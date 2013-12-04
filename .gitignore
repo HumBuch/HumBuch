@@ -5,6 +5,5 @@
 *.war
 *.ear
 /.settings
-/.classpath
 /.gradle
 /bin
