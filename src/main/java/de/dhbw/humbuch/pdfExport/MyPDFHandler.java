@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.pdfExport;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +26,19 @@ public abstract class MyPDFHandler {
 	 */
 	public MyPDFHandler(String path){
 		this.document = new Document();
+	}
+	
+	public MyPDFHandler(){
+		this.document = new Document();		
+	}
+	
+	/**
+	 * Creates the pdf with the information in the 
+	 * 	object that was passed to the constructor previously.
+	 * 
+	 * @param path where the file will be saved
+	 */	
+	public void savePDF(String path){
 		try {
 			PdfWriter.getInstance(document, new FileOutputStream(path));
 		}
@@ -34,17 +48,34 @@ public abstract class MyPDFHandler {
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Creates the pdf with the information in the 
-	 * 	object that was passed to the constructor previously.
-	 */	
-	public void createPDF(){
 		this.document.open();
 		this.addMetaData(document);
 		this.insertDocumentParts(document);
 		this.document.close();
+	}
+	
+	/**
+	 * User can choose a printer where this pdf is printed then.
+	 * The pdf contains the information stored in the object that
+	 * 	was send to the constructor previously.
+	 * 
+	 */	
+	public void printPDF(){
+		ByteArrayOutputStream byteArrayOutputStream;
+		try {
+			byteArrayOutputStream = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, byteArrayOutputStream);
+
+			this.document.open();
+			this.addMetaData(document);
+			this.insertDocumentParts(document);
+			this.document.close();
+			
+			new PDFPrinter(byteArrayOutputStream);
+		}
+		catch (DocumentException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

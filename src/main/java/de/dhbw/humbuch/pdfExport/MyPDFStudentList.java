@@ -11,8 +11,8 @@ import de.dhbw.humbuch.model.Student;
 public final class MyPDFStudentList extends MyPDFHandler{
 	private Student student;
 
-	public MyPDFStudentList(String path, Student student) {
-		super(path);	
+	public MyPDFStudentList(Student student) {
+		super();	
 		this.student = student;
 	}
 	
@@ -119,6 +119,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	}
 	
 	public static void main(String[] args){
-		new MyPDFStudentList("./testfiles/FirstPdf.pdf", null).createPDF();
+//		new MyPDFStudentList(null).savePDF("./testfiles/FirstPdf.pdf");
+		new MyPDFStudentList(null).printPDF();
 	}
 }
