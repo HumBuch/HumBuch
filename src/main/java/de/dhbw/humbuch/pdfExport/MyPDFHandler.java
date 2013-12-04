@@ -19,6 +19,10 @@ import com.lowagie.text.pdf.PdfWriter;
 public abstract class MyPDFHandler {
 	Document document;
 	
+	/**
+	 * 
+	 * @param path links to the directory where the PDF file should be saved
+	 */
 	public MyPDFHandler(String path){
 		this.document = new Document();
 		try {
@@ -32,6 +36,10 @@ public abstract class MyPDFHandler {
 		}
 	}
 	
+	/**
+	 * Creates the pdf with the information in the 
+	 * 	object that was passed to the constructor previously.
+	 */	
 	public void createPDF(){
 		this.document.open();
 		this.addMetaData(document);
@@ -39,6 +47,14 @@ public abstract class MyPDFHandler {
 		this.document.close();
 	}
 	
+	
+	/**
+	 * Adds meta data to the PDF document.
+	 * The information of using iText must be part of the meta data due to the
+	 * 	license of the iText library!
+	 * 
+	 * @param document represents the PDF before it is saved
+	 */
 	private void addMetaData(Document document) {
 		document.addTitle("Humbuch Schule");
 		document.addSubject("Using iText");
@@ -52,7 +68,6 @@ public abstract class MyPDFHandler {
 	 * 	on the right corner on top of the document
 	 * 
 	 * @param document reference of the pdfDocument object
-	 * @throws DocumentException
 	 */	
 	protected void addHeading(Document document, String listType) {
 		Paragraph paragraph = new Paragraph();
@@ -101,7 +116,14 @@ public abstract class MyPDFHandler {
 		}	
 	}
 	
-	protected void addSignatureField(Document document) {
+	/**
+	 * Adds a signature field with a date field to the document.
+	 * Should be the last part that is added to the document.
+	 * 
+	 * @param document represents the PDF before it is saved
+	 * @param role word for the kind of person that shall sign the paper
+	 */
+	protected void addSignatureField(Document document, String role) {
 		Paragraph paragraph = new Paragraph();
 		addEmptyLine(paragraph, 2);
 		
@@ -127,7 +149,7 @@ public abstract class MyPDFHandler {
 	    
 	    signatureTable.addCell(cell);
 	    
-	    cell = new PdfPCell(new Phrase("Unterschrift Schüler"));
+	    cell = new PdfPCell(new Phrase("Unterschrift " + role));
 	    cell.setBorder(0);
 	    	    
 	    signatureTable.addCell(cell);
@@ -167,6 +189,10 @@ public abstract class MyPDFHandler {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return PdfPTable
+	 */
 	protected PdfPTable createTableWithRentalInformationHeader(){
 		PdfPTable table = new PdfPTable(5);
 		
@@ -190,6 +216,17 @@ public abstract class MyPDFHandler {
 		}
 	}
 	
+	
+	/**
+	 * In this method all parts of the document shall be 'put' together.
+	 * @param document represents the PDF before it is saved
+	 */
 	protected abstract void insertDocumentParts(Document document);
+	
+	/**
+	 * In this method the PDF-specific information shall 
+	 * 	be inserted into the document.
+	 * @param document represents the PDF before it is saved
+	 */
 	protected abstract void addContent(Document document);
 } 

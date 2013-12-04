@@ -10,12 +10,12 @@ import de.dhbw.humbuch.model.Student;
 
 
 public final class MyPDFClassList extends MyPDFHandler {
-	private Student student;
+//	private Grade grade;
 	
 	//object student has to be replaced by a class object
 	public MyPDFClassList(String path, Student student) {
 		super(path);	
-		this.student = student;
+//		this.grade = student;
 	}
 	
 	protected void insertDocumentParts(Document document){

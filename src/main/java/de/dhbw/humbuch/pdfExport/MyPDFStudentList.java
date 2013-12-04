@@ -9,7 +9,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import de.dhbw.humbuch.model.Student;
 
 public final class MyPDFStudentList extends MyPDFHandler{
-	Student student;
+	private Student student;
 
 	public MyPDFStudentList(String path, Student student) {
 		super(path);	
@@ -21,7 +21,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		this.addStudentInformation(document);
 		this.addContent(document);
 		this.addRentalDisclosure(document);
-		this.addSignatureField(document);
+		this.addSignatureField(document, "Schüler");
 	}
 	
 	protected void addContent(Document document) {
@@ -49,6 +49,11 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	    System.out.println(document);	
 	}
 	
+	/**
+	 * Inserts information about the student like grade, language, name etc.
+	 * 
+	 * @param document represents the PDF before it is saved
+	 */	
 	private void addStudentInformation(Document document){
 		PdfPTable table = new PdfPTable(5);
 		
@@ -65,7 +70,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		cell = new PdfPCell(new Phrase("Religions-\nunterricht"));
 		table.addCell(cell);
 
-		cell = new PdfPCell(new Phrase("SchÃ¼ler"));
+		cell = new PdfPCell(new Phrase("Schüler"));
 		table.addCell(cell);
 		
 		//Table-Content
@@ -93,10 +98,14 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		}
 	}
 	
+	/**
+	 * 
+	 * @param document represents the PDF before it is saved
+	 */
 	private void addRentalDisclosure(Document document){
-		String disclosure = "Die oben angefÃ¼hrten SchulbÃ¼cher habe ich erhalten.\n" +
-								"Die ausgeliehenen BÃ¼cher habe ich auf VollstÃ¤ndigkeit und BeschÃ¤digung Ã¼berprÃ¼ft. "+
-								"BeschÃ¤digte oder verlorengegangene BÃ¼cher mÃ¼ssen ersetzt werden.\n";
+		String disclosure = "Die oben angeführten Schulbücher habe ich erhalten.\n" +
+								"Die ausgeliehenen Bücher habe ich auf VollstÃ¤ndigkeit und Beschädigung überprüft. "+
+								"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n";
 		PdfPTable table = new PdfPTable(1);
 		PdfPCell cell = new PdfPCell(new Phrase(disclosure));
 		table.addCell(cell);

@@ -1,13 +1,16 @@
 package de.dhbw.humbuch.pdfExport;
 
+import java.util.ArrayList;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 public final class MyPDFOrderList extends MyPDFHandler {
+//	private ArrayList orderList;
 	
-	public MyPDFOrderList(String path){
+	public MyPDFOrderList(String path, ArrayList orderList){
 		super(path);
 	}
 	
@@ -22,6 +25,12 @@ public final class MyPDFOrderList extends MyPDFHandler {
 		//TODO implement appending of data to this table
 	}
 	
+	
+	/**
+	 * Creates and returns a table with a header row for an order-list
+	 * 
+	 * @return PdfPTable
+	 */
 	private PdfPTable createTableWithOrderListHeader(){
 		PdfPTable table = new PdfPTable(10);
 		PdfPCell cell = new PdfPCell(new Phrase(""));
@@ -33,7 +42,7 @@ public final class MyPDFOrderList extends MyPDFHandler {
 		cell = new PdfPCell(new Phrase("Verliehen"));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase("ZurÃ¼ck"));
+		cell = new PdfPCell(new Phrase("Zurück"));
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Neuleihe"));
@@ -42,7 +51,7 @@ public final class MyPDFOrderList extends MyPDFHandler {
 		cell = new PdfPCell(new Phrase("Weiter in Leihe"));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase("VerfÃ¼gbar"));
+		cell = new PdfPCell(new Phrase("Verfügbar"));
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Reserve"));

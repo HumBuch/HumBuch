@@ -9,7 +9,7 @@ import java.util.List;
 import au.com.bytecode.opencsv.CSVReader;
 import de.dhbw.humbuch.model.Student;
 
-public class MyCSVHandler {
+public final class MyCSVHandler {
 	
 	/**
 	 * Reads a csv file and creates student objects of it's records.
@@ -42,6 +42,12 @@ public class MyCSVHandler {
 		return studentArrayList;
 	}
 	
+	/**
+	 * Creates a student object with the information in the record.
+	 * 
+	 * @param record is one line of the loaded csv-file
+	 * @return Student
+	 */
 	private static Student createStudentObject(String[] record){
 		String[] foreignLanguage = new String[4];			
 		foreignLanguage[0] = record[0];
