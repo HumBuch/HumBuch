@@ -17,7 +17,7 @@ import com.vaadin.ui.Button.ClickEvent;
 public class BasicUI extends UI
 {
 
-    @WebServlet(value = "/*", asyncSupported = true)
+    @WebServlet(value = {"/*", "/VAADIN/basic"}, asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = BasicUI.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }

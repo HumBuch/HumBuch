@@ -7,3 +7,7 @@
 /.settings
 /.gradle
 /bin
+/build
+/src/main/webapp/VAADIN/gwt-unitCache
+src/main/webapp/VAADIN/widgetsets/de.davherrmann.mvvm.demo.AppWidgetSet/*.cache.js
+src/main/webapp/VAADIN/widgetsets/de.davherrmann.mvvm.demo.AppWidgetSet/deferredjs
