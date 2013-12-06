@@ -27,7 +27,7 @@ public class StudentTest {
 		assertEquals("12.04.1970", dateFormat.format(student.getBirthday()));
 		assertEquals("m", student.getGender());
 		assertEquals("11au", GradeHandler.getFullGrade(student.getGrade()));
-		assertEquals("E F", ProfileHandler.getLanguageProfile(student.getProfil()));
+		assertEquals("E F", ProfileHandler.getLanguageProfile(student.getProfile()));
 	}
 
 }

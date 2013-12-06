@@ -82,10 +82,10 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		cell = new PdfPCell(new Phrase(this.student.getGrade().getGrade()));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase(ProfileHandler.getLanguageProfile(this.student.getProfil())));
+		cell = new PdfPCell(new Phrase(ProfileHandler.getLanguageProfile(this.student.getProfile())));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase(this.student.getProfil().getReligion().toString()));
+		cell = new PdfPCell(new Phrase(this.student.getProfile().getReligion().toString()));
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase(StudentHandler.getFullNameOfStudent(student)));

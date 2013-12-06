@@ -92,12 +92,12 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowedList = borrowedList;
 	}
 
-	public Profile getProfil() {
+	public Profile getProfile() {
 		return profile;
 	}
 
-	public void setProfil(Profile profil) {
-		this.profile = profil;
+	public void setProfile(Profile profile) {
+		this.profile = profile;
 	}
 	
 	
