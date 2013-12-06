@@ -7,7 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
-import de.dhbw.humbuch.model.Student;
+import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.StudentHandler;
+import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.Student;
 
 public final class MyCSVHandler {
 	
@@ -53,11 +56,9 @@ public final class MyCSVHandler {
 		foreignLanguage[0] = record[0];
 		foreignLanguage[1] = record[1];
 		foreignLanguage[2] = record[2];
-		foreignLanguage[3] = record[3];
-
-							
-		return new Student(foreignLanguage, record[5], record[6], Integer.parseInt(record[7]), //foreignLanguages, birthDay, gender, id
-							record[8],  record[9], record[16], record[10], //tutorGroup, lastName, firstName, place
-							Integer.parseInt(record[11]), record[14], record[15]); //postalCode, streetName, profile
+//		foreignLanguage[3] = record[3];
+		
+		Profile profile = ProfileHandler.createProfile(record[0], record[1], record[2]);
+		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], profile);
 	}
 }

@@ -1,12 +1,10 @@
 package de.dhbw.humbuch.pdfExport;
 
-
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 
-import de.dhbw.humbuch.model.Student;
+import de.dhbw.humbuch.model.entity.Student;
 
 
 public final class MyPDFClassList extends MyPDFHandler {

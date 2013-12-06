@@ -6,7 +6,9 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
-import de.dhbw.humbuch.model.Student;
+import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.StudentHandler;
+import de.dhbw.humbuch.model.entity.Student;
 
 public final class MyPDFStudentList extends MyPDFHandler{
 	private Student student;
@@ -74,20 +76,20 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		table.addCell(cell);
 		
 		//Table-Content
-//		cell = new PdfPCell(new Phrase("getSchuljahr()"));
-//		table.addCell(cell);
-//		
-//		cell = new PdfPCell(new Phrase(this.student.getTutorGroup()));
-//		table.addCell(cell);
-//		
-//		cell = new PdfPCell(new Phrase("this.student.getAllLanguages()"));
-//		table.addCell(cell);
-//		
-//		cell = new PdfPCell(new Phrase(this.student.getProfile()));
-//		table.addCell(cell);
-//		
-//		cell = new PdfPCell(new Phrase(this.student.getFullName()));
-//		table.addCell(cell);
+		cell = new PdfPCell(new Phrase("#SCHOOLYEAR"));
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(this.student.getGrade().getGrade()));
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(ProfileHandler.getLanguageProfile(this.student.getProfil())));
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(this.student.getProfil().getReligion().toString()));
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(StudentHandler.getFullNameOfStudent(student)));
+		table.addCell(cell);
 		
 		try {
 			document.add(table);
