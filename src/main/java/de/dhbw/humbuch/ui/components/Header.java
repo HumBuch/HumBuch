@@ -60,5 +60,4 @@ public class Header implements IComponent {
 	public Component getComponent() {
 		return horizontalLayoutHeader;
 	}
-
 }
