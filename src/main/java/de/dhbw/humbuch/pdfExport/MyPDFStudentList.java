@@ -34,8 +34,6 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	protected void addContent(Document document) {
 		PdfPTable table = this.createTableWithRentalInformationHeader();
 
-//		Not implemented yet since no data are available
-//
 		Iterator<BorrowedMaterial> iterator = this.student.getBorrowedList().iterator();
 		BorrowedMaterial borrowedMaterial;
 		PdfPCell cell;
@@ -59,9 +57,6 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
-	    
-	    System.out.println("test");
-	    System.out.println(document);	
 	}
 	
 	/**
@@ -111,7 +106,6 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			document.add(paragraph);
 		}
 		catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -131,7 +125,6 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			document.add(table);
 		}
 		catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

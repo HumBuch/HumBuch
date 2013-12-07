@@ -124,11 +124,6 @@ public abstract class MyPDFHandler {
 		catch (BadElementException e) {
 			e.printStackTrace();
 		}
-
-//	    cell = new PdfPCell(new Phrase("Humboldt-Gymnasium-Karlsruhe"));
-//		cell.setBorder(0);
-//	    cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-//	    table.addCell(cell);
 	    
 	    cell = new PdfPCell(new Phrase(listType));
 	    cell.setBorder(0);
