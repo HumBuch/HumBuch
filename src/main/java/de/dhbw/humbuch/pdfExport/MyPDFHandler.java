@@ -137,7 +137,7 @@ public abstract class MyPDFHandler {
 	    table.addCell(cell);
 	    
 	    paragraph.add(table);  
-	    addEmptyLine(paragraph, 2);  
+	    addEmptyLine(paragraph, 1);  
      
 	    try {
 			document.add(paragraph);

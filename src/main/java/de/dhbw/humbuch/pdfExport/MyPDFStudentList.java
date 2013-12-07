@@ -1,7 +1,10 @@
 package de.dhbw.humbuch.pdfExport;
 
+import java.util.Iterator;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -9,6 +12,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import de.dhbw.humbuch.model.ProfileHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+
 
 public final class MyPDFStudentList extends MyPDFHandler{
 	private Student student;
@@ -31,14 +36,22 @@ public final class MyPDFStudentList extends MyPDFHandler{
 
 //		Not implemented yet since no data are available
 //
-//		Iterator iterator = this.student.getRentalList().iterator();
-//		String rentalList;
-//		PdfPCell cell;
-//		while(iterator.hasNext()){
-//			rentalList = (String) iterator.next();
-//			cell = new PdfPCell(new Phrase(rentalList));
-//			table.addCell(cell);
-//		}
+		Iterator<BorrowedMaterial> iterator = this.student.getBorrowedList().iterator();
+		BorrowedMaterial borrowedMaterial;
+		PdfPCell cell;
+		while(iterator.hasNext()){
+			borrowedMaterial = (BorrowedMaterial) iterator.next();
+			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getSubject().getName()));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getToGrade()));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getName()));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(""+borrowedMaterial.getTeachingMaterial().getPrice()));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(" "));
+			table.addCell(cell);
+		}
 	    
 	    try {
 			document.add(table);
@@ -93,6 +106,9 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		
 		try {
 			document.add(table);
+			Paragraph paragraph = new Paragraph();
+			addEmptyLine(paragraph, 2);
+			document.add(paragraph);
 		}
 		catch (DocumentException e) {
 			// TODO Auto-generated catch block
@@ -118,10 +134,5 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public static void main(String[] args){
-//		new MyPDFStudentList(null).savePDF("./testfiles/FirstPdf.pdf");
-		new MyPDFStudentList(null).printPDF();
 	}
 }
