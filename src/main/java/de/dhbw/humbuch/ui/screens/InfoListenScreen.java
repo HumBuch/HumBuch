@@ -25,16 +25,15 @@ public class InfoListenScreen extends AbstractBasicScreen {
 	
 	protected void init(VaadinRequest request, Panel panel) {		
 		VerticalLayout vl = new VerticalLayout();
-		
+		vl.setMargin(true);
+		vl.setSpacing(true);
 		
 		//TODO Mehrfachauswahl für Klassenauswahl
-		Label l1 = new Label("Gesammelt für Klasse");
-		ComboBox select1  = new ComboBox("Klasse auswählen");
+		ComboBox select1  = new ComboBox("Gesammelt für Klasse");
 		select1.addItem("7a");
 		select1.addItem("7b");
 		select1.addItem("7c");
 		HorizontalLayout hl1 = new HorizontalLayout();
-		hl1.addComponent(l1);
 		hl1.addComponent(select1);
 		hl1.addComponent(new Button("Drucken"));
 		

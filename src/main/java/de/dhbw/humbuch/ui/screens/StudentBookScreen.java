@@ -24,6 +24,8 @@ public class StudentBookScreen extends AbstractBasicScreen {
 	
 	protected void init(VaadinRequest request, Panel panel) {		
 		VerticalLayout vl = new VerticalLayout();
+		vl.setMargin(true);
+		vl.setSpacing(true);
 		
 		Label name = new Label("Martin Wentzel");
 		Label course = new Label("7a");

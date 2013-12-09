@@ -23,6 +23,8 @@ public class BookEditScreen extends AbstractBasicScreen {
 	
 	protected void init(VaadinRequest request, Panel panel) {
 		VerticalLayout vl = new VerticalLayout();
+		vl.setMargin(true);
+		vl.setSpacing(true);
 		//TODO Datenfelder einfügen
 		
 		HorizontalLayout hl = new HorizontalLayout();

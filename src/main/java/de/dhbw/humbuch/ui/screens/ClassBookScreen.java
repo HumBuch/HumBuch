@@ -18,21 +18,28 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class ClassBookScreen extends AbstractBasicScreen {
 
+	private static final String CHOOSE_CLASS = "Klasse auswählen";
+	private static final String LIST_EDIT = "Liste einpflegen";
+	
+	private String[] courses = {"5a","5b","5c","6a","6b","6c","7a","7b","7c","8a","8b","8c"};
+	
 	@WebServlet(value = "/classBook", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = ClassBookScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 	
-	protected void init(VaadinRequest request, Panel panel) {		
-		VerticalLayout vl = new VerticalLayout();
-		ComboBox select  = new ComboBox("Klasse auswählen");
-		select.addItem("7a");
-		select.addItem("7b");
-		select.addItem("7c");
+	protected void init(VaadinRequest request, Panel panel) {	
+		VerticalLayout vl = new VerticalLayout(); 
+		vl.setMargin(true);
+		vl.setSpacing(true);
+		
+		ComboBox select  = new ComboBox(CHOOSE_CLASS);
+		for(int i=0;i<courses.length;i++) {
+			select.addItem(courses[i]);
+		}
 		vl.addComponent(select);
 		
-		Table table = new Table("Liste einpflegen");
-		
+		Table table = new Table(LIST_EDIT);
 		//TODO Dynamically add new Columns, based on the database design
 		table.addContainerProperty("Name", String.class, null);
 		table.addContainerProperty("M", CheckBox.class, null);
@@ -41,14 +48,14 @@ public class ClassBookScreen extends AbstractBasicScreen {
 		CheckBox math = new CheckBox();
 		CheckBox english = new CheckBox();
 		CheckBox french = new CheckBox();
-		
 		table.addItem(new Object[]{"Martin", math, english, french}, new Integer(1));
-		
 		vl.addComponent(table);
 		
 		HorizontalLayout buttons = new HorizontalLayout();
-		buttons.addComponent(new Button("Abbrechen"));
-		buttons.addComponent(new Button("Bestätigen"));
+		Button cancel = new Button("Abbrechen");
+		Button save = new Button("Bestätigen");
+		buttons.addComponent(cancel);
+		buttons.addComponent(save);
 		
 		vl.addComponent(buttons);
 		panel.setContent(vl);
