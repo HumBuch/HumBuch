@@ -9,6 +9,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -45,8 +46,11 @@ public class ClassBookScreen extends AbstractBasicScreen {
 		
 		vl.addComponent(table);
 		
-		vl.addComponent(new Button("Abbrechen"));
-		vl.addComponent(new Button("Bestätigen"));
+		HorizontalLayout buttons = new HorizontalLayout();
+		buttons.addComponent(new Button("Abbrechen"));
+		buttons.addComponent(new Button("Bestätigen"));
+		
+		vl.addComponent(buttons);
 		panel.setContent(vl);
 	}
 }
