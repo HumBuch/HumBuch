@@ -24,28 +24,30 @@ repositories {
 dependencies {
 	def version = [
 		vaadin: '7.1.8',
-		hibernate: '4.2.7.Final'
+		hibernate: '4.2.7.Final',
+		guice: '3.0'
 	]
 	
-	compile dep('de.davherrmann:annoMVVM:1.0')
+	compile 'de.davherrmann:annoMVVM:1.0'
+	compile 'de.davherrmann:guice-vaadin:1.0'
     compile "com.vaadin:vaadin-client:$version.vaadin"
     compile "com.vaadin:vaadin-server:$version.vaadin"
     compile "com.vaadin:vaadin-push:$version.vaadin"
     compile "com.vaadin:vaadin-client-compiled:$version.vaadin"
     compile "com.vaadin:vaadin-themes:$version.vaadin"
     compile 'javax.servlet:javax.servlet-api:3.0.1'
+    compile "com.google.inject:guice:$version.guice"
+    compile "com.google.inject.extensions:guice-servlet:$version.guice"
+    compile "com.google.inject.extensions:guice-multibindings:$version.guice"
+    compile "com.google.inject.extensions:guice-persist:$version.guice"
     compile dep("org.hibernate:hibernate-core:$version.hibernate")
     compile dep("org.hibernate:hibernate-entitymanager:$version.hibernate")
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-def dep(coords, javadoc = true, sources = true) {  
+def dep(coords, javadoc = false, sources = true) {  
     def result = [dependencies.create(coords)]  
     if (javadoc) result << dependencies.create("$coords:javadoc")  
     if (sources) result << dependencies.create("$coords:sources")  
 	result
-}
-
-vaadin {
-	widgetset "de.davherrmann.mvvm.demo.AppWidgetSet"
 }
