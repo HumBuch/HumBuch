@@ -24,6 +24,7 @@ public class HomeScreen extends AbstractBasicScreen {
 		VerticalLayout vl = new VerticalLayout();
 		Task t = new Task();
 		vl.addComponent(t.getComponent());
+		panel.setCaption("Aufgaben Management");
 		panel.setContent(vl);
 	}
 }

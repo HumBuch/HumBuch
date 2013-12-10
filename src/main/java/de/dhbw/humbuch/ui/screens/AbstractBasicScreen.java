@@ -6,6 +6,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 import de.dhbw.humbuch.ui.components.Footer;
 import de.dhbw.humbuch.ui.components.Header;
@@ -23,10 +24,12 @@ public abstract class AbstractBasicScreen extends UI {
 	private Component componentHeader;
 	private Component componentFooter;
 	private Component componentNavBar;
+	private VerticalLayout verticalLayoutPanel;
 	
 	@Override
 	protected void init(VaadinRequest request) {
 		gridLayoutScreen = new GridLayout(2, 3);
+		verticalLayoutPanel = new VerticalLayout();
 		header = new Header();
 		footer = new Footer();
 		navigationBar = new NavigationBar();
@@ -34,25 +37,28 @@ public abstract class AbstractBasicScreen extends UI {
 		
 		this.init(request, panelContent);
 		
+		//panelContent.setStyleName(Runo.PANEL_LIGHT);
+		verticalLayoutPanel.setMargin(true);
+		verticalLayoutPanel.setSizeFull();
+		verticalLayoutPanel.addComponent(panelContent);
+		
 		componentHeader = header.getComponent();
-		componentHeader.setWidth("100%");
-		componentHeader.setHeight("13%");
+		componentHeader.setSizeFull();
 		componentFooter = footer.getComponent();
-		componentFooter.setWidth("100%");
-		componentFooter.setHeight("5%");
+		componentFooter.setSizeFull();
 		componentNavBar = navigationBar.getComponent();
 		componentNavBar.setWidth("100%");
 		panelContent.setSizeFull();
 		
 		gridLayoutScreen.setSizeFull();
-		gridLayoutScreen.setRowExpandRatio(0, 13);
-		gridLayoutScreen.setRowExpandRatio(1, 82);
+		gridLayoutScreen.setRowExpandRatio(0, 15);
+		gridLayoutScreen.setRowExpandRatio(1, 80);
 		gridLayoutScreen.setRowExpandRatio(2, 5);
 		gridLayoutScreen.setColumnExpandRatio(0, 20);
 		gridLayoutScreen.setColumnExpandRatio(1, 80);
 		gridLayoutScreen.addComponent(header.getComponent(), 0, 0, 1, 0);
 		gridLayoutScreen.addComponent(navigationBar.getComponent(), 0, 1);
-		gridLayoutScreen.addComponent(panelContent, 1, 1);
+		gridLayoutScreen.addComponent(verticalLayoutPanel, 1, 1);
 		gridLayoutScreen.addComponent(footer.getComponent(), 0, 2, 1, 2);
 		
 		setContent(gridLayoutScreen);

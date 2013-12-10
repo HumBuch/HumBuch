@@ -6032,3 +6032,12 @@ body .mytheme.v-app .v-app-loading {
 	height: 39px;
 	background: transparent url(../runo/window/img/shadow/bottom-right.png);
 }
+
+.mytheme .footer_background {
+	background: #953735;
+	padding: 5px;
+}
+
+.mytheme .footer_font {
+	color: #FFFFFF;
+}

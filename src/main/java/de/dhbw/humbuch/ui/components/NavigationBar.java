@@ -48,7 +48,7 @@ public class NavigationBar implements IComponent {
 		buttonImport = new Button(NAV_IMPORT);
 
 		
-		String width = "90%";
+		String width = "100%";
 		buttonHome.setWidth(width);
 		buttonBorrow.setWidth(width);
 		buttonReturn.setWidth(width);
@@ -60,24 +60,25 @@ public class NavigationBar implements IComponent {
 		buttonImport.setWidth(width);
 
 		verticalLayoutNavBar.setSpacing(true);
+		verticalLayoutNavBar.setMargin(true);
 		verticalLayoutNavBar.addComponent(buttonHome);
-		verticalLayoutNavBar.setComponentAlignment(buttonHome, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonHome, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonBorrow);
-		verticalLayoutNavBar.setComponentAlignment(buttonBorrow, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonBorrow, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonReturn);
-		verticalLayoutNavBar.setComponentAlignment(buttonReturn, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonReturn, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonMaintainClass);
-		verticalLayoutNavBar.setComponentAlignment(buttonMaintainClass, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonMaintainClass, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonMaintainPupil);
-		verticalLayoutNavBar.setComponentAlignment(buttonMaintainPupil, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonMaintainPupil, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonInfoList);
-		verticalLayoutNavBar.setComponentAlignment(buttonInfoList, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonInfoList, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonDunning);
-		verticalLayoutNavBar.setComponentAlignment(buttonDunning, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonDunning, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonManageBooks);
-		verticalLayoutNavBar.setComponentAlignment(buttonManageBooks, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonManageBooks, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonImport);
-		verticalLayoutNavBar.setComponentAlignment(buttonImport, Alignment.MIDDLE_LEFT);
+		verticalLayoutNavBar.setComponentAlignment(buttonImport, Alignment.MIDDLE_CENTER);
 	}
 
 	@Override

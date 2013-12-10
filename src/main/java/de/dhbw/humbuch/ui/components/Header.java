@@ -1,7 +1,6 @@
 package de.dhbw.humbuch.ui.components;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -32,39 +31,35 @@ public class Header implements IComponent {
 		buttonSettings = new Button();
 		buttonHelp = new Button();
 
-		imageLogo = new Image("", new ThemeResource("images/humbuch_logo_red.png"));
-		//imageLogo.setWidth(20, Unit.EM);
-		imageLogo.setHeight(64, Unit.PIXELS);
-
+		imageLogo = new Image(null, new ThemeResource("images/humbuch_logo_red.png"));
+		imageLogo.setHeight("100%");
+		
 		buttonLogout.setIcon(new ThemeResource("images/icons/32/icon_logout_red.png"));
-//		buttonLogout.setHeight(32, Unit.PIXELS);
 		buttonLogout.setSizeFull();
 		buttonLogout.setStyleName(BaseTheme.BUTTON_LINK);		
 		
 		buttonSettings.setIcon(new ThemeResource("images/icons/32/icon_settings_red.png"));
-//		buttonSettings.setHeight(32, Unit.PIXELS);
 		buttonSettings.setSizeFull();
 		buttonSettings.setStyleName(BaseTheme.BUTTON_LINK);
 		
 		buttonHelp.setIcon(new ThemeResource("images/icons/32/icon_help_red.png"));
-//		buttonHelp.setHeight(32, Unit.PIXELS);
 		buttonHelp.setSizeFull();
 		buttonHelp.setStyleName(BaseTheme.BUTTON_LINK);
 
 		horizontalLayoutHeaderBar.setSpacing(true);
 		horizontalLayoutHeaderBar.addComponent(buttonHelp);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonHelp, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonHelp, Alignment.TOP_RIGHT);
 		horizontalLayoutHeaderBar.addComponent(buttonSettings);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonSettings, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonSettings, Alignment.TOP_RIGHT);
 		horizontalLayoutHeaderBar.addComponent(buttonLogout);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonLogout, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonLogout, Alignment.TOP_RIGHT);
 
-//		horizontalLayoutHeader.setWidth(100, Unit.PERCENTAGE);
-		horizontalLayoutHeader.setSizeFull();
+		horizontalLayoutHeader.setMargin(true);
+		horizontalLayoutHeader.setWidth("100%");
 		horizontalLayoutHeader.addComponent(imageLogo);
-		horizontalLayoutHeader.setComponentAlignment(imageLogo, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeader.setComponentAlignment(imageLogo, Alignment.TOP_LEFT);
 		horizontalLayoutHeader.addComponent(horizontalLayoutHeaderBar);
-		horizontalLayoutHeader.setComponentAlignment(horizontalLayoutHeaderBar, Alignment.MIDDLE_RIGHT);
+		horizontalLayoutHeader.setComponentAlignment(horizontalLayoutHeaderBar, Alignment.TOP_RIGHT);
 	}
 
 	public Component getComponent() {
