@@ -1,4 +1,4 @@
-package de.dhbw.humbuch;
+package de.dhbw.humbuch.view;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;

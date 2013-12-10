@@ -1,8 +1,10 @@
-package de.dhbw.humbuch;
+package de.dhbw.humbuch.guice;
 
 import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 import com.vaadin.ui.UI;
+
+import de.dhbw.humbuch.view.BasicUI;
 
 public class BasicModule extends ServletModule {
 
