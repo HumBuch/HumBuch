@@ -1,4 +1,4 @@
-package de.dhbw.humbuch;
+package de.dhbw.humbuch.guice;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;

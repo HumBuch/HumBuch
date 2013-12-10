@@ -1,4 +1,4 @@
-package de.dhbw.humbuch;
+package de.dhbw.humbuch.guice;
 
 import java.util.Properties;
 
