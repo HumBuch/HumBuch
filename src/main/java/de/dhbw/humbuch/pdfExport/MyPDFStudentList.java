@@ -45,8 +45,6 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			table.addCell(cell);
 			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getName()));
 			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(""+borrowedMaterial.getTeachingMaterial().getPrice()));
-			table.addCell(cell);
 			cell = new PdfPCell(new Phrase(" "));
 			table.addCell(cell);
 		}

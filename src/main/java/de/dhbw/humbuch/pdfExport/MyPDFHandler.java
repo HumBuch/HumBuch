@@ -220,7 +220,7 @@ public abstract class MyPDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader(){
-		PdfPTable table = new PdfPTable(5);
+		PdfPTable table = new PdfPTable(4);
 		
 		PdfPCell cell = new PdfPCell(new Phrase("Fach"));
 		table.addCell(cell);
@@ -228,9 +228,7 @@ public abstract class MyPDFHandler {
 		table.addCell(cell);
 		cell = new PdfPCell(new Phrase("Bezeichnung Lehrmittel"));
 		table.addCell(cell);
-		cell = new PdfPCell(new Phrase("Preis"));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase("Anzahl"));
+		cell = new PdfPCell(new Phrase("Unterschrift"));
 		table.addCell(cell);
 		
 		return table;		
