@@ -11,34 +11,33 @@ import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
-import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
-import de.dhbw.humbuch.model.entity.Student;
 
 
 public final class MyPDFClassList extends MyPDFHandler {
+
 	private Grade grade;
-	
+
 	//object student has to be replaced by a class object
 	public MyPDFClassList(Grade grade) {
-		super();	
+		super();
 		this.grade = grade;
 	}
-	
-	protected void insertDocumentParts(Document document){
+
+	protected void insertDocumentParts(Document document) {
 		this.addHeading(document, "Ausgabe-Liste 2013");
 		this.addContent(document);
 	}
-	
+
 	protected void addContent(Document document) {
 		PdfPTable table = this.createTableWithRentalInformationHeader();
 
 		List<MapperAmountAndBorrowedMaterial> gradeRentalList = GradeHandler.getAllRentedBooksOfGrade(this.grade);
-		
+
 		Iterator<MapperAmountAndBorrowedMaterial> iterator = gradeRentalList.iterator();
 		MapperAmountAndBorrowedMaterial gradeRental;
 		PdfPCell cell;
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			gradeRental = iterator.next();
 			cell = new PdfPCell(new Phrase(gradeRental.getBorrowedMaterial().getTeachingMaterial().getSubject().getName()));
 			table.addCell(cell);
@@ -46,20 +45,20 @@ public final class MyPDFClassList extends MyPDFHandler {
 			table.addCell(cell);
 			cell = new PdfPCell(new Phrase(gradeRental.getBorrowedMaterial().getTeachingMaterial().getName()));
 			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getPrice()));
+			cell = new PdfPCell(new Phrase("" + gradeRental.getBorrowedMaterial().getTeachingMaterial().getPrice()));
 			table.addCell(cell);
 			cell = new PdfPCell(new Phrase(gradeRental.getAmount()));
 			table.addCell(cell);
 		}
-	    
-	    try {
+
+		try {
 			document.add(table);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
-	    
-	    System.out.println("test");
-	    System.out.println(document);	
+
+		System.out.println("test");
+		System.out.println(document);
 	}
 }
