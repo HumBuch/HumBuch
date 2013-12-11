@@ -116,7 +116,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 */
 	private void addRentalDisclosure(Document document){
 		String disclosure = "Die oben angeführten Schulbücher habe ich erhalten.\n" +
-								"Die ausgeliehenen Bücher habe ich auf VollstÃ¤ndigkeit und Beschädigung überprüft. "+
+								"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
 								"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n";
 		PdfPTable table = new PdfPTable(1);
 		PdfPCell cell = new PdfPCell(new Phrase(disclosure));

@@ -57,8 +57,5 @@ public final class MyPDFClassList extends MyPDFHandler {
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
-
-		System.out.println("test");
-		System.out.println(document);
 	}
 }
