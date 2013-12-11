@@ -28,7 +28,7 @@ dependencies {
 		guice: '3.0'
 	]
 	
-	compile 'de.davherrmann:annoMVVM:1.0'
+	compile 'de.davherrmann:annoMVVM:1.2'
 	compile 'de.davherrmann:guice-vaadin:1.0'
     compile "com.vaadin:vaadin-client:$version.vaadin"
     compile "com.vaadin:vaadin-server:$version.vaadin"
