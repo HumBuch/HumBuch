@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'war'
-apply from: 'deploy2jetty.gradle'
+apply plugin: 'jetty'
 apply from: 'vaadin.plugin'
 
 sourceCompatibility = 1.7
@@ -28,7 +28,7 @@ dependencies {
 		guice: '3.0'
 	]
 	
-	compile 'de.davherrmann:annoMVVM:1.0'
+	compile 'de.davherrmann:annoMVVM:1.2'
 	compile 'de.davherrmann:guice-vaadin:1.0'
     compile "com.vaadin:vaadin-client:$version.vaadin"
     compile "com.vaadin:vaadin-server:$version.vaadin"
