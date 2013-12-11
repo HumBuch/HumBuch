@@ -7,6 +7,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 
+import de.davherrmann.guice.vaadin.UIScopeModule;
+
 public class BasicFilter extends GuiceFilter {
 
 	private static Injector INJECTOR;
@@ -20,7 +22,7 @@ public class BasicFilter extends GuiceFilter {
 		if (INJECTOR != null) {
 			throw new ServletException("Injector already created?!");
 		}
-		INJECTOR = Guice.createInjector(new BasicModule());
+		INJECTOR = Guice.createInjector(new BasicModule(), new UIScopeModule());
 		filterConfig.getServletContext().log(
 				"Created injector with " + INJECTOR.getAllBindings().size()
 						+ " bindings.");
