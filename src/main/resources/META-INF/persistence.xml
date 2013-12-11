@@ -20,6 +20,7 @@
 			<!-- <property name="hibernate.hbm2ddl.auto" value="update" />  --> <!-- man kann auch "create" nehmen -->
 			<property name="hibernate.current_session_context_class"
 				value="thread" />
+			<property name="hibernate.enbale_lazy_load_no_trans" value="true"/>
 
 			<property name="hibernate.c3p0.min_size" value="5" />
 			<property name="hibernate.c3p0.max_size" value="20" />
