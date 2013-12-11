@@ -25,7 +25,7 @@ import de.dhbw.humbuch.pdfExport.MyPDFClassList;
 public class GradeTest {
 	
 	@Test
-	public static void testGetAllRentedBooksOfGrade(){
+	public void testGetAllRentedBooksOfGrade(){
 		Grade grade = prepareGradeTest();
 		List<MapperAmountAndBorrowedMaterial> maabm = GradeHandler.getAllRentedBooksOfGrade(grade);
 		
@@ -37,10 +37,6 @@ public class GradeTest {
 		assertEquals("Java rocks", maabm.get(2).getBorrowedMaterial().getTeachingMaterial().getName());
 		assertEquals(1, maabm.get(3).getAmount());
 		assertEquals("Geometrie for Dummies", maabm.get(3).getBorrowedMaterial().getTeachingMaterial().getName());
-	}
-	
-	public static void main(String[] args){
-		
 	}
 	
 	public static Grade prepareGradeTest(){

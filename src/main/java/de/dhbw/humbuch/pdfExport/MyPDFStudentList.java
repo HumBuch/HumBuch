@@ -41,7 +41,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
 			                         borrowedMaterial.getTeachingMaterial().getName(),
 			                      	 "" };
-			MyPDFHandler.fillTableWithContent(table, contentArray);		
+			MyPDFHandler.fillTableWithContent(table, true, contentArray);		
 		}
 	    
 	    try {
@@ -58,24 +58,33 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addStudentInformation(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(5);
-		
-		//header of table which contains information about the student
-		MyPDFHandler.fillTableWithContent(table, 
-				new String[]{"Schuljahr", "Klasse", "Sprachenfolge", "Religions-\nunterricht",
-				             "Schüler"});
+		PdfPTable table = MyPDFHandler.createMyStandardTable(2);
+//		
+//		//header of table which contains information about the student
+//		MyPDFHandler.fillTableWithContent(table, false,
+//				new String[]{, 
+//				             ,
+//				             
+//				             , ""});
 		//fill the table with the content
-		String[] contentArray = {"#SCHOOLYEAR", 
-		                         ""+this.student.getGrade().getGrade(),
-		                         ProfileHandler.getLanguageProfile(this.student.getProfile()),
-		                         this.student.getProfile().getReligion().toString(),
-		                         StudentHandler.getFullNameOfStudent(student)};
-		MyPDFHandler.fillTableWithContent(table, contentArray);
+//		String[] contentArray = {", 
+//		                         ,
+//		                         ),
+//		                         ,
+//		                         };
+//		
+		
+		String[] contentArray = {"Schüler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
+		                         + "Klasse: " + ""+this.student.getGrade().getGrade() + "\n"
+		                         + "Schuljahr: " + "#SCHOOLYEAR", 
+		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
+					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+		MyPDFHandler.fillTableWithContent(table, false, contentArray);
 		
 		try {
 			document.add(table);
 			Paragraph paragraph = new Paragraph();
-			addEmptyLine(paragraph, 2);
+			//addEmptyLine(paragraph, 2);
 			document.add(paragraph);
 		}
 		catch (DocumentException e) {
@@ -89,7 +98,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 */
 	private void addRentalDisclosure(Document document){
 		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
-		MyPDFHandler.fillTableWithContent(table, 
+		MyPDFHandler.fillTableWithContent(table, false,
 				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
 				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
 				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"});

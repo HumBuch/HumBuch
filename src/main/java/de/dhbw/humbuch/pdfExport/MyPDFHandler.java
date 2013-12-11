@@ -153,7 +153,7 @@ public abstract class MyPDFHandler {
 	 */
 	protected void addSignatureField(Document document, String role) {
 		Paragraph paragraph = new Paragraph();
-		addEmptyLine(paragraph, 2);
+		addEmptyLine(paragraph, 1);
 		
 		//this table contains the signatureTable and the dataTable.
 		// this purpose makes it easier to format
@@ -224,7 +224,7 @@ public abstract class MyPDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeader(){
 		PdfPTable table = createMyStandardTable(4);
 		
-		fillTableWithContent(table, 
+		fillTableWithContent(table, true, 
 				new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
 		
 		return table;		
@@ -240,16 +240,19 @@ public abstract class MyPDFHandler {
 		PdfPTable table = new PdfPTable(columnNumber);
 		table.setLockedWidth(true);
 		table.setTotalWidth(TABLEWIDTH);
-		
+			
 		return table;
 	}
 	
-	protected static void fillTableWithContent(PdfPTable table, String[] contentArray){
+	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray){
 		PdfPCell cell = null;
 		
 		for(int i = 0; i < contentArray.length; i++){
 			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));	
+			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));
+			if(withBorder == false){
+				cell.setBorder(0);
+			}
 			table.addCell(cell);			
 		}
 	}

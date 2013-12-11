@@ -42,7 +42,7 @@ public final class MyPDFClassList extends MyPDFHandler {
 			                         ""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
 			                         gradeRental.getBorrowedMaterial().getTeachingMaterial().getName(),
 			                         ""+gradeRental.getAmount()};
-			MyPDFHandler.fillTableWithContent(table, contentArray);
+			MyPDFHandler.fillTableWithContent(table, true, contentArray);
 		}
 
 		try {
