@@ -6,17 +6,23 @@ import java.util.List;
 import de.dhbw.humbuch.model.ProfileHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.Religion;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.pdfExport.MyPDFClassList;
 import de.dhbw.humbuch.pdfExport.MyPDFStudentList;
 
 
 public class PDFTest {
 	public static void main(String[] args){
-//		new MyPDFStudentList(null).savePDF("./testfiles/FirstPdf.pdf");
+		testStudentPDF();
+		testClassPDF();	
+	}
+	
+	public static void testStudentPDF(){
 		Profile profile = ProfileHandler.createProfile("E", "", "F");
 		profile.setReligion(Religion.ETHICS);
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
@@ -46,6 +52,11 @@ public class PDFTest {
 		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profile);
 		student.setBorrowedList(borrowedMaterialList);
 		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
+	}
+	
+	public static void testClassPDF(){
+		Grade grade = GradeTest.prepareGradeTest();
+		new MyPDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
 	}
 
 }

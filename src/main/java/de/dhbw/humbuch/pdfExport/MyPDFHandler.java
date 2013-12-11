@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
@@ -18,7 +19,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 public abstract class MyPDFHandler {
-	Document document;
+	private Document document;
+	protected static float TABLEWIDTH = 418f;
 	
 	/**
 	 * 
@@ -102,16 +104,16 @@ public abstract class MyPDFHandler {
 	 */	
 	protected void addHeading(Document document, String listType) {
 		Paragraph paragraph = new Paragraph();
-		PdfPTable table = new PdfPTable(2);
+		PdfPTable table = createMyStandardTable(2);
+
+		table.setTotalWidth(TABLEWIDTH + 40f);
 		PdfPCell cell;		
 
 		try {
 			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein.png");	
 			img.setAlignment(Element.ALIGN_BOTTOM);
-			cell = new PdfPCell(img);			
-//			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-//			
-//			cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+			cell = new PdfPCell(img);	
+
 			cell.setBorder(0);
 			table.addCell(cell);
 		}
@@ -220,16 +222,10 @@ public abstract class MyPDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader(){
-		PdfPTable table = new PdfPTable(4);
+		PdfPTable table = createMyStandardTable(4);
 		
-		PdfPCell cell = new PdfPCell(new Phrase("Fach"));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase("Klasse"));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase("Bezeichnung Lehrmittel"));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase("Unterschrift"));
-		table.addCell(cell);
+		fillTableWithContent(table, 
+				new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
 		
 		return table;		
 	}
@@ -240,7 +236,24 @@ public abstract class MyPDFHandler {
 		}
 	}
 	
+	protected static PdfPTable createMyStandardTable(int columnNumber){
+		PdfPTable table = new PdfPTable(columnNumber);
+		table.setLockedWidth(true);
+		table.setTotalWidth(TABLEWIDTH);
+		
+		return table;
+	}
 	
+	protected static void fillTableWithContent(PdfPTable table, String[] contentArray){
+		PdfPCell cell = null;
+		
+		for(int i = 0; i < contentArray.length; i++){
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));	
+			table.addCell(cell);			
+		}
+	}
+		
 	/**
 	 * In this method all parts of the document shall be 'put' together.
 	 * @param document represents the PDF before it is saved

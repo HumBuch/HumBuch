@@ -19,12 +19,13 @@ import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.pdfExport.MyPDFClassList;
 
 
 public class GradeTest {
 	
 	@Test
-	public void testGetAllRentedBooksOfGrade(){
+	public static void testGetAllRentedBooksOfGrade(){
 		Grade grade = prepareGradeTest();
 		List<MapperAmountAndBorrowedMaterial> maabm = GradeHandler.getAllRentedBooksOfGrade(grade);
 		
@@ -38,7 +39,11 @@ public class GradeTest {
 		assertEquals("Geometrie for Dummies", maabm.get(3).getBorrowedMaterial().getTeachingMaterial().getName());
 	}
 	
-	private Grade prepareGradeTest(){
+	public static void main(String[] args){
+		
+	}
+	
+	public static Grade prepareGradeTest(){
 		Grade grade = GradeHandler.createGrade(7, "b", "Herr Bob");
 		List<Student> studentsList = new ArrayList<Student>();
 		
@@ -97,5 +102,4 @@ public class GradeTest {
 		
 		return grade;
 	}
-
 }
