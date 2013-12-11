@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'war'
-apply from: 'deploy2jetty.gradle'
+apply plugin: 'jetty'
 apply from: 'vaadin.plugin'
 
 sourceCompatibility = 1.7
