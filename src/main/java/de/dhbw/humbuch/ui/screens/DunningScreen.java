@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
@@ -42,7 +43,7 @@ public class DunningScreen extends AbstractBasicScreen {
 	private Table tableSearchResults;
 	
 	@WebServlet(value = "/dunnings", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = DunningScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
+//    @VaadinServletConfiguration(productionMode = false, ui = DunningScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 	
@@ -79,5 +80,11 @@ public class DunningScreen extends AbstractBasicScreen {
 		verticalLayoutContent.addComponent(buttonCreateDunning);
 		
 		panel.setContent(verticalLayoutContent);
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

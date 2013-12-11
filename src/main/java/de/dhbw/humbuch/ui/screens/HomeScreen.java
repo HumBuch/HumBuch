@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
@@ -15,16 +16,26 @@ import de.dhbw.humbuch.ui.components.Task;
 @SuppressWarnings("serial")
 public class HomeScreen extends AbstractBasicScreen {
 
-    @WebServlet(value = "/home", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = HomeScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
-    public static class Servlet extends VaadinServlet {
-    }
-	
+//    @WebServlet(value = "/home", asyncSupported = true)
+//    @VaadinServletConfiguration(productionMode = false, ui = HomeScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
+//    public static class Servlet extends VaadinServlet {
+//    }
+	public HomeScreen() {
+//		init(null,null);
+	}
 	protected void init(VaadinRequest request, Panel panel) {
-		VerticalLayout vl = new VerticalLayout();
+		System.out.println("HomeScreen");
+//		VerticalLayout vl = new VerticalLayout();
 		Task t = new Task();
-		vl.addComponent(t.getComponent());
+		addComponent(t.getComponent());
+//		vl.addComponent(t.getComponent());
 		panel.setCaption("Aufgaben Management");
-		panel.setContent(vl);
+//		panel.setContent(vl);
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

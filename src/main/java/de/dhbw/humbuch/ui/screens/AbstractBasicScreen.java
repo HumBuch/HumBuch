@@ -1,11 +1,11 @@
 package de.dhbw.humbuch.ui.screens;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.dhbw.humbuch.ui.components.Footer;
@@ -14,7 +14,7 @@ import de.dhbw.humbuch.ui.components.NavigationBar;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
-public abstract class AbstractBasicScreen extends UI {
+public abstract class AbstractBasicScreen extends VerticalLayout implements View {
 
 	private GridLayout gridLayoutScreen;
 	private Header header;
@@ -26,8 +26,13 @@ public abstract class AbstractBasicScreen extends UI {
 	private Component componentNavBar;
 	private VerticalLayout verticalLayoutPanel;
 	
-	@Override
+	public AbstractBasicScreen() {
+		init(null);
+	}
+	
+	//@Override
 	protected void init(VaadinRequest request) {
+		System.out.println("Ausführung");
 		gridLayoutScreen = new GridLayout(2, 3);
 		verticalLayoutPanel = new VerticalLayout();
 		header = new Header();
@@ -61,7 +66,7 @@ public abstract class AbstractBasicScreen extends UI {
 		gridLayoutScreen.addComponent(verticalLayoutPanel, 1, 1);
 		gridLayoutScreen.addComponent(footer.getComponent(), 0, 2, 1, 2);
 		
-		setContent(gridLayoutScreen);
+//		setContent(gridLayoutScreen);
 	}
 	
 	protected abstract void init(VaadinRequest request, Panel panel);
