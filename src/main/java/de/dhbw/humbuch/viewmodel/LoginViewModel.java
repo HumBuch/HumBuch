@@ -9,6 +9,7 @@ import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class LoginViewModel {
 
@@ -18,6 +19,9 @@ public class LoginViewModel {
 	
 	@Inject
 	private DAO<Student> daoStudent;
+	
+	@Inject
+	private DAO<TeachingMaterial> daoTeachingMaterial;
 
 	@ProvidesState(LoginSuccessful.class)
 	public final BasicState<String> loginSuccessful = new BasicState<>(String.class);
