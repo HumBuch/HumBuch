@@ -5,14 +5,13 @@ import java.util.Iterator;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.ProfileHandler;
 import de.dhbw.humbuch.model.StudentHandler;
-import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Student;
 
 
 public final class MyPDFStudentList extends MyPDFHandler{
@@ -33,22 +32,16 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	
 	protected void addContent(Document document) {
 		PdfPTable table = this.createTableWithRentalInformationHeader();
-
+		
 		Iterator<BorrowedMaterial> iterator = this.student.getBorrowedList().iterator();
 		BorrowedMaterial borrowedMaterial;
-		PdfPCell cell;
 		while(iterator.hasNext()){
 			borrowedMaterial = (BorrowedMaterial) iterator.next();
-			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getSubject().getName()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getToGrade()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(borrowedMaterial.getTeachingMaterial().getName()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(""+borrowedMaterial.getTeachingMaterial().getPrice()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(" "));
-			table.addCell(cell);
+			String[] contentArray = {borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+			                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+			                         borrowedMaterial.getTeachingMaterial().getName(),
+			                      	 "" };
+			MyPDFHandler.fillTableWithContent(table, true, contentArray);		
 		}
 	    
 	    try {
@@ -65,44 +58,33 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addStudentInformation(Document document){
-		PdfPTable table = new PdfPTable(5);
+		PdfPTable table = MyPDFHandler.createMyStandardTable(2);
+//		
+//		//header of table which contains information about the student
+//		MyPDFHandler.fillTableWithContent(table, false,
+//				new String[]{, 
+//				             ,
+//				             
+//				             , ""});
+		//fill the table with the content
+//		String[] contentArray = {", 
+//		                         ,
+//		                         ),
+//		                         ,
+//		                         };
+//		
 		
-		//header of table which contains information about the student
-		PdfPCell cell = new PdfPCell(new Phrase("Schuljahr"));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase("Klasse"));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase("Sprachenfolge"));
-		table.addCell(cell);
-
-		cell = new PdfPCell(new Phrase("Religions-\nunterricht"));
-		table.addCell(cell);
-
-		cell = new PdfPCell(new Phrase("Schüler"));
-		table.addCell(cell);
-		
-		//Table-Content
-		cell = new PdfPCell(new Phrase("#SCHOOLYEAR"));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase(this.student.getGrade().getGrade()));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase(ProfileHandler.getLanguageProfile(this.student.getProfile())));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase(this.student.getProfile().getReligion().toString()));
-		table.addCell(cell);
-		
-		cell = new PdfPCell(new Phrase(StudentHandler.getFullNameOfStudent(student)));
-		table.addCell(cell);
+		String[] contentArray = {"Schüler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
+		                         + "Klasse: " + ""+this.student.getGrade().getGrade() + "\n"
+		                         + "Schuljahr: " + "#SCHOOLYEAR", 
+		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
+					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+		MyPDFHandler.fillTableWithContent(table, false, contentArray);
 		
 		try {
 			document.add(table);
 			Paragraph paragraph = new Paragraph();
-			addEmptyLine(paragraph, 2);
+			//addEmptyLine(paragraph, 2);
 			document.add(paragraph);
 		}
 		catch (DocumentException e) {
@@ -115,12 +97,11 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */
 	private void addRentalDisclosure(Document document){
-		String disclosure = "Die oben angeführten Schulbücher habe ich erhalten.\n" +
-								"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
-								"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n";
-		PdfPTable table = new PdfPTable(1);
-		PdfPCell cell = new PdfPCell(new Phrase(disclosure));
-		table.addCell(cell);
+		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
+		MyPDFHandler.fillTableWithContent(table, false,
+				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
+				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
+				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"});
 		try {
 			document.add(table);
 		}
