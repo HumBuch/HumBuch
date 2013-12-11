@@ -20,6 +20,6 @@ public class LoginViewModel {
 		System.out.println("login attempt...");
 		System.out.println("userName: " + username);
 		System.out.println("password: " + password);
-		loginSuccessful.set("Login erfolgreich!");
+		loginSuccessful.set("Login Erfolgreich!");
 	}
 }
