@@ -40,6 +40,8 @@ dependencies {
     compile "com.google.inject.extensions:guice-servlet:$version.guice"
     compile "com.google.inject.extensions:guice-multibindings:$version.guice"
     compile "com.google.inject.extensions:guice-persist:$version.guice"
+    compile 'net.sf.opencsv:opencsv:2.3'
+    compile 'com.lowagie:itext:4.2.1'
     compile dep("org.hibernate:hibernate-core:$version.hibernate")
     compile dep("org.hibernate:hibernate-entitymanager:$version.hibernate")
     compile 'mysql:mysql-connector-java:5.1.27'
