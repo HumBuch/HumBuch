@@ -13,13 +13,13 @@ public class LoginViewModel {
 	public interface DoLogin extends ActionHandler {}
 
 	@ProvidesState(LoginSuccessful.class)
-	public final BasicState<String> loginSuccessful = new BasicState<>(String.class);
+	public final BasicState<String> loginWasSuccessful = new BasicState<>(String.class);
 
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
 		System.out.println("login attempt...");
 		System.out.println("userName: " + username);
 		System.out.println("password: " + password);
-		loginSuccessful.set("Login erfolgreich!");
+		loginWasSuccessful.set("Login erfolgreich!");
 	}
 }
