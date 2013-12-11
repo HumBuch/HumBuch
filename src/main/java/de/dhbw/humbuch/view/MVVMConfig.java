@@ -9,10 +9,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import de.davherrmann.mvvm.*;
+import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.StateChangeListener;
+import de.davherrmann.mvvm.StateChangeWrapper;
+import de.davherrmann.mvvm.SourceWrapper;
+import de.davherrmann.mvvm.ActionWrapper;
+import de.davherrmann.mvvm.ActionHandler;
+import de.davherrmann.mvvm.State;
 
 public class MVVMConfig {
-	
+
 	@Inject
 	public MVVMConfig(ViewModelComposer viewModelComposer) {
 		viewModelComposer.addStateChangeWrapper(AbstractField.class,
@@ -30,7 +36,7 @@ public class MVVMConfig {
 						};
 					}
 				});
-		
+
 		viewModelComposer.addSourceWrapper(AbstractField.class,
 				new SourceWrapper<Object>() {
 					@SuppressWarnings("unchecked")
@@ -62,10 +68,11 @@ public class MVVMConfig {
 								});
 					}
 				});
-		
+
 		viewModelComposer.addActionWrapper(Button.class, new ActionWrapper() {
 			@Override
-			public void addActionHandler(Object notifier, final ActionHandler actionHandler) {
+			public void addActionHandler(Object notifier,
+					final ActionHandler actionHandler) {
 				((Button) notifier).addClickListener(new ClickListener() {
 					private static final long serialVersionUID = 3154305342571215268L;
 
@@ -76,18 +83,20 @@ public class MVVMConfig {
 				});
 			}
 		});
-		
-		viewModelComposer.addStateChangeWrapper(State.class, new StateChangeWrapper() {
-			@Override
-			public StateChangeListener getStateChangeListener(final Object notified) {
-				return new StateChangeListener() {
-					@SuppressWarnings("unchecked")
+
+		viewModelComposer.addStateChangeWrapper(State.class,
+				new StateChangeWrapper() {
 					@Override
-					public void stateChange(Object value) {
-						((State<Object>) notified).set(value);
+					public StateChangeListener getStateChangeListener(
+							final Object notified) {
+						return new StateChangeListener() {
+							@SuppressWarnings("unchecked")
+							@Override
+							public void stateChange(Object value) {
+								((State<Object>) notified).set(value);
+							}
+						};
 					}
-				};
-			}
-		});
+				});
 	}
 }
