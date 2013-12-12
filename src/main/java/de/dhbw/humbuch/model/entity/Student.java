@@ -37,7 +37,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 			joinColumns={@JoinColumn(name="student_id", referencedColumnName="id")},
 		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
 			)
-	private List<ProfileType> profileTypes = new ArrayList<ProfileType>();
+	private List<Profile> profiles = new ArrayList<Profile>();
 	
 	public Student() {}
 
@@ -97,12 +97,12 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowedList = borrowedList;
 	}
 
-	public List<ProfileType> getProfileTypes() {
-		return profileTypes;
+	public List<Profile> getProfiles() {
+		return profiles;
 	}
 
-	public void setProfileTypes(List<ProfileType> profileTypes) {
-		this.profileTypes = profileTypes;
+	public void setProfiles(List<Profile> profiles) {
+		this.profiles = profiles;
 	}
-
+	
 }
