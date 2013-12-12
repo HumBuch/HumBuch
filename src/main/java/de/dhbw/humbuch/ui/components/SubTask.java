@@ -3,11 +3,12 @@ package de.dhbw.humbuch.ui.components;
 import com.vaadin.annotations.Theme;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 @Theme("mytheme")
-public class SubTask implements IComponent {
+public class SubTask extends CustomComponent implements IComponent {
 
 	// TODO: enum mit allen task descriptions
 	

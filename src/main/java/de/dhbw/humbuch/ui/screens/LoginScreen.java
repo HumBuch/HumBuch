@@ -48,7 +48,7 @@ public class LoginScreen extends UI {
 		passwordField = new PasswordField(PASSWORD);
 		buttonLogin = new Button(LOGIN);
 		footer = new Footer();
-		footerComponent = footer.getComponent();
+		footerComponent = footer;
 		
 		imageLogo = new Image(null, new ThemeResource("images/humbuch_logo_red.png"));
 		imageLogo.setWidth("30%");

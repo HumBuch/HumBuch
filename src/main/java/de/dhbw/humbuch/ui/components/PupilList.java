@@ -4,6 +4,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -11,7 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Theme("mytheme")
-public class PupilList implements IComponent {
+public class PupilList extends CustomComponent implements IComponent {
 
 	private static final String SEARCH_PUPIL_CAPTION = "Schueler suchen";
 	

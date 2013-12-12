@@ -5,13 +5,14 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 @Theme("mytheme")
-public class ClassList implements IComponent {
+public class ClassList extends CustomComponent implements IComponent {
 
 	private static final String CHOOSE_CLASS_CAPTION = "Klasse auswaehlen";
 	

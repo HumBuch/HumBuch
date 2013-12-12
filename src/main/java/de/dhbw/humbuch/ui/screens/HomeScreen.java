@@ -1,41 +1,51 @@
 package de.dhbw.humbuch.ui.screens;
 
-import javax.servlet.annotation.WebServlet;
+import java.util.NoSuchElementException;
 
+import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
+import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.ui.components.Task;
+import de.dhbw.humbuch.viewmodel.HomeScreenModel;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
 public class HomeScreen extends AbstractBasicScreen {
-
-//    @WebServlet(value = "/home", asyncSupported = true)
-//    @VaadinServletConfiguration(productionMode = false, ui = HomeScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
-//    public static class Servlet extends VaadinServlet {
-//    }
-	public HomeScreen() {
-//		init(null,null);
+	
+	@Inject
+	public HomeScreen(ViewModelComposer viewModelComposer, HomeScreenModel homeScreenModel) {
+		bindViewModel(viewModelComposer, homeScreenModel);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see de.dhbw.humbuch.ui.screens.AbstractBasicScreen#init(com.vaadin.server.VaadinRequest, com.vaadin.ui.Panel)
+	 * This function is called from the init function in AbstractBasicScreen
+	 */
 	protected void init(VaadinRequest request, Panel panel) {
 		System.out.println("HomeScreen");
-//		VerticalLayout vl = new VerticalLayout();
+		VerticalLayout vl = new VerticalLayout();
 		Task t = new Task();
-		addComponent(t.getComponent());
-//		vl.addComponent(t.getComponent());
+		vl.addComponent(t.getComponent());
 		panel.setCaption("Aufgaben Management");
-//		panel.setContent(vl);
+		panel.setContent(vl);
 	}
-
+	
+	private void bindViewModel(ViewModelComposer viewModelComposer, Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -3,12 +3,15 @@ package de.dhbw.humbuch.ui.components;
 import com.vaadin.annotations.Theme;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
+
+import de.dhbw.humbuch.ui.NavigationUI;
 
 
 @Theme("mytheme")
-public class NavigationBar implements IComponent {
+public class NavigationBar extends CustomComponent /*implements IComponent*/ {
 
 	private static final String NAV_HOME = "Aufgaben";
 	private static final String NAV_BORROW = "Ausleihe";
@@ -32,20 +35,74 @@ public class NavigationBar implements IComponent {
 	private Button buttonImport;
 
 	public NavigationBar() {
-		init();
-	}
 
-	private void init() {
+		/*TODO insert the correct constants for the corresponding screens
+		 * 
+		 */
 		verticalLayoutNavBar = new VerticalLayout();
-		buttonHome = new Button(NAV_HOME);
-		buttonBorrow = new Button(NAV_BORROW);
-		buttonReturn = new Button(NAV_RETURN);
-		buttonMaintainClass = new Button(NAV_MAINTAIN_CLASS);
-		buttonMaintainPupil = new Button(NAV_MAINTAIN_PUPIL);
-		buttonInfoList = new Button(NAV_INFO_LIST);
-		buttonDunning = new Button(NAV_DUNNING);
-		buttonManageBooks = new Button(NAV_MANAGE_BOOKS);
-		buttonImport = new Button(NAV_IMPORT);
+		buttonHome = new Button(NAV_HOME, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MAINVIEW);
+			}
+		});
+		buttonBorrow = new Button(NAV_BORROW, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonReturn = new Button(NAV_RETURN, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonMaintainClass = new Button(NAV_MAINTAIN_CLASS, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonMaintainPupil = new Button(NAV_MAINTAIN_PUPIL, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonInfoList = new Button(NAV_INFO_LIST, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonDunning = new Button(NAV_DUNNING, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonManageBooks = new Button(NAV_MANAGE_BOOKS, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
+		buttonImport = new Button(NAV_IMPORT, new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				System.out.println(getUI());
+				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+			}
+		});
 
 		
 		String width = "100%";
@@ -79,11 +136,13 @@ public class NavigationBar implements IComponent {
 		verticalLayoutNavBar.setComponentAlignment(buttonManageBooks, Alignment.MIDDLE_CENTER);
 		verticalLayoutNavBar.addComponent(buttonImport);
 		verticalLayoutNavBar.setComponentAlignment(buttonImport, Alignment.MIDDLE_CENTER);
+		
+		setCompositionRoot(verticalLayoutNavBar);
 	}
 
-	@Override
-	public Component getComponent() {
-		return verticalLayoutNavBar;
-	}
+//	@Override
+//	public Component getComponent() {
+//		return verticalLayoutNavBar;
+//	}
 
 }

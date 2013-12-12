@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 
-public class Task implements IComponent {
+public class Task extends CustomComponent implements IComponent {
 
 	private VerticalLayout verticalLayoutContent;
 	private ArrayList<SubTask> subTasks;

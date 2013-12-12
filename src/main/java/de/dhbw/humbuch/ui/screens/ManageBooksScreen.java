@@ -1,12 +1,11 @@
 package de.dhbw.humbuch.ui.screens;
 
-import javax.servlet.annotation.WebServlet;
+import java.util.NoSuchElementException;
 
+import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -15,6 +14,13 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindAction;
+import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.viewmodel.ManageBookScreenModel;
+import de.dhbw.humbuch.viewmodel.ManageBookScreenModel.DoEdit;
+import de.dhbw.humbuch.viewmodel.ManageBookScreenModel.Edit;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -30,16 +36,25 @@ public class ManageBooksScreen extends AbstractBasicScreen {
 	
 	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
+	
+	@BindState(Edit.class)
 	private TextField textFieldSearchBar;
 	private Table tableBooks;
+	
+	@BindAction(value = DoEdit.class)
 	private Button buttonNewBook;
 	private Button buttonEditBook;
 	
-	@WebServlet(value = "/manageBooks", asyncSupported = true)
-//    @VaadinServletConfiguration(productionMode = false, ui = ManageBooksScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
-    public static class Servlet extends VaadinServlet {
-    }
+	@Inject
+	public ManageBooksScreen(ViewModelComposer viewModelComposer, ManageBookScreenModel manageBookScreenModel) {
+		bindViewModel(viewModelComposer, manageBookScreenModel);
+	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see de.dhbw.humbuch.ui.screens.AbstractBasicScreen#init(com.vaadin.server.VaadinRequest, com.vaadin.ui.Panel)
+	 * This function is called from the init function in AbstractBasicScreen
+	 */
 	@Override
 	protected void init(VaadinRequest request, Panel panel) {
 		verticalLayoutContent = new VerticalLayout();
@@ -66,6 +81,15 @@ public class ManageBooksScreen extends AbstractBasicScreen {
 		panel.setContent(verticalLayoutContent);
 	}
 
+	private void bindViewModel(ViewModelComposer viewModelComposer, Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		// TODO Auto-generated method stub
