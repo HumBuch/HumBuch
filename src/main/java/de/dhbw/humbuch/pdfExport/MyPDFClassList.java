@@ -38,8 +38,7 @@ public final class MyPDFClassList extends MyPDFHandler {
 		MapperAmountAndBorrowedMaterial gradeRental;
 		while (iterator.hasNext()) {
 			gradeRental = iterator.next();
-			String[] contentArray = {gradeRental.getBorrowedMaterial().getTeachingMaterial().getSubject().getName(),
-			                         ""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
+			String[] contentArray = {""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
 			                         gradeRental.getBorrowedMaterial().getTeachingMaterial().getName(),
 			                         ""+gradeRental.getAmount()};
 			MyPDFHandler.fillTableWithContent(table, true, contentArray);

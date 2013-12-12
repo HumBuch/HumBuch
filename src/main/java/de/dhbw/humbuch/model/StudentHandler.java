@@ -27,7 +27,7 @@ public class StudentHandler {
 			grade.setGrade(Integer.parseInt(splittedString[0]));
 			grade.setSuffix(splittedString[1]);
 			student.setGrade(grade);
-			student.setProfile(profile);
+//			student.setProfiles(profile);
 		}catch (ParseException e) {
 			System.err.println("Could not parse String to Date " + e.getMessage());
 		}

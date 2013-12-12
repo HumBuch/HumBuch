@@ -222,11 +222,11 @@ public abstract class MyPDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader(){
-		PdfPTable table = createMyStandardTable(4);
+		PdfPTable table = createMyStandardTable(3);
 		
 		fillTableWithContent(table, true, 
-				new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-		
+				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
+				new String[]{"Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
 		return table;		
 	}
 	

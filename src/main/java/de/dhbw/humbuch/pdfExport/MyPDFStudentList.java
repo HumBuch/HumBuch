@@ -37,7 +37,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		BorrowedMaterial borrowedMaterial;
 		while(iterator.hasNext()){
 			borrowedMaterial = (BorrowedMaterial) iterator.next();
-			String[] contentArray = {borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+			String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
 			                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
 			                         borrowedMaterial.getTeachingMaterial().getName(),
 			                      	 "" };
@@ -58,7 +58,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addStudentInformation(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(2);
+		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
 //		
 //		//header of table which contains information about the student
 //		MyPDFHandler.fillTableWithContent(table, false,
@@ -76,9 +76,9 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		
 		String[] contentArray = {"Schüler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
 		                         + "Klasse: " + ""+this.student.getGrade().getGrade() + "\n"
-		                         + "Schuljahr: " + "#SCHOOLYEAR", 
-		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
-					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+		                         + "Schuljahr: " + "#SCHOOLYEAR"}; 
+//		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
+//					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
 		MyPDFHandler.fillTableWithContent(table, false, contentArray);
 		
 		try {

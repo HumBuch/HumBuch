@@ -11,13 +11,11 @@ import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
 import de.dhbw.humbuch.model.ProfileHandler;
 import de.dhbw.humbuch.model.StudentHandler;
-import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.TeachingMaterialHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.pdfExport.MyPDFClassList;
 
@@ -47,20 +45,20 @@ public class GradeTest {
 		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", profile);
 		
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
-		Subject subject = SubjectHandler.createSubject("Biology");
-		TeachingMaterial teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 6, "Bio1 - Bugs", 79.75);
+		//Subject subject = SubjectHandler.createSubject("Biology");
+		TeachingMaterial teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(6, "Bio1 - Bugs", 79.75);
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		subject = SubjectHandler.createSubject("German");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 11, "German1 - Faust", 22.49);
+		//subject = SubjectHandler.createSubject("German");
+		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "German1 - Faust", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		subject = SubjectHandler.createSubject("IT");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 11, "Java rocks", 22.49);
+		//subject = SubjectHandler.createSubject("IT");
+		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Java rocks", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
@@ -73,20 +71,20 @@ public class GradeTest {
 		
 		borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		
-		subject = SubjectHandler.createSubject("Biology");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 6, "Bio1 - Bugs", 79.75);
+		//subject = SubjectHandler.createSubject("Biology");
+		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(6, "Bio1 - Bugs", 79.75);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		subject = SubjectHandler.createSubject("IT");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 11, "Java rocks", 22.49);
+		//subject = SubjectHandler.createSubject("IT");
+		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Java rocks", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		subject = SubjectHandler.createSubject("Mathe");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(subject, 11, "Geometrie for Dummies", 22.49);
+		//subject = SubjectHandler.createSubject("Mathe");
+		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Geometrie for Dummies", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
