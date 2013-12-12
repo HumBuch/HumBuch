@@ -1,13 +1,18 @@
 package de.dhbw.humbuch.model.entity;
 
-public enum Religion {
+public enum ProfileType {
 	EVANGELIC("evangelisch"),
 	ROMANCATHOLIC("römisch-katholisch"),
-	ETHICS("Ethik");
+	ETHICS("Ethik"),
+	STANDARD("Standard"),
+	LATIN("Latein"),
+	FRENCH2("Franz2"),
+	FRENCH3("Franz3"),
+	SCIENCE("NWT");
 	
 	private String value;
 	
-	private Religion(String value) {
+	private ProfileType(String value) {
 		this.value = value;
 	}
 	
