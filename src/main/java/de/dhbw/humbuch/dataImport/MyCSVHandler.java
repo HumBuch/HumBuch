@@ -58,7 +58,7 @@ public final class MyCSVHandler {
 		foreignLanguage[2] = record[2];
 //		foreignLanguage[3] = record[3];
 		
-		Profile profile = ProfileHandler.createProfile(record[0], record[1], record[2]);
-		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], profile);
+		//Profile profile = ProfileHandler.createProfile(record[0], record[1], record[2]);
+		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], new Profile());
 	}
 }

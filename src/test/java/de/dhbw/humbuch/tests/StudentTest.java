@@ -18,8 +18,8 @@ public class StudentTest {
 	
 	@Test
 	public void testCreateStudent(){
-		Profile profile = ProfileHandler.createProfile("E", "", "F");
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profile);
+//		Profile profile = ProfileHandler.createProfile("E", "", "F");
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", new Profile());
 		
 		assertEquals("Karl", student.getFirstname());
 		assertEquals("August", student.getLastname());

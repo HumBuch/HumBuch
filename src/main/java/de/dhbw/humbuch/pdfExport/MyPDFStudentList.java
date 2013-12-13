@@ -58,34 +58,18 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addStudentInformation(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
-//		
-//		//header of table which contains information about the student
-//		MyPDFHandler.fillTableWithContent(table, false,
-//				new String[]{, 
-//				             ,
-//				             
-//				             , ""});
-		//fill the table with the content
-//		String[] contentArray = {", 
-//		                         ,
-//		                         ),
-//		                         ,
-//		                         };
-//		
-		
-		String[] contentArray = {"Schüler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
-		                         + "Klasse: " + ""+this.student.getGrade().getGrade() + "\n"
-		                         + "Schuljahr: " + "#SCHOOLYEAR"}; 
+		PdfPTable table = MyPDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
+
+		String[] contentArray = {"Schüler: ", StudentHandler.getFullNameOfStudent(student),
+		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
+		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
 //		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
 //					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
-		MyPDFHandler.fillTableWithContent(table, false, contentArray);
+		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {
 			document.add(table);
-			Paragraph paragraph = new Paragraph();
-			//addEmptyLine(paragraph, 2);
-			document.add(paragraph);
+			MyPDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -101,7 +85,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		MyPDFHandler.fillTableWithContent(table, false,
 				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
 				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
-				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"});
+				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"}, false);
 		try {
 			document.add(table);
 		}

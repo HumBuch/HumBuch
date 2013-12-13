@@ -22,8 +22,8 @@ public class PDFTest {
 	}
 	
 	public static void testStudentPDF(){
-		Profile profile = ProfileHandler.createProfile("E", "", "F");
-		profile.setReligion(Religion.ETHICS);
+//		Profile profile = ProfileHandler.createProfile("E", "", "F");
+//		profile.setReligion(Religion.ETHICS);
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
 		TeachingMaterial teachingMaterial = new TeachingMaterial();
@@ -48,7 +48,7 @@ public class PDFTest {
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profile);
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", new Profile());
 		student.setBorrowedList(borrowedMaterialList);
 		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
 	}

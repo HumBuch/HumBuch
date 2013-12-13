@@ -41,8 +41,8 @@ public class GradeTest {
 		Grade grade = GradeHandler.createGrade(7, "b", "Herr Bob");
 		List<Student> studentsList = new ArrayList<Student>();
 		
-		Profile profile = ProfileHandler.createProfile("L", "E", "");
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", profile);
+//		Profile profile = ProfileHandler.createProfile("L", "E", "");
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", new Profile());
 		
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		//Subject subject = SubjectHandler.createSubject("Biology");
@@ -66,8 +66,8 @@ public class GradeTest {
 		student.setBorrowedList(borrowedMaterialList);
 		studentsList.add(student);
 		
-		profile = ProfileHandler.createProfile("E", "", "F");
-		student = StudentHandler.createStudentObject("Karla", "Kolumna", "12.04.1981", "m", "7b", profile);
+//		profile = ProfileHandler.createProfile("E", "", "F");
+		student = StudentHandler.createStudentObject("Karla", "Kolumna", "12.04.1981", "m", "7b", new Profile());
 		
 		borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		

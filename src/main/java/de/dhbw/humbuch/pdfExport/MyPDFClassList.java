@@ -11,6 +11,7 @@ import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
+import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.Grade;
 
 
@@ -26,6 +27,7 @@ public final class MyPDFClassList extends MyPDFHandler {
 
 	protected void insertDocumentParts(Document document) {
 		this.addHeading(document, "Ausgabe-Liste 2013");
+		this.addGradeInformation(document);
 		this.addContent(document);
 	}
 
@@ -46,6 +48,29 @@ public final class MyPDFClassList extends MyPDFHandler {
 
 		try {
 			document.add(table);
+		}
+		catch (DocumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Inserts information about the grade.
+	 * 
+	 * @param document represents the PDF before it is saved
+	 */	
+	private void addGradeInformation(Document document){
+		PdfPTable table = MyPDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
+
+		String[] contentArray = {"Klasse: ", "" + this.grade.getGrade(),
+		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
+//		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
+//					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
+		
+		try {
+			document.add(table);
+			MyPDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
