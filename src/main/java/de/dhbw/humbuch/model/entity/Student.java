@@ -11,6 +11,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -38,6 +39,10 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
 			)
 	private List<Profile> profiles = new ArrayList<Profile>();
+	
+	@OneToOne
+	@JoinColumn(name="parentId")
+	private Parent parent;
 	
 	public Student() {}
 
@@ -103,6 +108,14 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 
 	public void setProfiles(List<Profile> profiles) {
 		this.profiles = profiles;
+	}
+
+	public Parent getParent() {
+		return parent;
+	}
+
+	public void setParent(Parent parent) {
+		this.parent = parent;
 	}
 	
 }
