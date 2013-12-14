@@ -29,10 +29,16 @@ public class HomeScreen extends AbstractBasicScreen {
 	 */
 	protected void init(VaadinRequest request, Panel panel) {
 		System.out.println("HomeScreen");
+		// TODO: the tasks should be loaded from database and added to the ui in loop. just a proof of concept here
 		VerticalLayout vl = new VerticalLayout();
-		Task t = new Task();
-		vl.addComponent(t.getComponent());
+		Task t = new Task(Task.TASK_DUMMY);
+		Task t2 = new Task(Task.TASK_DUMMY);
+		
+		vl.setSizeFull();
+		vl.addComponent(t);
+		vl.addComponent(t2);
 		panel.setCaption("Aufgaben Management");
+
 		panel.setContent(vl);
 	}
 	

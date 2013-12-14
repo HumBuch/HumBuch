@@ -32,7 +32,7 @@ public abstract class AbstractBasicScreen extends VerticalLayout implements View
 	
 	//@Override
 	protected void init(VaadinRequest request) {
-		System.out.println("Ausführung");
+		System.out.println("Ausfuehrung");
 		gridLayoutScreen = new GridLayout(2, 3);
 		verticalLayoutPanel = new VerticalLayout();
 		header = new Header();
@@ -53,6 +53,8 @@ public abstract class AbstractBasicScreen extends VerticalLayout implements View
 //		componentFooter.setSizeFull();
 //		componentNavBar = navigationBar.getComponent();
 //		componentNavBar.setWidth("100%");
+		header.setSizeFull();
+		footer.setSizeFull();
 		navigationBar.setWidth("100%");
 		panelContent.setSizeFull();
 		

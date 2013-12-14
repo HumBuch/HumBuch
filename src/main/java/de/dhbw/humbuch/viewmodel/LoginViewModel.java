@@ -5,6 +5,7 @@ import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.ui.NavigationUI;
 
 public class LoginViewModel {
 
@@ -20,6 +21,6 @@ public class LoginViewModel {
 		System.out.println("login attempt...");
 		System.out.println("userName: " + username);
 		System.out.println("password: " + password);
-		loginSuccessful.set("Login Erfolgreich!");
+//		loginSuccessful.set("Login Erfolgreich!");
 	}
 }

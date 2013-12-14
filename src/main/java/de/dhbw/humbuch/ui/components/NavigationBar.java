@@ -86,7 +86,7 @@ public class NavigationBar extends CustomComponent /*implements IComponent*/ {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				System.out.println(getUI());
-				getUI().getNavigator().navigateTo(NavigationUI.MANAGE_BOOKS);
+				getUI().getNavigator().navigateTo(NavigationUI.DUNNING);
 			}
 		});
 		buttonManageBooks = new Button(NAV_MANAGE_BOOKS, new Button.ClickListener() {
