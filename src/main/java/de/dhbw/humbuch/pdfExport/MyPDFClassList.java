@@ -36,19 +36,13 @@ public final class MyPDFClassList extends MyPDFHandler {
 
 		Iterator<MapperAmountAndBorrowedMaterial> iterator = gradeRentalList.iterator();
 		MapperAmountAndBorrowedMaterial gradeRental;
-		PdfPCell cell;
 		while (iterator.hasNext()) {
 			gradeRental = iterator.next();
-			cell = new PdfPCell(new Phrase(gradeRental.getBorrowedMaterial().getTeachingMaterial().getSubject().getName()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(gradeRental.getBorrowedMaterial().getTeachingMaterial().getName()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase("" + gradeRental.getBorrowedMaterial().getTeachingMaterial().getPrice()));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(gradeRental.getAmount()));
-			table.addCell(cell);
+			String[] contentArray = {gradeRental.getBorrowedMaterial().getTeachingMaterial().getSubject().getName(),
+			                         ""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
+			                         gradeRental.getBorrowedMaterial().getTeachingMaterial().getName(),
+			                         ""+gradeRental.getAmount()};
+			MyPDFHandler.fillTableWithContent(table, true, contentArray);
 		}
 
 		try {
