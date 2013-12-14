@@ -2,12 +2,14 @@ package de.dhbw.humbuch.view;
 
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
 
 import de.davherrmann.guice.vaadin.ScopedUI;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
+@Widgetset("de.dhbw.humbuch.view.AppWidgetSet")
 public class BasicUI extends ScopedUI {
 	
 	@Inject
