@@ -2,7 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 public enum Religion {
 	EVANGELIC("evangelisch"),
-	ROMANCATHOLIC("römisch-katholisch"),
+	ROMANCATHOLIC("rÃ¶misch-katholisch"),
 	ETHICS("Ethik");
 	
 	private String value;

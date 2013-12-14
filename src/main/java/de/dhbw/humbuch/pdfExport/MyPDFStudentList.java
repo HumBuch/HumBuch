@@ -5,7 +5,6 @@ import java.util.Iterator;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.ProfileHandler;
@@ -27,7 +26,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		this.addStudentInformation(document);
 		this.addContent(document);
 		this.addRentalDisclosure(document);
-		this.addSignatureField(document, "Schüler");
+		this.addSignatureField(document, "SchÃ¼ler");
 	}
 	
 	protected void addContent(Document document) {
@@ -74,7 +73,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 //		                         };
 //		
 		
-		String[] contentArray = {"Schüler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
+		String[] contentArray = {"SchÃ¼ler: " + StudentHandler.getFullNameOfStudent(student) + "\n"
 		                         + "Klasse: " + ""+this.student.getGrade().getGrade() + "\n"
 		                         + "Schuljahr: " + "#SCHOOLYEAR", 
 		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
@@ -99,9 +98,9 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	private void addRentalDisclosure(Document document){
 		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
 		MyPDFHandler.fillTableWithContent(table, false,
-				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
-				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
-				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"});
+				new String[]{"\nDie oben angefÃ¼hrten SchulbÃ¼cher habe ich erhalten.\n" +
+				"Die ausgeliehenen BÃ¼cher habe ich auf VollstÃ¤ndigkeit und BeschÃ¤digung Ã¼berprÃ¼ft. "+
+				"BeschÃ¤digte oder verlorengegangene BÃ¼cher mÃ¼ssen ersetzt werden.\n"});
 		try {
 			document.add(table);
 		}
