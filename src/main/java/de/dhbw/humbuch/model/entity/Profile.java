@@ -13,50 +13,19 @@ public class Profile implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-//	@OneToOne
-//	@JoinColumn(name="student_Id")
-//	private Student student;
-	
-	private boolean english;
-	private boolean latin;
-	private boolean french;
-	
 	@Enumerated(EnumType.STRING)
-	private Religion religion;
+	private ProfileType profileType;
+	
+//	private boolean standard;
+//	private boolean french2;
+//	private boolean french3;
+//	private boolean latin;
+//	private boolean science;
+//	private boolean evangelic;
+//	private boolean romancatholic;
+//	private boolean ethics;
 	
 	public Profile() {}
-
-	public boolean isEnglish() {
-		return english;
-	}
-
-	public void setEnglish(boolean english) {
-		this.english = english;
-	}
-
-	public boolean isLatin() {
-		return latin;
-	}
-
-	public void setLatin(boolean latin) {
-		this.latin = latin;
-	}
-
-	public boolean isFrench() {
-		return french;
-	}
-
-	public void setFrench(boolean french) {
-		this.french = french;
-	}
-
-	public Religion getReligion() {
-		return religion;
-	}
-
-	public void setReligion(Religion religion) {
-		this.religion = religion;
-	}
 
 	public int getId() {
 		return id;
@@ -65,6 +34,13 @@ public class Profile implements de.dhbw.humbuch.model.entity.Entity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
 
+	public ProfileType getProfileType() {
+		return profileType;
+	}
+
+	public void setProfileType(ProfileType profileType) {
+		this.profileType = profileType;
+	}
+	
 }
