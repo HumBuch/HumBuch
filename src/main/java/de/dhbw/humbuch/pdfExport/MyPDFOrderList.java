@@ -42,7 +42,7 @@ public final class MyPDFOrderList extends MyPDFHandler {
 		cell = new PdfPCell(new Phrase("Verliehen"));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase("Zurück"));
+		cell = new PdfPCell(new Phrase("ZurÃ¼ck"));
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Neuleihe"));
@@ -51,7 +51,7 @@ public final class MyPDFOrderList extends MyPDFHandler {
 		cell = new PdfPCell(new Phrase("Weiter in Leihe"));
 		table.addCell(cell);
 		
-		cell = new PdfPCell(new Phrase("Verfügbar"));
+		cell = new PdfPCell(new Phrase("VerfÃ¼gbar"));
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Reserve"));
