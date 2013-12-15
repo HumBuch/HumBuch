@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.model.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -30,7 +31,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="teachingMaterialProfile", joinColumns = @JoinColumn(name="teachingMaterialId"))
 	@Column(name="profileType")
-	private Set<ProfileType> profileTypes;
+	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 	
 	private String name;
 	private String producer;
