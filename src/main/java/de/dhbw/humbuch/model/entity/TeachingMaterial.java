@@ -1,8 +1,7 @@
 package de.dhbw.humbuch.model.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -31,7 +30,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="teachingMaterialProfile", joinColumns = @JoinColumn(name="teachingMaterialId"))
 	@Column(name="profileType")
-	private List<ProfileType> profileTypes = new ArrayList<ProfileType>();
+	private Set<ProfileType> profileTypes;
 	
 	private String name;
 	private String producer;
@@ -152,11 +151,11 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.validUntil = validUntil;
 	}
 
-	public List<ProfileType> getProfileTypes() {
+	public Set<ProfileType> getProfileTypes() {
 		return profileTypes;
 	}
 
-	public void setProfileTypes(List<ProfileType> profileTypes) {
+	public void setProfileTypes(Set<ProfileType> profileTypes) {
 		this.profileTypes = profileTypes;
 	}
 
