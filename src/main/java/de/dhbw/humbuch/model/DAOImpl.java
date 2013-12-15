@@ -1,7 +1,5 @@
 package de.dhbw.humbuch.model;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -12,17 +10,24 @@ import org.hibernate.criterion.Criterion;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
 import com.google.inject.persist.Transactional;
 
 import de.dhbw.humbuch.model.entity.Entity;
 
-public abstract class DAOImpl<EntityType extends Entity> implements
+public class DAOImpl<EntityType extends Entity> implements
 		DAO<EntityType> {
 
 	@Inject
 	private Provider<EntityManager> emProvider;
 
 	private Class<EntityType> entityClass;
+	
+	@SuppressWarnings("unchecked")
+	@Inject
+	public DAOImpl(TypeLiteral<EntityType> entityType) {
+		entityClass = (Class<EntityType>) entityType.getRawType();
+	}
 
 	@Transactional
 	public EntityType insert(EntityType entity) {
@@ -60,33 +65,14 @@ public abstract class DAOImpl<EntityType extends Entity> implements
 		return emProvider.get();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Class<EntityType> getEntityClass() {
-		if (entityClass == null) {
-			Class<?> clazz = getClass();
-
-			if (DAOImpl.class.isAssignableFrom(clazz)) {
-				Type type;
-				while (!DAOImpl.class.equals(clazz.getSuperclass())) {
-					clazz = clazz.getSuperclass();
-				}
-				type = clazz.getGenericSuperclass();
-
-				ParameterizedType paramType = (ParameterizedType) type;
-
-				entityClass = (Class<EntityType>) paramType
-						.getActualTypeArguments()[0];
-
-			}
-		}
 		return entityClass;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<EntityType> findAll() {
 		return getEntityManager().createQuery(
-				"from " + getEntityClass().getSimpleName())
+				"from " + getEntityClass().getSimpleName(), getEntityClass())
 				.getResultList();
 	}
 }

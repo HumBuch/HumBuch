@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -30,9 +32,17 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@OneToMany(mappedBy="student")
 	private List<BorrowedMaterial> borrowedList = new ArrayList<>();
 	
+	@ManyToMany
+	@JoinTable(
+			name="student_has_profile",
+			joinColumns={@JoinColumn(name="student_id", referencedColumnName="id")},
+		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
+			)
+	private List<Profile> profiles = new ArrayList<Profile>();
+	
 	@OneToOne
-	@JoinColumn(name="profileId")
-	private Profile profile;
+	@JoinColumn(name="parentId")
+	private Parent parent;
 	
 	public Student() {}
 
@@ -92,13 +102,20 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowedList = borrowedList;
 	}
 
-	public Profile getProfil() {
-		return profile;
+	public List<Profile> getProfiles() {
+		return profiles;
 	}
 
-	public void setProfil(Profile profil) {
-		this.profile = profil;
+	public void setProfiles(List<Profile> profiles) {
+		this.profiles = profiles;
 	}
-	
+
+	public Parent getParent() {
+		return parent;
+	}
+
+	public void setParent(Parent parent) {
+		this.parent = parent;
+	}
 	
 }
