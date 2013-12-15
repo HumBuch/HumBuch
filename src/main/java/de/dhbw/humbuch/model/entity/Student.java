@@ -121,5 +121,59 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	public void setProfileTypes(Set<ProfileType> profileTypes) {
 		this.profileTypes = profileTypes;
 	}
-
+	
+	public static class Builder {
+		private final String firstname;
+		private final String lastname;
+		private final Date birthday;
+		private final Grade grade;
+		
+		private String gender;
+		private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
+		private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
+		private Parent parent;
+		
+		public Builder(String firstname, String lastname, Date birthday, Grade grade) {
+			this.firstname = firstname;
+			this.lastname = lastname;
+			this.birthday = birthday;
+			this.grade = grade;
+		}
+		
+		public Builder gender(String gender) {
+			this.gender = gender;
+			return this;
+		}
+		
+		public Builder borrowedList(List<BorrowedMaterial> borrowedList) {
+			this.borrowedList = borrowedList;
+			return this;
+		}
+		
+		public Builder profileTypes(Set<ProfileType> profileTypes) {
+			this.profileTypes = profileTypes;
+			return this;
+		}
+		
+		public Builder parent(Parent parent) {
+			this.parent = parent;
+			return this;
+		}
+		
+		public Student build() {
+			return new Student(this);
+		}
+	}
+	
+	private Student(Builder builder) {
+		firstname = builder.firstname;
+		lastname = builder.lastname;
+		birthday = builder.birthday;
+		grade = builder.grade;
+		
+		gender = builder.gender;
+		borrowedList = builder.borrowedList;
+		profileTypes = builder.profileTypes;
+		parent = builder.parent;
+	}
 }
