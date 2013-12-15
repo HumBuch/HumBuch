@@ -3,12 +3,17 @@ package de.dhbw.humbuch.model.entity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -21,7 +26,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="gradeId", referencedColumnName="id")
 	private Grade grade;
 	private String lastname;
@@ -29,18 +34,16 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	private Date birthday;
 	private String gender;
 	
-	@OneToMany(mappedBy="student")
-	private List<BorrowedMaterial> borrowedList = new ArrayList<>();
+	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
+	private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
+
+	@ElementCollection(targetClass=ProfileType.class)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name="studentProfile", joinColumns = @JoinColumn(name="studentId"))
+	@Column(name="profileType")
+	private Set<ProfileType> profileTypes;
 	
-	@ManyToMany
-	@JoinTable(
-			name="student_has_profile",
-			joinColumns={@JoinColumn(name="student_id", referencedColumnName="id")},
-		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
-			)
-	private List<Profile> profiles = new ArrayList<Profile>();
-	
-	@OneToOne
+	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parentId")
 	private Parent parent;
 	
@@ -94,6 +97,14 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.gender = gender;
 	}
 
+	public Parent getParent() {
+		return parent;
+	}
+
+	public void setParent(Parent parent) {
+		this.parent = parent;
+	}
+
 	public List<BorrowedMaterial> getBorrowedList() {
 		return borrowedList;
 	}
@@ -102,20 +113,12 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowedList = borrowedList;
 	}
 
-	public List<Profile> getProfiles() {
-		return profiles;
+	public Set<ProfileType> getProfileTypes() {
+		return profileTypes;
 	}
 
-	public void setProfiles(List<Profile> profiles) {
-		this.profiles = profiles;
+	public void setProfileTypes(Set<ProfileType> profileTypes) {
+		this.profileTypes = profileTypes;
 	}
 
-	public Parent getParent() {
-		return parent;
-	}
-
-	public void setParent(Parent parent) {
-		this.parent = parent;
-	}
-	
 }
