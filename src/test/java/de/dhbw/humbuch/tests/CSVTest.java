@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import de.dhbw.humbuch.dataImport.MyCSVHandler;
 import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 
 public class CSVTest {
 	

@@ -8,7 +8,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
@@ -62,9 +62,9 @@ public final class MyPDFStudentList extends MyPDFHandler{
 
 		String[] contentArray = {"Schüler: ", StudentHandler.getFullNameOfStudent(student),
 		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
-		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
-//		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
-//					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+		                         "Schuljahr: ", "#SCHOOLYEAR",
+		                         "Sprachen: ", ProfileTypeHandler.getLanguageProfile(this.student.getProfileTypes()),
+					             "Religionsunterricht: ", ProfileTypeHandler.getReligionProfile(this.student.getProfileTypes()) + "\n"};
 		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {

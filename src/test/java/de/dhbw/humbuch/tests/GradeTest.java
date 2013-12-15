@@ -4,17 +4,18 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.TeachingMaterialHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
-import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.pdfExport.MyPDFClassList;
@@ -42,7 +43,8 @@ public class GradeTest {
 		List<Student> studentsList = new ArrayList<Student>();
 		
 //		Profile profile = ProfileHandler.createProfile("L", "E", "");
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", new Profile());
+		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"L", "E", ""}, "ev");
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", profileTypeSet);
 		
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		//Subject subject = SubjectHandler.createSubject("Biology");
@@ -67,7 +69,8 @@ public class GradeTest {
 		studentsList.add(student);
 		
 //		profile = ProfileHandler.createProfile("E", "", "F");
-		student = StudentHandler.createStudentObject("Karla", "Kolumna", "12.04.1981", "m", "7b", new Profile());
+		profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"E", "", "F"}, "rk");
+		student = StudentHandler.createStudentObject("Karla", "Kolumna", "12.04.1981", "m", "7b", profileTypeSet);
 		
 		borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		

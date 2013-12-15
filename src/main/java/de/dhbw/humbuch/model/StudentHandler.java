@@ -3,9 +3,11 @@ package de.dhbw.humbuch.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.dhbw.humbuch.model.entity.Grade;
-import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 
 
@@ -15,7 +17,7 @@ public class StudentHandler {
 	}
 	
 	public static Student createStudentObject(String firstName, String lastName, String birthDayString, 
-												String gender, String gradeString, Profile profile){
+												String gender, String gradeString, Set<ProfileType> profileTypeSet){
 		Student student = new Student();
 		try {
 			student.setFirstname(firstName);
@@ -27,7 +29,7 @@ public class StudentHandler {
 			grade.setGrade(Integer.parseInt(splittedString[0]));
 			grade.setSuffix(splittedString[1]);
 			student.setGrade(grade);
-//			student.setProfiles(profile);
+			student.setProfileTypes(profileTypeSet);
 		}catch (ParseException e) {
 			System.err.println("Could not parse String to Date " + e.getMessage());
 		}

@@ -4,13 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 import org.junit.Test;
 
 import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
-import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 
 
@@ -19,7 +20,8 @@ public class StudentTest {
 	@Test
 	public void testCreateStudent(){
 //		Profile profile = ProfileHandler.createProfile("E", "", "F");
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", new Profile());
+		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"E", "", "F"}, "ev");
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profileTypeSet);
 		
 		assertEquals("Karl", student.getFirstname());
 		assertEquals("August", student.getLastname());
@@ -27,7 +29,7 @@ public class StudentTest {
 		assertEquals("12.04.1970", dateFormat.format(student.getBirthday()));
 		assertEquals("m", student.getGender());
 		assertEquals("11au", GradeHandler.getFullGrade(student.getGrade()));
-//		SassertEquals("E F", ProfileHandler.getLanguageProfile(student.getProfile()));
+		assertEquals("E F", ProfileTypeHandler.getLanguageProfile(student.getProfileTypes()));
 	}
 
 }

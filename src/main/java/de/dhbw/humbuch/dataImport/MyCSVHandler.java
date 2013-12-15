@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import au.com.bytecode.opencsv.CSVReader;
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
-import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 
 public final class MyCSVHandler {
@@ -52,13 +53,14 @@ public final class MyCSVHandler {
 	 * @return Student
 	 */
 	private static Student createStudentObject(String[] record){
-		String[] foreignLanguage = new String[4];			
+		String[] foreignLanguage = new String[3];			
 		foreignLanguage[0] = record[0];
 		foreignLanguage[1] = record[1];
 		foreignLanguage[2] = record[2];
-//		foreignLanguage[3] = record[3];
 		
+		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(foreignLanguage, record[15]);
+				
 		//Profile profile = ProfileHandler.createProfile(record[0], record[1], record[2]);
-		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], new Profile());
+		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], profileTypeSet);
 	}
 }

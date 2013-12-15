@@ -2,13 +2,13 @@ package de.dhbw.humbuch.tests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import de.dhbw.humbuch.model.ProfileHandler;
+import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
-import de.dhbw.humbuch.model.entity.Profile;
-import de.dhbw.humbuch.model.entity.Religion;
+import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.pdfExport.MyPDFClassList;
@@ -24,6 +24,7 @@ public class PDFTest {
 	public static void testStudentPDF(){
 //		Profile profile = ProfileHandler.createProfile("E", "", "F");
 //		profile.setReligion(Religion.ETHICS);
+		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"E", "", "F"}, "ev");
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
 		TeachingMaterial teachingMaterial = new TeachingMaterial();
@@ -48,7 +49,7 @@ public class PDFTest {
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", new Profile());
+		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profileTypeSet);
 		student.setBorrowedList(borrowedMaterialList);
 		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
 	}
