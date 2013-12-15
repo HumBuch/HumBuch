@@ -10,7 +10,7 @@ public enum ProfileType {
 	SCIENCE("NWT"),
 	
 	EVANGELIC("evangelisch"),
-	ROMANCATHOLIC("römisch-katholisch"),
+	ROMANCATHOLIC("rÃ¶misch-katholisch"),
 	ETHICS("Ethik");
 	
 	private String value;

@@ -2,6 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="studentProfile", joinColumns = @JoinColumn(name="studentId"))
 	@Column(name="profileType")
-	private Set<ProfileType> profileTypes;
+	private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();	
 	
 	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parentId")
@@ -121,4 +122,58 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.profileTypes = profileTypes;
 	}
 	
+	public static class Builder {
+		private final String firstname;
+		private final String lastname;
+		private final Date birthday;
+		private final Grade grade;
+		
+		private String gender;
+		private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
+		private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();
+		private Parent parent;
+		
+		public Builder(String firstname, String lastname, Date birthday, Grade grade) {
+			this.firstname = firstname;
+			this.lastname = lastname;
+			this.birthday = birthday;
+			this.grade = grade;
+		}
+		
+		public Builder gender(String gender) {
+			this.gender = gender;
+			return this;
+		}
+		
+		public Builder borrowedList(List<BorrowedMaterial> borrowedList) {
+			this.borrowedList = borrowedList;
+			return this;
+		}
+		
+		public Builder profileTypes(Set<ProfileType> profileTypes) {
+			this.profileTypes = profileTypes;
+			return this;
+		}
+		
+		public Builder parent(Parent parent) {
+			this.parent = parent;
+			return this;
+		}
+		
+		public Student build() {
+			return new Student(this);
+		}
+	}
+	
+	private Student(Builder builder) {
+		firstname = builder.firstname;
+		lastname = builder.lastname;
+		birthday = builder.birthday;
+		grade = builder.grade;
+		
+		gender = builder.gender;
+		borrowedList = builder.borrowedList;
+		profileTypes = builder.profileTypes;
+		parent = builder.parent;
+	}
 }
