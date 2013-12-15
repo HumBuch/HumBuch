@@ -2,6 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="studentProfile", joinColumns = @JoinColumn(name="studentId"))
 	@Column(name="profileType")
-	private Set<ProfileType> profileTypes;
+	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 	
 	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parentId")
