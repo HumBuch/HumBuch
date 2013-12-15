@@ -25,7 +25,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		this.addStudentInformation(document);
 		this.addContent(document);
 		this.addRentalDisclosure(document);
-		this.addSignatureField(document, "Schüler");
+		this.addSignatureField(document, "SchÃ¼ler");
 	}
 	
 	protected void addContent(Document document) {
@@ -58,7 +58,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	private void addStudentInformation(Document document){
 		PdfPTable table = MyPDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
-		String[] contentArray = {"Schüler: ", StudentHandler.getFullNameOfStudent(student),
+		String[] contentArray = {"SchÃ¼ler: ", StudentHandler.getFullNameOfStudent(student),
 		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
 		                         "Schuljahr: ", "#SCHOOLYEAR",
 		                         "Sprachen: ", ProfileTypeHandler.getLanguageProfile(this.student.getProfileTypes()),
@@ -81,9 +81,9 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	private void addRentalDisclosure(Document document){
 		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
 		MyPDFHandler.fillTableWithContent(table, false,
-				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
-				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
-				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"}, false);
+				new String[]{"\nDie oben angefÃ¼hrten SchulbÃ¼cher habe ich erhalten.\n" +
+				"Die ausgeliehenen BÃ¼cher habe ich auf VollstÃ¤ndigkeit und BeschÃ¤digung Ã¼berprÃ¼ft. "+
+				"BeschÃ¤digte oder verlorengegangene BÃ¼cher mÃ¼ssen ersetzt werden.\n"}, false);
 		try {
 			document.add(table);
 		}
