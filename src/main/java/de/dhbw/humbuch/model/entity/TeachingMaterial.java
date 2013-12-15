@@ -1,14 +1,17 @@
 package de.dhbw.humbuch.model.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -19,17 +22,15 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="categoryId", referencedColumnName="id")
 	private Category category;
 	
-	@ManyToMany
-	@JoinTable(
-			name="teachingMaterial_has_profile",
-			joinColumns={@JoinColumn(name="teachingMaterial_id", referencedColumnName="id")},
-		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
-			)
-	private List<Profile> profiles = new ArrayList<Profile>();
+	@ElementCollection(targetClass=ProfileType.class)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name="teachingMaterialProfile", joinColumns = @JoinColumn(name="teachingMaterialId"))
+	@Column(name="profileType")
+	private Set<ProfileType> profileTypes;
 	
 	private String name;
 	private String producer;
@@ -150,12 +151,12 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.validUntil = validUntil;
 	}
 
-	public List<Profile> getProfiles() {
-		return profiles;
+	public Set<ProfileType> getProfileTypes() {
+		return profileTypes;
 	}
 
-	public void setProfiles(List<Profile> profiles) {
-		this.profiles = profiles;
+	public void setProfileTypes(Set<ProfileType> profileTypes) {
+		this.profileTypes = profileTypes;
 	}
 
 }
