@@ -5,13 +5,14 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.themes.BaseTheme;
 
 
 @Theme("mytheme")
-public class Header implements IComponent {
+public class Header extends CustomComponent /* implements IComponent*/ {
 
 	private HorizontalLayout horizontalLayoutHeader;
 	private HorizontalLayout horizontalLayoutHeaderBar;
@@ -21,10 +22,10 @@ public class Header implements IComponent {
 	private Image imageLogo;
 
 	public Header() {
-		init();
-	}
-
-	private void init() {
+//		init();
+//	}
+//
+//	private void init() {
 		horizontalLayoutHeader = new HorizontalLayout();
 		horizontalLayoutHeaderBar = new HorizontalLayout();
 		buttonLogout = new Button();
@@ -60,9 +61,11 @@ public class Header implements IComponent {
 		horizontalLayoutHeader.setComponentAlignment(imageLogo, Alignment.TOP_LEFT);
 		horizontalLayoutHeader.addComponent(horizontalLayoutHeaderBar);
 		horizontalLayoutHeader.setComponentAlignment(horizontalLayoutHeaderBar, Alignment.TOP_RIGHT);
+		
+		setCompositionRoot(horizontalLayoutHeader);
 	}
 
-	public Component getComponent() {
-		return horizontalLayoutHeader;
-	}
+//	public Component getComponent() {
+//		return horizontalLayoutHeader;
+//	}
 }

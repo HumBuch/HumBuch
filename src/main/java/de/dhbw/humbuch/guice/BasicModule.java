@@ -12,6 +12,8 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.ui.NavigationUI;
+import de.dhbw.humbuch.ui.screens.HomeScreen;
 import de.dhbw.humbuch.view.BasicUI;
 import de.dhbw.humbuch.view.LoginView;
 import de.dhbw.humbuch.view.MVVMConfig;
@@ -31,16 +33,19 @@ public class BasicModule extends ServletModule {
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
 		
-		bind(LoginViewModel.class).in(UIScoped.class);
+		//bind(LoginViewModel.class).in(UIScoped.class);
 		
-		bind(LoginView.class);
+		bind(HomeScreen.class);
+//		bind(LoginView.class);
 		
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
-		mapbinder.addBinding(BasicUI.class.getName()).to(BasicUI.class);
+		mapbinder.addBinding(NavigationUI.class.getName()).to(NavigationUI.class);
+//		mapbinder.addBinding(BasicUI.class.getName()).to(BasicUI.class);
 	}
 
 	@Provides
 	private Class<? extends UI> provideUIClass() {
-		return BasicUI.class;
+//		return BasicUI.class;
+		return NavigationUI.class;
 	}
 }

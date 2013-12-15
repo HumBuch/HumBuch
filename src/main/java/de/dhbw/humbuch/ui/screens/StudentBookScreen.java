@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
@@ -18,7 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 public class StudentBookScreen extends AbstractBasicScreen {
 
 	@WebServlet(value = "/studentBook", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = StudentBookScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
+//    @VaadinServletConfiguration(productionMode = false, ui = StudentBookScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 	
@@ -43,5 +44,11 @@ public class StudentBookScreen extends AbstractBasicScreen {
 
 		vl.addComponent(hl);
 		panel.setContent(vl);
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

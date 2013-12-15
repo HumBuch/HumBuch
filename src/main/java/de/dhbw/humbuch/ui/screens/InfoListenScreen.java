@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
@@ -19,7 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 public class InfoListenScreen extends AbstractBasicScreen {
 	
 	@WebServlet(value = "/infoListen", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = InfoListenScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
+//    @VaadinServletConfiguration(productionMode = false, ui = InfoListenScreen.class, widgetset = "de.davherrmann.mvvm.demo.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 	
@@ -48,6 +49,12 @@ public class InfoListenScreen extends AbstractBasicScreen {
 		vl.addComponent(hl1);
 		vl.addComponent(hl3);
 		panel.setContent(vl);
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
