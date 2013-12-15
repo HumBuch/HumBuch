@@ -3,6 +3,7 @@ package de.dhbw.humbuch.model.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -15,16 +16,16 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="studentId", referencedColumnName="id")
 	private Student student;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="teachingMaterialId", referencedColumnName="id")
 	private TeachingMaterial teachingMaterial;
 	
 	private Date borrowFrom;
-	private Date borrowTo;
+	private Date borrowUntil;
 	private Date returnDate;
 	private boolean defect;
 	private String defectComment;
@@ -63,12 +64,12 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowFrom = borrowFrom;
 	}
 
-	public Date getBorrowTo() {
-		return borrowTo;
+	public Date getBorrowUntil() {
+		return borrowUntil;
 	}
 
-	public void setBorrowTo(Date borrowTo) {
-		this.borrowTo = borrowTo;
+	public void setBorrowUntil(Date borrowUntil) {
+		this.borrowUntil = borrowUntil;
 	}
 
 	public Date getReturnDate() {

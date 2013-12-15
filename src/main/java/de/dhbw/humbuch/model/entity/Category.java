@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,7 +18,7 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity {
 	private String name;
 	private String description;
 	
-	@OneToMany(mappedBy="category")
+	@OneToMany(mappedBy="category", fetch=FetchType.LAZY)
 	private List<TeachingMaterial> teachingMaterials = new ArrayList<>();
 	
 	public Category() {}
