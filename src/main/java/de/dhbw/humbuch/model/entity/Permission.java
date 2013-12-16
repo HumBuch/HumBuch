@@ -39,4 +39,27 @@ public class Permission implements de.dhbw.humbuch.model.entity.Entity {
 		this.description = description;
 	}
 	
+	public static class Builder {
+		private final String name;
+		
+		private String description;
+		
+		public Builder(String name) {
+			this.name = name;
+		}
+		
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public Permission build() {
+			return new Permission(this);
+		}
+	}
+	
+	private Permission(Builder builder) {
+		this.name = builder.name;
+		this.description = builder.description;
+	}
 }

@@ -60,5 +60,41 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity {
 		this.beginSecondTerm = beginSecondTerm;
 	}
 	
+	public static class Builder {
+		private final int year;
+		private final Date from;
+		private final Date to;
+		
+		private Date endFirstTerm;
+		private Date beginSecondTerm;
+		
+		public Builder(int year, Date from, Date to) {
+			this.year = year;
+			this.from = from;
+			this.to = to;
+		}
+		
+		public Builder endFirstTerm(Date endFirstTerm) {
+			this.endFirstTerm = endFirstTerm;
+			return this;
+		}
+		
+		public Builder beginSecondTerm(Date beginSecondTerm) {
+			this.beginSecondTerm = beginSecondTerm;
+			return this;
+		}
+		
+		public SchoolYear build() {
+			return new SchoolYear(this);
+		}
+	}
 	
+	private SchoolYear(Builder builder) {
+		this.year = builder.year;
+		this.from = builder.from;
+		this.to = builder.to;
+
+		this.endFirstTerm = builder.endFirstTerm;
+		this.beginSecondTerm = builder.beginSecondTerm;
+	}
 }
