@@ -70,4 +70,31 @@ public class User implements de.dhbw.humbuch.model.entity.Entity {
 		this.roles = roles;
 	}
 
+	public static class Builder {
+		private final String username;
+		private final String password;
+		
+		private String email;
+		
+		public Builder(String username, String password) {
+			this.username = username;
+			this.password = password;
+		}
+		
+		public Builder email(String email) {
+			this.email = email;
+			return this;
+		}
+		
+		public User build() {
+			return new User(this);
+		}
+	}
+	
+	private User(Builder builder) {
+		this.username = builder.username;
+		this.password = builder.password;
+		
+		this.email = builder.email;
+	}
 }
