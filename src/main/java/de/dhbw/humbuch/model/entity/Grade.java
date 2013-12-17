@@ -68,5 +68,54 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity {
 		this.teacher = teacher;
 	}
 	
+	public static class Builder {
+		private final int grade;
+		private final String suffix;
+		
+		private String teacher;
+		
+		public Builder(int grade, String suffix) {
+			this.grade = grade;
+			this.suffix = suffix;
+		}
+		
+		public Builder techer(String teacher) {
+			this.teacher = teacher;
+			return this;
+		}
+		
+		public Grade build() {
+			return new Grade(this);
+		}
+	}
+	
+	private Grade(Builder builder) {
+		grade = builder.grade;
+		suffix = builder.suffix;
+		
+		teacher = builder.teacher;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Grade other = (Grade) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 	
 }

@@ -79,4 +79,75 @@ public class Parent implements de.dhbw.humbuch.model.entity.Entity {
 		this.city = city;
 	}
 	
+	public static class Builder {
+		private final String firstname;
+		private final String lastname;
+
+		private String title;
+		private String street;
+		private int postcode;
+		private String city;
+		
+		public Builder(String firstname, String lastname) {
+			this.firstname = firstname;
+			this.lastname = lastname;
+		}
+		
+		public Builder title(String title) {
+			this.title = title;
+			return this;
+		}
+		
+		public Builder street(String street) {
+			this.street = street;
+			return this;
+		}
+		
+		public Builder postcode(int postcode) {
+			this.postcode = postcode; 
+			return this;
+		}
+		
+		public Builder city(String city) {
+			this.city = city;
+			return this;
+		}
+		
+		public Parent build() {
+			return new Parent(this);
+		}
+	}
+
+	private Parent(Builder builder) {
+		firstname = builder.firstname;
+		lastname = builder.lastname;
+
+		title = builder.title;
+		street = builder.street;
+		postcode = builder.postcode;
+		city = builder.city;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Parent other = (Parent) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	
 }

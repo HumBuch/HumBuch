@@ -1,14 +1,18 @@
 package de.dhbw.humbuch.model.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -19,17 +23,15 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="categoryId", referencedColumnName="id")
 	private Category category;
 	
-	@ManyToMany
-	@JoinTable(
-			name="teachingMaterial_has_profile",
-			joinColumns={@JoinColumn(name="teachingMaterial_id", referencedColumnName="id")},
-		    inverseJoinColumns={@JoinColumn(name="profile_id", referencedColumnName="id")}
-			)
-	private List<Profile> profiles = new ArrayList<Profile>();
+	@ElementCollection(targetClass=ProfileType.class)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name="teachingMaterialProfile", joinColumns = @JoinColumn(name="teachingMaterialId"))
+	@Column(name="profileType")
+	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 	
 	private String name;
 	private String producer;
@@ -150,12 +152,117 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.validUntil = validUntil;
 	}
 
-	public List<Profile> getProfiles() {
-		return profiles;
+	public Set<ProfileType> getProfileTypes() {
+		return profileTypes;
 	}
 
-	public void setProfiles(List<Profile> profiles) {
-		this.profiles = profiles;
+	public void setProfileTypes(Set<ProfileType> profileTypes) {
+		this.profileTypes = profileTypes;
 	}
 
+	public static class Builder {
+		private final Category category;
+		private final String name;
+		private final String identifyingNumber;
+		private final Date validFrom;
+		
+		private String producer;
+		private double price;
+		private String comment;
+		private int fromGrade;
+		private int fromTerm;
+		private int toGrade;
+		private int toTerm;
+		private Date validUntil;
+		
+		public Builder(Category category, String name, String identifyingNumber, Date validFrom) {
+			this.category = category;
+			this.name = name;
+			this.identifyingNumber = identifyingNumber;
+			this.validFrom = validFrom;
+		}
+		
+		public Builder producer(String producer) {
+			this.producer = producer;
+			return this;
+		}
+		
+		public Builder price(double price) {
+			this.price = price;
+			return this;
+		}
+		
+		public Builder comment(String comment) {
+			this.comment = comment;
+			return this;
+		}
+		
+		public Builder fromGrade(int fromGrade) {
+			this.fromGrade = fromGrade;
+			return this;
+		}
+		
+		public Builder fromTerm(int fromTerm) {
+			this.fromTerm = fromTerm;
+			return this;
+		}
+		
+		public Builder toGrade(int toGrade) {
+			this.toGrade = toGrade;
+			return this;
+		}
+		
+		public Builder toTerm(int toTerm) {
+			this.toTerm = toTerm;
+			return this;
+		}
+		
+		public Builder validUntil(Date validUntil) {
+			this.validUntil = validUntil;
+			return this;
+		}
+		
+		public TeachingMaterial build() {
+			return new TeachingMaterial(this);
+		}
+	}
+	
+	private TeachingMaterial(Builder builder) {
+		this.category = builder.category;
+		this.name = builder.name;
+		this.identifyingNumber = builder.identifyingNumber;
+		this.validFrom = builder.validFrom;
+		
+		this.producer = builder.producer;
+		this.price = builder.price;
+		this.comment = builder.comment;
+		this.fromGrade = builder.fromGrade;
+		this.fromTerm = builder.fromTerm;
+		this.toGrade = builder.toGrade;
+		this.toTerm = builder.toTerm;
+		this.validUntil = builder.validUntil;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TeachingMaterial other = (TeachingMaterial) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	
 }

@@ -60,5 +60,51 @@ public class Role implements de.dhbw.humbuch.model.entity.Entity {
 	public void setPermissions(List<Permission> permissions) {
 		this.permissions = permissions;
 	}
+
+	public static class Builder {
+		private final String name;
+		
+		private String description;
+		
+		public Builder(String name) {
+			this.name = name;
+		}
+		
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public Role build() {
+			return new Role(this);
+		}
+	}
+	
+	private Role(Builder builder) {
+		this.name = builder.name;
+		this.description = builder.description;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Role other = (Role) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 	
 }
