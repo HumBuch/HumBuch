@@ -18,6 +18,7 @@ import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.TeachingMaterialHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
@@ -56,18 +57,19 @@ public class GradeTest {
 		}		
 		Student student = new Student.Builder(2, "Karl", "August", date, grade).gender("m").profileTypes(profileTypeSet).build();
 		
-		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
-		TeachingMaterial teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(6, "Bio1 - Bugs", 79.75);
+		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
+		Category category = new Category.Builder("Book").build();
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(category, "Bio1 - Bugs", "1-2-3", date).price(79.75).toGrade(6).build();	
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "German1 - Faust", 22.49);
+		teachingMaterial = new TeachingMaterial.Builder(category, "German1 - Faust", "1-2-3", date).price(22.49).toGrade(11).build();	
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Java rocks", 22.49);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Java rocks", "1-2-3", date).price(22.49).toGrade(11).build();
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
@@ -87,19 +89,19 @@ public class GradeTest {
 		borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		
 		//subject = SubjectHandler.createSubject("Biology");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(6, "Bio1 - Bugs", 79.75);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Bio1 - Bugs", "1-2-3", date).price(79.75).toGrade(6).build();
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		//subject = SubjectHandler.createSubject("IT");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Java rocks", 22.49);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Java rocks", "1-2-3", date).price(22.49).toGrade(11).build();
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		//subject = SubjectHandler.createSubject("Mathe");
-		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Geometrie for Dummies", 22.49);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Geometrie for Dummies", "1-2-3", date).price(22.49).toGrade(11).build();
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
