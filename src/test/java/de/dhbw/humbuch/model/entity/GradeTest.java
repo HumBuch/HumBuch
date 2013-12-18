@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.util;
+package de.dhbw.humbuch.model.entity;
 
 import static org.junit.Assert.assertEquals;
 

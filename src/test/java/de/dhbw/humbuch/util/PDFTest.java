@@ -11,6 +11,7 @@ import java.util.Set;
 import de.dhbw.humbuch.model.ProfileTypeHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.GradeTest;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
