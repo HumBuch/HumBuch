@@ -17,7 +17,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 
-public final class MyCSVHandler {
+public final class CSVHandler {
 	
 	/**
 	 * Reads a csv file and creates student objects of it's records.
