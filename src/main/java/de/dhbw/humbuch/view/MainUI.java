@@ -6,10 +6,14 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.guice.vaadin.ScopedUI;
+import de.dhbw.humbuch.view.components.Footer;
+import de.dhbw.humbuch.view.components.Header;
+import de.dhbw.humbuch.view.components.NavigationBar;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
@@ -27,19 +31,39 @@ public class MainUI extends ScopedUI {
 	@Inject
 	private BookManagementView bookManagementView;
 	
-	private VerticalLayout verticalLayoutRoot;
+	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
 	private ComponentContainerViewDisplay ccViewDisplay;
+	private Header header;
+	private Footer footer;
+	private NavigationBar navigationBar;
 
 	public Navigator navigator;
 	
 	@Override
 	protected void init(VaadinRequest request) {
 		
-		verticalLayoutRoot = new VerticalLayout();
+		gridLayoutRoot = new GridLayout(2,3);
 		verticalLayoutContent = new VerticalLayout();
 		
-		verticalLayoutRoot.addComponent(verticalLayoutContent);
+		header = new Header();
+		footer = new Footer();
+		navigationBar = new NavigationBar();
+		
+		header.setSizeFull();
+		footer.setSizeFull();
+		navigationBar.setWidth("100%");
+		
+		gridLayoutRoot.setSizeFull();
+		gridLayoutRoot.setRowExpandRatio(0, 15);
+		gridLayoutRoot.setRowExpandRatio(1, 80);
+		gridLayoutRoot.setRowExpandRatio(2, 5);
+		gridLayoutRoot.setColumnExpandRatio(0, 20);
+		gridLayoutRoot.setColumnExpandRatio(1, 80);
+		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
+		gridLayoutRoot.addComponent(navigationBar, 0, 1);
+		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
+		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);		
 		
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
 		
@@ -50,7 +74,7 @@ public class MainUI extends ScopedUI {
 		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
 //		navigator.addView(NavigationTarget.HOME_VIEW.name(), homeView);
 		
-		setContent(verticalLayoutRoot);
+		setContent(gridLayoutRoot);
 	}
 
 }
