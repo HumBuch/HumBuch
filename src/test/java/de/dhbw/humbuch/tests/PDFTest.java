@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import de.dhbw.humbuch.model.ProfileTypeHandler;
-import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;

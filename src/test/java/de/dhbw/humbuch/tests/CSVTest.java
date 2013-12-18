@@ -1,6 +1,6 @@
 package de.dhbw.humbuch.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import de.dhbw.humbuch.dataImport.MyCSVHandler;
 import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.ProfileTypeHandler;
 
 public class CSVTest {
 	

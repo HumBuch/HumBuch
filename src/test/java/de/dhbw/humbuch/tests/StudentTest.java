@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.ProfileTypeHandler;
-import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
