@@ -123,6 +123,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	}
 	
 	public static class Builder {
+		private final int id;
 		private final String firstname;
 		private final String lastname;
 		private final Date birthday;
@@ -133,7 +134,8 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 		private Parent parent;
 		
-		public Builder(String firstname, String lastname, Date birthday, Grade grade) {
+		public Builder(int id, String firstname, String lastname, Date birthday, Grade grade) {
+			this.id = id;
 			this.firstname = firstname;
 			this.lastname = lastname;
 			this.birthday = birthday;
@@ -166,6 +168,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	}
 	
 	private Student(Builder builder) {
+		id = builder.id;
 		firstname = builder.firstname;
 		lastname = builder.lastname;
 		birthday = builder.birthday;
