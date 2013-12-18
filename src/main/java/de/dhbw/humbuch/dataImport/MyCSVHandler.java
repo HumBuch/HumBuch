@@ -13,7 +13,6 @@ import java.util.Set;
 
 import au.com.bytecode.opencsv.CSVReader;
 import de.dhbw.humbuch.model.ProfileTypeHandler;
-import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
@@ -76,9 +75,5 @@ public final class MyCSVHandler {
 		}
 		Grade grade = new Grade.Builder(record[8]).build();
 		return new Student.Builder(0, record[16], record[9],  date, grade).profileTypes(profileTypeSet).gender(record[6]).build();
-	}
-	
-	private static String[] splitBetweenCharsAndDigits(String str){	
-		return str.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
 	}
 }
