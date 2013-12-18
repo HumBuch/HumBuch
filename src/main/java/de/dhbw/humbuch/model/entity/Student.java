@@ -2,7 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +42,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="studentProfile", joinColumns = @JoinColumn(name="studentId"))
 	@Column(name="profileType")
-	private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();	
+	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 	
 	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parentId")
@@ -131,7 +131,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		
 		private String gender;
 		private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
-		private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();
+		private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
 		private Parent parent;
 		
 		public Builder(int id, String firstname, String lastname, Date birthday, Grade grade) {

@@ -10,7 +10,7 @@ public class StudentTest {
 	
 	@Test
 	public void testStudentBuilder() {
-		final int ID = 4;
+		final int ID = 1;
 		final String FIRST_NAME = "John";
 		final String LAST_NAME = "Doe";
 		final Date DATE = new Date();
