@@ -96,6 +96,78 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.defectComment = defectComment;
 	}
 
+	public static class Builder {
+		private final Student student;
+		private final TeachingMaterial teachingMaterial;
+		private final Date borrowFrom;
+		
+		private Date borrowUntil;
+		private Date returnDate;
+		private boolean defect;
+		private String defectComment;
+		
+		public Builder(Student student, TeachingMaterial teachingMaterial, Date borrowFrom) {
+			this.student = student;
+			this.teachingMaterial = teachingMaterial;
+			this.borrowFrom = borrowFrom;
+		}
+		
+		public Builder borrowUntil(Date borrowUntil) {
+			this.borrowUntil = borrowUntil;
+			return this;
+		}
+		
+		public Builder returnDate(Date returnDate) {
+			this.returnDate = returnDate;
+			return this;
+		}
+		
+		public Builder defect(boolean defect) {
+			this.defect = defect;
+			return this;
+		}
+		
+		public Builder defectComment(String defectComment) {
+			this.defectComment = defectComment;
+			return this;
+		}
+		
+		public BorrowedMaterial build() {
+			return new BorrowedMaterial(this);
+		}
+	}
 	
+	private BorrowedMaterial(Builder builder) {
+		this.student = builder.student;
+		this.teachingMaterial = builder.teachingMaterial;
+		this.borrowFrom = builder.borrowFrom;
+		
+		this.borrowUntil = builder.borrowUntil;
+		this.returnDate = builder.returnDate;
+		this.defect = builder.defect;
+		this.defectComment = builder.defectComment;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BorrowedMaterial other = (BorrowedMaterial) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 	
 }

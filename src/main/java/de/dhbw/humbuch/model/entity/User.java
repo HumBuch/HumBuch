@@ -70,4 +70,54 @@ public class User implements de.dhbw.humbuch.model.entity.Entity {
 		this.roles = roles;
 	}
 
+	public static class Builder {
+		private final String username;
+		private final String password;
+		
+		private String email;
+		
+		public Builder(String username, String password) {
+			this.username = username;
+			this.password = password;
+		}
+		
+		public Builder email(String email) {
+			this.email = email;
+			return this;
+		}
+		
+		public User build() {
+			return new User(this);
+		}
+	}
+	
+	private User(Builder builder) {
+		this.username = builder.username;
+		this.password = builder.password;
+		
+		this.email = builder.email;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	
 }
