@@ -74,10 +74,7 @@ public final class MyCSVHandler {
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
 		}
-		Grade grade = new Grade();
-		String[] splittedString = splitBetweenCharsAndDigits(record[8]);
-		grade.setGrade(Integer.parseInt(splittedString[0]));
-		grade.setSuffix(splittedString[1]);
+		Grade grade = new Grade.Builder(record[8]).build();
 		return new Student.Builder(0, record[16], record[9],  date, grade).profileTypes(profileTypeSet).gender(record[6]).build();
 	}
 	
