@@ -15,7 +15,7 @@ public class CSVTest {
 	
 	@Test
 	public void testCreateStudentObjectsFromCSV(){
-		ArrayList<de.dhbw.humbuch.model.entity.Student> list = CSVHandler.createStudentObjectsFromCSV("./src/test/java/de/dhbw/humbuch/tests/schueler_stamm.csv");
+		ArrayList<de.dhbw.humbuch.model.entity.Student> list = CSVHandler.createStudentObjectsFromCSV("./src/test/java/de/dhbw/humbuch/util/schueler_stamm.csv");
 		assertEquals(99, list.size());		
 		assertEquals("Zivko", list.get(1).getLastname());
 		assertEquals("5a", GradeHandler.getFullGrade(list.get(1).getGrade()));
