@@ -1,21 +1,19 @@
 package de.dhbw.humbuch.model.entity;
 
-public enum ProfileType {
-	STANDARD("Standard"),
+public enum Subject {
 	
+	ENGLISH("Englisch"),
 	LATIN("Latein"),
-	FRENCH2("Franz2"),
-	FRENCH3("Franz3"),
-	
-	SCIENCE("NWT"),
+	FRENCH2("Französisch 2"),
+	FRENCH3("Französisch 3"),
 	
 	EVANGELIC("evangelisch"),
-	ROMANCATHOLIC("römisch-katholisch"),
+	ROMAN_CATHOLIC("römisch-katholisch"),
 	ETHICS("Ethik");
 	
 	private String value;
 	
-	private ProfileType(String value) {
+	private Subject(String value) {
 		this.value = value;
 	}
 	
