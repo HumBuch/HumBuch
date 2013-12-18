@@ -1,6 +1,5 @@
 package de.dhbw.humbuch.model;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
