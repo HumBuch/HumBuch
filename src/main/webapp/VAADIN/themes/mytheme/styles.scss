@@ -8,4 +8,13 @@
 
   // Include mytheme theme styles in your theme
   @include mytheme;
+  
+  	.footer_background {
+  		background: #953735;
+  		padding: 5px;
+  	}
+  
+    .footer_font {
+		color: #FFFFFF;
+	}
 }
