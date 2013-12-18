@@ -7,6 +7,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
 
+import de.dhbw.humbuch.view.MainUI;
+
 @Theme("mytheme")
 public class NavigationBar extends CustomComponent {
 	private static final long serialVersionUID = -2263554457706891669L;
@@ -18,9 +20,9 @@ public class NavigationBar extends CustomComponent {
 	 */
 	// TODO refactor when a good navigation method is found
 	private static final String[][] navigationButtons = new String[][] {
-			{ "Aufgaben", "main" }, { "Ausleihe", "lending" },
-			{ "Rückgabe", "return" }, { "Lehrmittel", "manageBooks" },
-			{ "Mahnungen", "dunning" } };
+			{ "Aufgaben", MainUI.HOME_VIEW }, { "Ausleihe", MainUI.LENDING_VIEW },
+			{ "Rückgabe", MainUI.RETURN_VIEW }, { "Lehrmittel", MainUI.BOOK_MANAGEMENT_VIEW },
+			{ "Mahnungen", MainUI.DUNNING_VIEW } };
 
 	private VerticalLayout verticalLayoutNavBar;
 

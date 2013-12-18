@@ -21,11 +21,19 @@ import de.dhbw.humbuch.view.components.NavigationBar;
 public class MainUI extends ScopedUI {
 	
 	public static final String HOME_VIEW = "home_view";
-	public static final String BOOK_MANAGEMENT_VIEW = "book_management";
+	public static final String BOOK_MANAGEMENT_VIEW = "book_management_view";
+	public static final String DUNNING_VIEW = "dunning_view";
+	public static final String LENDING_VIEW = "lending_view";
+	public static final String RETURN_VIEW = "return_view";
 	
 	@Inject
 	private LoginView loginView;
-	
+	@Inject
+	private DunningView dunningView;
+	@Inject
+	private LendingView lendingView;
+	@Inject
+	private ReturnView returnView;
 	@Inject
 	private HomeView homeView;
 	@Inject
@@ -71,8 +79,11 @@ public class MainUI extends ScopedUI {
 		
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
+		navigator.addView(HOME_VIEW, homeView);
 		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
-//		navigator.addView(NavigationTarget.HOME_VIEW.name(), homeView);
+		navigator.addView(DUNNING_VIEW, dunningView);
+		navigator.addView(LENDING_VIEW, lendingView);
+		navigator.addView(RETURN_VIEW, returnView);
 		
 		setContent(gridLayoutRoot);
 	}
