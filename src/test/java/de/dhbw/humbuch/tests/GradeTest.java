@@ -2,8 +2,12 @@ package de.dhbw.humbuch.tests;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Test;
@@ -39,27 +43,30 @@ public class GradeTest {
 	}
 	
 	public static Grade prepareGradeTest(){
-		Grade grade = GradeHandler.createGrade(7, "b", "Herr Bob");
+		Grade grade = new Grade.Builder("7b").teacher("Herr Bob").build();
 		List<Student> studentsList = new ArrayList<Student>();
-		
-//		Profile profile = ProfileHandler.createProfile("L", "E", "");
+
 		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"L", "E", ""}, "ev");
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "7b", profileTypeSet);
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		Student student = new Student.Builder(2, "Karl", "August", date, grade).gender("m").profileTypes(profileTypeSet).build();
 		
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
-		//Subject subject = SubjectHandler.createSubject("Biology");
 		TeachingMaterial teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(6, "Bio1 - Bugs", 79.75);
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		//subject = SubjectHandler.createSubject("German");
 		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "German1 - Faust", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		//subject = SubjectHandler.createSubject("IT");
 		teachingMaterial = TeachingMaterialHandler.createTeachingMaterial(11, "Java rocks", 22.49);
 		borrowedMaterial = new BorrowedMaterial();
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
@@ -68,9 +75,14 @@ public class GradeTest {
 		student.setBorrowedList(borrowedMaterialList);
 		studentsList.add(student);
 		
-//		profile = ProfileHandler.createProfile("E", "", "F");
 		profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"E", "", "F"}, "rk");
-		student = StudentHandler.createStudentObject("Karla", "Kolumna", "12.04.1981", "m", "7b", profileTypeSet);
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1981");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}
+		student = new Student.Builder(5, "Karla", "Kolumna", date, grade).gender("w").profileTypes(profileTypeSet).build();
 		
 		borrowedMaterialList = new ArrayList<BorrowedMaterial>();	
 		
