@@ -62,7 +62,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
 		                         "Schuljahr: ", "#SCHOOLYEAR",
 		                         "Sprachen: ", ProfileTypeHandler.getLanguageProfile(this.student.getProfileTypes()),
-					             "Religionsunterricht: ", ProfileTypeHandler.getReligionProfile(this.student.getProfileTypes()) + "\n"};
+					             "Religion: ", ProfileTypeHandler.getReligionProfile(this.student.getProfileTypes()) + "\n"};
 		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {
