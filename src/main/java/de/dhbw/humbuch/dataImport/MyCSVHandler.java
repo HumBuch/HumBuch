@@ -61,6 +61,8 @@ public final class MyCSVHandler {
 		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(foreignLanguage, record[15]);
 				
 		//Profile profile = ProfileHandler.createProfile(record[0], record[1], record[2]);
-		return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], profileTypeSet);
+		//return StudentHandler.createStudentObject(record[16], record[9], record[5], record[6], record[8], profileTypeSet);
+		Date date = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse(string);
+		return new Student.Builder(record[16],record[9],  record[5], record[8]).build();
 	}
 }
