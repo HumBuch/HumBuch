@@ -12,10 +12,10 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 
 
-public final class MyPDFStudentList extends MyPDFHandler{
+public final class PDFStudentList extends PDFHandler{
 	private Student student;
 
-	public MyPDFStudentList(Student student) {
+	public PDFStudentList(Student student) {
 		super();	
 		this.student = student;
 	}
@@ -39,7 +39,7 @@ public final class MyPDFStudentList extends MyPDFHandler{
 			                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
 			                         borrowedMaterial.getTeachingMaterial().getName(),
 			                      	 "" };
-			MyPDFHandler.fillTableWithContent(table, true, contentArray);		
+			PDFHandler.fillTableWithContent(table, true, contentArray);		
 		}
 	    
 	    try {
@@ -56,18 +56,18 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addStudentInformation(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
+		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
 		String[] contentArray = {"Schüler: ", StudentHandler.getFullNameOfStudent(student),
 		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
 		                         "Schuljahr: ", "#SCHOOLYEAR",
 		                         "Sprachen: ", ProfileTypeHandler.getLanguageProfile(this.student.getProfileTypes()),
 					             "Religion: ", ProfileTypeHandler.getReligionProfile(this.student.getProfileTypes()) + "\n"};
-		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
+		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {
 			document.add(table);
-			MyPDFHandler.addEmptyLineToDocument(document, 1);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -79,8 +79,8 @@ public final class MyPDFStudentList extends MyPDFHandler{
 	 * @param document represents the PDF before it is saved
 	 */
 	private void addRentalDisclosure(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(1);
-		MyPDFHandler.fillTableWithContent(table, false,
+		PdfPTable table = PDFHandler.createMyStandardTable(1);
+		PDFHandler.fillTableWithContent(table, false,
 				new String[]{"\nDie oben angeführten Schulbücher habe ich erhalten.\n" +
 				"Die ausgeliehenen Bücher habe ich auf Vollständigkeit und Beschädigung überprüft. "+
 				"Beschädigte oder verlorengegangene Bücher müssen ersetzt werden.\n"}, false);

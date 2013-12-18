@@ -15,12 +15,12 @@ import de.dhbw.humbuch.model.StudentHandler;
 import de.dhbw.humbuch.model.entity.Grade;
 
 
-public final class MyPDFClassList extends MyPDFHandler {
+public final class PDFClassList extends PDFHandler {
 
 	private Grade grade;
 
 	//object student has to be replaced by a class object
-	public MyPDFClassList(Grade grade) {
+	public PDFClassList(Grade grade) {
 		super();
 		this.grade = grade;
 	}
@@ -43,7 +43,7 @@ public final class MyPDFClassList extends MyPDFHandler {
 			String[] contentArray = {""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
 			                         gradeRental.getBorrowedMaterial().getTeachingMaterial().getName(),
 			                         ""+gradeRental.getAmount()};
-			MyPDFHandler.fillTableWithContent(table, true, contentArray);
+			PDFHandler.fillTableWithContent(table, true, contentArray);
 		}
 
 		try {
@@ -60,17 +60,17 @@ public final class MyPDFClassList extends MyPDFHandler {
 	 * @param document represents the PDF before it is saved
 	 */	
 	private void addGradeInformation(Document document){
-		PdfPTable table = MyPDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
+		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
 		String[] contentArray = {"Klasse: ", "" + this.grade.getGrade(),
 		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
 //		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
 //					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
-		MyPDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
+		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {
 			document.add(table);
-			MyPDFHandler.addEmptyLineToDocument(document, 1);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();

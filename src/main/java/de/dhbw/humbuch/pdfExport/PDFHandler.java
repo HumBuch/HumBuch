@@ -22,7 +22,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
-public abstract class MyPDFHandler {
+public abstract class PDFHandler {
 	private Document document;
 	protected static float TABLEWIDTH = 418f;
 	
@@ -30,11 +30,11 @@ public abstract class MyPDFHandler {
 	 * 
 	 * @param path links to the directory where the PDF file should be saved
 	 */
-	public MyPDFHandler(String path){
+	public PDFHandler(String path){
 		this.document = new Document();
 	}
 	
-	public MyPDFHandler(){
+	public PDFHandler(){
 		this.document = new Document();		
 	}
 	

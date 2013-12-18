@@ -14,8 +14,8 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.pdfExport.MyPDFClassList;
-import de.dhbw.humbuch.pdfExport.MyPDFStudentList;
+import de.dhbw.humbuch.pdfExport.PDFClassList;
+import de.dhbw.humbuch.pdfExport.PDFStudentList;
 
 
 public class PDFTest {
@@ -55,12 +55,12 @@ public class PDFTest {
 		}		
 		Grade grade = new Grade.Builder("11au").build();
 		Student student = new Student.Builder(4,"Karl","August", date, grade).profileTypes(profileTypeSet).borrowedList(borrowedMaterialList).build();
-		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
+		new PDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
 	}
 	
 	public static void testClassPDF(){
 		Grade grade = GradeTest.prepareGradeTest();
-		new MyPDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
+		new PDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
 	}
 
 }
