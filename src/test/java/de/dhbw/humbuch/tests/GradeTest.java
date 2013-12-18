@@ -15,15 +15,12 @@ import org.junit.Test;
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
 import de.dhbw.humbuch.model.ProfileTypeHandler;
-import de.dhbw.humbuch.model.StudentHandler;
-import de.dhbw.humbuch.model.TeachingMaterialHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.pdfExport.MyPDFClassList;
 
 
 public class GradeTest {
