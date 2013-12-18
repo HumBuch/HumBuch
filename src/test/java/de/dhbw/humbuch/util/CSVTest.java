@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.tests;
+package de.dhbw.humbuch.util;
 
 import static org.junit.Assert.assertEquals;
 
