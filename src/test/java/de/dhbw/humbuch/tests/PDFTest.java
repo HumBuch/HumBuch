@@ -55,8 +55,7 @@ public class PDFTest {
 			System.err.println("Could not format date " + e.getStackTrace());
 		}		
 		Grade grade = new Grade.Builder("11au").build();
-		Student student = new Student.Builder(4,"Karl","August", date, grade).profileTypes(profileTypeSet).build();
-		student.setBorrowedList(borrowedMaterialList);
+		Student student = new Student.Builder(4,"Karl","August", date, grade).profileTypes(profileTypeSet).borrowedList(borrowedMaterialList).build();
 		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
 	}
 	
