@@ -5,17 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
 public abstract class MyPDFHandler {
@@ -42,7 +46,10 @@ public abstract class MyPDFHandler {
 	 */	
 	public void savePDF(String path){
 		try {
-			PdfWriter.getInstance(document, new FileOutputStream(path));
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(path));
+			HeaderFooter event = new HeaderFooter();
+			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
+			writer.setPageEvent(event);
 		}
 		catch (FileNotFoundException e) {			
 			e.printStackTrace();
@@ -218,15 +225,16 @@ public abstract class MyPDFHandler {
 	}
 	
 	/**
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel, Unterschrift
 	 * 
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader(){
-		PdfPTable table = createMyStandardTable(4);
-		
+		PdfPTable table = createMyStandardTable(3, new float[]{1f, 3f, 1f});
+		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		fillTableWithContent(table, true, 
-				new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-		
+				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
+				new String[]{"Klasse", "Bezeichnung Lehrmittel", "Unterschrift"}, font);
 		return table;		
 	}
 	
@@ -236,6 +244,26 @@ public abstract class MyPDFHandler {
 		}
 	}
 	
+	protected static void addEmptyLineToDocument(Document document, int number) {
+		Paragraph paragraph = new Paragraph();
+		for (int i = 0; i < number; i++) {
+			paragraph.add(new Paragraph(" "));
+		}
+		
+		try {
+			document.add(paragraph);
+		}
+		catch (DocumentException e) {
+			System.err.println("Could not add empty line to documnet " + e.getStackTrace());
+		}
+	}
+	
+	/**
+	 * Create a standard table with constant table width.
+	 * 
+	 * @param columnNumber set how many columns the table will have
+	 * @return table
+	 */
 	protected static PdfPTable createMyStandardTable(int columnNumber){
 		PdfPTable table = new PdfPTable(columnNumber);
 		table.setLockedWidth(true);
@@ -244,12 +272,113 @@ public abstract class MyPDFHandler {
 		return table;
 	}
 	
+	/**
+	 * Create a standard table with constant table width.
+	 * 
+	 * @param columnNumber set how many columns the table will have
+	 * @param columnWidths set the ratio between the columns. If null, all columns will be equal.
+	 * @return table
+	 */
+	protected static PdfPTable createMyStandardTable(int columnNumber, float[] columnWidths){
+		PdfPTable table = new PdfPTable(columnNumber);
+		table.setLockedWidth(true);
+		table.setTotalWidth(TABLEWIDTH);
+		
+		if(!(columnWidths == null) && (columnWidths.length != 0)){
+			try {
+				table.setWidths(columnWidths);
+			}
+			catch (DocumentException e) {
+				System.err.println("Could not set columnWidths of standardTable " + e.getStackTrace());
+			}
+		}
+			
+		return table;
+	}
+	
+	/**
+	 * Convenience method to add content to a table in a standard way
+	 * 
+	 * @param table
+	 * @param withBorder if true a standard border is used, if false no border is used
+	 * @param contentArray an array with all cell contents
+	 */
 	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray){
+		PdfPCell cell = null;	
+		for(int i = 0; i < contentArray.length; i++){
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			if(withBorder == false){
+				cell.setBorder(0);
+			}
+			table.addCell(cell);			
+		}
+	}
+	
+	/**
+	 * Convenience method to add content to a table in a standard way
+	 * 
+	 * @param table
+	 * @param withBorder if true a standard border is used, if false no border is used
+	 * @param contentArray an array with all cell contents
+	 * @param isAlignedCenter if true the content is horizontally and vertically aligned
+	 */	
+	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter){
+		PdfPCell cell = null;	
+
+		for(int i = 0; i < contentArray.length; i++){
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));
+			if(isAlignedCenter){
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			}
+
+			if(withBorder == false){
+				cell.setBorder(0);
+			}
+			table.addCell(cell);			
+		}
+	}
+	
+	/**
+	 * Convenience method to add content to a table in a standard way
+	 * 
+	 * @param table
+	 * @param withBorder if true a standard border is used, if false no border is used
+	 * @param contentArray an array with all cell contents
+	 * @param font set a font for the cell content
+	 */
+	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, Font font){
+		PdfPCell cell = null;	
+
+		for(int i = 0; i < contentArray.length; i++){
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  ", font));
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			if(withBorder == false){
+				cell.setBorder(0);
+			}
+			table.addCell(cell);			
+		}
+	}
+	
+	/**
+	 * Cell entry is not followed by \n
+	 * 
+	 * @param table
+	 * @param withBorder if true a standard border is used, if false no border is used
+	 * @param contentArray an array with all cell contents
+	 */
+	protected static void fillTableWithContentWithoutSpace(PdfPTable table, boolean withBorder, String[] contentArray){
 		PdfPCell cell = null;
 		
 		for(int i = 0; i < contentArray.length; i++){
 			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i]+"\n  "));
+			cell = new PdfPCell(new Phrase(contentArray[i]));
 			if(withBorder == false){
 				cell.setBorder(0);
 			}
@@ -269,4 +398,68 @@ public abstract class MyPDFHandler {
 	 * @param document represents the PDF before it is saved
 	 */
 	protected abstract void addContent(Document document);
+	
+	
+	/** Inner class to add a header and a footer. */
+    class HeaderFooter extends PdfPageEventHelper {
+        /** Alternating phrase for the header. */
+        Phrase[] header = new Phrase[2];
+        /** Current page number (will be reset for every chapter). */
+        int pagenumber;
+ 
+        /**
+         * Initialize one of the headers.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onOpenDocument(PdfWriter writer, Document document) {
+            header[0] = new Phrase("Movie history");
+        }
+ 
+        /**
+         * Initialize one of the headers, based on the chapter title;
+         * reset the page number.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onChapter(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document, float,
+         *      com.itextpdf.text.Paragraph)
+         */
+        public void onChapter(PdfWriter writer, Document document,
+                float paragraphPosition, Paragraph title) {
+            header[1] = new Phrase(title.getContent());
+            pagenumber = 1;
+        }
+ 
+        /**
+         * Increase the page number.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onStartPage(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onStartPage(PdfWriter writer, Document document) {
+            pagenumber++;
+        }
+ 
+        /**
+         * Adds the header and the footer.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onEndPage(PdfWriter writer, Document document) {
+            Rectangle rect = writer.getBoxSize("art");
+//            switch(writer.getPageNumber() % 2) {
+//            case 0:
+//                ColumnText.showTextAligned(writer.getDirectContent(),
+//                        Element.ALIGN_RIGHT, header[0],
+//                        rect.getRight(), rect.getTop(), 0);
+//                break;
+//            case 1:
+//                ColumnText.showTextAligned(writer.getDirectContent(),
+//                        Element.ALIGN_LEFT, header[0],
+//                        rect.getLeft(), rect.getTop(), 0);
+//                break;
+//            }
+            ColumnText.showTextAligned(writer.getDirectContent(),
+                    Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
+                    (rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
+        }
+    }
 } 
