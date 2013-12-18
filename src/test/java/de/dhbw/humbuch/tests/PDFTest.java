@@ -1,7 +1,11 @@
 package de.dhbw.humbuch.tests;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import de.dhbw.humbuch.model.ProfileTypeHandler;
@@ -22,15 +26,11 @@ public class PDFTest {
 	}
 	
 	public static void testStudentPDF(){
-//		Profile profile = ProfileHandler.createProfile("E", "", "F");
-//		profile.setReligion(Religion.ETHICS);
 		Set<ProfileType> profileTypeSet = ProfileTypeHandler.createProfile(new String[]{"E", "", "F"}, "ev");
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
 		TeachingMaterial teachingMaterial = new TeachingMaterial();
-		//Subject subject = new Subject();
-//		subject.setName("Biology");
-//		teachingMaterial.setSubject(subject);
+
 		teachingMaterial.setToGrade(6);
 		teachingMaterial.setName("Bio1 - Bugs");
 		teachingMaterial.setPrice(79.75);
@@ -39,9 +39,7 @@ public class PDFTest {
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		teachingMaterial = new TeachingMaterial();
-//		subject = new Subject();
-//		subject.setName("German");
-//		teachingMaterial.setSubject(subject);
+
 		teachingMaterial.setToGrade(11);
 		teachingMaterial.setName("German1 - Faust");
 		teachingMaterial.setPrice(22.49);
@@ -49,7 +47,15 @@ public class PDFTest {
 		borrowedMaterial.setTeachingMaterial(teachingMaterial);
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		Student student = StudentHandler.createStudentObject("Karl", "August", "12.04.1970", "m", "11au", profileTypeSet);
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		Grade grade = new Grade.Builder("11au").build();
+		Student student = new Student.Builder(4,"Karl","August", date, grade).profileTypes(profileTypeSet).build();
 		student.setBorrowedList(borrowedMaterialList);
 		new MyPDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
 	}
