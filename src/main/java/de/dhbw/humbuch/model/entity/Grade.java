@@ -74,18 +74,28 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity {
 		
 		private String teacher;
 		
+		public Builder(String gradeString){
+			String[] splittedString = splitBetweenCharsAndDigits(gradeString);
+			this.grade = Integer.parseInt(splittedString[0]);
+			this.suffix = splittedString[1];
+		}
+		
 		public Builder(int grade, String suffix) {
 			this.grade = grade;
 			this.suffix = suffix;
 		}
 		
-		public Builder techer(String teacher) {
+		public Builder teacher(String teacher) {
 			this.teacher = teacher;
 			return this;
 		}
 		
 		public Grade build() {
 			return new Grade(this);
+		}
+		
+		private static String[] splitBetweenCharsAndDigits(String str){	
+			return str.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
 		}
 	}
 	
