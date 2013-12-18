@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.dataImport;
+package de.dhbw.humbuch.util;
 
 import java.io.FileReader;
 import java.io.IOException;
