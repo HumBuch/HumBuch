@@ -1,4 +1,4 @@
-    package de.dhbw.humbuch.pdfExport;
+    package de.dhbw.humbuch.util;
 	
 	import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.pdfExport;
+package de.dhbw.humbuch.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;

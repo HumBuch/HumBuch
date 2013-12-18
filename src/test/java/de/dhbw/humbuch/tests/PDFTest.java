@@ -14,8 +14,8 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.ProfileType;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.pdfExport.PDFClassList;
-import de.dhbw.humbuch.pdfExport.PDFStudentList;
+import de.dhbw.humbuch.util.PDFClassList;
+import de.dhbw.humbuch.util.PDFStudentList;
 
 
 public class PDFTest {
