@@ -1,6 +1,6 @@
 package de.dhbw.humbuch.viewmodel;
 
 
-public class BookManagementModel {
+public class BookManagementViewModel {
 
 }

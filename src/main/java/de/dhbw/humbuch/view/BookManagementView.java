@@ -9,7 +9,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.ViewModelComposer;
-import de.dhbw.humbuch.viewmodel.BookManagementModel;
+import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
 
 
 public class BookManagementView extends VerticalLayout implements View {
@@ -18,9 +18,9 @@ public class BookManagementView extends VerticalLayout implements View {
 	private Label label;
 
 	@Inject
-	public BookManagementView(ViewModelComposer viewModelComposer, BookManagementModel bookManagementModel) {
+	public BookManagementView(ViewModelComposer viewModelComposer, BookManagementViewModel bookManagementViewModel) {
 		init();
-		bindViewModel(viewModelComposer, bookManagementModel);
+		bindViewModel(viewModelComposer, bookManagementViewModel);
 	}
 
 	private void init() {
