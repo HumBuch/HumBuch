@@ -25,6 +25,7 @@ public class MainUI extends ScopedUI {
 	public static final String DUNNING_VIEW = "dunning_view";
 	public static final String LENDING_VIEW = "lending_view";
 	public static final String RETURN_VIEW = "return_view";
+	public static final String IMPORT_VIEW = "import_view";
 	
 	@Inject
 	private LoginView loginView;
@@ -38,6 +39,8 @@ public class MainUI extends ScopedUI {
 	private HomeView homeView;
 	@Inject
 	private BookManagementView bookManagementView;
+	@Inject
+	private ImportView importView;
 	
 	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
@@ -84,6 +87,7 @@ public class MainUI extends ScopedUI {
 		navigator.addView(DUNNING_VIEW, dunningView);
 		navigator.addView(LENDING_VIEW, lendingView);
 		navigator.addView(RETURN_VIEW, returnView);
+		navigator.addView(IMPORT_VIEW, importView);
 		
 		setContent(gridLayoutRoot);
 	}
