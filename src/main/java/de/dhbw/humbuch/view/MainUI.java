@@ -61,6 +61,7 @@ public class MainUI extends ScopedUI {
 		footer = new Footer();
 		navigationBar = new NavigationBar();
 		
+		verticalLayoutContent.setSizeFull();
 		header.setSizeFull();
 		footer.setSizeFull();
 		navigationBar.setWidth("100%");
