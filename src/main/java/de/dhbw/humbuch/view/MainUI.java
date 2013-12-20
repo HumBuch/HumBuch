@@ -61,6 +61,7 @@ public class MainUI extends ScopedUI {
 		header.setSizeFull();
 		footer.setSizeFull();
 		navigationBar.setWidth("100%");
+		verticalLayoutContent.setSizeFull();
 		
 		gridLayoutRoot.setSizeFull();
 		gridLayoutRoot.setRowExpandRatio(0, 15);
