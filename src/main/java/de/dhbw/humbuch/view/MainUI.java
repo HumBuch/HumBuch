@@ -75,7 +75,7 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
 		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
-		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);		
+		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 		
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
 		

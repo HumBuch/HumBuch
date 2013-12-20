@@ -30,7 +30,6 @@ public class DunningView extends VerticalLayout implements View {
 	private static final String TABLE_CLASS = "Klasse";
 	private static final String TABLE_TYPE = "Typ";
 
-	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private Button buttonSecondDunning;
 	private Button buttonReturnBook;
@@ -49,7 +48,6 @@ public class DunningView extends VerticalLayout implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
 		buttonSecondDunning = new Button(SECOND_DUNNING);
 		buttonReturnBook = new Button(RETURN_BOOK);
@@ -60,7 +58,7 @@ public class DunningView extends VerticalLayout implements View {
 		tableSearchResults = new Table();
 
 		tableDunnings.setSelectable(true);
-		tableDunnings.setWidth("100%");
+		tableDunnings.setSizeFull();
 		tableDunnings
 				.addContainerProperty(TABLE_FIRST_NAME, String.class, null);
 		tableDunnings.addContainerProperty(TABLE_LAST_NAME, String.class, null);
@@ -69,7 +67,7 @@ public class DunningView extends VerticalLayout implements View {
 		fillTableDunnings();
 
 		tableSearchResults.setSelectable(true);
-		tableSearchResults.setWidth("100%");
+		tableSearchResults.setSizeFull();
 		tableSearchResults.addContainerProperty(TABLE_LAST_NAME, String.class,
 				null);
 		tableSearchResults.addContainerProperty(TABLE_FIRST_NAME, String.class,
@@ -78,22 +76,21 @@ public class DunningView extends VerticalLayout implements View {
 				.addContainerProperty(TABLE_CLASS, String.class, null);
 
 		horizontalLayoutButtonBar.setSpacing(true);
-
-		verticalLayoutContent.setSpacing(true);
-		verticalLayoutContent.setMargin(true);
 	}
 
 	private void buildLayout() {
+		setSizeFull();
+		setMargin(true);
+		setSpacing(true);
+		
 		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
 		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
 		horizontalLayoutButtonBar.addComponent(buttonReturnBook);
-		verticalLayoutContent.addComponent(tableDunnings);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
-		verticalLayoutContent.addComponent(textFieldSearch);
-		verticalLayoutContent.addComponent(tableSearchResults);
-		verticalLayoutContent.addComponent(buttonCreateDunning);
-		
-		addComponent(verticalLayoutContent);
+		addComponent(tableDunnings);
+		addComponent(horizontalLayoutButtonBar);
+		addComponent(textFieldSearch);
+		addComponent(tableSearchResults);
+		addComponent(buttonCreateDunning);
 	}
 
 	private void fillTableDunnings() {
