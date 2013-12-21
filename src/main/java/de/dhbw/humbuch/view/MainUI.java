@@ -51,7 +51,7 @@ public class MainUI extends ScopedUI {
 	public static final String LENDING_VIEW = "lending_view";
 	public static final String RETURN_VIEW = "return_view";
 	public static final String IMPORT_VIEW = "import_view";
-	
+
 	@Inject
 	private DunningView dunningView;
 	@Inject
@@ -62,14 +62,14 @@ public class MainUI extends ScopedUI {
 	private HomeView homeView;
 	@Inject
 	private BookManagementView bookManagementView;
-    @Inject
-    private ImportView importView;
+	@Inject
+	private ImportView importView;
 
 	private CssLayout root = new CssLayout();
-	
+
 	private VerticalLayout loginLayout;
 	private CssLayout content = new CssLayout();
-	
+
 	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
 	private ComponentContainerViewDisplay ccViewDisplay;
@@ -82,11 +82,11 @@ public class MainUI extends ScopedUI {
 	// Fields
 	private TextField username = new TextField("Username");
 	private PasswordField password = new PasswordField("Passwort");
-	
+
 	// Buttons
 	@BindAction(value = DoLogout.class, source = {})
 	private Button logoutButton = new Button("Logout");
-	
+
 	@BindAction(value = DoLogin.class, source = { "username", "password" })
 	private Button loginButton = new Button("Login");
 
@@ -102,112 +102,109 @@ public class MainUI extends ScopedUI {
 
 	@Override
 	protected void init(VaadinRequest request) {
-		
+
 		setContent(root);
 		root.setSizeFull();
 
-        if (!isLoggedIn.get()) {
-        	buildLoginView(false);
-        } else if (isLoggedIn.get()) {
-        	buildMainView();
-        }
-		
+		if (!isLoggedIn.get()) {
+			buildLoginView(false);
+		} else if (isLoggedIn.get()) {
+			buildMainView();
+		}
+
 	}
-	
-	
-    private void buildLoginView(boolean exit) {
-        if (exit) {
-            root.removeAllComponents();
-        }
-        addStyleName("login");
 
-        loginLayout = new VerticalLayout();
-        loginLayout.setSizeFull();
-        loginLayout.addStyleName("login-layout");
-        root.addComponent(loginLayout);
+	private void buildLoginView(boolean exit) {
+		if (exit) {
+			root.removeAllComponents();
+		}
+		addStyleName("login");
 
-        final CssLayout loginPanel = new CssLayout();
-        loginPanel.addStyleName("login-panel");
+		loginLayout = new VerticalLayout();
+		loginLayout.setSizeFull();
+		loginLayout.addStyleName("login-layout");
+		root.addComponent(loginLayout);
 
-        HorizontalLayout labels = new HorizontalLayout();
-        labels.setWidth("100%");
-        labels.setMargin(true);
-        labels.addStyleName("labels");
-        loginPanel.addComponent(labels);
+		final CssLayout loginPanel = new CssLayout();
+		loginPanel.addStyleName("login-panel");
 
-        Label welcome = new Label("Welcome");
-        welcome.setSizeUndefined();
-        welcome.addStyleName("h4");
-        labels.addComponent(welcome);
-        labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
+		HorizontalLayout labels = new HorizontalLayout();
+		labels.setWidth("100%");
+		labels.setMargin(true);
+		labels.addStyleName("labels");
+		loginPanel.addComponent(labels);
 
-        Label title = new Label("HumBuch Schulbuchverwaltung");
-        title.setSizeUndefined();
-        title.addStyleName("h2");
-        title.addStyleName("light");
-        labels.addComponent(title);
-        labels.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
+		Label welcome = new Label("Welcome");
+		welcome.setSizeUndefined();
+		welcome.addStyleName("h4");
+		labels.addComponent(welcome);
+		labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
-        HorizontalLayout fields = new HorizontalLayout();
-        fields.setSpacing(true);
-        fields.setMargin(true);
-        fields.addStyleName("fields");
+		Label title = new Label("HumBuch Schulbuchverwaltung");
+		title.setSizeUndefined();
+		title.addStyleName("h2");
+		title.addStyleName("light");
+		labels.addComponent(title);
+		labels.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
 
-        username.focus();
-        fields.addComponent(username);
+		HorizontalLayout fields = new HorizontalLayout();
+		fields.setSpacing(true);
+		fields.setMargin(true);
+		fields.addStyleName("fields");
 
-        fields.addComponent(password);
+		username.focus();
+		fields.addComponent(username);
 
-        loginButton.addStyleName("default");
-        fields.addComponent(loginButton);
-        fields.setComponentAlignment(loginButton, Alignment.BOTTOM_LEFT);
+		fields.addComponent(password);
 
-        final ShortcutListener enter = new ShortcutListener("Login",
-                KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-            	loginButton.click();
-            }
-        };
+		loginButton.addStyleName("default");
+		fields.addComponent(loginButton);
+		fields.setComponentAlignment(loginButton, Alignment.BOTTOM_LEFT);
 
-        isLoggedIn.addStateChangeListener(new StateChangeListener() {
+		final ShortcutListener enter = new ShortcutListener("Login",
+				KeyCode.ENTER, null) {
+			@Override
+			public void handleAction(Object sender, Object target) {
+				loginButton.click();
+			}
+		};
+
+		isLoggedIn.addStateChangeListener(new StateChangeListener() {
 
 			@Override
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
 					buildMainView();
 				}
-				
+
 			}
-        	
-        	
-        });
 
-        loginButton.addShortcutListener(enter);
+		});
 
-        loginPanel.addComponent(fields);
+		loginButton.addShortcutListener(enter);
 
-        loginLayout.addComponent(loginPanel);
-        loginLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
-    }
+		loginPanel.addComponent(fields);
 
-    private void buildMainView() {
+		loginLayout.addComponent(loginPanel);
+		loginLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
+	}
 
-        root.removeAllComponents();
-        
-        gridLayoutRoot = new GridLayout(2,3);
-        verticalLayoutContent = new VerticalLayout();
-        
+	private void buildMainView() {
+
+		root.removeAllComponents();
+
+		gridLayoutRoot = new GridLayout(2, 3);
+		verticalLayoutContent = new VerticalLayout();
 
 		header = new Header();
 		footer = new Footer();
 		navigationBar = new NavigationBar();
-		
+
 		verticalLayoutContent.setSizeFull();
 		header.setSizeFull();
 		footer.setSizeFull();
 		navigationBar.setWidth("100%");
-		
+
 		gridLayoutRoot.setSizeFull();
 		gridLayoutRoot.setRowExpandRatio(0, 15);
 		gridLayoutRoot.setRowExpandRatio(1, 80);
@@ -218,11 +215,11 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
 		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
 		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
-		
+
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
-		
+
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
-		
+
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
 		navigator.addView(HOME_VIEW, homeView);
@@ -232,10 +229,34 @@ public class MainUI extends ScopedUI {
 		navigator.addView(RETURN_VIEW, returnView);
 		navigator.addView(IMPORT_VIEW, importView);
 
-        root.addComponent(gridLayoutRoot);
+		getNavigator().addViewChangeListener(new ViewChangeListener() {
 
-    }
-    
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+
+				// Check if a user has logged in
+				boolean isLoginView = event.getNewView() instanceof LoginView;
+
+				if (!isLoggedIn.get()) {
+					// Redirect to login view always if a user has not yet
+					// logged in
+					getNavigator().navigateTo("");
+					return false;
+
+				}
+
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+
+			}
+		});
+
+		root.addComponent(gridLayoutRoot);
+
+	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
