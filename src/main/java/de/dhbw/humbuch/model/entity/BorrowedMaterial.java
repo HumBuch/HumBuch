@@ -27,6 +27,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	private Date borrowFrom;
 	private Date borrowUntil;
 	private Date returnDate;
+	private boolean received;
 	private boolean defect;
 	private String defectComment;
 	
@@ -96,6 +97,14 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.defectComment = defectComment;
 	}
 
+	public boolean isReceived() {
+		return received;
+	}
+
+	public void setReceived(boolean received) {
+		this.received = received;
+	}
+
 	public static class Builder {
 		private final Student student;
 		private final TeachingMaterial teachingMaterial;
@@ -103,6 +112,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		
 		private Date borrowUntil;
 		private Date returnDate;
+		private boolean received;
 		private boolean defect;
 		private String defectComment;
 		
@@ -119,6 +129,11 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		
 		public Builder returnDate(Date returnDate) {
 			this.returnDate = returnDate;
+			return this;
+		}
+		
+		public Builder received(boolean received) {
+			this.received = received;
 			return this;
 		}
 		
@@ -144,6 +159,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		
 		this.borrowUntil = builder.borrowUntil;
 		this.returnDate = builder.returnDate;
+		this.received = builder.received;
 		this.defect = builder.defect;
 		this.defectComment = builder.defectComment;
 	}
