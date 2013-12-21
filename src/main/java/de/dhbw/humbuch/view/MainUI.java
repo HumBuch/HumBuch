@@ -71,7 +71,7 @@ public class MainUI extends ScopedUI {
 	private CssLayout content = new CssLayout();
 
 	private GridLayout gridLayoutRoot;
-	private VerticalLayout verticalLayoutContent;
+	private VerticalLayout verticalLayoutContent = new VerticalLayout();
 	private ComponentContainerViewDisplay ccViewDisplay;
 	private Header header;
 	private Footer footer;
@@ -105,6 +105,19 @@ public class MainUI extends ScopedUI {
 
 		setContent(root);
 		root.setSizeFull();
+		
+		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
+
+		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
+
+		// TODO: Hack! Check how to save String in enums
+		navigator.addView("", homeView);
+		navigator.addView(HOME_VIEW, homeView);
+		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
+		navigator.addView(DUNNING_VIEW, dunningView);
+		navigator.addView(LENDING_VIEW, lendingView);
+		navigator.addView(RETURN_VIEW, returnView);
+		navigator.addView(IMPORT_VIEW, importView);
 
 		if (!isLoggedIn.get()) {
 			buildLoginView(false);
@@ -194,7 +207,6 @@ public class MainUI extends ScopedUI {
 		root.removeAllComponents();
 
 		gridLayoutRoot = new GridLayout(2, 3);
-		verticalLayoutContent = new VerticalLayout();
 
 		header = new Header();
 		footer = new Footer();
@@ -216,43 +228,6 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
 		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 
-		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
-
-		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
-
-		// TODO: Hack! Check how to save String in enums
-		navigator.addView("", homeView);
-		navigator.addView(HOME_VIEW, homeView);
-		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
-		navigator.addView(DUNNING_VIEW, dunningView);
-		navigator.addView(LENDING_VIEW, lendingView);
-		navigator.addView(RETURN_VIEW, returnView);
-		navigator.addView(IMPORT_VIEW, importView);
-
-		getNavigator().addViewChangeListener(new ViewChangeListener() {
-
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
-
-				// Check if a user has logged in
-				boolean isLoginView = event.getNewView() instanceof LoginView;
-
-				if (!isLoggedIn.get()) {
-					// Redirect to login view always if a user has not yet
-					// logged in
-					getNavigator().navigateTo("");
-					return false;
-
-				}
-
-				return true;
-			}
-
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
-
-			}
-		});
 
 		root.addComponent(gridLayoutRoot);
 
