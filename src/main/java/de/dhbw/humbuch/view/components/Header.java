@@ -33,7 +33,7 @@ public class Header extends CustomComponent {
 	private Button buttonHelp;
 	private Image imageLogo;
     @BindAction(value = DoLogout.class, source = {})
-    private Button buttonLogout = new Button("Logout");
+    private Button buttonLogout = new Button();
 	
 	@BindState(IsLoggedIn.class)
 	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
