@@ -489,7 +489,7 @@ public abstract class PDFHandler {
         }
     }
     
-    class PDFStreamSource implements StreamSource {
+    public static class PDFStreamSource implements StreamSource {
     	
 		private static final long serialVersionUID = 1L;
 		ByteArrayOutputStream byteArrayOutputstream;
