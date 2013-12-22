@@ -87,7 +87,31 @@ public abstract class PDFHandler {
 		}
 	}
 	
-	
+	/**
+	 * Creates a ByteArrayOutputStream which holds the PDF as a byte array.
+	 * @return the byteArrayOutputStream the PDF is stored in.
+	 * @return null if an error occurred.
+	 */
+	public ByteArrayOutputStream createByteArrayOutputStreamForPDF(){
+		ByteArrayOutputStream byteArrayOutputStream;
+		try {
+			byteArrayOutputStream = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, byteArrayOutputStream);
+
+			this.document.open();
+			this.addMetaData(document);
+			this.insertDocumentParts(document);
+			this.document.close();
+			
+			return byteArrayOutputStream;
+		}
+		catch (DocumentException e) {
+			System.err.println("Could not create ByteArrayOutputStream of PDF data. " + e.getMessage());
+		}
+		
+		return null;
+	}
+		
 	/**
 	 * Adds meta data to the PDF document.
 	 * The information of using iText must be part of the meta data due to the
