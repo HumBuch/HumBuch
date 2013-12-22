@@ -1,9 +1,11 @@
 package de.dhbw.humbuch.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 
 import com.lowagie.text.BadElementException;
@@ -21,6 +23,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
+import com.vaadin.server.StreamResource.StreamSource;
 
 public abstract class PDFHandler {
 	private Document document;
@@ -422,8 +425,7 @@ public abstract class PDFHandler {
 	 * @param document represents the PDF before it is saved
 	 */
 	protected abstract void addContent(Document document);
-	
-	
+		
 	/** Inner class to add a header and a footer. */
     class HeaderFooter extends PdfPageEventHelper {
         /** Alternating phrase for the header. */
@@ -485,5 +487,21 @@ public abstract class PDFHandler {
                     Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
                     (rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
         }
+    }
+    
+    class PDFStreamSource implements StreamSource {
+    	
+		private static final long serialVersionUID = 1L;
+		ByteArrayOutputStream byteArrayOutputstream;
+    	
+    	public PDFStreamSource(ByteArrayOutputStream byteArrayOutputStream){
+    		this.byteArrayOutputstream = byteArrayOutputStream;
+    	}
+		
+    	@Override
+		public InputStream getStream() {
+    		// Here we return the pdf contents as a byte-array
+            return new ByteArrayInputStream(this.byteArrayOutputstream.toByteArray());
+		}  	
     }
 } 
