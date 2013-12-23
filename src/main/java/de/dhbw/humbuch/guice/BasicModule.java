@@ -11,10 +11,11 @@ import de.davherrmann.guice.vaadin.UIScoped;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.view.LoginView;
 import de.dhbw.humbuch.view.MVVMConfig;
+import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 
 public class BasicModule extends ServletModule {
@@ -27,6 +28,7 @@ public class BasicModule extends ServletModule {
 		serve("/*").with(BasicServlet.class);
 		
 		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
+		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
 		
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
