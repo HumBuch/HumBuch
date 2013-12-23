@@ -2,7 +2,6 @@ package de.dhbw.humbuch.guice;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -10,7 +9,6 @@ import com.google.inject.servlet.GuiceFilter;
 
 import de.davherrmann.guice.vaadin.UIScopeModule;
 
-@WebFilter(urlPatterns = "/*")
 public class BasicFilter extends GuiceFilter {
 
 	private static Injector INJECTOR;
