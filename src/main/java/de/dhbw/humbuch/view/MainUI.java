@@ -25,6 +25,7 @@ public class MainUI extends ScopedUI {
 	public static final String DUNNING_VIEW = "dunning_view";
 	public static final String LENDING_VIEW = "lending_view";
 	public static final String RETURN_VIEW = "return_view";
+	public static final String IMPORT_VIEW = "import_view";
 	
 	@Inject
 	private LoginView loginView;
@@ -38,6 +39,8 @@ public class MainUI extends ScopedUI {
 	private HomeView homeView;
 	@Inject
 	private BookManagementView bookManagementView;
+	@Inject
+	private ImportView importView;
 	
 	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
@@ -58,21 +61,20 @@ public class MainUI extends ScopedUI {
 		footer = new Footer();
 		navigationBar = new NavigationBar();
 		
-		header.setSizeFull();
-		footer.setSizeFull();
+		verticalLayoutContent.setSizeFull();
+		header.setWidth("100%");
+		footer.setWidth("100%");
 		navigationBar.setWidth("100%");
 		verticalLayoutContent.setSizeFull();
 		
 		gridLayoutRoot.setSizeFull();
-		gridLayoutRoot.setRowExpandRatio(0, 15);
-		gridLayoutRoot.setRowExpandRatio(1, 80);
-		gridLayoutRoot.setRowExpandRatio(2, 5);
+		gridLayoutRoot.setRowExpandRatio(1, 1);
 		gridLayoutRoot.setColumnExpandRatio(0, 20);
 		gridLayoutRoot.setColumnExpandRatio(1, 80);
 		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
 		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
-		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);		
+		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 		
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
 		
@@ -85,6 +87,7 @@ public class MainUI extends ScopedUI {
 		navigator.addView(DUNNING_VIEW, dunningView);
 		navigator.addView(LENDING_VIEW, lendingView);
 		navigator.addView(RETURN_VIEW, returnView);
+		navigator.addView(IMPORT_VIEW, importView);
 		
 		setContent(gridLayoutRoot);
 	}

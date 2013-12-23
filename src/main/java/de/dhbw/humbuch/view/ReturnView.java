@@ -7,6 +7,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -17,10 +18,11 @@ import de.dhbw.humbuch.view.components.MultiClassChooser;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 
 
-public class ReturnView extends VerticalLayout implements View {
+public class ReturnView extends Panel implements View {
 
 	private static final long serialVersionUID = -525078997965992622L;
 
+	private static final String TITLE = "Rückgabe";
 	private static final String BUTTON_MATERIAL = "Materialliste";
 	private static final String BUTTON_LENDING = "Ausleihliste";
 	private static final String INPUT_PROMPT = "Schüler suchen";
@@ -28,10 +30,6 @@ public class ReturnView extends VerticalLayout implements View {
 	private static final String FIRST_NAME = "Vorname";
 	private static final String LAST_NAME = "Nachname";
 	private static final String CLASS = "Klasse";
-	private static final String OKAY_HEADER = "Daten okay";
-	private static final String OKAY = "Alle Bücher zurückgegeben";
-	private static final String EDIT = "Bücher unvollständig";
-	private static final String EDIT_HEADER = "Daten anpassen";
 
 	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutPopup;
@@ -58,7 +56,7 @@ public class ReturnView extends VerticalLayout implements View {
 		verticalLayoutContent.setSpacing(true);
 
 		horizontalLayoutPopup = new HorizontalLayout();
-		horizontalLayoutPopup.setWidth("100%");
+		horizontalLayoutPopup.setWidth("300px");
 
 		verticalLayoutPopupFirstColumn = new VerticalLayout();
 		classChooser = new MultiClassChooser();
@@ -77,15 +75,16 @@ public class ReturnView extends VerticalLayout implements View {
 		popupView.setHideOnMouseOut(false);
 
 		tableStudents = new Table();
-		tableStudents.setWidth("100%");
-		tableStudents.setSelectable(true);
-		tableStudents.addContainerProperty(FIRST_NAME, String.class, null);
 		tableStudents.addContainerProperty(LAST_NAME, String.class, null);
+		tableStudents.addContainerProperty(FIRST_NAME, String.class, null);
 		tableStudents.addContainerProperty(CLASS, String.class, null);
-		tableStudents.addContainerProperty(OKAY_HEADER, Button.class, null);
-		tableStudents.addContainerProperty(EDIT_HEADER, Button.class, null);
+		tableStudents.addContainerProperty("", Button.class, null);
+		tableStudents.addContainerProperty("", Button.class, null);
 
-		populateWithTestData();
+		populateWithTestData(tableStudents);
+
+		setSizeFull();
+		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
@@ -104,39 +103,16 @@ public class ReturnView extends VerticalLayout implements View {
 
 		verticalLayoutContent.addComponent(tableStudents);
 
-		addComponent(verticalLayoutContent);
+		setContent(verticalLayoutContent);
 	}
 
-	private Button okButton;
-	private Button editButton;
-	
-	private void populateWithTestData() {
-		okButton = new Button(OKAY);
-		editButton = new Button(EDIT);
-		
-		tableStudents.addItem(new Object[] { "Max", "Mustermann", "5a", okButton, editButton }, 1);
-		tableStudents.addItem(new Object[] { "Clara", "Maier", "8b", okButton, editButton }, 2);
-		tableStudents.addItem(new Object[] { "Hans", "Mustermann", "9c", okButton, editButton }, 3);
-		tableStudents.addItem(new Object[] { "Cat", "Dog", "7b", okButton, editButton }, 4);
-		tableStudents.addItem(new Object[] { "Spongebob", "Schwammkopf", "6a", okButton, editButton }, 5);
-
-		tableStudents.addItem(new Object[] { "Max", "Mustermann", "5a", okButton, editButton }, 6);
-		tableStudents.addItem(new Object[] { "Clara", "Maier", "8b", okButton, editButton }, 7);
-		tableStudents.addItem(new Object[] { "Hans", "Mustermann", "9c", okButton, editButton }, 8);
-		tableStudents.addItem(new Object[] { "Cat", "Dog", "7b", okButton, editButton }, 9);
-		tableStudents.addItem(new Object[] { "Spongebob", "Schwammkopf", "6a", okButton, editButton }, 10);
-		
-//		tableStudents.addItem(new Object[] { "Max", "Mustermann", "5a", new Button(OKAY), new Button(EDIT) }, 1);
-//		tableStudents.addItem(new Object[] { "Clara", "Maier", "8b", new Button(OKAY), new Button(EDIT) }, 2);
-//		tableStudents.addItem(new Object[] { "Hans", "Mustermann", "9c", new Button(OKAY), new Button(EDIT) }, 3);
-//		tableStudents.addItem(new Object[] { "Cat", "Dog", "7b", new Button(OKAY), new Button(EDIT) }, 4);
-//		tableStudents.addItem(new Object[] { "Spongebob", "Schwammkopf", "6a", new Button(OKAY), new Button(EDIT) }, 5);
-//
-//		tableStudents.addItem(new Object[] { "Max", "Mustermann", "5a", new Button(OKAY), new Button(EDIT) }, 6);
-//		tableStudents.addItem(new Object[] { "Clara", "Maier", "8b", new Button(OKAY), new Button(EDIT) }, 7);
-//		tableStudents.addItem(new Object[] { "Hans", "Mustermann", "9c", new Button(OKAY), new Button(EDIT) }, 8);
-//		tableStudents.addItem(new Object[] { "Cat", "Dog", "7b", new Button(OKAY), new Button(EDIT) }, 9);
-//		tableStudents.addItem(new Object[] { "Spongebob", "Schwammkopf", "6a", new Button(OKAY), new Button(EDIT) }, 10);
+	private void populateWithTestData(Table tableStudents) {
+		Button dataOk = new Button("Ok");
+		Button dataInvalid = new Button("Editieren");
+		tableStudents.addItem(new Object[] { "5a", "Mustermann", "Max", dataOk, dataInvalid }, 1);
+		tableStudents.addItem(new Object[] { "8b", "Maier", "Clara", dataOk, dataInvalid }, 2);
+		tableStudents.addItem(new Object[] { "9c", "Mustermann", "Hans", dataOk, dataInvalid }, 3);
+		tableStudents.addItem(new Object[] { "7a", "XYZ", "BLaa", dataOk, dataInvalid }, 4);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

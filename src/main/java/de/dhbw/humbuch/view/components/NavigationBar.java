@@ -9,8 +9,10 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.dhbw.humbuch.view.MainUI;
 
+
 @Theme("mytheme")
 public class NavigationBar extends CustomComponent {
+
 	private static final long serialVersionUID = -2263554457706891669L;
 
 	/**
@@ -22,7 +24,7 @@ public class NavigationBar extends CustomComponent {
 	private static final String[][] navigationButtons = new String[][] {
 			{ "Aufgaben", MainUI.HOME_VIEW }, { "Ausleihe", MainUI.LENDING_VIEW },
 			{ "Rückgabe", MainUI.RETURN_VIEW }, { "Lehrmittel", MainUI.BOOK_MANAGEMENT_VIEW },
-			{ "Mahnungen", MainUI.DUNNING_VIEW } };
+			{ "Mahnungen", MainUI.DUNNING_VIEW }, { "Import", MainUI.IMPORT_VIEW } };
 
 	private VerticalLayout verticalLayoutNavBar;
 
@@ -35,6 +37,7 @@ public class NavigationBar extends CustomComponent {
 		for (final String[] view : navigationButtons) {
 			NativeButton b = new NativeButton(view[0],
 					new NativeButton.ClickListener() {
+
 						private static final long serialVersionUID = -5330895560377816934L;
 
 						@Override
@@ -46,7 +49,8 @@ public class NavigationBar extends CustomComponent {
 									.equals(view[1])) {
 								try {
 									getUI().getNavigator().navigateTo(view[1]);
-								} catch (IllegalArgumentException e) {
+								}
+								catch (IllegalArgumentException e) {
 									getUI().getNavigator().navigateTo("main");
 								}
 							}
