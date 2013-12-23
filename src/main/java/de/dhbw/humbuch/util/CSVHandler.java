@@ -122,7 +122,7 @@ public final class CSVHandler {
 		
 		Date date = null;
 		try {
-			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("");
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse(birthDay);
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
