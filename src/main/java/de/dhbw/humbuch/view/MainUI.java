@@ -1,10 +1,14 @@
 package de.dhbw.humbuch.view;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.GridLayout;
@@ -17,18 +21,21 @@ import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
 import de.dhbw.humbuch.view.components.NavigationBar;
 
+
 @Theme("mytheme")
 @SuppressWarnings("serial")
 @Widgetset("com.vaadin.DefaultWidgetSet")
 public class MainUI extends ScopedUI {
-	
+
+	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
+
 	public static final String HOME_VIEW = "home_view";
 	public static final String BOOK_MANAGEMENT_VIEW = "book_management_view";
 	public static final String DUNNING_VIEW = "dunning_view";
 	public static final String LENDING_VIEW = "lending_view";
 	public static final String RETURN_VIEW = "return_view";
 	public static final String IMPORT_VIEW = "import_view";
-	
+
 	@Inject
 	private LoginView loginView;
 	@Inject
@@ -43,7 +50,7 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private ImportView importView;
-	
+
 	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
 	private ComponentContainerViewDisplay ccViewDisplay;
@@ -53,26 +60,26 @@ public class MainUI extends ScopedUI {
 	private Panel panelContent;
 
 	public Navigator navigator;
-	
+
 	@Override
 	protected void init(VaadinRequest request) {
-		
-		gridLayoutRoot = new GridLayout(2,3);
+
+		gridLayoutRoot = new GridLayout(2, 3);
 		verticalLayoutContent = new VerticalLayout();
 		panelContent = new Panel();
-		
+
 		header = new Header();
 		footer = new Footer();
 		navigationBar = new NavigationBar();
-		
+
 		panelContent.setSizeFull();
 		//verticalLayoutContent.setSizeFull();
 		header.setWidth("100%");
 		footer.setWidth("100%");
 		navigationBar.setWidth("100%");
-		
+
 		panelContent.setContent(verticalLayoutContent);
-		
+
 		gridLayoutRoot.setSizeFull();
 		gridLayoutRoot.setRowExpandRatio(1, 1);
 		gridLayoutRoot.setColumnExpandRatio(0, 20);
@@ -81,11 +88,11 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
 		gridLayoutRoot.addComponent(panelContent, 1, 1);
 		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
-		
+
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
-		
+
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
-		
+
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
 		navigator.addView(HOME_VIEW, homeView);
@@ -94,7 +101,11 @@ public class MainUI extends ScopedUI {
 		navigator.addView(LENDING_VIEW, lendingView);
 		navigator.addView(RETURN_VIEW, returnView);
 		navigator.addView(IMPORT_VIEW, importView);
-		
+
+		/**
+		 * TODO I am not sure if this belongs here. Should the MainUI implement
+		 * ViewChangeListener? What is the best practice to solve this?
+		 * */
 		navigator.addViewChangeListener(new ViewChangeListener() {
 
 			@Override
@@ -104,16 +115,18 @@ public class MainUI extends ScopedUI {
 
 			@Override
 			public void afterViewChange(ViewChangeEvent event) {
-				try {
-				ViewInformation cv = (ViewInformation) event.getNewView();
-				panelContent.setCaption(cv.getTitle());
-				} catch(Exception e) {
-					System.out.println("exception afterViewChange");
+				View newView = event.getNewView();
+				if (newView instanceof ViewInformation) {
+					panelContent.setCaption(((ViewInformation) newView).getTitle());
+				}
+				else {
+					LOG.warn("New View does not implement ViewInformation interface." +
+							" Could not set caption of panel correctly.");
 				}
 			}
-			
+
 		});
-		
+
 		setContent(gridLayoutRoot);
 	}
 
