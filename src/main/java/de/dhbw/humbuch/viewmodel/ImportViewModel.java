@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.view;
+package de.dhbw.humbuch.viewmodel;
 
 
 public class ImportViewModel {
