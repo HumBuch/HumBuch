@@ -5,6 +5,9 @@ import java.util.NoSuchElementException;
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -13,6 +16,7 @@ import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.view.components.MultiClassChooser;
@@ -27,24 +31,27 @@ public class ReturnView extends Panel implements View {
 	private static final String BUTTON_MATERIAL = "Materialliste";
 	private static final String BUTTON_LENDING = "Ausleihliste";
 	private static final String INPUT_PROMPT = "Schüler suchen";
-	private static final String CHOOSE_LIST = "Listenauswahl";
+	private static final String CHOOSE_LIST = "Rückgabe Listen drucken";
+	private static final String POPULATE = "Listen ins System einpflegen";
 	private static final String FIRST_NAME = "Vorname";
 	private static final String LAST_NAME = "Nachname";
 	private static final String CLASS = "Klasse";
-	private static final String OKAY_HEADER = "Daten in Ordnung";
+	private static final String OKAY_HEADER = "Zurückgegebene Bücher";
 	private static final String OKAY = "Alle Bücher zurückgegeben";
+	private static final String SAVE = "Auswahl speichern";
 
-	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutPopup;
+	private Accordion accordionContent;
+	private VerticalLayout verticalLayoutPopulate;
+	private HorizontalLayout horizontalLayoutLists;
 	private VerticalLayout verticalLayoutPopupFirstColumn;
 	private VerticalLayout verticalLayoutPopupSecondColumn;
 	private MultiClassChooser classChooser;
 	private Button buttonMaterialList;
 	private Button buttonLendingList;
+	private Button buttonSave;
 	private TextField searchbar;
 	private Button buttonMaterialListStudent;
 	private PopupView popupView;
-//	private Table tableStudents;
 	private TreeTable treeTableStudents;
 
 	@Inject
@@ -55,12 +62,18 @@ public class ReturnView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
-		verticalLayoutContent.setMargin(true);
-		verticalLayoutContent.setSpacing(true);
+		accordionContent = new Accordion();
+		
+		buttonSave = new Button(SAVE);
+		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
+		//buttonSave.setStyleName(BaseTheme.BUTTON_LINK);
+		
+		verticalLayoutPopulate = new VerticalLayout();
+		verticalLayoutPopulate.setMargin(true);
+		verticalLayoutPopulate.setSpacing(true);
 
-		horizontalLayoutPopup = new HorizontalLayout();
-		horizontalLayoutPopup.setWidth("100%");
+		horizontalLayoutLists = new HorizontalLayout();
+		horizontalLayoutLists.setWidth("100%");
 
 		verticalLayoutPopupFirstColumn = new VerticalLayout();
 		classChooser = new MultiClassChooser();
@@ -75,15 +88,16 @@ public class ReturnView extends Panel implements View {
 
 		buttonMaterialListStudent = new Button(BUTTON_LENDING);
 
-		popupView = new PopupView(CHOOSE_LIST, horizontalLayoutPopup);
+		popupView = new PopupView(CHOOSE_LIST, horizontalLayoutLists);
 		popupView.setHideOnMouseOut(false);
 
 		treeTableStudents = new TreeTable();
 		treeTableStudents.setSizeFull();
-		treeTableStudents.addContainerProperty(LAST_NAME, CheckBox.class, null);
+		treeTableStudents.setColumnReorderingAllowed(true);
+		treeTableStudents.addContainerProperty(LAST_NAME, String.class, null);
 		treeTableStudents.addContainerProperty(FIRST_NAME, String.class, null);
 		treeTableStudents.addContainerProperty(CLASS, String.class, null);
-		treeTableStudents.addContainerProperty(OKAY_HEADER, Button.class, null);
+		treeTableStudents.addContainerProperty(OKAY_HEADER, CheckBox.class, null);
 
 		populateWithTestData();
 
@@ -96,36 +110,41 @@ public class ReturnView extends Panel implements View {
 		verticalLayoutPopupFirstColumn.addComponent(buttonMaterialList);
 		verticalLayoutPopupFirstColumn.addComponent(buttonLendingList);
 
-		horizontalLayoutPopup.addComponent(verticalLayoutPopupFirstColumn);
+		horizontalLayoutLists.addComponent(verticalLayoutPopupFirstColumn);
 
 		verticalLayoutPopupSecondColumn.addComponent(searchbar);
 		verticalLayoutPopupSecondColumn.addComponent(buttonMaterialListStudent);
 
-		horizontalLayoutPopup.addComponent(verticalLayoutPopupSecondColumn);
+		horizontalLayoutLists.addComponent(verticalLayoutPopupSecondColumn);
+		
+//		verticalLayoutPopulate.addComponent(popupView);
+		verticalLayoutPopulate.addComponent(treeTableStudents);
+		verticalLayoutPopulate.addComponent(buttonSave);
+		verticalLayoutPopulate.setComponentAlignment(buttonSave, Alignment.MIDDLE_RIGHT);
 
-		verticalLayoutContent.addComponent(popupView);
-
-		verticalLayoutContent.addComponent(treeTableStudents);
-
-		setContent(verticalLayoutContent);
+		accordionContent.addTab(horizontalLayoutLists, CHOOSE_LIST);
+		accordionContent.addTab(verticalLayoutPopulate, POPULATE);
+		accordionContent.setSelectedTab(verticalLayoutPopulate);
+		
+		setContent(accordionContent);
 	}
 
 	private void populateWithTestData() {
 		// Create root elements
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mustermann"), "Max", "5a", new Button(OKAY) }, 1);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Maier"), "Clara", "6b", new Button(OKAY) }, 2);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mustermann"), "Hans", "9c", new Button(OKAY) }, 3);
-		treeTableStudents.addItem(new Object[] { new CheckBox("XYZ"), "BLaa", "7a", new Button(OKAY) }, 4);
+		treeTableStudents.addItem(new Object[] { "Mustermann", "Max", "5a", new CheckBox(OKAY) }, 1);
+		treeTableStudents.addItem(new Object[] { "Maier", "Clara", "6b", new CheckBox(OKAY) }, 2);
+		treeTableStudents.addItem(new Object[] { "Mustermann", "Hans", "9c", new CheckBox(OKAY) }, 3);
+		treeTableStudents.addItem(new Object[] { "XYZ", "BLaa", "7a", new CheckBox(OKAY) }, 4);
 		
 		// Create child elements
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mathe für Anfänger"), null, null, null }, 5);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Deutsch für Anfänger"), null, null, null }, 6);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Englisch für Anfänger"), null, null, null }, 7);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Kochen für Anfänger"), null, null, null }, 8);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mathe für Anfänger"), null, null, null }, 9);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Deutsch für Anfänger"), null, null, null }, 10);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Englisch für Anfänger"), null, null, null }, 11);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Kochen für Anfänger"), null, null, null }, 12);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Mathe für Anfänger") }, 5);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Deutsch für Anfänger") }, 6);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Englisch für Anfänger") }, 7);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Kochen für Anfänger") }, 8);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Mathe für Anfänger") }, 9);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Deutsch für Anfänger") }, 10);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Englisch für Anfänger") }, 11);
+		treeTableStudents.addItem(new Object[] { null, null, null, new CheckBox("Kochen für Anfänger") }, 12);
 		
 		// Build the hierarchy
 		treeTableStudents.setParent(5, 1);
