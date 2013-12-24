@@ -106,6 +106,8 @@ public class MainUI extends ScopedUI {
 			@Override
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
+					gridLayoutRoot.removeAllComponents();
+					gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
 					gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
 					gridLayoutRoot.addComponent(navigationBar, 0, 1);
 					gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
