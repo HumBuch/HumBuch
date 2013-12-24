@@ -7,7 +7,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -18,7 +17,7 @@ import de.dhbw.humbuch.view.components.MultiClassChooser;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 
 
-public class LendingView extends Panel implements View {
+public class LendingView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -6400075534193735694L;
 
@@ -31,7 +30,6 @@ public class LendingView extends Panel implements View {
 	private static final String LAST_NAME = "Nachname";
 	private static final String CLASS = "Klasse";
 
-	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutPopup;
 	private VerticalLayout verticalLayoutPopupFirstColumn;
 	private VerticalLayout verticalLayoutPopupSecondColumn;
@@ -51,9 +49,8 @@ public class LendingView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
-		verticalLayoutContent.setMargin(true);
-		verticalLayoutContent.setSpacing(true);
+		setMargin(true);
+		setSpacing(true);
 
 		horizontalLayoutPopup = new HorizontalLayout();
 		horizontalLayoutPopup.setWidth("300px");
@@ -81,9 +78,6 @@ public class LendingView extends Panel implements View {
 		tableStudents.addContainerProperty("", Button.class, null);
 		tableStudents.addContainerProperty("", Button.class, null);
 		populateWithTestData();
-
-		setSizeFull();
-		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
@@ -98,11 +92,9 @@ public class LendingView extends Panel implements View {
 
 		horizontalLayoutPopup.addComponent(verticalLayoutPopupSecondColumn);
 
-		verticalLayoutContent.addComponent(popupView);
+		addComponent(popupView);
 
-		verticalLayoutContent.addComponent(tableStudents);
-
-		setContent(verticalLayoutContent);
+		addComponent(tableStudents);
 	}
 
 	private void populateWithTestData() {
@@ -129,6 +121,11 @@ public class LendingView extends Panel implements View {
 	public void enter(ViewChangeEvent event) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 
 }

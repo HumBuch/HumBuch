@@ -5,8 +5,10 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -48,6 +50,7 @@ public class MainUI extends ScopedUI {
 	private Header header;
 	private Footer footer;
 	private NavigationBar navigationBar;
+	private Panel panelContent;
 
 	public Navigator navigator;
 	
@@ -56,15 +59,19 @@ public class MainUI extends ScopedUI {
 		
 		gridLayoutRoot = new GridLayout(2,3);
 		verticalLayoutContent = new VerticalLayout();
+		panelContent = new Panel();
 		
 		header = new Header();
 		footer = new Footer();
 		navigationBar = new NavigationBar();
 		
-		verticalLayoutContent.setSizeFull();
+		panelContent.setSizeFull();
+		//verticalLayoutContent.setSizeFull();
 		header.setWidth("100%");
 		footer.setWidth("100%");
 		navigationBar.setWidth("100%");
+		
+		panelContent.setContent(verticalLayoutContent);
 		
 		gridLayoutRoot.setSizeFull();
 		gridLayoutRoot.setRowExpandRatio(1, 1);
@@ -72,7 +79,7 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.setColumnExpandRatio(1, 80);
 		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
-		gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
+		gridLayoutRoot.addComponent(panelContent, 1, 1);
 		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 		
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
@@ -87,6 +94,25 @@ public class MainUI extends ScopedUI {
 		navigator.addView(LENDING_VIEW, lendingView);
 		navigator.addView(RETURN_VIEW, returnView);
 		navigator.addView(IMPORT_VIEW, importView);
+		
+		navigator.addViewChangeListener(new ViewChangeListener() {
+
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+				try {
+				ViewInformation cv = (ViewInformation) event.getNewView();
+				panelContent.setCaption(cv.getTitle());
+				} catch(Exception e) {
+					System.out.println("exception afterViewChange");
+				}
+			}
+			
+		});
 		
 		setContent(gridLayoutRoot);
 	}
