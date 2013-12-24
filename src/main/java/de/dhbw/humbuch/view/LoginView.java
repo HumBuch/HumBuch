@@ -8,9 +8,10 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -24,106 +25,130 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogin;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
+import de.dhbw.humbuch.viewmodel.LoginViewModel.LoginError;
 
-public class LoginView extends CustomComponent implements View {
+public class LoginView extends VerticalLayout implements View {
 
-        private static final long serialVersionUID = 5187769743375079627L;
+	private static final long serialVersionUID = 5187769743375079627L;
 
-        private TextField user;
-        private PasswordField password;
+	private VerticalLayout viewLayout;
+	
+	private TextField username = new TextField("Nutzername:");
+	private PasswordField password = new PasswordField("Passwort:");;
 
-        @BindAction(value = DoLogin.class, source = { "user", "password" })
-        private Button loginButton;
+	@BindAction(value = DoLogin.class, source = { "username", "password" })
+	private Button loginButton = new Button("Login");
 
-        @BindState(IsLoggedIn.class)
-        private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-                        Boolean.class);
+	@BindState(IsLoggedIn.class)
+	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
+			Boolean.class);
+	
+	@BindState(LoginError.class)
+	private BasicState<String> loginError = new BasicState<String>(
+			String.class);
 
-        @Inject
-        public LoginView(ViewModelComposer viewModelComposer,
-                        LoginViewModel loginViewModel) {
-                init();
-                bindViewModel(viewModelComposer, loginViewModel);
-        }
+	@Inject
+	public LoginView(ViewModelComposer viewModelComposer,
+			LoginViewModel loginViewModel) {
+		init();
+		buildLayout();
+		bindViewModel(viewModelComposer, loginViewModel);
+	}
 
-        private void init() {
-                setSizeFull();
+	private void init() {
 
-                // Create the user input field
-                user = new TextField("User:");
-                user.setWidth("300px");
-                user.setRequired(true);
-                user.setInputPrompt("Ihr Nutzername");
-                user.setInvalidAllowed(false);
+		// Create the user input field
+		username.setWidth("300px");
+		username.setRequired(true);
+		username.setInvalidAllowed(false);
 
-                // Create the password input field
-                password = new PasswordField("Password:");
-                password.setWidth("300px");
-                password.setRequired(true);
-                password.setValue("");
-                password.setNullRepresentation("");
+		// Create the password input field
+		password.setWidth("300px");
+		password.setRequired(true);
+		password.setValue("");
+		password.setNullRepresentation("");
+		
+		// Add both to a panel
+		final VerticalLayout loginPanel = new VerticalLayout(username, password, loginButton);
+		loginPanel.setCaption("Bitte melden Sie sich an, um die Anwendung zu nutzen. Name: admin Pw: 1234");
+		loginPanel.setSpacing(true);
+		loginPanel.setMargin(new MarginInfo(true, true, true, false));
+		loginPanel.setSizeUndefined();
 
-                final ShortcutListener enter = new ShortcutListener("Sign In",
-                                KeyCode.ENTER, null) {
+		// The view root layout
+		viewLayout = new VerticalLayout(loginPanel);
+		viewLayout.setSizeFull();
+		viewLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
+		viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
 
-                        private static final long serialVersionUID = 2980349254427801100L;
+		final ShortcutListener enter = new ShortcutListener("Sign In",
+				KeyCode.ENTER, null) {
 
-                        @Override
-                        public void handleAction(Object sender, Object target) {
-                                loginButton.click();
-                        }
-                };
+			private static final long serialVersionUID = 2980349254427801100L;
 
-                // Create login button
-                loginButton = new Button("Login");
-                loginButton.addShortcutListener(enter);
+			@Override
+			public void handleAction(Object sender, Object target) {
+				loginButton.click();
+			}
+		};
 
-                // Add both to a panel
-                VerticalLayout fields = new VerticalLayout(user, password, loginButton);
-                fields.setCaption("Bitte melden Sie sich an, um die Anwendung zu nutzen. Name: admin Pw: 1234");
-                fields.setSpacing(true);
-                fields.setMargin(new MarginInfo(true, true, true, false));
-                fields.setSizeUndefined();
+		// Listeners
+		username.addShortcutListener(enter);
+		password.addShortcutListener(enter);
 
-                // The view root layout
-                VerticalLayout viewLayout = new VerticalLayout(fields);
-                viewLayout.setSizeFull();
-                viewLayout.setComponentAlignment(fields, Alignment.MIDDLE_CENTER);
-                viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
-                setCompositionRoot(viewLayout);
+		// Check for a successful login
+		isLoggedIn.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				if (isLoggedIn.get()) {
 
-                isLoggedIn.addStateChangeListener(new StateChangeListener() {
-                        @Override
-                        public void stateChange(Object arg0) {
-                                if (isLoggedIn.get() == true) {
+					// Navigate to main view
+					if (getUI() != null && getUI().getNavigator() != null) {
+						getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
+					}
+				}
 
-                                        /**
-                                         * TODO: Why is the workaround necessary here? With no
-                                         * if-clause the application would throw a NPE when
-                                         * reloading the page
-                                         */
-                                        // Navigate to main view
-                                        if (getUI() != null && getUI().getNavigator() != null) {
-                                                getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
-                                        }
-                                }
+			}
+		});
+		
+		loginError.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				if (!isLoggedIn.get()) {
+					
+                   if (loginPanel.getComponentCount() > 3) {
+                        // Remove the previous error message
+                        loginPanel.removeComponent(loginPanel.getComponent(3));
+                    }
+					
+					Label error = new Label(loginError.get(), ContentMode.HTML);
+					error.setStyleName("error-box");
+					error.setSizeUndefined();
+					loginPanel.addComponent(error);
+				}
 
-                        }
-                });
-        }
+			}
+		});
+	}
+	
+	private void buildLayout() {
+		setSizeFull();	
+		
+		addComponent(viewLayout);
+	}
 
-        private void bindViewModel(ViewModelComposer viewModelComposer,
-                        Object... viewModels) {
-                try {
-                        viewModelComposer.bind(this, viewModels);
-                } catch (IllegalAccessException | NoSuchElementException
-                                | UnsupportedOperationException e) {
-                        e.printStackTrace();
-                }
-        }
+	private void bindViewModel(ViewModelComposer viewModelComposer,
+			Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+	}
 
-        @Override
-        public void enter(ViewChangeEvent event) {
-                user.focus();
-        }
+	@Override
+	public void enter(ViewChangeEvent event) {
+		username.focus();
+	}
 }

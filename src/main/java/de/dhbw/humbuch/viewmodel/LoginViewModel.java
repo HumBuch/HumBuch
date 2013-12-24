@@ -12,41 +12,52 @@ import de.dhbw.humbuch.model.entity.Student;
 
 public class LoginViewModel {
 
-        public interface IsLoggedIn extends State<Boolean> {
-        }
+	public interface IsLoggedIn extends State<Boolean> {
+	}
+	
+	public interface LoginError extends State<String> {
+	}
 
-        public interface DoLogout extends ActionHandler {
-        }
+	public interface DoLogout extends ActionHandler {
+	}
 
-        public interface DoLogin extends ActionHandler {
-        }
+	public interface DoLogin extends ActionHandler {
+	}
 
-        @Inject
-        private DAO<Student> daoStudent;
+	@Inject
+	private DAO<Student> daoStudent;
 
-        @ProvidesState(IsLoggedIn.class)
-        public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-                        Boolean.class);
+	@ProvidesState(IsLoggedIn.class)
+	public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
+			Boolean.class);
+	
 
-        public LoginViewModel() {
-                isLoggedIn.set(new Boolean(false));
-        }
+	@ProvidesState(LoginError.class)
+	public final BasicState<String> loginError = new BasicState<String>(
+			String.class);
 
-        @HandlesAction(DoLogin.class)
-        public void doLogin(String username, String password) {
-                // loginSuccessful.set(daoStudent.find(1).getFirstname());
+	public LoginViewModel() {
+		isLoggedIn.set(new Boolean(false));
+	}
 
-                if ((username == null) || (password == null)) {
-                        return;
-                } else if (username.equals("admin") && password.equals("1234")) {
-                        isLoggedIn.set(new Boolean(true));
-                }
-        }
+	@HandlesAction(DoLogin.class)
+	public void doLogin(String username, String password) {
+		// loginSuccessful.set(daoStudent.find(1).getFirstname());
 
-        @HandlesAction(DoLogout.class)
-        public void doLogout(Object obj) {
-                isLoggedIn.set(new Boolean(false));
-                System.out.println("LoginViewModel->doLogout()");
-        }
+		if (username.equals("") || password.equals("")) {
+			loginError.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
+			return;
+		} else if (username.equals("admin") && password.equals("1234")) {
+			isLoggedIn.set(new Boolean(true));
+		} else {
+			loginError.set("Username oder Passwort stimmen nicht überein.");
+		}
+	}
+
+	@HandlesAction(DoLogout.class)
+	public void doLogout(Object obj) {
+		isLoggedIn.set(new Boolean(false));
+		System.out.println("LoginViewModel->doLogout()");
+	}
 
 }
