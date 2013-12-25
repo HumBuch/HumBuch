@@ -30,7 +30,7 @@ public class ReturnViewModel {
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	
 	@HandlesAction(GenerateReturnList.class)
-	public void generateRetunList(String studentId) {
+	public void generateReturnList(String studentId) {
 		List<BorrowedMaterial> toReturn = new ArrayList<BorrowedMaterial>();
 
 		Student student = daoStudent.find(Integer.parseInt(studentId));
