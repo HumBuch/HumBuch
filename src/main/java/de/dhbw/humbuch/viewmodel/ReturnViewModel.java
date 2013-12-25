@@ -26,9 +26,6 @@ public class ReturnViewModel {
 	@Inject
 	private DAO<Student> daoStudent;
 	
-	@Inject
-	private DAO<BorrowedMaterial> daoBorrowedMaterial;
-	
 	@HandlesAction(GenerateReturnList.class)
 	public void generateReturnList(String studentId) {
 		List<BorrowedMaterial> toReturn = new ArrayList<BorrowedMaterial>();

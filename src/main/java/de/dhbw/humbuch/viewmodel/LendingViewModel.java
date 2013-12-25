@@ -87,16 +87,21 @@ public class LendingViewModel {
 		Student student = daoStudent.find(studentId);
 		
 		Collection<TeachingMaterial> teachingMerterials = daoTeachingMaterial.findAllWithCriteria(
-				Restrictions.or(
-						Restrictions.and(
-								Restrictions.le("fromGrade", student.getGrade().getGrade())
-								, Restrictions.ge("toGrade", student.getGrade().getGrade())
-								, Restrictions.le("validFrom", new Date())
-								, Restrictions.ge("validUntil", new Date())
-								)
-						, Restrictions.isNull("validUntil")
+				Restrictions.and(
+						Restrictions.le("fromGrade", student.getGrade().getGrade())
+						, Restrictions.ge("toGrade", student.getGrade().getGrade())
+						, Restrictions.le("validFrom", new Date())
+						, Restrictions.or(
+								Restrictions.ge("validUntil", new Date())
+								, Restrictions.isNull("validUntil")
+						)
 				));
 		//TODO: restrictions with TM's term
+		
+		System.out.println("TM size: " + teachingMerterials.size());
+		for (TeachingMaterial teachingMaterial : teachingMerterials) {
+			System.out.println("TM: " + teachingMaterial.getName());
+		}
 		
 		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 		
