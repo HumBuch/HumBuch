@@ -41,6 +41,10 @@ public class BookManagementViewModel {
 
 	@AfterVMBinding
 	private void afterVMBinding() {
+		updateTeachingMaterial();
+	}
+	
+	private void updateTeachingMaterial() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
@@ -60,5 +64,6 @@ public class BookManagementViewModel {
 		} else {
 			daoTeachingMaterial.insert(teachingMaterial);
 		}
+		updateTeachingMaterial();
 	}
 }
