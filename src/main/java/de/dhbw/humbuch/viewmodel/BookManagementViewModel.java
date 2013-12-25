@@ -16,7 +16,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class BookManagementViewModel {
 
-	public interface TeachingMaterials extends State<Set<TeachingMaterial>> {
+	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {
 	}
 
 	public interface DoUpdateTeachingMaterial extends ActionHandler {
