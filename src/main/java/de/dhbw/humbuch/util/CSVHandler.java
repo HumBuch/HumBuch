@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public final class CSVHandler {
 
 		try {
 			//csvReader - separator is ';';
-			CSVReader csvReader = new CSVReader(new FileReader(path), ';', '\'', 0);
+			CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(path), "UTF-8"), ';', '\'', 0);
 
 			Properties csvHeaderProperties = readCSVConfigurationFile();
 
