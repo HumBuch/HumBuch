@@ -1,7 +1,6 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.Collection;
-import java.util.Set;
 
 import com.google.inject.Inject;
 
