@@ -11,6 +11,7 @@ import de.davherrmann.guice.vaadin.UIScoped;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
@@ -29,6 +30,7 @@ public class BasicModule extends ServletModule {
 		serve("/*").with(BasicServlet.class);
 		
 		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
+		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
 		bind(new TypeLiteral<DAO<TeachingMaterial>>() {}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {});
 		bind(new TypeLiteral<DAO<Grade>>() {}).to(new TypeLiteral<DAOImpl<Grade>>() {});
 		
