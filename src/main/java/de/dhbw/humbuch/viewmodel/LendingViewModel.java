@@ -98,11 +98,6 @@ public class LendingViewModel {
 				));
 		//TODO: restrictions with TM's term
 		
-		System.out.println("TM size: " + teachingMerterials.size());
-		for (TeachingMaterial teachingMaterial : teachingMerterials) {
-			System.out.println("TM: " + teachingMaterial.getName());
-		}
-		
 		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 		
 		for(TeachingMaterial teachingMaterial : teachingMerterials) {
