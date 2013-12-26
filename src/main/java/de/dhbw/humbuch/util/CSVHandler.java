@@ -115,7 +115,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
-			csvHeaderProperties.load(new FileInputStream("src/main/resources/csvConfiguration.properties"));
+			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();

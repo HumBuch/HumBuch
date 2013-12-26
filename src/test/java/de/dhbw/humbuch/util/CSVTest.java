@@ -35,6 +35,7 @@ public class CSVTest {
 		assertEquals("Deacon", list.get(1).getFirstname());
 		assertEquals(54321, list.get(1).getPostcode());
 		assertEquals("Herr", list.get(1).getTitle());
+		assertEquals("Example Ave.", list.get(1).getStreet());
 	}
 
 }
