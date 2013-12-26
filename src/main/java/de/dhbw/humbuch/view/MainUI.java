@@ -118,7 +118,7 @@ public class MainUI extends ScopedUI {
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
 					gridLayoutRoot.removeAllComponents();
-					gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
+					gridLayoutRoot.addComponent(panelContent, 1, 1);
 					gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
 					gridLayoutRoot.addComponent(navigationBar, 0, 1);
 					gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
@@ -139,6 +139,7 @@ public class MainUI extends ScopedUI {
 
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
+		navigator.addView(LOGIN_VIEW, loginView);
 		navigator.addView(HOME_VIEW, homeView);
 		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
 		navigator.addView(DUNNING_VIEW, dunningView);
