@@ -42,7 +42,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="studentSubject", joinColumns = @JoinColumn(name="studentId"))
-	@Column(name="profileType")
+	@Column(name="subject")
 	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
 	@OneToOne(fetch=FetchType.LAZY)

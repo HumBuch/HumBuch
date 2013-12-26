@@ -1,5 +1,7 @@
 package de.dhbw.humbuch.view;
 
+import java.util.NoSuchElementException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +19,15 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.guice.vaadin.ScopedUI;
+import de.davherrmann.mvvm.BasicState;
+import de.davherrmann.mvvm.StateChangeListener;
+import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
 import de.dhbw.humbuch.view.components.NavigationBar;
+import de.dhbw.humbuch.viewmodel.LoginViewModel;
+import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 
 
 @Theme("mytheme")
@@ -29,6 +37,7 @@ public class MainUI extends ScopedUI {
 
 	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
+	public static final String LOGIN_VIEW = "login_view";
 	public static final String HOME_VIEW = "home_view";
 	public static final String BOOK_MANAGEMENT_VIEW = "book_management_view";
 	public static final String DUNNING_VIEW = "dunning_view";
@@ -61,6 +70,16 @@ public class MainUI extends ScopedUI {
 
 	public Navigator navigator;
 
+	@BindState(IsLoggedIn.class)
+	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
+			Boolean.class);
+
+	@Inject
+	public MainUI(ViewModelComposer viewModelComposer,
+			LoginViewModel loginViewModel) {
+		bindViewModel(viewModelComposer, loginViewModel);
+	}
+
 	@Override
 	protected void init(VaadinRequest request) {
 
@@ -73,7 +92,6 @@ public class MainUI extends ScopedUI {
 		navigationBar = new NavigationBar();
 
 		panelContent.setSizeFull();
-		//verticalLayoutContent.setSizeFull();
 		header.setWidth("100%");
 		footer.setWidth("100%");
 		navigationBar.setWidth("100%");
@@ -84,11 +102,37 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.setRowExpandRatio(1, 1);
 		gridLayoutRoot.setColumnExpandRatio(0, 20);
 		gridLayoutRoot.setColumnExpandRatio(1, 80);
-		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
-		gridLayoutRoot.addComponent(navigationBar, 0, 1);
-		gridLayoutRoot.addComponent(panelContent, 1, 1);
-		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 
+		gridLayoutRoot.addComponent(panelContent, 1, 1);
+
+		// Hide Menus if not logged in
+		if (isLoggedIn.get()) {
+			gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
+			gridLayoutRoot.addComponent(navigationBar, 0, 1);
+			gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
+		}
+
+		isLoggedIn.addStateChangeListener(new StateChangeListener() {
+
+			@Override
+			public void stateChange(Object arg0) {
+				if (isLoggedIn.get()) {
+					gridLayoutRoot.removeAllComponents();
+					gridLayoutRoot.addComponent(verticalLayoutContent, 1, 1);
+					gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
+					gridLayoutRoot.addComponent(navigationBar, 0, 1);
+					gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
+				}
+				else {
+					// remove Components
+					gridLayoutRoot.removeComponent(header);
+					gridLayoutRoot.removeComponent(navigationBar);
+					gridLayoutRoot.removeComponent(footer);
+				}
+
+			}
+
+		});
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
 
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
@@ -110,6 +154,21 @@ public class MainUI extends ScopedUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
+				boolean isLoginView = event.getNewView() instanceof LoginView;
+
+				if (!isLoggedIn.get() && !isLoginView) {
+					// Redirect to login view always if a user has not yet
+					// logged in
+					getNavigator().navigateTo(MainUI.LOGIN_VIEW);
+					return false;
+
+				}
+				else if (isLoggedIn.get() && isLoginView) {
+					// If someone tries to access to login view while logged in,
+					// then cancel
+					return false;
+				}
+
 				return true;
 			}
 
@@ -130,4 +189,14 @@ public class MainUI extends ScopedUI {
 		setContent(gridLayoutRoot);
 	}
 
+	private void bindViewModel(ViewModelComposer viewModelComposer,
+			Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		}
+		catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+	}
 }

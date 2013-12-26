@@ -46,6 +46,15 @@ public class MVVMConfig {
 					}
 				});
 
+		viewModelComposer.addSourceWrapper(State.class,
+				new SourceWrapper<Object>() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public Object get(Object source) {
+						return ((State<Object>) source).get();
+					}
+				});
+
 		viewModelComposer.addActionWrapper(ValueChangeNotifier.class,
 				new ActionWrapper() {
 					@Override

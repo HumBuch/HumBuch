@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>de.davherrmann</groupId>
 			<artifactId>annoMVVM</artifactId>
-			<version>1.2</version>
+			<version>1.3</version>
 		</dependency>
 		<dependency>
 			<groupId>de.davherrmann</groupId>
@@ -271,7 +271,7 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.8.v20121106</version>
+				<version>8.1.14.v20131031</version>
 				<configuration>
 					<scanIntervalSeconds>1</scanIntervalSeconds>
 				</configuration>
