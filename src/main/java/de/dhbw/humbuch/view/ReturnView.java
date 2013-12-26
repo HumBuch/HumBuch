@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.view.components.EnterDataComponent;
@@ -14,7 +14,7 @@ import de.dhbw.humbuch.view.components.ListSelector;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 
 
-public class ReturnView extends Panel implements View {
+public class ReturnView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -525078997965992622L;
 
@@ -37,9 +37,6 @@ public class ReturnView extends Panel implements View {
 		accordionContent = new Accordion();
 		listSelector = new ListSelector(ListSelector.Process.RETURNING);
 		enterDataComponent = new EnterDataComponent(EnterDataComponent.Process.RETURNING);
-
-		setSizeFull();
-		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
@@ -47,7 +44,7 @@ public class ReturnView extends Panel implements View {
 		accordionContent.addTab(enterDataComponent, ENTER_DATA);
 		accordionContent.setSelectedTab(enterDataComponent);
 
-		setContent(accordionContent);
+		addComponent(accordionContent);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
@@ -65,5 +62,10 @@ public class ReturnView extends Panel implements View {
 	public void enter(ViewChangeEvent event) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }

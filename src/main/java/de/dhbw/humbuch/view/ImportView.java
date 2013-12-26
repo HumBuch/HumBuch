@@ -8,7 +8,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
@@ -17,7 +16,7 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 
 
-public class ImportView extends Panel implements View {
+public class ImportView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -739081142499192817L;
 
@@ -25,7 +24,6 @@ public class ImportView extends Panel implements View {
 	private static final String DESCRIPTION = "Betätigen Sie den Button um Schülerdaten zu importieren.";
 	private static final String IMPORT = "Importieren";
 
-	private VerticalLayout verticalLayoutContent;
 	private Label labelDescription;
 	private Button buttonImport;
 	private Label labelResult;
@@ -38,9 +36,8 @@ public class ImportView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
-		verticalLayoutContent.setMargin(true);
-		verticalLayoutContent.setSpacing(true);
+		setMargin(true);
+		setSpacing(true);
 
 		labelResult = new Label("put result of import here. e.g. 4/5 successfully imported");
 
@@ -50,17 +47,12 @@ public class ImportView extends Panel implements View {
 		buttonImport = new Button(IMPORT);
 		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
 		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
-
-		setSizeFull();
-		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
-		verticalLayoutContent.addComponent(labelDescription);
-		verticalLayoutContent.addComponent(buttonImport);
-		verticalLayoutContent.addComponent(labelResult);
-
-		setContent(verticalLayoutContent);
+		addComponent(labelDescription);
+		addComponent(buttonImport);
+		addComponent(labelResult);
 	}
 
 	@Override
@@ -76,5 +68,10 @@ public class ImportView extends Panel implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }
