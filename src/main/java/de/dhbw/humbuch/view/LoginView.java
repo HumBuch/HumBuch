@@ -27,10 +27,12 @@ import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogin;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.LoginError;
 
-public class LoginView extends VerticalLayout implements View {
+public class LoginView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = 5187769743375079627L;
 
+	private static final String TITLE = "Einloggen";
+	
 	private VerticalLayout viewLayout;
 	
 	private TextField username = new TextField("Nutzername:");
@@ -150,5 +152,10 @@ public class LoginView extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		username.focus();
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }

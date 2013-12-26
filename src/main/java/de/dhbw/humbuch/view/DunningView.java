@@ -7,7 +7,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -16,7 +15,7 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.DunningViewModel;
 
 
-public class DunningView extends Panel implements View {
+public class DunningView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = 1284094636968999625L;
 
@@ -33,7 +32,6 @@ public class DunningView extends Panel implements View {
 	private static final String TABLE_CLASS = "Klasse";
 	private static final String TABLE_TYPE = "Typ";
 
-	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private Button buttonSecondDunning;
 	private Button buttonReturnBook;
@@ -52,7 +50,6 @@ public class DunningView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
 		buttonSecondDunning = new Button(SECOND_DUNNING);
 		buttonReturnBook = new Button(RETURN_BOOK);
@@ -80,26 +77,21 @@ public class DunningView extends Panel implements View {
 		tableSearchResults
 				.addContainerProperty(TABLE_CLASS, String.class, null);
 
-		verticalLayoutContent.setSpacing(true);
-		verticalLayoutContent.setMargin(true);
+		setSpacing(true);
+		setMargin(true);
 
 		horizontalLayoutButtonBar.setSpacing(true);
-
-		setSizeFull();
-		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
 		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
 		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
 		horizontalLayoutButtonBar.addComponent(buttonReturnBook);
-		verticalLayoutContent.addComponent(tableDunnings);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
-		verticalLayoutContent.addComponent(textFieldSearch);
-		verticalLayoutContent.addComponent(tableSearchResults);
-		verticalLayoutContent.addComponent(buttonCreateDunning);
-
-		setContent(verticalLayoutContent);
+		addComponent(tableDunnings);
+		addComponent(horizontalLayoutButtonBar);
+		addComponent(textFieldSearch);
+		addComponent(tableSearchResults);
+		addComponent(buttonCreateDunning);
 	}
 
 	private void fillTableDunnings() {
@@ -140,6 +132,11 @@ public class DunningView extends Panel implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 
 }
