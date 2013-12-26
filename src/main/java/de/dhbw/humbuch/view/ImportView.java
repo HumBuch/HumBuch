@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -13,8 +14,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
+import de.davherrmann.mvvm.BasicState;
+import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindAction;
+import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
+import de.dhbw.humbuch.viewmodel.ImportViewModel.DoImportStudents;
+import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
 
 
 public class ImportView extends Panel implements View {
@@ -27,7 +34,13 @@ public class ImportView extends Panel implements View {
 
 	private VerticalLayout verticalLayoutContent;
 	private Label labelDescription;
-	private Button buttonImport;
+	
+	@BindAction(value = DoImportStudents.class, source = {""})
+	private Button buttonImport = new Button(IMPORT);
+	
+	@BindState(ImportResult.class)
+	private BasicState<String> importResult = new BasicState<String>(String.class);
+	
 	private Label labelResult;
 
 	@Inject
@@ -47,12 +60,19 @@ public class ImportView extends Panel implements View {
 		labelDescription = new Label(DESCRIPTION);
 		labelDescription.setStyleName(Runo.LABEL_H2);
 
-		buttonImport = new Button(IMPORT);
 		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
 		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
 
 		setSizeFull();
 		setCaption(TITLE);
+		
+		
+		importResult.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				labelResult.setCaption("test test");
+			}
+		});
 	}
 
 	private void buildLayout() {
