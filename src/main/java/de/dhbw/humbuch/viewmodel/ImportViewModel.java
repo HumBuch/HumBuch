@@ -17,8 +17,7 @@ public class ImportViewModel {
 	
 	@HandlesAction(DoImportStudents.class)
 	public void doImportStudents(String str){
-		importResult.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
-		return;
+		importResult.set("Test");
 		//System.out.println("In ImportStudentsActionHandler");
 		//Upload upload = new Upload();
 	}

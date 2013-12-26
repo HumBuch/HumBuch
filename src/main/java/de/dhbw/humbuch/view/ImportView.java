@@ -70,7 +70,12 @@ public class ImportView extends Panel implements View {
 		importResult.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
-				labelResult.setCaption("test test");
+				labelResult.setCaption(importResult.get());
+				
+				Label error = new Label(importResult.get(), ContentMode.HTML);
+				error.setStyleName("error-box");
+				error.setSizeUndefined();
+				verticalLayoutContent.addComponent(error);
 			}
 		});
 	}
