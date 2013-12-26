@@ -1,7 +1,7 @@
 package de.dhbw.humbuch.model.entity;
 
 import java.util.Date;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -27,11 +27,11 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@JoinColumn(name="categoryId", referencedColumnName="id")
 	private Category category;
 	
-	@ElementCollection(targetClass=ProfileType.class)
+	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(name="teachingMaterialProfile", joinColumns = @JoinColumn(name="teachingMaterialId"))
-	@Column(name="profileType")
-	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
+	@CollectionTable(name="teachingMaterialSubject", joinColumns = @JoinColumn(name="teachingMaterialId"))
+	@Column(name="subject")
+	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
 	private String name;
 	private String producer;
@@ -152,12 +152,12 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.validUntil = validUntil;
 	}
 
-	public Set<ProfileType> getProfileTypes() {
-		return profileTypes;
+	public Set<Subject> getProfile() {
+		return profile;
 	}
 
-	public void setProfileTypes(Set<ProfileType> profileTypes) {
-		this.profileTypes = profileTypes;
+	public void setProfile(Set<Subject> profile) {
+		this.profile = profile;
 	}
 
 	public static class Builder {
@@ -166,6 +166,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		private final String identifyingNumber;
 		private final Date validFrom;
 		
+		private Set<Subject> profile;
 		private String producer;
 		private double price;
 		private String comment;
@@ -180,6 +181,11 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 			this.name = name;
 			this.identifyingNumber = identifyingNumber;
 			this.validFrom = validFrom;
+		}
+		
+		public Builder profile(Set<Subject> profile) {
+			this.profile = profile;
+			return this;
 		}
 		
 		public Builder producer(String producer) {
@@ -233,6 +239,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 		this.identifyingNumber = builder.identifyingNumber;
 		this.validFrom = builder.validFrom;
 		
+		this.profile = builder.profile;
 		this.producer = builder.producer;
 		this.price = builder.price;
 		this.comment = builder.comment;

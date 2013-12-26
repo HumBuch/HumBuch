@@ -2,7 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,15 +34,16 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	private String firstname;
 	private Date birthday;
 	private String gender;
+	private boolean leavingSchool;
 	
 	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
 	private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
 
-	@ElementCollection(targetClass=ProfileType.class)
+	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(name="studentProfile", joinColumns = @JoinColumn(name="studentId"))
-	@Column(name="profileType")
-	private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
+	@CollectionTable(name="studentSubject", joinColumns = @JoinColumn(name="studentId"))
+	@Column(name="subject")
+	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
 	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="parentId")
@@ -114,15 +115,24 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		this.borrowedList = borrowedList;
 	}
 
-	public Set<ProfileType> getProfileTypes() {
-		return profileTypes;
+	public Set<Subject> getProfile() {
+		return profile;
 	}
 
-	public void setProfileTypes(Set<ProfileType> profileTypes) {
-		this.profileTypes = profileTypes;
+	public void setProfile(Set<Subject> profile) {
+		this.profile = profile;
 	}
 	
+	public boolean isLeavingSchool() {
+		return leavingSchool;
+	}
+
+	public void setLeavingSchool(boolean leavingSchool) {
+		this.leavingSchool = leavingSchool;
+	}
+
 	public static class Builder {
+		private final int id;
 		private final String firstname;
 		private final String lastname;
 		private final Date birthday;
@@ -130,10 +140,11 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		
 		private String gender;
 		private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
-		private Set<ProfileType> profileTypes = new HashSet<ProfileType>();
+		private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 		private Parent parent;
 		
-		public Builder(String firstname, String lastname, Date birthday, Grade grade) {
+		public Builder(int id, String firstname, String lastname, Date birthday, Grade grade) {
+			this.id = id;
 			this.firstname = firstname;
 			this.lastname = lastname;
 			this.birthday = birthday;
@@ -150,8 +161,8 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 			return this;
 		}
 		
-		public Builder profileTypes(Set<ProfileType> profileTypes) {
-			this.profileTypes = profileTypes;
+		public Builder profile(Set<Subject> profile) {
+			this.profile = profile;
 			return this;
 		}
 		
@@ -166,6 +177,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	}
 	
 	private Student(Builder builder) {
+		id = builder.id;
 		firstname = builder.firstname;
 		lastname = builder.lastname;
 		birthday = builder.birthday;
@@ -173,7 +185,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		
 		gender = builder.gender;
 		borrowedList = builder.borrowedList;
-		profileTypes = builder.profileTypes;
+		profile = builder.profile;
 		parent = builder.parent;
 	}
 

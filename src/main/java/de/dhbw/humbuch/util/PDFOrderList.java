@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.pdfExport;
+package de.dhbw.humbuch.util;
 
 import java.util.ArrayList;
 
@@ -7,10 +7,10 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
-public final class MyPDFOrderList extends MyPDFHandler {
+public final class PDFOrderList extends PDFHandler {
 //	private ArrayList orderList;
 	
-	public MyPDFOrderList(String path, ArrayList orderList){
+	public PDFOrderList(String path, ArrayList orderList){
 		super(path);
 	}
 	

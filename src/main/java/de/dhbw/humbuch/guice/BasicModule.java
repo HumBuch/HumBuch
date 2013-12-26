@@ -11,12 +11,13 @@ import de.davherrmann.guice.vaadin.UIScoped;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.ui.NavigationUI;
-import de.dhbw.humbuch.ui.screens.HomeScreen;
-import de.dhbw.humbuch.view.BasicUI;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.view.LoginView;
 import de.dhbw.humbuch.view.MVVMConfig;
+import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 
 public class BasicModule extends ServletModule {
@@ -29,23 +30,23 @@ public class BasicModule extends ServletModule {
 		serve("/*").with(BasicServlet.class);
 		
 		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
+		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
+		bind(new TypeLiteral<DAO<TeachingMaterial>>() {}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {});
+		bind(new TypeLiteral<DAO<Grade>>() {}).to(new TypeLiteral<DAOImpl<Grade>>() {});
 		
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
 		
-		//bind(LoginViewModel.class).in(UIScoped.class);
+		bind(LoginViewModel.class).in(UIScoped.class);
 		
-		bind(HomeScreen.class);
-//		bind(LoginView.class);
+		bind(LoginView.class);
 		
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
-		mapbinder.addBinding(NavigationUI.class.getName()).to(NavigationUI.class);
-//		mapbinder.addBinding(BasicUI.class.getName()).to(BasicUI.class);
+		mapbinder.addBinding(MainUI.class.getName()).to(MainUI.class);
 	}
 
 	@Provides
 	private Class<? extends UI> provideUIClass() {
-//		return BasicUI.class;
-		return NavigationUI.class;
+		return MainUI.class;
 	}
 }

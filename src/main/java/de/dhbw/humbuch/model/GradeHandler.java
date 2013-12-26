@@ -7,16 +7,7 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 
-public class GradeHandler {
-	public static Grade createGrade(int grade, String suffix, String teacher){
-		Grade g = new Grade();
-		g.setGrade(grade);
-		g.setSuffix(suffix);
-		g.setTeacher(teacher);
-		
-		return g;
-	}
-	
+public class GradeHandler {	
 	public static String getFullGrade(Grade grade){
 		return grade.getGrade() + grade.getSuffix();
 	}
