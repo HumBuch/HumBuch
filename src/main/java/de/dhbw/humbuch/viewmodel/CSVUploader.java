@@ -11,6 +11,8 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import com.vaadin.ui.Upload;
 
+import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
 
@@ -56,6 +58,22 @@ public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, U
       public void uploadSucceeded(Upload.SucceededEvent event) {
           // Log the upload on screen.
       	ArrayList<Student> studentList = CSVHandler.createStudentObjectsFromCSV(csvReader);
+      	DAO<Student> daoStudent = this.importViewModel.getDAOStudent();
+      	DAO<Grade> daoGrade = this.importViewModel.getDAOGrade();
+      	Grade grade = daoGrade.find(1);
+      	System.out.println(grade);
+      	int i = 4;
+      	for(Student student : studentList){
+//      		student.setGrade(grade);
+//      		student.setBorrowedList(null);
+//      		student.setParent(null);
+//      		student.setProfile(null);
+//      		student.setId(i);
+//      		daoStudent.insert(student);
+      		student.getGrade().setId(i);
+      		daoGrade.insert(student.getGrade());
+      		i++;
+      	}
       	System.out.println("MyStudentList:" + studentList);
       	this.importViewModel.setImportResult("Success");
       }

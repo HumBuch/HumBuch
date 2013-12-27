@@ -1,9 +1,7 @@
 package de.dhbw.humbuch.util;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,8 +20,8 @@ import au.com.bytecode.opencsv.CSVReader;
 import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
-import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.Subject;
 
 
 public final class CSVHandler {
