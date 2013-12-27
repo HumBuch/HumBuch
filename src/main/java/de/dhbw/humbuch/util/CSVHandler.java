@@ -225,7 +225,7 @@ public final class CSVHandler {
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
 		
-		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).build();
+		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).leavingSchool(false).build();
 	}
 	
 	/**

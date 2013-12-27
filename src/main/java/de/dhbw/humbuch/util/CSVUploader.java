@@ -60,7 +60,7 @@ public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, U
       	ArrayList<Student> studentList = CSVHandler.createStudentObjectsFromCSV(csvReader);
       	
       	StudentPersistenceHandler.persistStudents(studentList, 
-      			this.importViewModel.getDAOStudent(), this.importViewModel.getDAOGrade());
+      			this.importViewModel.getDAOStudent(), this.importViewModel.getDAOGrade(), this.importViewModel.getDAOParent());
  //     	DAO<Student> daoStudent = this.importViewModel.getDAOStudent();
 //      	DAO<Grade> daoGrade = this.importViewModel.getDAOGrade();
 //

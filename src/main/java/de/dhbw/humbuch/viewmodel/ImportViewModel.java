@@ -10,6 +10,7 @@ import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 
 public class ImportViewModel {
@@ -24,6 +25,7 @@ public class ImportViewModel {
 	
 	private DAO<Student> daoStudent;
 	private DAO<Grade> daoGrade;
+	private DAO<Parent> daoParent;
 
 	/**
 	 * Constructor
@@ -32,9 +34,10 @@ public class ImportViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public ImportViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade) {
+	public ImportViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;
+		this.daoParent = daoParent;
 	}
 	
 	@HandlesAction(DoImportStudents.class)
@@ -48,6 +51,10 @@ public class ImportViewModel {
 	
 	public DAO<Grade> getDAOGrade(){
 		return this.daoGrade;
+	}
+	
+	public DAO<Parent> getDAOParent(){
+		return this.daoParent;
 	}
 	
 	public void setImportResult(String importResult){
