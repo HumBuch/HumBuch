@@ -1,7 +1,9 @@
 package de.dhbw.humbuch.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,6 +42,53 @@ public final class CSVHandler {
 		try {
 			//csvReader - separator is ';';
 			CSVReader csvReader = new CSVReader(new FileReader(path), ';', '\'', 0);
+
+			Properties csvHeaderProperties = readCSVConfigurationFile();
+
+			List<String[]> allRecords = csvReader.readAll();
+			Iterator<String[]> allRecordsIterator = allRecords.iterator();
+			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
+
+			if(allRecordsIterator.hasNext()) {
+				String[] headerRecord = allRecordsIterator.next();
+	
+				for (int i = 0; i < headerRecord.length; i++) {
+					headerIndexMap.put(headerRecord[i], i);
+				}
+			}
+
+			while (allRecordsIterator.hasNext()) {
+				String[] record = allRecordsIterator.next();
+
+				Student student = createStudentObject(record, csvHeaderProperties, headerIndexMap);
+				if(student != null){
+					studentArrayList.add(student);
+				}				
+			}
+
+			csvReader.close();
+		}
+		catch (IOException e) {
+			System.err.println("Could not read student's csv records. " + e.getStackTrace());
+		}
+
+		return studentArrayList;
+	}
+	
+	/**
+	 * Reads a csv file and creates student objects of it's records.
+	 * 
+	 * @param path
+	 *            a path to the csv which contains information about students
+	 * @return an ArrayList that contains student objects
+	 * @see ArrayList
+	 */
+	public static ArrayList<Student> createStudentObjectsFromCSV(CSVReader csvReaderParam) {
+		ArrayList<Student> studentArrayList = new ArrayList<Student>();
+
+		try {
+			//csvReader - separator is ';';
+			CSVReader csvReader = csvReaderParam;
 
 			Properties csvHeaderProperties = readCSVConfigurationFile();
 

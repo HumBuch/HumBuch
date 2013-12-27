@@ -10,6 +10,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
@@ -19,10 +20,11 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.viewmodel.CSVUploader;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.DoImportStudents;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
-
+import de.dhbw.humbuch.viewmodel.ImportViewModel.UploadButton;
 
 public class ImportView extends Panel implements View {
 
@@ -35,16 +37,23 @@ public class ImportView extends Panel implements View {
 	private VerticalLayout verticalLayoutContent;
 	private Label labelDescription;
 	
-	@BindAction(value = DoImportStudents.class, source = {""})
+	@BindAction(value = DoImportStudents.class)
 	private Button buttonImport = new Button(IMPORT);
 	
 	@BindState(ImportResult.class)
 	private BasicState<String> importResult = new BasicState<String>(String.class);
 	
+//	@BindState(UploadButton.class)
+//	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
+	private Upload uploadButton;
+	private CSVUploader csvUploader;
+	
+	
 	private Label labelResult;
 
 	@Inject
 	public ImportView(ViewModelComposer viewModelComposer, ImportViewModel importViewModel) {
+		this.csvUploader = new CSVUploader(importViewModel);
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, importViewModel);
@@ -62,20 +71,18 @@ public class ImportView extends Panel implements View {
 
 		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
 		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
+		
+		uploadButton = new Upload("Upload the file here", this.csvUploader);
+		uploadButton.addSucceededListener(this.csvUploader);
+		uploadButton.addFailedListener(this.csvUploader);
 
 		setSizeFull();
 		setCaption(TITLE);
-		
-		
+				
 		importResult.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
 				labelResult.setCaption(importResult.get());
-				
-				Label error = new Label(importResult.get(), ContentMode.HTML);
-				error.setStyleName("error-box");
-				error.setSizeUndefined();
-				verticalLayoutContent.addComponent(error);
 			}
 		});
 	}
@@ -84,6 +91,7 @@ public class ImportView extends Panel implements View {
 		verticalLayoutContent.addComponent(labelDescription);
 		verticalLayoutContent.addComponent(buttonImport);
 		verticalLayoutContent.addComponent(labelResult);
+		verticalLayoutContent.addComponent(uploadButton);
 
 		setContent(verticalLayoutContent);
 	}
