@@ -6,8 +6,9 @@ import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Upload;
@@ -18,13 +19,10 @@ import com.vaadin.ui.themes.Runo;
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
-import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
-import de.dhbw.humbuch.viewmodel.CSVUploader;
+import de.dhbw.humbuch.util.CSVUploader;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
-import de.dhbw.humbuch.viewmodel.ImportViewModel.DoImportStudents;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
-import de.dhbw.humbuch.viewmodel.ImportViewModel.UploadButton;
 
 public class ImportView extends Panel implements View {
 
@@ -37,9 +35,6 @@ public class ImportView extends Panel implements View {
 	private VerticalLayout verticalLayoutContent;
 	private Label labelDescription;
 	
-	@BindAction(value = DoImportStudents.class)
-	private Button buttonImport = new Button(IMPORT);
-	
 	@BindState(ImportResult.class)
 	private BasicState<String> importResult = new BasicState<String>(String.class);
 	
@@ -47,7 +42,9 @@ public class ImportView extends Panel implements View {
 //	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
 	private Upload uploadButton;
 	private CSVUploader csvUploader;
-	
+		
+	//@BindAction(value = DoImportStudents.class, source = { "uploadButton" })
+	private Button buttonImport = new Button(IMPORT);
 	
 	private Label labelResult;
 
@@ -71,10 +68,20 @@ public class ImportView extends Panel implements View {
 
 		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
 		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
+		buttonImport.addClickListener(new ClickListener() {
+			
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				uploadButton.submitUpload();
+			}
+		});
 		
-		uploadButton = new Upload("Upload the file here", this.csvUploader);
+		uploadButton = new Upload(null, this.csvUploader);
 		uploadButton.addSucceededListener(this.csvUploader);
 		uploadButton.addFailedListener(this.csvUploader);
+		uploadButton.setButtonCaption(null);
 
 		setSizeFull();
 		setCaption(TITLE);

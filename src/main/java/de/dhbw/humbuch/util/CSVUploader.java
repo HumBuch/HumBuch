@@ -1,4 +1,4 @@
-package de.dhbw.humbuch.viewmodel;
+package de.dhbw.humbuch.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import com.vaadin.ui.Upload;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.util.CSVHandler;
+import de.dhbw.humbuch.viewmodel.ImportViewModel;
 
 
 public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, Upload.FailedListener {
@@ -58,12 +58,12 @@ public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, U
       public void uploadSucceeded(Upload.SucceededEvent event) {
           // Log the upload on screen.
       	ArrayList<Student> studentList = CSVHandler.createStudentObjectsFromCSV(csvReader);
-      	DAO<Student> daoStudent = this.importViewModel.getDAOStudent();
+ //     	DAO<Student> daoStudent = this.importViewModel.getDAOStudent();
       	DAO<Grade> daoGrade = this.importViewModel.getDAOGrade();
-      	Grade grade = daoGrade.find(1);
-      	System.out.println(grade);
-      	int i = 4;
+
+      	int i = 3;
       	for(Student student : studentList){
+      		//TODO: implement correct student persistance
 //      		student.setGrade(grade);
 //      		student.setBorrowedList(null);
 //      		student.setParent(null);
@@ -74,7 +74,6 @@ public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, U
       		daoGrade.insert(student.getGrade());
       		i++;
       	}
-      	System.out.println("MyStudentList:" + studentList);
       	this.importViewModel.setImportResult("Success");
       }
 

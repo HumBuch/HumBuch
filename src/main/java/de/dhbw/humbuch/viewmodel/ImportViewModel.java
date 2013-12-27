@@ -15,16 +15,12 @@ import de.dhbw.humbuch.model.entity.Student;
 public class ImportViewModel {
 
 	public interface ImportResult extends State<String> {}
-	
-	public interface UploadButton extends State<Upload> {}
-	
+		
 	public interface DoImportStudents extends ActionHandler {}
 	
 	@ProvidesState(ImportResult.class)
 	public final BasicState<String> importResult = new BasicState<String>(String.class);
-	
-	@ProvidesState(UploadButton.class)
-	private BasicState<Upload> uploadPanel = new BasicState<Upload>(Upload.class);
+
 	
 	private DAO<Student> daoStudent;
 	private DAO<Grade> daoGrade;
@@ -42,9 +38,8 @@ public class ImportViewModel {
 	}
 	
 	@HandlesAction(DoImportStudents.class)
-	public void doImportStudents(String str){
-	
-
+	public void doImportStudents(Upload upload){
+		upload.startUpload();
 	}
 	
 	public DAO<Student> getDAOStudent(){
