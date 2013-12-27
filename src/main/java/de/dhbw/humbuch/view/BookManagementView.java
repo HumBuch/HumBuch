@@ -9,7 +9,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -18,7 +17,7 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
 
 
-public class BookManagementView extends Panel implements View {
+public class BookManagementView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -5063268947544706757L;
 
@@ -30,7 +29,6 @@ public class BookManagementView extends Panel implements View {
 	private static final String TABLE_PUBLISHER = "Verlag";
 	private static final String TABLE_CLASS = "Klassenstufe";
 
-	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private TextField textFieldSearchBar;
 	private Table tableBooks;
@@ -46,10 +44,9 @@ public class BookManagementView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
 
-		verticalLayoutContent.setMargin(true);
+		setMargin(true);
 
 		buttonNewBook = new Button(NEW_BOOK);
 		buttonEditBook = new Button(EDIT_BOOK);
@@ -63,9 +60,6 @@ public class BookManagementView extends Panel implements View {
 		tableBooks.addContainerProperty(TABLE_CLASS, String.class, null);
 		tableBooks.addContainerProperty(TABLE_PUBLISHER, String.class, null);
 		populateTableWithTestData();
-
-		setSizeFull();
-		setCaption(TITLE);
 	}
 
 	private void buildLayout() {
@@ -76,11 +70,9 @@ public class BookManagementView extends Panel implements View {
 		horizontalLayoutButtonBar.setComponentAlignment(buttonEditBook,
 				Alignment.MIDDLE_RIGHT);
 
-		verticalLayoutContent.addComponent(textFieldSearchBar);
-		verticalLayoutContent.addComponent(tableBooks);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
-
-		setContent(verticalLayoutContent);
+		addComponent(textFieldSearchBar);
+		addComponent(tableBooks);
+		addComponent(horizontalLayoutButtonBar);
 	}
 
 	private void populateTableWithTestData() {
@@ -107,5 +99,10 @@ public class BookManagementView extends Panel implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }
