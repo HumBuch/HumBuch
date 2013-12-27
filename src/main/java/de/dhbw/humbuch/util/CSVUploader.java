@@ -58,22 +58,26 @@ public class CSVUploader implements Upload.Receiver, Upload.SucceededListener, U
       public void uploadSucceeded(Upload.SucceededEvent event) {
           // Log the upload on screen.
       	ArrayList<Student> studentList = CSVHandler.createStudentObjectsFromCSV(csvReader);
+      	
+      	StudentPersistenceHandler.persistStudents(studentList, 
+      			this.importViewModel.getDAOStudent(), this.importViewModel.getDAOGrade());
  //     	DAO<Student> daoStudent = this.importViewModel.getDAOStudent();
-      	DAO<Grade> daoGrade = this.importViewModel.getDAOGrade();
-
-      	int i = 3;
-      	for(Student student : studentList){
-      		//TODO: implement correct student persistance
-//      		student.setGrade(grade);
-//      		student.setBorrowedList(null);
-//      		student.setParent(null);
-//      		student.setProfile(null);
-//      		student.setId(i);
-//      		daoStudent.insert(student);
-      		student.getGrade().setId(i);
-      		daoGrade.insert(student.getGrade());
-      		i++;
-      	}
+//      	DAO<Grade> daoGrade = this.importViewModel.getDAOGrade();
+//
+//      	int i = 3;
+//      	for(Student student : studentList){
+//      		//TODO: implement correct student persistance
+////      		student.setGrade(grade);
+////      		student.setBorrowedList(null);
+////      		student.setParent(null);
+////      		student.setProfile(null);
+////      		student.setId(i);
+////      		daoStudent.insert(student);
+////      		student.getGrade().setId(i);
+////      		daoGrade.insert(student.getGrade());
+////      		i++;
+//      		
+//      	}
       	this.importViewModel.setImportResult("Success");
       }
 
