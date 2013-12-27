@@ -142,6 +142,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
 		private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 		private Parent parent;
+		private boolean leavingSchool;
 		
 		public Builder(int id, String firstname, String lastname, Date birthday, Grade grade) {
 			this.id = id;
@@ -171,6 +172,11 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 			return this;
 		}
 		
+		public Builder leavingSchool(boolean leavingSchool){
+			this.leavingSchool = leavingSchool;
+			return this;
+		}
+		
 		public Student build() {
 			return new Student(this);
 		}
@@ -182,11 +188,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		lastname = builder.lastname;
 		birthday = builder.birthday;
 		grade = builder.grade;
+		leavingSchool = builder.leavingSchool;
 		
 		gender = builder.gender;
 		borrowedList = builder.borrowedList;
 		profile = builder.profile;
 		parent = builder.parent;
+		
 	}
 
 	@Override
