@@ -39,7 +39,7 @@ public class ImportViewModel {
 	
 	@HandlesAction(DoImportStudents.class)
 	public void doImportStudents(Upload upload){
-		upload.startUpload();
+		
 	}
 	
 	public DAO<Student> getDAOStudent(){
