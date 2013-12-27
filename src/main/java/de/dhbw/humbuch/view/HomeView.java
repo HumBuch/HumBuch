@@ -7,21 +7,19 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.HomeViewModel;
 
 
-public class HomeView extends Panel implements View {
+public class HomeView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = 2068213441417298070L;
 
 	private static final String TITLE = "Aufgaben Verwaltung";
 
 	private Button button;
-	private VerticalLayout verticalLayoutContent;
 
 	@Inject
 	public HomeView(ViewModelComposer viewModelComposer, HomeViewModel homeViewModel) {
@@ -42,18 +40,12 @@ public class HomeView extends Panel implements View {
 			}
 		});
 
-		verticalLayoutContent = new VerticalLayout();
-		verticalLayoutContent.setSpacing(true);
-		verticalLayoutContent.setMargin(true);
-
-		setSizeFull();
-		setCaption(TITLE);
+		setSpacing(true);
+		setMargin(true);
 	}
 
 	private void buildLayout() {
-		verticalLayoutContent.addComponent(button);
-
-		setContent(verticalLayoutContent);
+		addComponent(button);
 	}
 
 	@Override
@@ -69,5 +61,10 @@ public class HomeView extends Panel implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }

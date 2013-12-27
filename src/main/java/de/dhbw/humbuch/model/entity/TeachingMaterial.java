@@ -30,7 +30,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="teachingMaterialSubject", joinColumns = @JoinColumn(name="teachingMaterialId"))
-	@Column(name="profileType")
+	@Column(name="subject")
 	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
 	private String name;
