@@ -15,9 +15,11 @@ import com.google.inject.Inject;
 import de.davherrmann.mvvm.ActionHandler;
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
+import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
@@ -28,25 +30,56 @@ public class LendingViewModel {
 	
 	public interface LendingListStudent extends State<List<TeachingMaterial>> {};
 	public interface LendingListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
-	
+	public interface Students extends State<Collection<Student>> {};
+	public interface Grades extends State<Collection<Grade>> {};
+
 	@ProvidesState(LendingListStudent.class)
 	public BasicState<List<TeachingMaterial>> lendingListStudent = new BasicState<>(List.class);
 	
 	@ProvidesState(LendingListGrades.class)
 	public BasicState<Map<Grade, Map<TeachingMaterial, Integer>>> lendingListGrades = new BasicState<>(Map.class);
 
-	@Inject
+	@ProvidesState(Students.class)
+	public BasicState<Collection<Student>> students = new BasicState<>(Collection.class);
+	
+	@ProvidesState(Grades.class)
+	public BasicState<Collection<Grade>> grades = new BasicState<>(Collection.class);
+	
 	private DAO<Student> daoStudent;
+	private DAO<TeachingMaterial> daoTeachingMaterial;
+	private DAO<Grade> daoGrade;
 	
 	@Inject
-	private DAO<TeachingMaterial> daoTeachingMaterial;
+	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade) {
+		this.daoStudent = daoStudent;
+		this.daoTeachingMaterial = daoTeachingMaterial;
+		this.daoGrade = daoGrade;
+	}
+	
+	@AfterVMBinding
+	private void afterVMBinding() {
+		updateStudents();
+		updateGrades();
+	}
+	
+	private void updateStudents() {
+		students.set(daoStudent.findAll());
+	}
+	
+	private void updateGrades() {
+		grades.set(daoGrade.findAll());
+	}
 	
 	@HandlesAction(GenerateStudentLendingList.class)
 	public void generateStudentLendingList(String studentId) {
-		lendingListStudent.set(getStudentLendingList(Integer.parseInt(studentId)));
+		Student student = daoStudent.find(Integer.parseInt(studentId));
+		
+		List<TeachingMaterial> studentLendingList = getStudentLendingList(student);
+		
+		persistBorrowedMaterial(student, studentLendingList);
+		lendingListStudent.set(studentLendingList);
 	}
 	
-	//TODO: refactor both getLending methods --> same name, different parameter	
 	@HandlesAction(GenerateGradeLendingList.class)
 	public void generateGradeLendingList(State<Set<Grade>> selectedGrades) {
 		Map<Grade, Map<TeachingMaterial, Integer>> toLend = new LinkedHashMap<Grade, Map<TeachingMaterial, Integer>>();
@@ -55,7 +88,7 @@ public class LendingViewModel {
 			Map<TeachingMaterial, Integer> gradeList = new LinkedHashMap<TeachingMaterial, Integer>();
 			
 			for(Student student : grade.getStudents()) {
-				List<TeachingMaterial> studentLendingList = getStudentLendingList(student.getId());
+				List<TeachingMaterial> studentLendingList = getStudentLendingList(student);
 				
 				for (TeachingMaterial teachingMaterial : studentLendingList) {
 					if(gradeList.containsKey(teachingMaterial)) {
@@ -83,8 +116,7 @@ public class LendingViewModel {
 		lendingListGrades.set(toLend);
 	}
 
-	private List<TeachingMaterial> getStudentLendingList(int studentId) {
-		Student student = daoStudent.find(studentId);
+	private List<TeachingMaterial> getStudentLendingList(Student student) {
 		
 		Collection<TeachingMaterial> teachingMerterials = daoTeachingMaterial.findAllWithCriteria(
 				Restrictions.and(
@@ -97,17 +129,31 @@ public class LendingViewModel {
 						)
 				));
 		//TODO: restrictions with TM's term
-		
+
+		List<TeachingMaterial> owningTeachingMaterial = getOwningTeachingMaterial(student);
 		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 		
 		for(TeachingMaterial teachingMaterial : teachingMerterials) {
-			if(student.getProfile().containsAll(teachingMaterial.getProfile())) {
+			if(student.getProfile().containsAll(teachingMaterial.getProfile())
+					&& !owningTeachingMaterial.contains(teachingMaterial)) {
 				toLend.add(teachingMaterial);
 			}
 		}
-		
+
 		lendingListStudent.set(toLend);
 		return toLend;
+	}
+	
+	private void persistBorrowedMaterial(Student student, List<TeachingMaterial> teachingMaterials) {
+		
+	}
+	
+	private List<TeachingMaterial> getOwningTeachingMaterial(Student student) {
+		List<TeachingMaterial> owning = new ArrayList<TeachingMaterial>();
+		for(BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
+			owning.add(borrowedMaterial.getTeachingMaterial());
+		}
+		return owning;
 	}
 }
 
