@@ -99,7 +99,10 @@ public abstract class PDFHandler {
 		ByteArrayOutputStream byteArrayOutputStream;
 		try {
 			byteArrayOutputStream = new ByteArrayOutputStream();
-			PdfWriter.getInstance(document, byteArrayOutputStream);
+			PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
+			HeaderFooter event = new HeaderFooter();
+			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
+			writer.setPageEvent(event);
 
 			this.document.open();
 			this.addMetaData(document);
