@@ -10,6 +10,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 
 public class FilterSearchBar extends CustomComponent {
@@ -47,8 +48,11 @@ public class FilterSearchBar extends CustomComponent {
 		verticalLayoutContent.setSpacing(true);
 		horizontalLayoutSearchBar.setWidth("100%");
 		horizontalLayoutSearchBar.setSpacing(true);
+		
 		horizontalLayoutFilter.setWidth("100%");
 		horizontalLayoutFilter.setSpacing(true);
+		horizontalLayoutFilter.setStyleName("filter_background");
+		
 
 		textFieldSearchBar.setWidth("100%");
 		buttonSearch.setWidth("100%");
