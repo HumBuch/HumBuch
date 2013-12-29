@@ -25,11 +25,14 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class LendingViewModel {
+
 	public interface GenerateStudentLendingList extends ActionHandler {}
 	public interface GenerateGradeLendingList extends ActionHandler {};
+	public interface GetStudentsBorrowedMaterial extends ActionHandler {};
 	
 	public interface LendingListStudent extends State<List<TeachingMaterial>> {};
 	public interface LendingListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
+	public interface StudentBorrowedMaterials extends State<List<BorrowedMaterial>> {};
 	public interface Students extends State<Collection<Student>> {};
 	public interface Grades extends State<Collection<Grade>> {};
 
@@ -39,21 +42,26 @@ public class LendingViewModel {
 	@ProvidesState(LendingListGrades.class)
 	public BasicState<Map<Grade, Map<TeachingMaterial, Integer>>> lendingListGrades = new BasicState<>(Map.class);
 
+	@ProvidesState(StudentBorrowedMaterials.class)
+	public BasicState<List<BorrowedMaterial>> studentBorrowedMaterials = new BasicState<>(List.class);
+	
 	@ProvidesState(Students.class)
 	public BasicState<Collection<Student>> students = new BasicState<>(Collection.class);
 	
 	@ProvidesState(Grades.class)
 	public BasicState<Collection<Grade>> grades = new BasicState<>(Collection.class);
 	
+	private DAO<Grade> daoGrade;
 	private DAO<Student> daoStudent;
 	private DAO<TeachingMaterial> daoTeachingMaterial;
-	private DAO<Grade> daoGrade;
+	private DAO<BorrowedMaterial> daoBorrowedMaterial; 
 	
 	@Inject
-	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade) {
+	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial) {
 		this.daoStudent = daoStudent;
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoGrade = daoGrade;
+		this.daoBorrowedMaterial = daoBorrowedMaterial;
 	}
 	
 	@AfterVMBinding
@@ -115,6 +123,12 @@ public class LendingViewModel {
 		
 		lendingListGrades.set(toLend);
 	}
+	
+	@HandlesAction(GetStudentsBorrowedMaterial.class)
+	public void getStudentBorrowedMaterials(String studentId) {
+		Student student = daoStudent.find(Integer.parseInt(studentId));
+		studentBorrowedMaterials.set(student.getBorrowedList());
+	}
 
 	private List<TeachingMaterial> getStudentLendingList(Student student) {
 		
@@ -145,7 +159,10 @@ public class LendingViewModel {
 	}
 	
 	private void persistBorrowedMaterial(Student student, List<TeachingMaterial> teachingMaterials) {
-		
+		for (TeachingMaterial teachingMaterial : teachingMaterials) {
+			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
+			daoBorrowedMaterial.insert(borrowedMaterial);
+		}
 	}
 	
 	private List<TeachingMaterial> getOwningTeachingMaterial(Student student) {

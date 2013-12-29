@@ -19,6 +19,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.view.LoginView;
 import de.dhbw.humbuch.view.MVVMConfig;
 import de.dhbw.humbuch.view.MainUI;
+import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 
 public class BasicModule extends ServletModule {
@@ -40,6 +41,7 @@ public class BasicModule extends ServletModule {
 		bind(MVVMConfig.class).asEagerSingleton();
 		
 		bind(LoginViewModel.class).in(UIScoped.class);
+		bind(LendingViewModel.class).in(UIScoped.class);
 		
 		bind(LoginView.class);
 		
