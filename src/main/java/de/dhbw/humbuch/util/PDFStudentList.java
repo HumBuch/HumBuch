@@ -28,6 +28,7 @@ public final class PDFStudentList extends PDFHandler{
 	
 	protected void insertDocumentParts(Document document){
 		if(this.student != null){
+			this.addHeading(document, "Ausgabe-Liste 2013");
 			this.addStudentInformation(document);
 			this.addContent(document);
 			this.addRentalDisclosure(document);
