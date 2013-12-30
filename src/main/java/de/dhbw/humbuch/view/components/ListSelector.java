@@ -193,21 +193,21 @@ public class ListSelector extends CustomComponent {
 				return;
 			}
 
-//			Window window = new Window(title);
-//			window.setSizeFull();
-//
-//			Embedded embedded = new Embedded();
-//			embedded.setSizeFull();
-//			embedded.setType(Embedded.TYPE_BROWSER);
+			Window window = new Window(title);
+			window.setSizeFull();
+
+			Embedded embedded = new Embedded();
+			embedded.setSizeFull();
+			embedded.setType(Embedded.TYPE_BROWSER);
 			// Set the right mime type
 			sr.setMIMEType("application/pdf");
 
-//			embedded.setSource(sr);
-//			window.setContent(embedded);
-//			getUI().addWindow(window);
-			BrowserWindowOpener opener =
-	                new BrowserWindowOpener(sr);
-		    opener.extend(clickedButton);
+			embedded.setSource(sr);
+			window.setContent(embedded);
+			getUI().addWindow(window);
+//			BrowserWindowOpener opener =
+//	                new BrowserWindowOpener(sr);
+//		    opener.extend(clickedButton);
 		}
 	}
 
