@@ -80,5 +80,7 @@ public class MultiClassChooser extends CustomComponent {
 		for (int i = 6; i <= 15; i++) {
 			treeTableClasses.setChildrenAllowed(i, false);
 		}
+		
+		treeTableClasses.setCollapsed(1, false);
 	}
 }
