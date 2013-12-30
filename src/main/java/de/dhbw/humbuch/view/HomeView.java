@@ -13,20 +13,24 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.HomeViewModel;
 
 
-public class HomeView extends VerticalLayout implements View {
+public class HomeView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = 2068213441417298070L;
+
+	private static final String TITLE = "Aufgaben Verwaltung";
 
 	private Button button;
 
 	@Inject
 	public HomeView(ViewModelComposer viewModelComposer, HomeViewModel homeViewModel) {
 		init();
+		buildLayout();
 		bindViewModel(viewModelComposer, homeViewModel);
 	}
 
 	private void init() {
 		button = new Button("navigate", new Button.ClickListener() {
+
 			private static final long serialVersionUID = -8316755622964189310L;
 
 			@Override
@@ -36,10 +40,11 @@ public class HomeView extends VerticalLayout implements View {
 			}
 		});
 
-		addComponents();
+		setSpacing(true);
+		setMargin(true);
 	}
 
-	private void addComponents() {
+	private void buildLayout() {
 		addComponent(button);
 	}
 
@@ -56,5 +61,10 @@ public class HomeView extends VerticalLayout implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }

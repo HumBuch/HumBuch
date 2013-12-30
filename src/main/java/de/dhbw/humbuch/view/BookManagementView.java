@@ -16,9 +16,12 @@ import com.vaadin.ui.VerticalLayout;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
 
-public class BookManagementView extends VerticalLayout implements View {
+
+public class BookManagementView extends VerticalLayout implements View, ViewInformation {
+
 	private static final long serialVersionUID = -5063268947544706757L;
 
+	private static final String TITLE = "Lehrmittel Verwaltung";
 	private static final String NEW_BOOK = "Neues Buch";
 	private static final String EDIT_BOOK = "Buch bearbeiten";
 	private static final String SEARCH_BOOK = "Buecher suchen";
@@ -26,7 +29,6 @@ public class BookManagementView extends VerticalLayout implements View {
 	private static final String TABLE_PUBLISHER = "Verlag";
 	private static final String TABLE_CLASS = "Klassenstufe";
 
-	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private TextField textFieldSearchBar;
 	private Table tableBooks;
@@ -42,10 +44,9 @@ public class BookManagementView extends VerticalLayout implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
 
-		verticalLayoutContent.setMargin(true);
+		setMargin(true);
 
 		buttonNewBook = new Button(NEW_BOOK);
 		buttonEditBook = new Button(EDIT_BOOK);
@@ -58,8 +59,7 @@ public class BookManagementView extends VerticalLayout implements View {
 		tableBooks.addContainerProperty(TABLE_TITLE, String.class, null);
 		tableBooks.addContainerProperty(TABLE_CLASS, String.class, null);
 		tableBooks.addContainerProperty(TABLE_PUBLISHER, String.class, null);
-
-		populateTableWithTestData(tableBooks);
+		populateTableWithTestData();
 	}
 
 	private void buildLayout() {
@@ -70,20 +70,19 @@ public class BookManagementView extends VerticalLayout implements View {
 		horizontalLayoutButtonBar.setComponentAlignment(buttonEditBook,
 				Alignment.MIDDLE_RIGHT);
 
-		verticalLayoutContent.addComponent(textFieldSearchBar);
-		verticalLayoutContent.addComponent(tableBooks);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
-		addComponent(verticalLayoutContent);
+		addComponent(textFieldSearchBar);
+		addComponent(tableBooks);
+		addComponent(horizontalLayoutButtonBar);
 	}
 
-	private void populateTableWithTestData(Table table) {
-		table.addItem(new Object[] { new CheckBox(), "Mustermann", "6",
-				"Springer" }, 1);
-		table.addItem(new Object[] { new CheckBox(), "Maier", "5", "d.punkt" },
+	private void populateTableWithTestData() {
+		tableBooks.addItem(new Object[] { new CheckBox(), "Mustermann", "6",
+											"Springer" }, 1);
+		tableBooks.addItem(new Object[] { new CheckBox(), "Maier", "5", "d.punkt" },
 				2);
-		table.addItem(new Object[] { new CheckBox(), "Mustermann", "8",
-				"d.punkt" }, 3);
-		table.addItem(new Object[] { new CheckBox(), "XYZ", "9", "XYZ" }, 4);
+		tableBooks.addItem(new Object[] { new CheckBox(), "Mustermann", "8",
+											"d.punkt" }, 3);
+		tableBooks.addItem(new Object[] { new CheckBox(), "XYZ", "9", "XYZ" }, 4);
 	}
 
 	@Override
@@ -95,9 +94,15 @@ public class BookManagementView extends VerticalLayout implements View {
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		} catch (IllegalAccessException | NoSuchElementException
+		}
+		catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }
