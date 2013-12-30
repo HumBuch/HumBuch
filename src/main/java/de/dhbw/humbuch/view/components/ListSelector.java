@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -170,7 +171,7 @@ public class ListSelector extends CustomComponent {
 			// TODO: get all entities needed for printing actual lists.
 			if (clickedButton == buttonClassList) {
 				title = "Klassen Liste";
-				Student s = createTestStudent();
+				Set<Student> s = createTestStudents();
 				ByteArrayOutputStream baos = new PDFStudentList(s).createByteArrayOutputStreamForPDF();
 				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "ClassList.pdf");
 			}
@@ -238,5 +239,73 @@ public class ListSelector extends CustomComponent {
 		Grade grade = new Grade.Builder("11au").build();
 		return new Student.Builder(4, "Karl", "August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
 
+	}
+	
+	public static Set<Student> createTestStudents(){
+		Set<Student> students = new LinkedHashSet<Student>();
+		
+		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
+		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
+		
+		TeachingMaterial teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(6);
+		teachingMaterial.setName("Bio1 - Bugs");
+		teachingMaterial.setPrice(79.75);
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(11);
+		teachingMaterial.setName("German1 - Faust");
+		teachingMaterial.setPrice(22.49);
+		borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		Grade grade = new Grade.Builder("11au").build();
+		students.add(new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build());
+		
+		profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
+		borrowedMaterialList = new ArrayList<BorrowedMaterial>();
+		
+		teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(6);
+		teachingMaterial.setName("Math");
+		teachingMaterial.setPrice(79.75);
+		borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(11);
+		teachingMaterial.setName("Chemistry");
+		teachingMaterial.setPrice(25.49);
+		borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.03.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		grade = new Grade.Builder("11au").build();
+		students.add(new Student.Builder(5,"Berta","Bussy", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build());
+		
+		return students;		
 	}
 }
