@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.util;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -12,18 +13,37 @@ import de.dhbw.humbuch.model.entity.Student;
 
 public final class PDFStudentList extends PDFHandler{
 	private Student student;
+	private Set<Student> students;
 
 	public PDFStudentList(Student student) {
 		super();	
 		this.student = student;
 	}
 	
+	public PDFStudentList(Set<Student> students) {
+		super();
+		this.students = students;
+	
+	}
+	
 	protected void insertDocumentParts(Document document){
-		this.addHeading(document, "Ausgabe-Liste 2013");
-		this.addStudentInformation(document);
-		this.addContent(document);
-		this.addRentalDisclosure(document);
-		this.addSignatureField(document, "Schüler");
+		if(this.student != null){
+			this.addStudentInformation(document);
+			this.addContent(document);
+			this.addRentalDisclosure(document);
+			this.addSignatureField(document, "Schüler");
+		}
+		else if(this.students != null){
+			for(Student student : this.students){
+				this.addHeading(document, "Ausgabe-Liste 2013");
+				this.student = student;
+				this.addStudentInformation(document);
+				this.addContent(document);
+				this.addRentalDisclosure(document);
+				this.addSignatureField(document, "Schüler");
+				document.newPage();
+			}
+		}
 	}
 	
 	protected void addContent(Document document) {
