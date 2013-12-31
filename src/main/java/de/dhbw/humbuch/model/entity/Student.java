@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -27,7 +28,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Id
 	private int id;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="gradeId", referencedColumnName="id")
 	private Grade grade;
 	private String lastname;
@@ -45,7 +46,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@Column(name="subject")
 	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="parentId")
 	private Parent parent;
 	
