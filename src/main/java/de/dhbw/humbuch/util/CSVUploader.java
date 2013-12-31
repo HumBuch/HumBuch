@@ -11,8 +11,6 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import com.vaadin.ui.Upload;
 
-import de.dhbw.humbuch.model.DAO;
-import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 
