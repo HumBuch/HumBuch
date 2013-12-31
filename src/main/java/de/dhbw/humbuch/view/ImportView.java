@@ -10,7 +10,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -24,7 +23,8 @@ import de.dhbw.humbuch.util.CSVUploader;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
 
-public class ImportView extends Panel implements View {
+
+public class ImportView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -739081142499192817L;
 
@@ -32,20 +32,19 @@ public class ImportView extends Panel implements View {
 	private static final String DESCRIPTION = "Betätigen Sie den Button um Schülerdaten zu importieren.";
 	private static final String IMPORT = "Importieren";
 
-	private VerticalLayout verticalLayoutContent;
 	private Label labelDescription;
-	
+
 	@BindState(ImportResult.class)
 	private BasicState<String> importResult = new BasicState<String>(String.class);
-	
-//	@BindState(UploadButton.class)
-//	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
+
+	//	@BindState(UploadButton.class)
+	//	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
 	private Upload uploadButton;
 	private CSVUploader csvUploader;
-		
+
 	//@BindAction(value = DoImportStudents.class, source = { "uploadButton" })
 	private Button buttonImport = new Button(IMPORT);
-	
+
 	private Label labelResult;
 
 	@Inject
@@ -57,9 +56,8 @@ public class ImportView extends Panel implements View {
 	}
 
 	private void init() {
-		verticalLayoutContent = new VerticalLayout();
-		verticalLayoutContent.setMargin(true);
-		verticalLayoutContent.setSpacing(true);
+		setMargin(true);
+		setSpacing(true);
 
 		labelResult = new Label("put result of import here. e.g. 4/5 successfully imported");
 
@@ -69,7 +67,7 @@ public class ImportView extends Panel implements View {
 		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
 		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
 		buttonImport.addClickListener(new ClickListener() {
-			
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -77,16 +75,14 @@ public class ImportView extends Panel implements View {
 				uploadButton.submitUpload();
 			}
 		});
-		
+
 		uploadButton = new Upload(null, this.csvUploader);
 		uploadButton.addSucceededListener(this.csvUploader);
 		uploadButton.addFailedListener(this.csvUploader);
 		uploadButton.setButtonCaption(null);
 
-		setSizeFull();
-		setCaption(TITLE);
-				
 		importResult.addStateChangeListener(new StateChangeListener() {
+
 			@Override
 			public void stateChange(Object arg0) {
 				labelResult.setCaption(importResult.get());
@@ -95,12 +91,10 @@ public class ImportView extends Panel implements View {
 	}
 
 	private void buildLayout() {
-		verticalLayoutContent.addComponent(labelDescription);
-		verticalLayoutContent.addComponent(buttonImport);
-		verticalLayoutContent.addComponent(labelResult);
-		verticalLayoutContent.addComponent(uploadButton);
-
-		setContent(verticalLayoutContent);
+		addComponent(labelDescription);
+		addComponent(buttonImport);
+		addComponent(labelResult);
+		addComponent(uploadButton);
 	}
 
 	@Override
@@ -116,5 +110,10 @@ public class ImportView extends Panel implements View {
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return TITLE;
 	}
 }
