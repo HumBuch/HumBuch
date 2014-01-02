@@ -249,6 +249,7 @@
 						<goals>
 							<goal>resources</goal>
 							<goal>update-widgetset</goal>
+							<goal>compile-theme</goal>
 							<goal>compile</goal>
 						</goals>
 					</execution>
@@ -302,6 +303,7 @@
 											<goal>
 												update-widgetset
 											</goal>
+											<goal>compile-theme</goal>
 											<goal>resources</goal>
 										</goals>
 									</pluginExecutionFilter>
