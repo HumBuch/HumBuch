@@ -1,5 +1,9 @@
 package de.dhbw.humbuch.viewmodel;
 
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -8,7 +12,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
-import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.User;
 
 public class LoginViewModel {
 
@@ -24,33 +28,36 @@ public class LoginViewModel {
 	public interface DoLogin extends ActionHandler {
 	}
 
-	@Inject
-	private DAO<Student> daoStudent;
+	private DAO<User> daoUser;
 
 	@ProvidesState(IsLoggedIn.class)
-	public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-			Boolean.class);
+	public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
 	
 
 	@ProvidesState(LoginError.class)
-	public final BasicState<String> loginError = new BasicState<String>(
-			String.class);
-
-	public LoginViewModel() {
+	public final BasicState<String> loginError = new BasicState<String>(String.class);
+	
+	@Inject
+	public LoginViewModel(DAO<User> daoUser) {
+		this.daoUser = daoUser;
 		isLoggedIn.set(new Boolean(false));
 	}
 
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
 		// loginSuccessful.set(daoStudent.find(1).getFirstname());
-
+		
+		// Es muss sichergestellt sein, dass es keine zwei User mit selber Name/Passwort Kombination gibt
 		if (username.equals("") || password.equals("")) {
 			loginError.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
 			return;
-		} else if (username.equals("admin") && password.equals("1234")) {
-			isLoggedIn.set(new Boolean(true));
 		} else {
-			loginError.set("Username oder Passwort stimmen nicht überein.");
+			List<User> user = (List<User>) daoUser.findAllWithCriteria(Restrictions.eq("username", username), Restrictions.eq("password", password));
+			if(!user.isEmpty()) {
+				isLoggedIn.set(new Boolean(true));
+			} else {
+				loginError.set("Username oder Passwort stimmen nicht überein.");
+			}
 		}
 	}
 

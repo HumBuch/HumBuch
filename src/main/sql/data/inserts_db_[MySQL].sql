@@ -64,7 +64,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch`;
-INSERT INTO `humbuch`.`user` (`id`, `username`, `password`, `email`) VALUES (1, 'test', 'test', 'test@test.de');
+INSERT INTO `humbuch`.`user` (`id`, `username`, `password`, `email`) VALUES (1, 'admin', '1234', 'test@test.de');
 
 COMMIT;
 
