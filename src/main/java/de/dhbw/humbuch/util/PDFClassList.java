@@ -29,7 +29,7 @@ public final class PDFClassList extends PDFHandler {
 	}
 
 	protected void addContent(Document document) {
-		PdfPTable table = this.createTableWithRentalInformationHeader();
+		PdfPTable table = this.createTableWithRentalInformationHeaderForClass();
 
 		List<MapperAmountAndBorrowedMaterial> gradeRentalList = GradeHandler.getAllRentedBooksOfGrade(this.grade);
 

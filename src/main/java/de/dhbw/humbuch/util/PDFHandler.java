@@ -280,6 +280,21 @@ public abstract class PDFHandler {
 		return table;
 	}
 	
+	/**
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
+	 * Anzahl
+	 * 
+	 * @return PdfPTable
+	 */
+	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
+		PdfPTable table = createMyStandardTable(3, new float[] { 1f, 3f, 1f });
+		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
+		fillTableWithContent(table, true,
+				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
+				new String[] { "Klasse", "Bezeichnung Lehrmittel", "Anzahl" }, font);
+		return table;
+	}
+	
 	protected void resetPageNumber(){
 		this.event.resetPageNumber();
 	}
