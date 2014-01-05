@@ -13,6 +13,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -63,6 +64,7 @@ public class ListSelector extends CustomComponent {
 	private VerticalLayout verticalLayoutClass;
 	private VerticalLayout verticalLayoutStudent;
 	private HorizontalLayout horizontalLayoutSearch;
+	@Inject
 	private MultiClassChooser multiClassChooser;
 	private TextField textFieldSearchBar;
 	private Button buttonSearch;
@@ -84,7 +86,7 @@ public class ListSelector extends CustomComponent {
 		verticalLayoutClass = new VerticalLayout();
 		verticalLayoutStudent = new VerticalLayout();
 		horizontalLayoutSearch = new HorizontalLayout();
-		multiClassChooser = new MultiClassChooser();
+//		multiClassChooser = new MultiClassChooser();
 		textFieldSearchBar = new TextField(SEARCH_STUDENT);
 		buttonSearch = new Button(SEARCH);
 		buttonMaterialList = new Button(MATERIAL_LIST);
@@ -92,6 +94,11 @@ public class ListSelector extends CustomComponent {
 		buttonStudentList = new Button(STUDENT_LIST);
 		tableSearchResults = new Table();
 		resourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
+		
+		//		if(multiClassChooser == null) {
+		//			System.out.println("mcc null choosing old constructor");
+		//			multiClassChooser = new MultiClassChooser();
+		//		}
 
 		horizontalLayoutContent.setWidth("100%");
 		horizontalLayoutContent.setSpacing(true);
