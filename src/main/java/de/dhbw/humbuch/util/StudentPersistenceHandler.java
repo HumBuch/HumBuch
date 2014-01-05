@@ -24,18 +24,19 @@ public class StudentPersistenceHandler {
 			
 			Student persistedStudent = daoStudent.find(student.getId());
 			
+			Collection<Grade> grades = daoGrade.findAllWithCriteria(
+					Restrictions.and(
+							Restrictions.like("grade", student.getGrade().getGrade()),
+							Restrictions.like("suffix", student.getGrade().getSuffix())
+					));
+
+			if(grades.size() == 1){
+				Iterator<Grade> gradesIterator = grades.iterator();
+				Grade grade = gradesIterator.next();		
+				student.setGrade(grade);
+			}
+			
 			if(persistedStudent == null){			
-				Collection<Grade> grades = daoGrade.findAllWithCriteria(
-						Restrictions.and(
-								Restrictions.eq("grade", student.getGrade().getGrade()),
-								Restrictions.like("suffix", student.getGrade().getSuffix())
-						));
-	
-				if(grades.size() == 1){
-					Iterator<Grade> gradesIterator = grades.iterator();
-					Grade grade = gradesIterator.next();		
-					student.setGrade(grade);
-				}
 				
 	//			Collection<Parent> parents = daoParent.findAllWithCriteria(
 	//					Restrictions.and(
@@ -55,7 +56,7 @@ public class StudentPersistenceHandler {
 	//			
 				Parent parent = daoParent.find(1);
 				student.setParent(parent);
-				student.setProfile(null);
+			//	student.setProfile(null);
 				daoStudent.insert(student);	
 			}
 			else{
@@ -65,7 +66,7 @@ public class StudentPersistenceHandler {
 				persistedStudent.setGrade(student.getGrade());
 				persistedStudent.setLastname(student.getLastname());
 				persistedStudent.setParent(student.getParent());
-				persistedStudent.setProfile(null);
+			//	persistedStudent.setProfile(null);
 				daoStudent.update(persistedStudent);
 			}
 		}		
