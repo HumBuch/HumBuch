@@ -29,6 +29,7 @@ import com.vaadin.server.StreamResource.StreamSource;
 public abstract class PDFHandler {
 
 	private Document document;
+	private HeaderFooter event;
 	protected static float TABLEWIDTH = 418f;
 
 	/**
@@ -54,7 +55,7 @@ public abstract class PDFHandler {
 	public void savePDF(String path) {
 		try {
 			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(path));
-			HeaderFooter event = new HeaderFooter();
+			event = new HeaderFooter();
 			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
 			writer.setPageEvent(event);
 		}
@@ -81,7 +82,7 @@ public abstract class PDFHandler {
 		try {
 			byteArrayOutputStream = new ByteArrayOutputStream();
 			PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
-			HeaderFooter event = new HeaderFooter();
+			event = new HeaderFooter();
 			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
 			writer.setPageEvent(event);
 
@@ -107,7 +108,7 @@ public abstract class PDFHandler {
 		try {
 			byteArrayOutputStream = new ByteArrayOutputStream();
 			PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
-			HeaderFooter event = new HeaderFooter();
+			event = new HeaderFooter();
 			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
 			writer.setPageEvent(event);
 
@@ -277,6 +278,10 @@ public abstract class PDFHandler {
 				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
 				new String[] { "Klasse", "Bezeichnung Lehrmittel", "Unterschrift" }, font);
 		return table;
+	}
+	
+	protected void resetPageNumber(){
+		this.event.resetPageNumber();
 	}
 
 	protected static void addEmptyLine(Paragraph paragraph, int number) {
@@ -518,6 +523,10 @@ public abstract class PDFHandler {
             ColumnText.showTextAligned(writer.getDirectContent(),
                     Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
                     (rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
+        }
+        
+        public void resetPageNumber(){
+        	this.pagenumber = 1;
         }
     }
     
