@@ -59,13 +59,7 @@ public class StudentPersistenceHandler {
 				daoStudent.insert(student);	
 			}
 			else{
-				persistedStudent.setBirthday(student.getBirthday());
-				persistedStudent.setFirstname(student.getFirstname());
-				persistedStudent.setGender(student.getGender());
-				persistedStudent.setGrade(student.getGrade());
-				persistedStudent.setLastname(student.getLastname());
-				persistedStudent.setParent(student.getParent());
-				daoStudent.update(persistedStudent);
+				daoStudent.update(student);
 			}
 		}		
 	}
