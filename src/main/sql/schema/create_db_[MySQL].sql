@@ -22,7 +22,7 @@ ENGINE = InnoDB;
 -- Table `humbuch`.`parent`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `humbuch`.`parent` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NULL,
   `firstname` VARCHAR(45) NOT NULL,
   `lastname` VARCHAR(45) NOT NULL,
@@ -228,7 +228,7 @@ ENGINE = InnoDB;
 -- Table `humbuch`.`studentSubject`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `humbuch`.`studentSubject` (
-  `id` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
   `studentId` INT(11) NOT NULL,
   `subject` VARCHAR(45) NULL,
   PRIMARY KEY (`id`, `studentId`),
@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`studentSubject` (
   CONSTRAINT `fk_studentProfile_student1`
     FOREIGN KEY (`studentId`)
     REFERENCES `humbuch`.`student` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -253,8 +253,8 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterialSubject` (
   CONSTRAINT `fk_teachingMaterialSubject_teachingMaterial1`
     FOREIGN KEY (`teachingMaterialId`)
     REFERENCES `humbuch`.`teachingMaterial` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
