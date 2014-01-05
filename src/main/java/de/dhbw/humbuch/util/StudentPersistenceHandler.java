@@ -56,7 +56,6 @@ public class StudentPersistenceHandler {
 	//			
 				Parent parent = daoParent.find(1);
 				student.setParent(parent);
-			//	student.setProfile(null);
 				daoStudent.insert(student);	
 			}
 			else{
@@ -66,7 +65,6 @@ public class StudentPersistenceHandler {
 				persistedStudent.setGrade(student.getGrade());
 				persistedStudent.setLastname(student.getLastname());
 				persistedStudent.setParent(student.getParent());
-			//	persistedStudent.setProfile(null);
 				daoStudent.update(persistedStudent);
 			}
 		}		
