@@ -257,13 +257,15 @@ public class ListSelector extends CustomComponent {
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(11);
-		teachingMaterial.setName("German1 - Faust");
-		teachingMaterial.setPrice(22.49);
-		borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
-		borrowedMaterialList.add(borrowedMaterial);
+		
+		for(int i = 0; i < 25; i ++){
+			teachingMaterial.setToGrade(11);
+			teachingMaterial.setName("German1 - Faust");
+			teachingMaterial.setPrice(22.49);
+			borrowedMaterial = new BorrowedMaterial();
+			borrowedMaterial.setTeachingMaterial(teachingMaterial);
+			borrowedMaterialList.add(borrowedMaterial);
+		}
 		
 		Date date = null;
 		try {
