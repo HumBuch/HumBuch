@@ -84,7 +84,7 @@ public class LendingViewModel {
 		
 		List<TeachingMaterial> studentLendingList = getStudentLendingList(student);
 		
-		persistBorrowedMaterial(student, studentLendingList);
+		persistBorrowedMaterials(student, studentLendingList);
 		lendingListStudent.set(studentLendingList);
 	}
 	
@@ -126,8 +126,19 @@ public class LendingViewModel {
 	
 	@HandlesAction(GetStudentsBorrowedMaterial.class)
 	public void getStudentBorrowedMaterials(String studentId) {
-		Student student = daoStudent.find(Integer.parseInt(studentId));
-		studentBorrowedMaterials.set(student.getBorrowedList());
+//		Student student = daoStudent.find(Integer.parseInt(studentId));
+//		List<BorrowedMaterial> borrowedList = student.getBorrowedList();
+//		for (BorrowedMaterial borrowedMaterial : borrowedList) {
+//			if(borrowedMaterial.isReceived() == true) {
+//				borrowedList.remove(borrowedMaterial);
+//			}
+//		}
+		
+		
+		List<BorrowedMaterial> borrowedList = (List<BorrowedMaterial>) daoBorrowedMaterial.findAllWithCriteria(
+				Restrictions.eq("studentId", Integer.parseInt(studentId))
+				, Restrictions.eq("received", false));
+		studentBorrowedMaterials.set(borrowedList);
 	}
 
 	private List<TeachingMaterial> getStudentLendingList(Student student) {
@@ -144,28 +155,27 @@ public class LendingViewModel {
 				));
 		//TODO: restrictions with TM's term
 
-		List<TeachingMaterial> owningTeachingMaterial = getOwningTeachingMaterial(student);
+		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
 		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 		
 		for(TeachingMaterial teachingMaterial : teachingMerterials) {
 			if(student.getProfile().containsAll(teachingMaterial.getProfile())
-					&& !owningTeachingMaterial.contains(teachingMaterial)) {
+					&& !owningTeachingMaterials.contains(teachingMaterial)) {
 				toLend.add(teachingMaterial);
 			}
 		}
 
-		lendingListStudent.set(toLend);
 		return toLend;
 	}
 	
-	private void persistBorrowedMaterial(Student student, List<TeachingMaterial> teachingMaterials) {
+	private void persistBorrowedMaterials(Student student, List<TeachingMaterial> teachingMaterials) {
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
 			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
 			daoBorrowedMaterial.insert(borrowedMaterial);
 		}
 	}
 	
-	private List<TeachingMaterial> getOwningTeachingMaterial(Student student) {
+	private List<TeachingMaterial> getOwningTeachingMaterials(Student student) {
 		List<TeachingMaterial> owning = new ArrayList<TeachingMaterial>();
 		for(BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
 			owning.add(borrowedMaterial.getTeachingMaterial());

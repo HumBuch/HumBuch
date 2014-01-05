@@ -6,6 +6,9 @@ import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.ViewModelComposer;
@@ -43,6 +46,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		accordionContent.addTab(listSelector, SELECT_LIST);
 		accordionContent.addTab(enterDataComponent, ENTER_DATA);
 		accordionContent.setSelectedTab(enterDataComponent);
+		accordionContent.addSelectedTabChangeListener(new TabChangeListener());
 
 		addComponent(accordionContent);
 	}
@@ -68,5 +72,20 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	public String getTitle() {
 		return TITLE;
 	}
-
+	
+	private class TabChangeListener implements SelectedTabChangeListener {
+		private static final long serialVersionUID = 1993690272458696837L;
+		
+		@Override
+		public void selectedTabChange(SelectedTabChangeEvent event) {
+			Component selectedTab = event.getTabSheet().getSelectedTab();
+			if(selectedTab.equals(listSelector)) {
+				System.out.println("---------------------------------------------------------------------------------------LIST SELECTOR");
+				
+			} else if(selectedTab.equals(enterDataComponent)) {
+				System.out.println("---------------------------------------------------------------------------------------ENTERDATACOMPONENT");
+			}
+		}
+		
+	}
 }
