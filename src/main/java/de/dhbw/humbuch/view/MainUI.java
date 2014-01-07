@@ -59,11 +59,13 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private ImportView importView;
+	
+	@Inject
+	private Header header;
 
 	private GridLayout gridLayoutRoot;
 	private VerticalLayout verticalLayoutContent;
 	private ComponentContainerViewDisplay ccViewDisplay;
-	private Header header;
 	private Footer footer;
 	private NavigationBar navigationBar;
 	private Panel panelContent;
@@ -87,7 +89,7 @@ public class MainUI extends ScopedUI {
 		verticalLayoutContent = new VerticalLayout();
 		panelContent = new Panel();
 
-		header = new Header();
+		//header = new Header();
 		footer = new Footer();
 		navigationBar = new NavigationBar();
 
@@ -112,27 +114,6 @@ public class MainUI extends ScopedUI {
 			gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 		}
 
-		isLoggedIn.addStateChangeListener(new StateChangeListener() {
-
-			@Override
-			public void stateChange(Object arg0) {
-				if (isLoggedIn.get()) {
-					gridLayoutRoot.removeAllComponents();
-					gridLayoutRoot.addComponent(panelContent, 1, 1);
-					gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
-					gridLayoutRoot.addComponent(navigationBar, 0, 1);
-					gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
-				}
-				else {
-					// remove Components
-					gridLayoutRoot.removeComponent(header);
-					gridLayoutRoot.removeComponent(navigationBar);
-					gridLayoutRoot.removeComponent(footer);
-				}
-
-			}
-
-		});
 		ccViewDisplay = new ComponentContainerViewDisplay(verticalLayoutContent);
 
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
@@ -187,6 +168,30 @@ public class MainUI extends ScopedUI {
 
 		});
 
+		isLoggedIn.addStateChangeListener(new StateChangeListener() {
+
+			@Override
+			public void stateChange(Object arg0) {
+				if (isLoggedIn.get()) {
+					gridLayoutRoot.removeAllComponents();
+					gridLayoutRoot.addComponent(panelContent, 1, 1);
+					gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
+					gridLayoutRoot.addComponent(navigationBar, 0, 1);
+					gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
+				}
+				else {
+					// remove Components
+					gridLayoutRoot.removeComponent(header);
+					gridLayoutRoot.removeComponent(navigationBar);
+					gridLayoutRoot.removeComponent(footer);
+					
+					navigator.navigateTo(MainUI.LOGIN_VIEW);
+				}
+
+			}
+
+		});
+		
 		setContent(gridLayoutRoot);
 	}
 
