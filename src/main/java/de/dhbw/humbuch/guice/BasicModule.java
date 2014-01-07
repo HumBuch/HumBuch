@@ -23,30 +23,43 @@ import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 
+
 public class BasicModule extends ServletModule {
 
 	@Override
 	protected void configureServlets() {
 		install(new JpaPersistModule("persistModule"));
-		
+
 		filter("/*").through(PersistFilter.class);
 		serve("/*").with(BasicServlet.class);
-		
-		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
-		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
-		bind(new TypeLiteral<DAO<TeachingMaterial>>() {}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {});
-		bind(new TypeLiteral<DAO<Grade>>() {}).to(new TypeLiteral<DAOImpl<Grade>>() {});
-		bind(new TypeLiteral<DAO<Parent>>() {}).to(new TypeLiteral<DAOImpl<Parent>>() {});
-		bind(new TypeLiteral<DAO<User>>() {}).to(new TypeLiteral<DAOImpl<User>>() {});
-		
+
+		bind(new TypeLiteral<DAO<Student>>() {
+		}).to(new TypeLiteral<DAOImpl<Student>>() {
+		});
+		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {
+		}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {
+		});
+		bind(new TypeLiteral<DAO<TeachingMaterial>>() {
+		}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {
+		});
+		bind(new TypeLiteral<DAO<Grade>>() {
+		}).to(new TypeLiteral<DAOImpl<Grade>>() {
+		});
+		bind(new TypeLiteral<DAO<Parent>>() {
+		}).to(new TypeLiteral<DAOImpl<Parent>>() {
+		});
+		bind(new TypeLiteral<DAO<User>>() {
+		}).to(new TypeLiteral<DAOImpl<User>>() {
+		});
+
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
-		
+
 		bind(LoginViewModel.class).in(UIScoped.class);
 		bind(LendingViewModel.class).in(UIScoped.class);
-		
+
 		bind(LoginView.class);
-		
+
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
 		mapbinder.addBinding(MainUI.class.getName()).to(MainUI.class);
 	}

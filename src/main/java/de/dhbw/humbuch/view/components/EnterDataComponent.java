@@ -11,8 +11,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 
@@ -31,8 +29,6 @@ public class EnterDataComponent extends CustomComponent {
 		RETURNING
 	};
 
-	private static final String SEARCH_STUDENT = "Schüler suchen";
-	private static final String SEARCH = "Suchen";
 	private static final String SAVE = "Auswahl speichern";
 	private static final String FIRST_NAME = "Vorname";
 	private static final String LAST_NAME = "Nachname";
@@ -47,11 +43,9 @@ public class EnterDataComponent extends CustomComponent {
 	private String enterDataLabel;
 
 	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutSearch;
-	private TextField textFieldSearchBar;
-	private Button buttonSearch;
 	private TreeTable treeTableStudents;
 	private Button buttonSave;
+	private FilterSearchBar filterSearchBar;
 
 	public EnterDataComponent(Process process) {
 		initProcess(process);
@@ -75,22 +69,15 @@ public class EnterDataComponent extends CustomComponent {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		horizontalLayoutSearch = new HorizontalLayout();
-		textFieldSearchBar = new TextField(SEARCH_STUDENT);
-		buttonSearch = new Button(SEARCH);
 		buttonSave = new Button(SAVE);
 		treeTableStudents = new TreeTable();
-		
+		filterSearchBar = new FilterSearchBar();
+
 		verticalLayoutContent.setWidth("100%");
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
-		horizontalLayoutSearch.setWidth("100%");
-		horizontalLayoutSearch.setSpacing(true);
 
-		textFieldSearchBar.setWidth("100%");
-
-		buttonSearch.setWidth("100%");
-		buttonSearch.setIcon(new ThemeResource("images/icons/16/icon_search_red.png"));
+		filterSearchBar.setWidth("100%");
 
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
@@ -103,15 +90,11 @@ public class EnterDataComponent extends CustomComponent {
 	}
 
 	private void buildLayout() {
-		horizontalLayoutSearch.addComponent(textFieldSearchBar);
-		horizontalLayoutSearch.addComponent(buttonSearch);
-		horizontalLayoutSearch.setComponentAlignment(buttonSearch, Alignment.BOTTOM_RIGHT);
-		
-		verticalLayoutContent.addComponent(horizontalLayoutSearch);
+		verticalLayoutContent.addComponent(filterSearchBar);
 		verticalLayoutContent.addComponent(treeTableStudents);
 		verticalLayoutContent.addComponent(buttonSave);
 		verticalLayoutContent.setComponentAlignment(buttonSave, Alignment.BOTTOM_RIGHT);
-		
+
 		setCompositionRoot(verticalLayoutContent);
 	}
 

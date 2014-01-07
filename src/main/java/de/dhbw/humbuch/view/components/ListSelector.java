@@ -8,11 +8,13 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -27,6 +29,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
@@ -63,6 +66,7 @@ public class ListSelector extends CustomComponent {
 	private VerticalLayout verticalLayoutClass;
 	private VerticalLayout verticalLayoutStudent;
 	private HorizontalLayout horizontalLayoutSearch;
+	@Inject
 	private MultiClassChooser multiClassChooser;
 	private TextField textFieldSearchBar;
 	private Button buttonSearch;
@@ -72,7 +76,8 @@ public class ListSelector extends CustomComponent {
 	private Table tableSearchResults;
 	private ThemeResource resourceIconPrint;
 
-	public ListSelector(Process process) {
+	public ListSelector(MultiClassChooser multiClassChooser, Process process) {
+		this.multiClassChooser = multiClassChooser;
 		init();
 		buildLayout();
 		// TODO: dirty, since you should check process before
@@ -84,7 +89,6 @@ public class ListSelector extends CustomComponent {
 		verticalLayoutClass = new VerticalLayout();
 		verticalLayoutStudent = new VerticalLayout();
 		horizontalLayoutSearch = new HorizontalLayout();
-		multiClassChooser = new MultiClassChooser();
 		textFieldSearchBar = new TextField(SEARCH_STUDENT);
 		buttonSearch = new Button(SEARCH);
 		buttonMaterialList = new Button(MATERIAL_LIST);
@@ -92,7 +96,7 @@ public class ListSelector extends CustomComponent {
 		buttonStudentList = new Button(STUDENT_LIST);
 		tableSearchResults = new Table();
 		resourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
-
+		
 		horizontalLayoutContent.setWidth("100%");
 		horizontalLayoutContent.setSpacing(true);
 		verticalLayoutClass.setWidth("100%");
@@ -257,13 +261,15 @@ public class ListSelector extends CustomComponent {
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(11);
-		teachingMaterial.setName("German1 - Faust");
-		teachingMaterial.setPrice(22.49);
-		borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
-		borrowedMaterialList.add(borrowedMaterial);
+		
+		for(int i = 0; i < 25; i ++){
+			teachingMaterial.setToGrade(11);
+			teachingMaterial.setName("German1 - Faust");
+			teachingMaterial.setPrice(22.49);
+			borrowedMaterial = new BorrowedMaterial();
+			borrowedMaterial.setTeachingMaterial(teachingMaterial);
+			borrowedMaterialList.add(borrowedMaterial);
+		}
 		
 		Date date = null;
 		try {
@@ -307,5 +313,15 @@ public class ListSelector extends CustomComponent {
 		students.add(new Student.Builder(5,"Berta","Bussy", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build());
 		
 		return students;		
+	}
+	
+	private void bindViewModel(ViewModelComposer viewModelComposer,
+			Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
 	}
 }

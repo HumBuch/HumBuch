@@ -23,6 +23,7 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.view.components.EnterDataComponent;
 import de.dhbw.humbuch.view.components.ListSelector;
+import de.dhbw.humbuch.view.components.MultiClassChooser;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.Students;
 
@@ -45,16 +46,20 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private LendingViewModel lendingViewModel;
 	
 	@Inject
-	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
+	private MultiClassChooser multiClassChooser;
+
+	@Inject
+	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, MultiClassChooser multiClassChooser) {
 		this.lendingViewModel = lendingViewModel;
+		this.multiClassChooser = multiClassChooser;
+		bindViewModel(viewModelComposer, lendingViewModel);
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, lendingViewModel);
 	}
 
 	private void init() {
 		accordionContent = new Accordion();
-		listSelector = new ListSelector(ListSelector.Process.LENDING);
+		listSelector = new ListSelector(multiClassChooser, ListSelector.Process.LENDING);
 		enterDataComponent = new EnterDataComponent(EnterDataComponent.Process.LENDING);
 		enterDataComponent.addSaveButtonClickedListener(new ClickListener() {
 			private static final long serialVersionUID = 5631960105849600201L;

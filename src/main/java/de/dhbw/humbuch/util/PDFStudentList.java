@@ -43,6 +43,7 @@ public final class PDFStudentList extends PDFHandler{
 				this.addRentalDisclosure(document);
 				this.addSignatureField(document, "Schüler");
 				document.newPage();
+				this.resetPageNumber();
 			}
 		}
 	}
