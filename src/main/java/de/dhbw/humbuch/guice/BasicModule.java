@@ -5,6 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.ServletModule;
+import com.google.inject.servlet.SessionScoped;
 import com.vaadin.ui.UI;
 
 import de.davherrmann.guice.vaadin.UIScoped;
@@ -55,7 +56,7 @@ public class BasicModule extends ServletModule {
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
 
-		bind(LoginViewModel.class).in(UIScoped.class);
+		bind(LoginViewModel.class).in(SessionScoped.class);
 		bind(LendingViewModel.class).in(UIScoped.class);
 
 		bind(LoginView.class);
