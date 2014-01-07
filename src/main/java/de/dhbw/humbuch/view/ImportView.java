@@ -5,15 +5,9 @@ import java.util.NoSuchElementException;
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Runo;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
@@ -23,32 +17,35 @@ import de.dhbw.humbuch.util.CSVUploader;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
 
+/**
+ * Stellt die Oberfläche für den Import von Schülerdaten zur Verfügung.
+ * 
+ * @author Johannes
+ * @version 1.0
+ *
+ */
 
 public class ImportView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -739081142499192817L;
 
 	private static final String TITLE = "Schüler Import";
-	private static final String DESCRIPTION = "Betätigen Sie den Button um Schülerdaten zu importieren.";
-	private static final String IMPORT = "Importieren";
-
-	private Label labelDescription;
 
 	@BindState(ImportResult.class)
-	private BasicState<String> importResult = new BasicState<String>(String.class);
+	private BasicState<String> importResult = new BasicState<String>(
+			String.class);
 
-	//	@BindState(UploadButton.class)
-	//	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
-	private Upload uploadButton;
+	// @BindState(UploadButton.class)
+	// private BasicState<Upload> uploadButton = new
+	// BasicState<Upload>(Upload.class);
+	private Upload upload;
 	private CSVUploader csvUploader;
-
-	//@BindAction(value = DoImportStudents.class, source = { "uploadButton" })
-	private Button buttonImport = new Button(IMPORT);
 
 	private Label labelResult;
 
 	@Inject
-	public ImportView(ViewModelComposer viewModelComposer, ImportViewModel importViewModel) {
+	public ImportView(ViewModelComposer viewModelComposer,
+			ImportViewModel importViewModel) {
 		this.csvUploader = new CSVUploader(importViewModel);
 		init();
 		buildLayout();
@@ -59,27 +56,16 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 		setMargin(true);
 		setSpacing(true);
 
-		labelResult = new Label("put result of import here. e.g. 4/5 successfully imported");
+		// Create and configure upload component
+		upload = new Upload("Upload der Schülerdatei (als CSV):", csvUploader);
+		upload.setImmediate(false);
 
-		labelDescription = new Label(DESCRIPTION);
-		labelDescription.setStyleName(Runo.LABEL_H2);
+		// uploadForm.addSucceededListener(csvUploader);
+		// uploadForm.addFailedListener(csvUploader);
+		upload.setButtonCaption("Importieren");
 
-		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
-		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
-		buttonImport.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				uploadButton.submitUpload();
-			}
-		});
-
-		uploadButton = new Upload(null, this.csvUploader);
-		uploadButton.addSucceededListener(this.csvUploader);
-		uploadButton.addFailedListener(this.csvUploader);
-		uploadButton.setButtonCaption(null);
+		// Import results
+		labelResult = new Label();
 
 		importResult.addStateChangeListener(new StateChangeListener() {
 
@@ -91,10 +77,8 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void buildLayout() {
-		addComponent(labelDescription);
-		addComponent(buttonImport);
+		addComponent(upload);
 		addComponent(labelResult);
-		addComponent(uploadButton);
 	}
 
 	@Override
@@ -105,8 +89,7 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		}
-		catch (IllegalAccessException | NoSuchElementException
+		} catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
