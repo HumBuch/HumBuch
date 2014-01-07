@@ -1,14 +1,24 @@
 package de.dhbw.humbuch.view.components;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
+
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.Student;
 
 
 public class EnterDataComponent extends CustomComponent {
@@ -70,7 +80,7 @@ public class EnterDataComponent extends CustomComponent {
 		buttonSearch = new Button(SEARCH);
 		buttonSave = new Button(SAVE);
 		treeTableStudents = new TreeTable();
-
+		
 		verticalLayoutContent.setWidth("100%");
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
@@ -89,10 +99,7 @@ public class EnterDataComponent extends CustomComponent {
 		treeTableStudents.addContainerProperty(enterDataHeader, CheckBox.class, null);
 		treeTableStudents.addContainerProperty(FIRST_NAME, String.class, null);
 		treeTableStudents.addContainerProperty(LAST_NAME, String.class, null);
-		treeTableStudents.addContainerProperty(CLASS, String.class, null);
-
-		populateWithTestData();
-
+		treeTableStudents.addContainerProperty(CLASS, Grade.class, null);
 	}
 
 	private void buildLayout() {
@@ -108,35 +115,63 @@ public class EnterDataComponent extends CustomComponent {
 		setCompositionRoot(verticalLayoutContent);
 	}
 
-	private void populateWithTestData() {
-		// Create root elements
-		treeTableStudents.addItem(new Object[] { new CheckBox(enterDataLabel), "Max", "Mustermann", "5a" }, 1);
-		treeTableStudents.addItem(new Object[] { new CheckBox(enterDataLabel), "Clara", "Maier", "6b" }, 2);
-		treeTableStudents.addItem(new Object[] { new CheckBox(enterDataLabel), "Hans", "Mustermann", "9c" }, 3);
-		treeTableStudents.addItem(new Object[] { new CheckBox(enterDataLabel), "BLaa", "XYZ", "7a" }, 4);
+	public void setStudents(Collection<Student> students) {
+		treeTableStudents.removeAllItems();
+		
+		for (Student student : students) {
+			if(!student.hasUnreceivedBorrowedMaterials()) {
+				continue;
+			}
+				
+			final CheckBox checkBoxStudent = new CheckBox(enterDataLabel);
+			treeTableStudents.addItem(new Object[] {
+					checkBoxStudent, student.getFirstname(), student.getLastname(), student.getGrade()}, student.hashCode());
+			
+			final Collection<CheckBox> checkBoxBorrowedMaterials = new ArrayList<CheckBox>(); 
+			for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
+				if(borrowedMaterial.isReceived()) {
+					continue;
+				}
+				
+				CheckBox checkBoxBorrowedMaterial = new CheckBox(borrowedMaterial.getTeachingMaterial().getName());
+				checkBoxBorrowedMaterial.setData(borrowedMaterial);
+				checkBoxBorrowedMaterials.add(checkBoxBorrowedMaterial);
+				
+				Object itemId = treeTableStudents.addItem(new Object[] {checkBoxBorrowedMaterial, null, null, null}, null);
+				treeTableStudents.setChildrenAllowed(itemId, false);
+				treeTableStudents.setParent(itemId, student.hashCode());
+			}
+			
+			checkBoxStudent.addValueChangeListener(new ValueChangeListener() {
+				private static final long serialVersionUID = 2108861783325156662L;
 
-		// Create child elements
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mathe für Anfänger"), null, null, null }, 5);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Deutsch für Anfänger"), null, null, null }, 6);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Englisch für Anfänger"), null, null, null }, 7);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Kochen für Anfänger"), null, null, null }, 8);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Mathe für Anfänger"), null, null, null }, 9);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Deutsch für Anfänger"), null, null, null }, 10);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Englisch für Anfänger"), null, null, null }, 11);
-		treeTableStudents.addItem(new Object[] { new CheckBox("Kochen für Anfänger"), null, null, null }, 12);
-
-		// Build the hierarchy
-		treeTableStudents.setParent(5, 1);
-		treeTableStudents.setParent(6, 1);
-		treeTableStudents.setParent(7, 2);
-		treeTableStudents.setParent(8, 2);
-		treeTableStudents.setParent(9, 3);
-		treeTableStudents.setParent(10, 3);
-		treeTableStudents.setParent(11, 4);
-		treeTableStudents.setParent(12, 4);
-		// The childs (books) may not have additional childs
-		for (int i = 5; i <= 12; i++) {
-			treeTableStudents.setChildrenAllowed(i, false);
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					for(CheckBox checkBox : checkBoxBorrowedMaterials) {
+						checkBox.setValue(checkBoxStudent.getValue());
+					}
+				}
+			});
 		}
+		
+		treeTableStudents.sort(new String[] {CLASS, LAST_NAME, FIRST_NAME}, new boolean[] {true, true, true});
+	}
+	
+	public void addSaveButtonClickedListener(ClickListener clickListener) {
+		buttonSave.addClickListener(clickListener);
+	}
+	
+	public Collection<BorrowedMaterial> getSelectedBorrowedMaterials() {
+		Collection<BorrowedMaterial> selectedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
+		for(Object itemId : treeTableStudents.getItemIds()) {
+			CheckBox itemCheckBox = (CheckBox) treeTableStudents.getItem(itemId).getItemProperty(enterDataHeader).getValue();
+			if(itemCheckBox.getValue()) {
+				if(itemCheckBox.getData() instanceof BorrowedMaterial) {
+					selectedBorrowedMaterials.add((BorrowedMaterial) itemCheckBox.getData());
+				}
+			}
+		}
+		
+		return selectedBorrowedMaterials;
 	}
 }

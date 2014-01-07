@@ -29,6 +29,7 @@ public class LendingViewModel {
 	public interface GenerateStudentLendingList extends ActionHandler {}
 	public interface GenerateGradeLendingList extends ActionHandler {};
 	public interface GetStudentsBorrowedMaterial extends ActionHandler {};
+	public interface SetBorrowedMaterialsReceived extends ActionHandler {};
 	
 	public interface LendingListStudent extends State<List<TeachingMaterial>> {};
 	public interface LendingListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
@@ -37,19 +38,19 @@ public class LendingViewModel {
 	public interface Grades extends State<Collection<Grade>> {};
 
 	@ProvidesState(LendingListStudent.class)
-	public BasicState<List<TeachingMaterial>> lendingListStudent = new BasicState<>(List.class);
+	public State<List<TeachingMaterial>> lendingListStudent = new BasicState<>(List.class);
 	
 	@ProvidesState(LendingListGrades.class)
-	public BasicState<Map<Grade, Map<TeachingMaterial, Integer>>> lendingListGrades = new BasicState<>(Map.class);
+	public State<Map<Grade, Map<TeachingMaterial, Integer>>> lendingListGrades = new BasicState<>(Map.class);
 
 	@ProvidesState(StudentBorrowedMaterials.class)
-	public BasicState<List<BorrowedMaterial>> studentBorrowedMaterials = new BasicState<>(List.class);
+	public State<List<BorrowedMaterial>> studentBorrowedMaterials = new BasicState<>(List.class);
 	
 	@ProvidesState(Students.class)
-	public BasicState<Collection<Student>> students = new BasicState<>(Collection.class);
+	public State<Collection<Student>> students = new BasicState<>(Collection.class);
 	
 	@ProvidesState(Grades.class)
-	public BasicState<Collection<Grade>> grades = new BasicState<>(Collection.class);
+	public State<Collection<Grade>> grades = new BasicState<>(Collection.class);
 	
 	private DAO<Grade> daoGrade;
 	private DAO<Student> daoStudent;
@@ -86,13 +87,15 @@ public class LendingViewModel {
 		
 		persistBorrowedMaterials(student, studentLendingList);
 		lendingListStudent.set(studentLendingList);
+		
+		updateStudents();
 	}
 	
 	@HandlesAction(GenerateGradeLendingList.class)
-	public void generateGradeLendingList(State<Set<Grade>> selectedGrades) {
+	public void generateGradeLendingList(Set<Grade> selectedGrades) {
 		Map<Grade, Map<TeachingMaterial, Integer>> toLend = new LinkedHashMap<Grade, Map<TeachingMaterial, Integer>>();
 		
-		for (Grade grade : selectedGrades.get()) {
+		for (Grade grade : selectedGrades) {
 			Map<TeachingMaterial, Integer> gradeList = new LinkedHashMap<TeachingMaterial, Integer>();
 			
 			for(Student student : grade.getStudents()) {
@@ -125,7 +128,7 @@ public class LendingViewModel {
 	}
 	
 	@HandlesAction(GetStudentsBorrowedMaterial.class)
-	public void getStudentBorrowedMaterials(String studentId) {
+	public void getStudentBorrowedMaterials(List<Student> students) {
 //		Student student = daoStudent.find(Integer.parseInt(studentId));
 //		List<BorrowedMaterial> borrowedList = student.getBorrowedList();
 //		for (BorrowedMaterial borrowedMaterial : borrowedList) {
@@ -134,10 +137,13 @@ public class LendingViewModel {
 //			}
 //		}
 		
+		List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
+		for (Student student : students) {
+			borrowedList.addAll(daoBorrowedMaterial.findAllWithCriteria(
+					Restrictions.eq("studentId", student.getId())
+					, Restrictions.eq("received", false)));
+		}
 		
-		List<BorrowedMaterial> borrowedList = (List<BorrowedMaterial>) daoBorrowedMaterial.findAllWithCriteria(
-				Restrictions.eq("studentId", Integer.parseInt(studentId))
-				, Restrictions.eq("received", false));
 		studentBorrowedMaterials.set(borrowedList);
 	}
 
@@ -166,6 +172,16 @@ public class LendingViewModel {
 		}
 
 		return toLend;
+	}
+	
+	@HandlesAction(SetBorrowedMaterialsReceived.class)
+	public void setBorrowedMaterialsReceived(Collection<BorrowedMaterial> borrowedMaterials) {
+		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
+			borrowedMaterial.setReceived(true);
+			daoBorrowedMaterial.update(borrowedMaterial);
+		}
+		
+		updateStudents();
 	}
 	
 	private void persistBorrowedMaterials(Student student, List<TeachingMaterial> teachingMaterials) {
