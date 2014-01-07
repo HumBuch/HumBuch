@@ -1,5 +1,8 @@
 package de.dhbw.humbuch.view.components;
 
+import java.util.NoSuchElementException;
+
+import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -9,6 +12,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.themes.BaseTheme;
 
+import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindAction;
+import de.dhbw.humbuch.viewmodel.LoginViewModel;
+import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogout;
+
 
 @Theme("mytheme")
 public class Header extends CustomComponent {
@@ -16,14 +24,19 @@ public class Header extends CustomComponent {
 	
 	private HorizontalLayout horizontalLayoutHeader;
 	private HorizontalLayout horizontalLayoutHeaderBar;
-	private Button buttonLogout;
 	private Button buttonSettings;
 	private Button buttonHelp;
 	private Image imageLogo;
+	
+	@BindAction(value = DoLogout.class, source = {})
+	private Button buttonLogout = new Button();
 
-	public Header() {
+	@Inject
+	public Header(ViewModelComposer viewModelComposer,
+			LoginViewModel loginViewModel) {
 		init();
 		buildLayout();
+		bindViewModel(viewModelComposer, loginViewModel);
 	}
 
 	private void init() {
@@ -67,5 +80,15 @@ public class Header extends CustomComponent {
 		horizontalLayoutHeader.setComponentAlignment(horizontalLayoutHeaderBar, Alignment.TOP_RIGHT);
 		
 		setCompositionRoot(horizontalLayoutHeader);
+	}
+	
+	private void bindViewModel(ViewModelComposer viewModelComposer,
+			Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
 	}
 }
