@@ -130,5 +130,10 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return grade + suffix;
+	}
 	
 }

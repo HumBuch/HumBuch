@@ -30,8 +30,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, MultiClassChooser multiClassChooser) {
-		bindViewModel(viewModelComposer, returnViewModel);
 		this.multiClassChooser = multiClassChooser;
+		bindViewModel(viewModelComposer, returnViewModel);
 		init();
 		buildLayout();
 	}

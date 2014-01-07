@@ -220,4 +220,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		return true;
 	}
 	
+	public boolean hasUnreceivedBorrowedMaterials() {
+		for(BorrowedMaterial borrowedMaterial : getBorrowedList()) {
+			if(!borrowedMaterial.isReceived()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
