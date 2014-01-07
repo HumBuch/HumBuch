@@ -11,6 +11,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.view.components.EnterDataComponent;
 import de.dhbw.humbuch.view.components.ListSelector;
+import de.dhbw.humbuch.view.components.MultiClassChooser;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 
 
@@ -25,17 +26,19 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	private Accordion accordionContent;
 	private ListSelector listSelector;
 	private EnterDataComponent enterDataComponent;
+	private MultiClassChooser multiClassChooser;
 
 	@Inject
-	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
+	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, MultiClassChooser multiClassChooser) {
+		bindViewModel(viewModelComposer, returnViewModel);
+		this.multiClassChooser = multiClassChooser;
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, returnViewModel);
 	}
 
 	private void init() {
 		accordionContent = new Accordion();
-		listSelector = new ListSelector(ListSelector.Process.RETURNING);
+		listSelector = new ListSelector(multiClassChooser, ListSelector.Process.RETURNING);
 		enterDataComponent = new EnterDataComponent(EnterDataComponent.Process.RETURNING);
 	}
 
