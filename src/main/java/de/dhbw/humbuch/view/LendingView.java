@@ -11,6 +11,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.view.components.EnterDataComponent;
 import de.dhbw.humbuch.view.components.ListSelector;
+import de.dhbw.humbuch.view.components.MultiClassChooser;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 
 
@@ -25,17 +26,20 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private Accordion accordionContent;
 	private ListSelector listSelector;
 	private EnterDataComponent enterDataComponent;
+	@Inject
+	private MultiClassChooser multiClassChooser;
 
 	@Inject
-	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
+	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, MultiClassChooser multiClassChooser) {
+		bindViewModel(viewModelComposer, lendingViewModel);
+		this.multiClassChooser = multiClassChooser;
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, lendingViewModel);
 	}
 
 	private void init() {
 		accordionContent = new Accordion();
-		listSelector = new ListSelector(ListSelector.Process.LENDING);
+		listSelector = new ListSelector(multiClassChooser, ListSelector.Process.LENDING);
 		enterDataComponent = new EnterDataComponent(EnterDataComponent.Process.LENDING);
 	}
 

@@ -1,6 +1,9 @@
 package de.dhbw.humbuch.view.components;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 import com.google.inject.Inject;
@@ -30,7 +33,7 @@ public class MultiClassChooser extends CustomComponent {
 	private TreeTable treeTableClasses;
 
 	@BindState(Grades.class)
-	private State<Collection<Grade>> allGrades;
+	private State<Collection<Grade>> allGrades = new BasicState<>(Collection.class);
 
 	@Inject
 	public MultiClassChooser(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
@@ -38,27 +41,8 @@ public class MultiClassChooser extends CustomComponent {
 		init();
 		buildLayout();
 	}
-	
-	//	public MultiClassChooser() {
-	//		init();
-	//		buildLayout();
-	//	}
 
 	private void init() {
-		if(allGrades == null){
-			System.out.println("allGrades null");
-		}
-		allGrades = new BasicState<>(Collection.class);
-		Collection<Grade> grades = allGrades.get();
-		if (grades != null) {
-			for (Grade grade : grades) {
-				System.out.println("" + grade.getGrade() + grade.getSuffix() + grade.getClass());
-			}
-		}
-		else {
-			System.out.println("no grades");
-		}
-
 		verticalLayoutContent = new VerticalLayout();
 		treeTableClasses = new TreeTable();
 
@@ -66,7 +50,7 @@ public class MultiClassChooser extends CustomComponent {
 		treeTableClasses.setPageLength(0);
 		treeTableClasses.addContainerProperty(CHOOSE_CLASS, CheckBox.class, null);
 
-		populateWithTestData();
+		populateWithClasses();
 	}
 
 	private void buildLayout() {
@@ -75,56 +59,64 @@ public class MultiClassChooser extends CustomComponent {
 		setCompositionRoot(verticalLayoutContent);
 	}
 
-	private void populateWithTestData() {
-		// root
+	private void populateWithClasses() {
+		Collection<Grade> collAllGrades = allGrades.get();
+		HashSet<Integer> grades = new HashSet<Integer>();
+		ArrayList<String> classesWithSuffix = new ArrayList<String>();
+		int numberOfItems = 1;
+
+		// Add root element
 		treeTableClasses.addItem(new Object[] { new CheckBox("Alle Klassen") }, 1);
-		// branches
-		treeTableClasses.addItem(new Object[] { new CheckBox("Klassenstufe 5") }, 2);
-		treeTableClasses.addItem(new Object[] { new CheckBox("Klassenstufe 6") }, 3);
-		treeTableClasses.addItem(new Object[] { new CheckBox("Klassenstufe 7") }, 4);
-		treeTableClasses.addItem(new Object[] { new CheckBox("Klassenstufe 8") }, 5);
-		// leaves
-		treeTableClasses.addItem(new Object[] { new CheckBox("5a") }, 6);
-		treeTableClasses.addItem(new Object[] { new CheckBox("5b") }, 7);
-		treeTableClasses.addItem(new Object[] { new CheckBox("5c") }, 8);
-		treeTableClasses.addItem(new Object[] { new CheckBox("6a") }, 9);
-		treeTableClasses.addItem(new Object[] { new CheckBox("6b") }, 10);
-		treeTableClasses.addItem(new Object[] { new CheckBox("7a") }, 11);
-		treeTableClasses.addItem(new Object[] { new CheckBox("7b") }, 12);
-		treeTableClasses.addItem(new Object[] { new CheckBox("8a") }, 13);
-		treeTableClasses.addItem(new Object[] { new CheckBox("8b") }, 14);
-		treeTableClasses.addItem(new Object[] { new CheckBox("8c") }, 15);
+		numberOfItems += 1;
 
-		// build hierarchy
-		treeTableClasses.setParent(2, 1);
-		treeTableClasses.setParent(3, 1);
-		treeTableClasses.setParent(4, 1);
-		treeTableClasses.setParent(5, 1);
+		// Collect information before building tree
+		for (Grade g : collAllGrades) {
+			// Collect all branches
+			grades.add(g.getGrade());
+			// Create names of leaves
+			classesWithSuffix.add("" + g.getGrade() + g.getSuffix());
+		}
 
-		treeTableClasses.setParent(6, 2);
-		treeTableClasses.setParent(7, 2);
-		treeTableClasses.setParent(8, 2);
-		treeTableClasses.setParent(9, 3);
-		treeTableClasses.setParent(10, 3);
-		treeTableClasses.setParent(11, 4);
-		treeTableClasses.setParent(12, 4);
-		treeTableClasses.setParent(13, 5);
-		treeTableClasses.setParent(14, 5);
-		treeTableClasses.setParent(15, 5);
+		ArrayList<Integer> sortedGrades = new ArrayList<Integer>(grades);
+		Collections.sort(sortedGrades);
+		Collections.sort(classesWithSuffix);
 
-		// The childs may not have additional childs
-		for (int i = 6; i <= 15; i++) {
-			treeTableClasses.setChildrenAllowed(i, false);
+		int lastMarker = 0;
+		for (Integer grade : sortedGrades) {
+			// Add branch elements
+			treeTableClasses.addItem(new Object[] { new CheckBox("Klassenstufe " + grade) }, numberOfItems);
+			// put branch under the root element
+			treeTableClasses.setParent(numberOfItems, 1);
+
+			// Add leaf elements
+			int leafesForBranch = 0;
+			for (; lastMarker < classesWithSuffix.size(); lastMarker++) {
+				String classWithSuffix = classesWithSuffix.get(lastMarker);
+
+				if (classWithSuffix.contains("" + grade)) {
+					leafesForBranch += 1;
+					treeTableClasses.addItem(new Object[] { new CheckBox(classWithSuffix) }, leafesForBranch + numberOfItems);
+					treeTableClasses.setChildrenAllowed(leafesForBranch + numberOfItems, false);
+					// put leaf under current branch
+					treeTableClasses.setParent(leafesForBranch + numberOfItems, numberOfItems);
+				}
+				else {
+					numberOfItems = leafesForBranch + numberOfItems;
+					break;
+				}
+			}
+			numberOfItems++;
 		}
 
 		treeTableClasses.setCollapsed(1, false);
 	}
-	
+
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		} catch (IllegalAccessException | NoSuchElementException
+		}
+		catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
