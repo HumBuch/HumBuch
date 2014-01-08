@@ -6,8 +6,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -103,5 +105,31 @@ public class GradeTest {
 		grade.setStudents(studentsList);
 		
 		return grade;
+	}
+	
+	public static Map<Grade, Map<TeachingMaterial, Integer>> prepareNewGradeTest(){
+		Grade grade = new Grade.Builder("7b").teacher("Herr Bob").build();
+		Map<Grade, Map<TeachingMaterial, Integer>> gradeMap = new LinkedHashMap<>();
+		Map<TeachingMaterial, Integer> teachingMaterialMap = new LinkedHashMap<>();
+		Category category = new Category.Builder("Book").build();
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(category, "Bio1 - Bugs", "1-2-3", date).price(79.75).toGrade(6).build();
+		teachingMaterial.setId(1);
+		teachingMaterialMap.put(teachingMaterial, 4);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Geometrie for Dummies", "1-2-3", date).price(22.49).toGrade(11).build();
+		teachingMaterial.setId(2);
+		teachingMaterialMap.put(teachingMaterial, 7);
+		teachingMaterial = new TeachingMaterial.Builder(category, "Java rocks", "1-2-3", date).price(22.49).toGrade(11).build();
+		teachingMaterial.setId(3);
+		teachingMaterialMap.put(teachingMaterial, 2);
+		gradeMap.put(grade, teachingMaterialMap);
+
+		return gradeMap;		
 	}
 }

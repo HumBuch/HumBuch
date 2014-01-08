@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import de.dhbw.humbuch.model.SubjectHandler;
@@ -60,8 +61,11 @@ public class PDFTest {
 	}
 	
 	public static void testClassPDF(){
-		Grade grade = GradeTest.prepareGradeTest();
-		new PDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
+//		Grade grade = GradeTest.prepareGradeTest();
+//		new PDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
+		
+		Map<Grade, Map<TeachingMaterial, Integer>> gradeMap = GradeTest.prepareNewGradeTest();
+		new PDFClassList(gradeMap).savePDF("./testfiles/SecondPdfClass.pdf");
 	}
 	
 	public static void testDunningPDF(){

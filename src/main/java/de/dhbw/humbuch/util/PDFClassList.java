@@ -1,7 +1,9 @@
 package de.dhbw.humbuch.util;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -10,36 +12,51 @@ import com.lowagie.text.pdf.PdfPTable;
 import de.dhbw.humbuch.model.GradeHandler;
 import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 
 public final class PDFClassList extends PDFHandler {
 
 	private Grade grade;
+	private Map<Grade, Map<TeachingMaterial, Integer>> gradesMap;
 
-	//object student has to be replaced by a class object
 	public PDFClassList(Grade grade) {
 		super();
 		this.grade = grade;
 	}
+	
+	public PDFClassList(Map<Grade, Map<TeachingMaterial, Integer>> gradesMap){
+		super();
+		this.gradesMap = gradesMap;
+	}
 
 	protected void insertDocumentParts(Document document) {
-		this.addHeading(document, "Ausgabe-Liste 2013");
-		this.addGradeInformation(document);
-		this.addContent(document);
+		if(this.grade != null){
+			this.addHeading(document, "Ausgabe-Liste 2013");
+			this.addGradeInformation(document);
+			this.addContent(document);
+		}
+		else if(this.gradesMap != null){
+			for(Grade grade : this.gradesMap.keySet()){
+				this.grade = grade;
+				this.addHeading(document, "Ausgabe-Liste 2013");
+				this.addGradeInformation(document);
+				this.addContent(document);
+				document.newPage();
+				this.resetPageNumber();
+			}
+		}
 	}
 
 	protected void addContent(Document document) {
 		PdfPTable table = this.createTableWithRentalInformationHeaderForClass();
 
-		List<MapperAmountAndBorrowedMaterial> gradeRentalList = GradeHandler.getAllRentedBooksOfGrade(this.grade);
-
-		Iterator<MapperAmountAndBorrowedMaterial> iterator = gradeRentalList.iterator();
-		MapperAmountAndBorrowedMaterial gradeRental;
-		while (iterator.hasNext()) {
-			gradeRental = iterator.next();
-			String[] contentArray = {""+gradeRental.getBorrowedMaterial().getTeachingMaterial().getToGrade(),
-			                         gradeRental.getBorrowedMaterial().getTeachingMaterial().getName(),
-			                         ""+gradeRental.getAmount()};
+		Map<TeachingMaterial, Integer> map = this.gradesMap.get(this.grade);
+		System.out.println(map.size());
+		for(TeachingMaterial teachingMaterial : map.keySet()) {
+			String[] contentArray = {""+teachingMaterial.getToGrade(),
+			                         	teachingMaterial.getName(),
+			                         ""+ map.get(teachingMaterial)};
 			PDFHandler.fillTableWithContent(table, true, contentArray);
 		}
 
@@ -61,8 +78,7 @@ public final class PDFClassList extends PDFHandler {
 
 		String[] contentArray = {"Klasse: ", "" + this.grade.getGrade(),
 		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
-//		                         "Sprachenfolge: "+ ProfileHandler.getLanguageProfile(this.student.getProfile()) + "\n"
-//					             + "Religionsunterricht: " + this.student.getProfile().getReligion().toString() + "\n"};
+
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
 		
 		try {
@@ -72,5 +88,9 @@ public final class PDFClassList extends PDFHandler {
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public PDFClassList(){
+		
 	}
 }
