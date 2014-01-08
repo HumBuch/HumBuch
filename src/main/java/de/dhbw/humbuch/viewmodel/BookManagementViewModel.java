@@ -1,6 +1,8 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -29,8 +31,7 @@ public class BookManagementViewModel {
 	}
 	public interface DoFetchTeachingMaterial extends ActionHandler{
 	}
-	public interface DoFetchCategory extends ActionHandler{
-	}
+
 
 	@ProvidesState(TeachingMaterials.class)
 	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
@@ -38,9 +39,7 @@ public class BookManagementViewModel {
 	@ProvidesState(TeachingMaterialInfo.class)
 	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(TeachingMaterial.class);
 	@ProvidesState(Categories.class)
-	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
-	@ProvidesState(CategoryInfo.class)
-	public final State<Category> categoryInfo = new BasicState<>(Category.class);
+	public final State<Map<Integer,Category>> categories = new BasicState<>(Map.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
@@ -59,11 +58,20 @@ public class BookManagementViewModel {
 	@AfterVMBinding
 	private void afterVMBinding() {
 		updateTeachingMaterial();
+		updateCategory();
 	}
 	
 	private void updateTeachingMaterial() {
-		teachingMaterials.set(daoTeachingMaterial.findAll());
-		categories.set(daoCategory.findAll());
+		teachingMaterials.set(daoTeachingMaterial.findAll());	
+	}
+	
+	private void updateCategory() {
+		Collection<Category> categories = daoCategory.findAll();
+		Map<Integer,Category> tempMap = new HashMap<Integer,Category>();
+		for(Category category : categories) {
+			tempMap.put(category.getId(), category);
+		}
+		this.categories.set(tempMap);
 	}
 
 	/**
@@ -92,15 +100,5 @@ public class BookManagementViewModel {
 	@HandlesAction(DoFetchTeachingMaterial.class)
 	public void doFetchTeachingMaterial(int id) {
 		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
-	}
-	
-	/**
-	 * Fetches a category and sets the categoryInfoState
-	 * @param id
-	 * 		the id of the category to be fetched
-	 */
-	@HandlesAction(DoFetchCategory.class)
-	public void doFetchCategory(int id){
-		categoryInfo.set(daoCategory.find(id));
 	}
 }
