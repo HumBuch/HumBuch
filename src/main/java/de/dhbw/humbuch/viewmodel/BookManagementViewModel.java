@@ -24,8 +24,6 @@ public class BookManagementViewModel {
 	}
 	public interface Categories extends State<Collection<Category>> {
 	}
-	public interface CategoryInfo extends State<Category>{
-	}
 
 	public interface DoUpdateTeachingMaterial extends ActionHandler {
 	}
