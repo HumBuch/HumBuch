@@ -76,7 +76,7 @@ public final class PDFClassList extends PDFHandler {
 	private void addGradeInformation(Document document){
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
-		String[] contentArray = {"Klasse: ", "" + this.grade.getGrade(),
+		String[] contentArray = {"Klasse: ", "" + this.grade.getGrade() + this.grade.getSuffix(),
 		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
 
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
