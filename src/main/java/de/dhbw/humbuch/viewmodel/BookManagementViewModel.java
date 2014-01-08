@@ -17,13 +17,19 @@ public class BookManagementViewModel {
 
 	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {
 	}
+	public interface TeachingMaterialInfo extends State<TeachingMaterial>{
+	}
 
 	public interface DoUpdateTeachingMaterial extends ActionHandler {
+	}
+	public interface DoFetchTeachingMaterial extends ActionHandler{
 	}
 
 	@ProvidesState(TeachingMaterials.class)
 	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
 			Collection.class);
+	@ProvidesState(TeachingMaterialInfo.class)
+	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(TeachingMaterial.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 
