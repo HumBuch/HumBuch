@@ -29,6 +29,8 @@ public class BookManagementViewModel {
 	}
 	public interface DoFetchTeachingMaterial extends ActionHandler{
 	}
+	public interface DoUpdateCategory extends ActionHandler{
+	}
 
 
 	@ProvidesState(TeachingMaterials.class)
@@ -98,5 +100,24 @@ public class BookManagementViewModel {
 	@HandlesAction(DoFetchTeachingMaterial.class)
 	public void doFetchTeachingMaterial(int id) {
 		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
+	}
+	
+	/**
+	 * Either persist a newly created category or update an existing one
+	 * 
+	 * @param category
+	 * 			a category to be persisted or updated
+	 */
+	@HandlesAction(DoUpdateCategory.class)
+	public void doUpdateCategory(Category category) {
+		if (category == null) {
+			return;
+		}
+		if (daoCategory.find(category.getId()) != null) {
+			daoCategory.update(category);
+		} else {
+			daoCategory.insert(category);
+		}
+		updateCategory();
 	}
 }
