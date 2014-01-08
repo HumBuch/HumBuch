@@ -1,6 +1,10 @@
 package de.dhbw.humbuch.viewmodel;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.inject.Inject;
 import com.vaadin.ui.Upload;
@@ -14,6 +18,7 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.util.CSVHandler;
 
 public class ImportViewModel {
 
@@ -67,7 +72,8 @@ public class ImportViewModel {
 	 * @param outputStream
 	 */
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
-		
-	
+		InputStreamReader inputStream = new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()));
+		CSVReader reader = new CSVReader(inputStream);
+		CSVHandler.createStudentObjectsFromCSV(reader);
 	}
 }
