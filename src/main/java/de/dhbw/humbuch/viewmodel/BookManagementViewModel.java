@@ -84,12 +84,21 @@ public class BookManagementViewModel {
 		}
 		updateTeachingMaterial();
 	}
-	
+	/**
+	 * Fetches a teaching material and sets the teachingMaterialInfoState
+	 * @param id
+	 * 		the id of the teaching material to be fetched
+	 */
 	@HandlesAction(DoFetchTeachingMaterial.class)
 	public void doFetchTeachingMaterial(int id) {
 		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
 	}
 	
+	/**
+	 * Fetches a category and sets the categoryInfoState
+	 * @param id
+	 * 		the id of the category to be fetched
+	 */
 	@HandlesAction(DoFetchCategory.class)
 	public void doFetchCategory(int id){
 		categoryInfo.set(daoCategory.find(id));
