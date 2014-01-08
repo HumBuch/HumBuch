@@ -61,6 +61,48 @@ public final class PDFStudentList extends PDFHandler{
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	    
+	    if(this.returnList != null && this.returnList.isEmpty()){
+	    	table = this.createTableWithRentalInformationHeader();
+			
+			iterator = this.returnList.iterator();
+			while(iterator.hasNext()){
+				borrowedMaterial = (BorrowedMaterial) iterator.next();
+				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+				                         borrowedMaterial.getTeachingMaterial().getName(),
+				                      	 "" };
+				PDFHandler.fillTableWithContent(table, true, contentArray);		
+			}
+		    
+		    try {
+				document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+	    }
+	    if(this.lendingList != null && this.lendingList.isEmpty()){
+	    	table = this.createTableWithRentalInformationHeader();
+			
+			iterator = this.lendingList.iterator();
+			while(iterator.hasNext()){
+				borrowedMaterial = (BorrowedMaterial) iterator.next();
+				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+				                         borrowedMaterial.getTeachingMaterial().getName(),
+				                      	 "" };
+				PDFHandler.fillTableWithContent(table, true, contentArray);		
+			}
+		    
+		    try {
+				document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+	    }
+	    
 	}
 	
 	/**
