@@ -66,6 +66,9 @@ public class PDFTest {
 		
 		Map<Grade, Map<TeachingMaterial, Integer>> gradeMap = GradeTest.prepareGradeTest();
 		new PDFClassList(gradeMap).savePDF("./testfiles/SecondPdfClass.pdf");
+		
+		Map<Grade, Map<TeachingMaterial, Integer>> multipleGradesMap = GradeTest.prepareMultipleGradeTest();
+		new PDFClassList(multipleGradesMap).savePDF("./testfiles/MultiPdfClass.pdf");
 	}
 	
 	public static void testDunningPDF(){
