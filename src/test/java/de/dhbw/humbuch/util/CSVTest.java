@@ -37,16 +37,4 @@ public class CSVTest {
 		}
 		
 	}
-	
-	@Test
-	public void testCreateParentObjectsFromCSV(){
-		ArrayList<Parent> list = CSVHandler.createParentObjectsFromCSV("./src/test/java/de/dhbw/humbuch/util/eltern_test.csv");
-		assertEquals(3, list.size());
-		assertEquals("Palmer", list.get(1).getLastname());
-		assertEquals("Deacon", list.get(1).getFirstname());
-		assertEquals(54321, list.get(1).getPostcode());
-		assertEquals("Herr", list.get(1).getTitle());
-		assertEquals("Example Ave.", list.get(1).getStreet());
-	}
-
 }
