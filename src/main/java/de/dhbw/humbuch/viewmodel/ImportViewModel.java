@@ -78,8 +78,8 @@ public class ImportViewModel {
 	 */
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
 		InputStreamReader inputStream = new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()));
-		CSVReader reader = new CSVReader(inputStream);
-		CSVHandler.createStudentObjectsFromCSV(reader);
+		CSVReader reader = new CSVReader(inputStream, ';', '\'', 0);
+		persistStudents(CSVHandler.createStudentObjectsFromCSV(reader));
 	}
 	
 	public void persistStudents(ArrayList<Student> students){
@@ -104,22 +104,23 @@ public class ImportViewModel {
 			}
 			
 			if(persistedStudent == null){			
-				
-				Collection<Parent> parents = daoParent.findAllWithCriteria(
-						Restrictions.and(
-								Restrictions.like("title", student.getParent().getTitle()),
-								Restrictions.like("firstname", student.getParent().getFirstname()),
-								Restrictions.like("lastname", student.getParent().getLastname()),
-								Restrictions.like("street", student.getParent().getStreet()),
-								Restrictions.eq("postcode", student.getParent().getPostcode()),
-								Restrictions.like("city", student.getParent().getCity())
-						));
-	
-				if(parents.size() == 1){
-					Iterator<Parent> parentsIterator = parents.iterator();
-					Parent parent = parentsIterator.next();		
-					student.setParent(parent);
-				}
+				if(student.getParent() != null){
+					Collection<Parent> parents = daoParent.findAllWithCriteria(
+							Restrictions.and(
+									Restrictions.like("title", student.getParent().getTitle()),
+									Restrictions.like("firstname", student.getParent().getFirstname()),
+									Restrictions.like("lastname", student.getParent().getLastname()),
+									Restrictions.like("street", student.getParent().getStreet()),
+									Restrictions.eq("postcode", student.getParent().getPostcode()),
+									Restrictions.like("city", student.getParent().getCity())
+							));
+		
+					if(parents.size() == 1){
+						Iterator<Parent> parentsIterator = parents.iterator();
+						Parent parent = parentsIterator.next();		
+						student.setParent(parent);
+					}
+				}				
 		
 				daoStudent.insert(student);	
 			}
