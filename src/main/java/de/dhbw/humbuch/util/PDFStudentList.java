@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.lowagie.text.Document;
@@ -14,6 +15,8 @@ import de.dhbw.humbuch.model.entity.Student;
 public final class PDFStudentList extends PDFHandler{
 	private Student student;
 	private Set<Student> students;
+	private List<BorrowedMaterial> returnList;
+	private List<BorrowedMaterial> lendingList;
 
 	public PDFStudentList(Student student) {
 		super();	
@@ -24,6 +27,13 @@ public final class PDFStudentList extends PDFHandler{
 		super();
 		this.students = students;
 	
+	}
+	
+	public PDFStudentList(Builder builder){
+		super();
+		this.student = builder.student;
+		this.returnList = builder.returnList;
+		this.lendingList = builder.lendingList;
 	}
 	
 	protected void insertDocumentParts(Document document){
@@ -110,5 +120,30 @@ public final class PDFStudentList extends PDFHandler{
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static class Builder{
+		private Student student;
+		private List<BorrowedMaterial> returnList;
+		private List<BorrowedMaterial> lendingList;
+				
+		public Builder(Student student){
+			this.student = student;
+		}
+		
+		public Builder returnList(List<BorrowedMaterial> borrowedMaterial){
+			this.returnList = borrowedMaterial;
+			return this;
+		}
+		
+		public Builder lendingList(List<BorrowedMaterial> borrowedMaterial){
+			this.lendingList = borrowedMaterial;
+			return this;
+		}
+		
+		public PDFStudentList build(){
+			return new PDFStudentList(this);
+		}
+		
 	}
 }
