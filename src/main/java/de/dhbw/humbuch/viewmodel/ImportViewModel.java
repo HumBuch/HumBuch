@@ -1,5 +1,7 @@
 package de.dhbw.humbuch.viewmodel;
 
+import java.io.ByteArrayOutputStream;
+
 import com.google.inject.Inject;
 import com.vaadin.ui.Upload;
 
@@ -59,5 +61,13 @@ public class ImportViewModel {
 	
 	public void setImportResult(String importResult){
 		this.importResult.set(importResult);
+	}
+	/**
+	 * Receives the OutputStream provided by an upload.
+	 * @param outputStream
+	 */
+	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
+		
+	
 	}
 }
