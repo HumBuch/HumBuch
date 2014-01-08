@@ -90,6 +90,45 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	private void buildTreeTable() {
-
+		// root
+		treeTableContent.addItem(new Object[] {new CheckBox("Alle Klassen")}, 1);
+		// class levels
+		treeTableContent.addItem(new Object[] {new CheckBox("Klassenstufe 5")}, 2);
+		treeTableContent.addItem(new Object[] {new CheckBox("Klassenstufe 6")}, 3);
+		treeTableContent.addItem(new Object[] {new CheckBox("Klassenstufe 7")}, 4);
+		// classes
+		treeTableContent.addItem(new Object[] {new CheckBox("5a")}, 5);
+		treeTableContent.addItem(new Object[] {new CheckBox("5b")}, 6);
+		treeTableContent.addItem(new Object[] {new CheckBox("6a")}, 7);
+		treeTableContent.addItem(new Object[] {new CheckBox("6b")}, 8);
+		treeTableContent.addItem(new Object[] {new CheckBox("7a")}, 9);
+		treeTableContent.addItem(new Object[] {new CheckBox("7b")}, 10);
+		// students
+		treeTableContent.addItem(new Object[] {new CheckBox("Hans Wurst")}, 11);
+		treeTableContent.addItem(new Object[] {new CheckBox("Max Mustermann")}, 12);
+		treeTableContent.addItem(new Object[] {new CheckBox("Micky Mouse")}, 13);
+		// borrowed materials
+		treeTableContent.addItem(new Object[] {new CheckBox("Englisch Buch")}, 14);
+		treeTableContent.setChildrenAllowed(14, false);
+		treeTableContent.addItem(new Object[] {new CheckBox("Mathe Buch")}, 15);
+		treeTableContent.setChildrenAllowed(15, false);
+		treeTableContent.addItem(new Object[] {new CheckBox("Französisch Buch")}, 16);
+		treeTableContent.setChildrenAllowed(16, false);
+		// hierarchy
+		treeTableContent.setParent(2, 1);
+		treeTableContent.setParent(3, 1);
+		treeTableContent.setParent(4, 1);
+		treeTableContent.setParent(5, 2);
+		treeTableContent.setParent(6, 2);
+		treeTableContent.setParent(7, 3);
+		treeTableContent.setParent(8, 3);
+		treeTableContent.setParent(9, 4);
+		treeTableContent.setParent(10, 4);
+		treeTableContent.setParent(11, 5);
+		treeTableContent.setParent(12, 7);
+		treeTableContent.setParent(13, 9);
+		treeTableContent.setParent(14, 5);
+		treeTableContent.setParent(15, 7);
+		treeTableContent.setParent(16, 9);
 	}
 }
