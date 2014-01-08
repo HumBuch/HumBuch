@@ -5,13 +5,10 @@ import java.util.NoSuchElementException;
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.ViewModelComposer;
-import de.dhbw.humbuch.view.components.EnterDataComponent;
-import de.dhbw.humbuch.view.components.ListSelector;
-import de.dhbw.humbuch.view.components.MultiClassChooser;
+import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 
 
@@ -20,34 +17,25 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	private static final long serialVersionUID = -525078997965992622L;
 
 	private static final String TITLE = "Rückgabe";
-	private static final String SELECT_LIST = "Rückgabelisten drucken";
-	private static final String ENTER_DATA = "Rückgabelisten ins System einpflegen";
 
-	private Accordion accordionContent;
-	private ListSelector listSelector;
-	private EnterDataComponent enterDataComponent;
-	private MultiClassChooser multiClassChooser;
+	private StudentMaterialSelector studentMaterialSelector;
 
 	@Inject
-	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, MultiClassChooser multiClassChooser) {
-		this.multiClassChooser = multiClassChooser;
+	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
 		bindViewModel(viewModelComposer, returnViewModel);
 		init();
 		buildLayout();
 	}
 
 	private void init() {
-		accordionContent = new Accordion();
-		listSelector = new ListSelector(multiClassChooser, ListSelector.Process.RETURNING);
-		enterDataComponent = new EnterDataComponent(EnterDataComponent.Process.RETURNING);
+		studentMaterialSelector = new StudentMaterialSelector(StudentMaterialSelector.Process.RETURNING);
+		
+		setSpacing(true);
+		setMargin(true);
 	}
 
 	private void buildLayout() {
-		accordionContent.addTab(listSelector, SELECT_LIST);
-		accordionContent.addTab(enterDataComponent, ENTER_DATA);
-		accordionContent.setSelectedTab(enterDataComponent);
-
-		addComponent(accordionContent);
+		addComponent(studentMaterialSelector);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
@@ -64,7 +52,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
