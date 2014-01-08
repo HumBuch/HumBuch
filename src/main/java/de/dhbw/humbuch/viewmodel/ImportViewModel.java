@@ -82,17 +82,16 @@ public class ImportViewModel {
 		CSVHandler.createStudentObjectsFromCSV(reader);
 	}
 	
-	public static void persistStudents(ArrayList<Student> students, DAO<Student> daoStudent, 
-			DAO<Grade> daoGrade, DAO<Parent> daoParent){
+	public void persistStudents(ArrayList<Student> students){
 		
 		Iterator<Student> studentIterator = students.iterator();
 		
 		while(studentIterator.hasNext()){
 			Student student = studentIterator.next();
 			
-			Student persistedStudent = daoStudent.find(student.getId());
+			Student persistedStudent = this.daoStudent.find(student.getId());
 			
-			Collection<Grade> grades = daoGrade.findAllWithCriteria(
+			Collection<Grade> grades = this.daoGrade.findAllWithCriteria(
 					Restrictions.and(
 							Restrictions.like("grade", student.getGrade().getGrade()),
 							Restrictions.like("suffix", student.getGrade().getSuffix())
