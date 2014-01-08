@@ -13,6 +13,7 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
@@ -51,6 +52,9 @@ public class BasicModule extends ServletModule {
 		});
 		bind(new TypeLiteral<DAO<User>>() {
 		}).to(new TypeLiteral<DAOImpl<User>>() {
+		});
+		bind(new TypeLiteral<DAO<Category>>() {
+		}).to(new TypeLiteral<DAOImpl<Category>>() {
 		});
 
 		bind(ViewModelComposer.class).asEagerSingleton();
