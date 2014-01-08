@@ -1,55 +1,47 @@
 package de.dhbw.humbuch.view;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.NoSuchElementException;
 
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Runo;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
-import de.dhbw.humbuch.util.CSVUploader;
 import de.dhbw.humbuch.viewmodel.ImportViewModel;
 import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
-
 
 public class ImportView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -739081142499192817L;
 
 	private static final String TITLE = "Schüler Import";
-	private static final String DESCRIPTION = "Betätigen Sie den Button um Schülerdaten zu importieren.";
-	private static final String IMPORT = "Importieren";
 
-	private Label labelDescription;
-
-	@BindState(ImportResult.class)
-	private BasicState<String> importResult = new BasicState<String>(String.class);
-
-	//	@BindState(UploadButton.class)
-	//	private BasicState<Upload> uploadButton = new BasicState<Upload>(Upload.class);
-	private Upload uploadButton;
-	private CSVUploader csvUploader;
-
-	//@BindAction(value = DoImportStudents.class, source = { "uploadButton" })
-	private Button buttonImport = new Button(IMPORT);
+	private Upload upload;
+	private UploadReceiver receiver = new UploadReceiver(5242880); // 5MB = 5242880
 
 	private Label labelResult;
 
+	protected ImportViewModel importViewModel;
+
+	@BindState(ImportResult.class)
+	private BasicState<String> importResult = new BasicState<String>(
+			String.class);
+
 	@Inject
-	public ImportView(ViewModelComposer viewModelComposer, ImportViewModel importViewModel) {
-		this.csvUploader = new CSVUploader(importViewModel);
+	public ImportView(ViewModelComposer viewModelComposer,
+			ImportViewModel importViewModel) {
+		this.importViewModel = importViewModel;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, importViewModel);
@@ -59,27 +51,16 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 		setMargin(true);
 		setSpacing(true);
 
-		labelResult = new Label("put result of import here. e.g. 4/5 successfully imported");
+		// Create and configure upload component
+		upload = new Upload("Upload der Schülerdatei (als CSV):", receiver);
+		upload.setImmediate(false);
 
-		labelDescription = new Label(DESCRIPTION);
-		labelDescription.setStyleName(Runo.LABEL_H2);
+		upload.addSucceededListener(receiver);
 
-		buttonImport.setIcon(new ThemeResource("images/icons/32/icon_upload_red.png"));
-		buttonImport.setStyleName(BaseTheme.BUTTON_LINK);
-		buttonImport.addClickListener(new ClickListener() {
+		upload.setButtonCaption("Importieren");
 
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				uploadButton.submitUpload();
-			}
-		});
-
-		uploadButton = new Upload(null, this.csvUploader);
-		uploadButton.addSucceededListener(this.csvUploader);
-		uploadButton.addFailedListener(this.csvUploader);
-		uploadButton.setButtonCaption(null);
+		// Import results
+		labelResult = new Label();
 
 		importResult.addStateChangeListener(new StateChangeListener() {
 
@@ -91,10 +72,8 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void buildLayout() {
-		addComponent(labelDescription);
-		addComponent(buttonImport);
+		addComponent(upload);
 		addComponent(labelResult);
-		addComponent(uploadButton);
 	}
 
 	@Override
@@ -105,8 +84,7 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		}
-		catch (IllegalAccessException | NoSuchElementException
+		} catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
@@ -115,5 +93,56 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 	@Override
 	public String getTitle() {
 		return TITLE;
+	}
+
+	public class UploadReceiver implements Receiver, Upload.SucceededListener,
+			Upload.ProgressListener {
+
+		private static final long serialVersionUID = 1L;
+		private ByteArrayOutputStream outputStream;
+		private final long maxSize;
+		private boolean interrupted;
+
+		/**
+		 * @param maxSize
+		 *            The maximum file size that will be accepted (in
+		 *            bytes). -1 in case of no limit. 100Kb = 100000
+		 */
+		public UploadReceiver(long maxSize) {
+			this.maxSize = maxSize;
+		}
+
+		public OutputStream receiveUpload(String filename, String MIMEType) {
+
+			this.outputStream = new ByteArrayOutputStream();
+			return outputStream;
+
+		}
+
+		public void uploadSucceeded(Upload.SucceededEvent event) {
+			if (!interrupted) {
+				importViewModel.receiveUploadByteOutputStream(outputStream);
+			}
+		}
+
+		/**
+		 * Interrupts the current upload
+		 */
+		protected void interrupt() {
+			upload.interruptUpload();
+			interrupted = true;
+			new Notification(
+					"Import nicht möglich.",
+					"Die ausgewählte Datei ist zu groß. Bitte kontaktieren Sie einen Administrator.",
+					Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+		}
+
+		@Override
+		public void updateProgress(long readBytes, long contentLength) {
+			if (readBytes > maxSize || contentLength > maxSize) {
+				interrupt();
+			}
+
+		}
 	}
 }
