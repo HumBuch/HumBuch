@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.view.components;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
@@ -65,7 +66,9 @@ public class StudentMaterialSelector extends CustomComponent {
 		buttonClassList.setIcon(themeResourceIconPrint);
 		buttonStudentList.setIcon(themeResourceIconPrint);
 
+		verticalLayoutContent.setSpacing(true);
 		horizontalLayoutSearchBar.setWidth("100%");
+		horizontalLayoutSearchBar.setSpacing(true);
 		textFieldSearchBar.setWidth("100%");
 
 		treeTableContent.setWidth("100%");
@@ -79,9 +82,13 @@ public class StudentMaterialSelector extends CustomComponent {
 		horizontalLayoutSearchBar.addComponent(buttonSaveSelectedData);
 		if (process == Process.LENDING) {
 			horizontalLayoutSearchBar.addComponent(buttonClassList);
+			horizontalLayoutSearchBar.setComponentAlignment(buttonClassList, Alignment.MIDDLE_CENTER);
 		}
 		horizontalLayoutSearchBar.addComponent(buttonStudentList);
-
+		
+		horizontalLayoutSearchBar.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);		
+		horizontalLayoutSearchBar.setComponentAlignment(buttonStudentList, Alignment.MIDDLE_CENTER);
+		
 		verticalLayoutContent.addComponent(textFieldSearchBar);
 		verticalLayoutContent.addComponent(treeTableContent);
 		verticalLayoutContent.addComponent(horizontalLayoutSearchBar);
@@ -127,8 +134,8 @@ public class StudentMaterialSelector extends CustomComponent {
 		treeTableContent.setParent(11, 5);
 		treeTableContent.setParent(12, 7);
 		treeTableContent.setParent(13, 9);
-		treeTableContent.setParent(14, 5);
-		treeTableContent.setParent(15, 7);
-		treeTableContent.setParent(16, 9);
+		treeTableContent.setParent(14, 11);
+		treeTableContent.setParent(15, 12);
+		treeTableContent.setParent(16, 13);
 	}
 }
