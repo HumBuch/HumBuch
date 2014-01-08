@@ -56,7 +56,7 @@ public class PDFTest {
 		}		
 		Grade grade = new Grade.Builder("11au").build();
 		Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-		new PDFStudentList(student).savePDF("./testfiles/FirstPdf.pdf");
+		new PDFStudentList.Builder(student).build().savePDF("./testfiles/FirstPdf.pdf");
 	}
 	
 	public static void testClassPDF(){
