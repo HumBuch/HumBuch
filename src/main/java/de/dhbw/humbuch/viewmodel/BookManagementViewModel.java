@@ -71,4 +71,8 @@ public class BookManagementViewModel {
 		}
 		updateTeachingMaterial();
 	}
+	@HandlesAction(DoFetchTeachingMaterial.class)
+	public void doFetchTeachingMaterial(int id) {
+		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
+	}
 }
