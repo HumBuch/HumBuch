@@ -106,16 +106,22 @@ public final class CSVHandler {
 		int id = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "id")]);
 		String religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
 		
-		String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
-		String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
-		String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
-		String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
-		int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
-		String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
-		
-		
-		Parent parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
-				.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
+		Parent parent = null;
+		try{
+			String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
+			String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
+			String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
+			String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
+			int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
+			String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
+					
+			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
+					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
+		}
+		catch(NullPointerException npe){
+			System.err.println("Could not create parent object to student");
+		}
+
 		
 		ArrayList<String> checkValidityList = new ArrayList<String>();
 		checkValidityList.add(foreignLanguage1);
