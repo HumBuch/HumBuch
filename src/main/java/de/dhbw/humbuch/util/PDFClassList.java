@@ -1,29 +1,18 @@
 package de.dhbw.humbuch.util;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 
-import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 
 public final class PDFClassList extends PDFHandler {
-
 	private Grade grade;
 	private Map<Grade, Map<TeachingMaterial, Integer>> gradesMap;
-
-	public PDFClassList(Grade grade) {
-		super();
-		this.grade = grade;
-	}
 	
 	public PDFClassList(Map<Grade, Map<TeachingMaterial, Integer>> gradesMap){
 		super();
@@ -31,12 +20,7 @@ public final class PDFClassList extends PDFHandler {
 	}
 
 	protected void insertDocumentParts(Document document) {
-		if(this.grade != null){
-			this.addHeading(document, "Ausgabe-Liste 2013");
-			this.addGradeInformation(document);
-			this.addContent(document);
-		}
-		else if(this.gradesMap != null){
+		if(this.gradesMap != null){
 			for(Grade grade : this.gradesMap.keySet()){
 				this.grade = grade;
 				this.addHeading(document, "Ausgabe-Liste 2013");
