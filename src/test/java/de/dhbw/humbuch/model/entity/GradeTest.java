@@ -4,20 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
-
-import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.MapperAmountAndBorrowedMaterial;
-import de.dhbw.humbuch.model.SubjectHandler;
 
 
 public class GradeTest {
@@ -26,7 +19,6 @@ public class GradeTest {
 	public void testGetAllRentedBooksOfGrade(){
 		Map<Grade, Map<TeachingMaterial, Integer>> gradeMap = prepareGradeTest();
 		for(Grade grade : gradeMap.keySet()){
-			List<MapperAmountAndBorrowedMaterial> maabm = GradeHandler.getAllRentedBooksOfGrade(grade);
 			Map<TeachingMaterial, Integer> teachingMaterialMap = gradeMap.get(grade);
 			Iterator<TeachingMaterial> iterator = teachingMaterialMap.keySet().iterator();
 			TeachingMaterial teachingMaterial;
