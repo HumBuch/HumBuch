@@ -1,7 +1,6 @@
-CREATE USER 'humbuch'@'%' 
-IDENTIFIED BY 'humbuch';
+CREATE USER 'travis'@'%' 
+IDENTIFIED BY '';
 
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER 
-ON *.* 
-TO 'humbuch'@'%' 
-IDENTIFIED BY 'humbuch';
+ON humbuch_test.*
+TO 'travis'@'%';
