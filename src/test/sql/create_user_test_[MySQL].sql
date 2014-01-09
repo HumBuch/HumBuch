@@ -1,0 +1,7 @@
+CREATE USER 'humbuch'@'%' 
+IDENTIFIED BY 'humbuch';
+
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, FILE, INDEX, ALTER 
+ON *.* 
+TO 'humbuch'@'%' 
+IDENTIFIED BY 'humbuch';
