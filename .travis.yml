@@ -1,4 +1,4 @@
 language: java
 
 before_script:
-	- mysql < src/test/sql/create_user_test_[MySQL].sql
+ - mysql < src/test/sql/create_user_test_[MySQL].sql
