@@ -286,6 +286,10 @@
 					<scanIntervalSeconds>1</scanIntervalSeconds>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -363,8 +367,8 @@
 					</configuration>
 					<executions>
 						<execution>
-							<id>default-cli</id>
-							<phase>prepare-package</phase>
+							<id>create_db_schema</id>
+							<phase>process-test-resources</phase>
 							<goals>
 								<goal>execute</goal>
 							</goals>
