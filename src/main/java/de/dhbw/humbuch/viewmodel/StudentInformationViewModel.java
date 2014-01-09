@@ -69,6 +69,7 @@ public class StudentInformationViewModel {
 	@HandlesAction(DoImportStudents.class)
 	public void doImportStudents(Upload upload) {
 		
+		updateStudents();
 	}
 	
 	@HandlesAction(PersistStudents.class)
@@ -115,7 +116,9 @@ public class StudentInformationViewModel {
 			} else {
 				daoStudent.update(student);
 			}
-		}		
+		}
+		
+		updateStudents();
 	}
 
 	/**
