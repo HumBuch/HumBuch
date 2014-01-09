@@ -17,7 +17,7 @@ public class TestModule extends ServletModule {
 
 	@Override
 	protected void configureServlets() {
-		install(new JpaPersistModule("persistModule"));
+		install(new JpaPersistModule("testPersistModule"));
 		
 		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
 		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
