@@ -27,8 +27,8 @@
 		<hibernate.version>4.1.7.Final</hibernate.version>
 		<project.build.source>1.7</project.build.source>
 		<project.build.target>1.7</project.build.target>
-		<db.user>humbuch</db.user>
-		<db.passwd>humbuch</db.passwd>
+		<db.user>travis</db.user>
+		<db.passwd></db.passwd>
 		<db.url>127.0.0.1</db.url>
 		<db.port>3306</db.port>
 	</properties>
