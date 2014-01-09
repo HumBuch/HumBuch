@@ -2,7 +2,6 @@ package de.dhbw.humbuch.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
@@ -25,53 +24,6 @@ import de.dhbw.humbuch.model.entity.Subject;
 
 
 public final class CSVHandler {
-
-	/**
-	 * Reads a csv file and creates student objects of it's records.
-	 * 
-	 * @param path
-	 *            a path to the csv which contains information about students
-	 * @return an ArrayList that contains student objects
-	 * @see ArrayList
-	 */
-	public static ArrayList<Student> createStudentObjectsFromCSV(String path) {
-		ArrayList<Student> studentArrayList = new ArrayList<Student>();
-
-		try {
-			//csvReader - separator is ';';
-			CSVReader csvReader = new CSVReader(new FileReader(path), ';', '\'', 0);
-
-			Properties csvHeaderProperties = readCSVConfigurationFile();
-
-			List<String[]> allRecords = csvReader.readAll();
-			Iterator<String[]> allRecordsIterator = allRecords.iterator();
-			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
-
-			if(allRecordsIterator.hasNext()) {
-				String[] headerRecord = allRecordsIterator.next();
-	
-				for (int i = 0; i < headerRecord.length; i++) {
-					headerIndexMap.put(headerRecord[i], i);
-				}
-			}
-
-			while (allRecordsIterator.hasNext()) {
-				String[] record = allRecordsIterator.next();
-
-				Student student = createStudentObject(record, csvHeaderProperties, headerIndexMap);
-				if(student != null){
-					studentArrayList.add(student);
-				}				
-			}
-
-			csvReader.close();
-		}
-		catch (IOException e) {
-			System.err.println("Could not read student's csv records. " + e.getStackTrace());
-		}
-
-		return studentArrayList;
-	}
 	
 	/**
 	 * Reads a csv file and creates student objects of it's records.
@@ -119,45 +71,6 @@ public final class CSVHandler {
 
 		return studentArrayList;
 	}
-	
-	public static ArrayList<Parent> createParentObjectsFromCSV(String path){
-		ArrayList<Parent> parentArrayList = new ArrayList<Parent>();
-
-		try {
-			//csvReader - separator is ';';
-			CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(path), "UTF-8"), ';', '\'', 0);
-
-			Properties csvHeaderProperties = readCSVConfigurationFile();
-
-			List<String[]> allRecords = csvReader.readAll();
-			Iterator<String[]> allRecordsIterator = allRecords.iterator();
-			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
-
-			if(allRecordsIterator.hasNext()) {
-				String[] headerRecord = allRecordsIterator.next();
-	
-				for (int i = 0; i < headerRecord.length; i++) {
-					headerIndexMap.put(headerRecord[i], i);
-				}
-			}
-
-			while (allRecordsIterator.hasNext()) {
-				String[] record = allRecordsIterator.next();
-
-				Parent parent = createParentObject(record, csvHeaderProperties, headerIndexMap);
-				if(parent != null){
-					parentArrayList.add(parent);
-				}				
-			}
-
-			csvReader.close();
-		}
-		catch (IOException e) {
-			System.err.println("Could not read student's csv records. " + e.getStackTrace());
-		}
-
-		return parentArrayList;
-	}
 
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
@@ -192,6 +105,23 @@ public final class CSVHandler {
 		int id = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "id")]);
 		String religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
 		
+		Parent parent = null;
+		try{
+			String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
+			String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
+			String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
+			String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
+			int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
+			String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
+					
+			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
+					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
+		}
+		catch(NullPointerException npe){
+			System.err.println("Could not create parent object to student");
+		}
+
+		
 		ArrayList<String> checkValidityList = new ArrayList<String>();
 		checkValidityList.add(foreignLanguage1);
 		checkValidityList.add(foreignLanguage2);
@@ -225,37 +155,7 @@ public final class CSVHandler {
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
 		
-		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).leavingSchool(false).build();
-	}
-	
-	/**
-	 * Creates a parent object with the information in the record.
-	 * 
-	 * @param record is one line of the loaded csv-file
-	 * @return Parent
-	 */
-	public static Parent createParentObject(String[] record, Properties properties, HashMap<String, Integer> index){
-		String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
-		String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
-		String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
-		String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
-		int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
-		String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
-		
-		ArrayList<String> checkValidityList = new ArrayList<String>();
-		checkValidityList.add(parentTitle);
-		checkValidityList.add(parentLastName);
-		checkValidityList.add(parentFirstName);
-		checkValidityList.add(parentStreet);
-		checkValidityList.add(""+parentPostalcode);
-		checkValidityList.add(parentPlace);
-		
-		if(!checkForValidityOfAttributes(checkValidityList)){
-			return null;
-		}
-		
-		return new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
-				.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
+		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).parent(parent).leavingSchool(false).build();
 	}
 	
 	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) {
