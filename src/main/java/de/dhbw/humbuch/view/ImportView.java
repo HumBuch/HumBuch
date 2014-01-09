@@ -18,8 +18,8 @@ import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
-import de.dhbw.humbuch.viewmodel.ImportViewModel;
-import de.dhbw.humbuch.viewmodel.ImportViewModel.ImportResult;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.ImportResult;
 
 public class ImportView extends VerticalLayout implements View, ViewInformation {
 
@@ -32,7 +32,7 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 
 	private Label labelResult;
 
-	protected ImportViewModel importViewModel;
+	protected StudentInformationViewModel importViewModel;
 
 	@BindState(ImportResult.class)
 	private BasicState<String> importResult = new BasicState<String>(
@@ -40,7 +40,7 @@ public class ImportView extends VerticalLayout implements View, ViewInformation 
 
 	@Inject
 	public ImportView(ViewModelComposer viewModelComposer,
-			ImportViewModel importViewModel) {
+			StudentInformationViewModel importViewModel) {
 		this.importViewModel = importViewModel;
 		init();
 		buildLayout();
