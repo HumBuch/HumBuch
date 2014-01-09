@@ -12,7 +12,6 @@ import org.hibernate.criterion.Restrictions;
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.inject.Inject;
-import com.vaadin.ui.Upload;
 
 import de.davherrmann.mvvm.ActionHandler;
 import de.davherrmann.mvvm.BasicState;
@@ -31,7 +30,6 @@ public class StudentInformationViewModel {
 	public interface ImportResult extends State<String> {}
 	public interface Students extends State<Collection<Student>> {}
 		
-	public interface DoImportStudents extends ActionHandler {}
 	public interface PersistStudents extends ActionHandler {}
 	
 	@ProvidesState(ImportResult.class)
@@ -66,12 +64,6 @@ public class StudentInformationViewModel {
 		students.set(daoStudent.findAll());
 	}
 
-	@HandlesAction(DoImportStudents.class)
-	public void doImportStudents(Upload upload) {
-		
-		updateStudents();
-	}
-	
 	@HandlesAction(PersistStudents.class)
 	public void persistStudents(List<Student> students) {
 		Iterator<Student> studentIterator = students.iterator();
