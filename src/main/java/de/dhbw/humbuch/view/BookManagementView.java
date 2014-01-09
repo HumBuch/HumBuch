@@ -2,8 +2,11 @@ package de.dhbw.humbuch.view;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
@@ -19,8 +22,10 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -32,6 +37,8 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.Category;
+import de.dhbw.humbuch.model.entity.Profile;
+import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel.Categories;
@@ -46,9 +53,10 @@ import de.dhbw.humbuch.viewmodel.BookManagementViewModel.TeachingMaterials;
 public class BookManagementView extends VerticalLayout implements View,
 		ViewInformation {
 	private static final long serialVersionUID = -5063268947544706757L;
-	
+
 	private BookManagementViewModel bookManagementViewModel;
 	private boolean editTeachingMaterial = false;
+	private String teachingMaterialProfile = "";
 	/**
 	 * Constants
 	 */
@@ -57,18 +65,26 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String EDIT_BOOK = "Buch bearbeiten";
 	private static final String SEARCH_BOOK = "Bücher suchen";
 	private static final String TABLE_TITLE = "Titel";
-	private static final String TABLE_PUBLISHER = "Verlag";
-	private static final String TABLE_CLASS = "Klassenstufe";
-	private static final String TEXTFIELD_NAME = "Titel";
-	private static final String TEXTFIELD_IDENTIFYER = "ISBN";
+	private static final String TABLE_PRODUCER = "Hersteller";
+	private static final String TABLE_IDENTIFYER = "Eindeutige Nummer";
+	private static final String TABLE_CATEGORY = "Kategorie";
+	private static final String TABLE_CLASSFROM = "von Klasse";
+	private static final String TABLE_CLASSTO = "bis Klasse";
+	private static final String TABLE_COMMENT = "Kommentar";
+	private static final String TABLE_PROFILE = "Profil";
 	private static final String WINDOW_NEW_BOOK = "Neues Buch eintragen";
 	private static final String WINDOW_EDIT_BOOK = "Buch editieren";
 	private static final String BUTTON_SAVE = "Speichern";
 	private static final String BUTTON_CANCEL = "Abbrechen";
+	private static final String TEXTFIELD_NAME = "Titel";
+	private static final String TEXTFIELD_IDENTIFYER = "Eindeutige Nummer";
 	private static final String TEXTFIELD_PRODUCER = "Hersteller/Verlag";
 	private static final String TEXTFIELD_FROMGRADE = "von Klassenstufe";
 	private static final String TEXTFIELD_TOGRADE = "bis Klassenstufe";
+	private static final String TEXTFIELD_COMMENT = "Kommentar";
 	private static final String TEXTFIELD_SEARCH_PLACEHOLDER = "Buch oder Verlag";
+	private static final String TERM = "Halbjahr";
+	private static final String CATEGORY = "Kategorie";
 
 	/**
 	 * Layout components
@@ -88,8 +104,9 @@ public class BookManagementView extends VerticalLayout implements View,
 	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(
 			TeachingMaterial.class);
 	@BindState(Categories.class)
-	public final State<Map<Integer,Category>> categories = new BasicState<>(Map.class);
-	
+	public final State<Map<Integer, Category>> categories = new BasicState<>(
+			Map.class);
+
 	private IndexedContainer containerTable;
 
 	/**
@@ -106,8 +123,13 @@ public class BookManagementView extends VerticalLayout implements View,
 	private TextField textFieldProducer = new TextField(TEXTFIELD_PRODUCER);
 	private TextField textFieldFromGrade = new TextField(TEXTFIELD_FROMGRADE);
 	private TextField textFieldToGrade = new TextField(TEXTFIELD_TOGRADE);
+	private ComboBox comboBoxProfiles = new ComboBox(TABLE_PROFILE);
+	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
+	private ComboBox comboBoxFromGradeTerm = new ComboBox(TERM);
+	private ComboBox comboBoxToGradeTerm = new ComboBox(TERM);
+	private ComboBox comboBoxCategory = new ComboBox(CATEGORY);
 	private Button buttonWindowSave = new Button(BUTTON_SAVE);
-	private Button buttonWindowCancel;
+	private Button buttonWindowCancel = new Button(BUTTON_CANCEL);
 
 	/**
 	 * 
@@ -132,13 +154,34 @@ public class BookManagementView extends VerticalLayout implements View,
 					e.printStackTrace();
 				}
 				Collection<TeachingMaterial> tableData = (Collection<TeachingMaterial>) value;
-				for (TeachingMaterial book : tableData) {
+				for (TeachingMaterial teachingMaterial : tableData) {
+
+					Map<String, Set<Subject>> profiles = Profile
+							.getProfileMap();
+					for (Entry<String, Set<Subject>> profile : profiles
+							.entrySet()) {
+						if (teachingMaterial.getProfile().equals(
+								profile.getValue())) {
+							teachingMaterialProfile = profile.getKey()
+									.toString();
+							break;
+						}
+					}
 					tableTeachingMaterials.addItem(
 							new Object[] {
-									book.getName(),
-									book.getFromGrade() + "-"
-											+ book.getToGrade(),
-									book.getProducer() }, book.getId());
+									teachingMaterial.getName(),
+									teachingMaterial.getProducer(),
+									teachingMaterial.getIdentifyingNumber(),
+									teachingMaterialProfile,
+									teachingMaterial.getFromGrade()
+											+ " Halbjahr "
+											+ teachingMaterial.getFromTerm(),
+									teachingMaterial.getToGrade()
+											+ " Halbjahr "
+											+ teachingMaterial.getToTerm(),
+									teachingMaterial.getCategory().getName(),
+									teachingMaterial.getComment() },
+							teachingMaterial.getId());
 				}
 			}
 		});
@@ -158,9 +201,19 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		textFieldSearchBar = new TextField(SEARCH_BOOK);
 		textFieldSearchBar.setImmediate(true);
-		textFieldSearchBar.setInputPrompt(TEXTFIELD_SEARCH_PLACEHOLDER);
-
 		textFieldSearchBar.setTextChangeEventMode(TextChangeEventMode.EAGER);
+
+		comboBoxFromGradeTerm.addItem(1);
+		comboBoxFromGradeTerm.addItem(2);
+		comboBoxToGradeTerm.addItem(1);
+		comboBoxToGradeTerm.addItem(2);
+		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
+		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
+			comboBoxProfiles.addItem(profile.getValue());
+			comboBoxProfiles.setItemCaption(profile.getValue(),
+					profile.getKey());
+		}
+		comboBoxCategory.setNewItemsAllowed(true);
 
 		tableTeachingMaterials = new Table();
 		tableTeachingMaterials.setSelectable(true);
@@ -169,9 +222,15 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		containerTable = new IndexedContainer();
 		containerTable.addContainerProperty(TABLE_TITLE, String.class, null);
-		containerTable.addContainerProperty(TABLE_CLASS, String.class, null);
+		containerTable.addContainerProperty(TABLE_PRODUCER, String.class, null);
+		containerTable.addContainerProperty(TABLE_IDENTIFYER, String.class,
+				null);
+		containerTable.addContainerProperty(TABLE_PROFILE, String.class, null);
 		containerTable
-				.addContainerProperty(TABLE_PUBLISHER, String.class, null);
+				.addContainerProperty(TABLE_CLASSFROM, String.class, null);
+		containerTable.addContainerProperty(TABLE_CLASSTO, String.class, null);
+		containerTable.addContainerProperty(TABLE_CATEGORY, String.class, null);
+		containerTable.addContainerProperty(TABLE_COMMENT, String.class, null);
 		tableTeachingMaterials.setContainerDataSource(containerTable);
 
 		windowEditBook = new Window();
@@ -180,8 +239,21 @@ public class BookManagementView extends VerticalLayout implements View,
 		verticalLayoutWindowContent.setMargin(true);
 		horizontalLayoutWindowBar = new HorizontalLayout();
 
-		buttonWindowCancel = new Button(BUTTON_CANCEL);
 		this.addListener();
+		this.setInputPrompts();
+	}
+
+	/**
+	 * Adds input prompts to textfields and textareas.
+	 */
+	private void setInputPrompts() {
+		textFieldSearchBar.setInputPrompt(TEXTFIELD_SEARCH_PLACEHOLDER);
+		textFieldBookIdentifyer.setInputPrompt("ISBN");
+		textFieldBookName.setInputPrompt("Titel oder Name");
+		textFieldProducer.setInputPrompt("z.B. Klett");
+		textFieldFromGrade.setInputPrompt("z.B. 5");
+		textFieldToGrade.setInputPrompt("z.B. 7");
+		textAreaComment.setInputPrompt("Zusätzliche Informationen");
 	}
 
 	/**
@@ -193,6 +265,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonWindowCancel.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 4111242410277636186L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				windowEditBook.close();
@@ -203,26 +276,53 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonWindowSave.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 907615005539877724L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				TeachingMaterial teachingMaterial;
-				if(!editTeachingMaterial) {
-					teachingMaterial = new TeachingMaterial.Builder(categories.get().get(1), textFieldBookName.getValue(), textFieldBookIdentifyer.getValue(), new Date()).build();
+				if (!editTeachingMaterial) {
+					teachingMaterial = new TeachingMaterial.Builder(categories
+							.get().get((int) comboBoxCategory.getValue()),
+							textFieldBookName.getValue(),
+							textFieldBookIdentifyer.getValue(), new Date())
+							.build();
 					teachingMaterial.setProducer(textFieldProducer.getValue());
-					teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
-					teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
-				}
-				else {
+					teachingMaterial.setFromGrade(Integer
+							.parseInt(textFieldFromGrade.getValue()));
+					teachingMaterial.setToGrade(Integer
+							.parseInt(textFieldToGrade.getValue()));
+					teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
+							.getValue());
+					teachingMaterial.setToTerm((int) comboBoxToGradeTerm
+							.getValue());
+					teachingMaterial.setComment(textAreaComment.getValue());
+					teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
+							.getValue());
+				} else {
 					teachingMaterial = teachingMaterialInfo.get();
 					teachingMaterial.setName(textFieldBookName.getValue());
-					teachingMaterial.setIdentifyingNumber(textFieldBookIdentifyer.getValue());
+					teachingMaterial
+							.setIdentifyingNumber(textFieldBookIdentifyer
+									.getValue());
 					teachingMaterial.setProducer(textFieldProducer.getValue());
-					teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
-					teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
+					teachingMaterial.setFromGrade(Integer
+							.parseInt(textFieldFromGrade.getValue()));
+					teachingMaterial.setToGrade(Integer
+							.parseInt(textFieldToGrade.getValue()));
+					teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
+							.getValue());
+					teachingMaterial.setToTerm((int) comboBoxToGradeTerm
+							.getValue());
+					teachingMaterial.setComment(textAreaComment.getValue());
+					teachingMaterial.setCategory(categories.get().get(
+							(int) comboBoxCategory.getValue()));
+					teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
+							.getValue());
 				}
-				
-				bookManagementViewModel.doUpdateTeachingMaterial(teachingMaterial);
-				windowEditBook.close();				
+
+				bookManagementViewModel
+						.doUpdateTeachingMaterial(teachingMaterial);
+				windowEditBook.close();
 			}
 		});
 
@@ -238,43 +338,70 @@ public class BookManagementView extends VerticalLayout implements View,
 			public void textChange(TextChangeEvent event) {
 				Filter filter = new Or(new SimpleStringFilter(TABLE_TITLE,
 						event.getText(), true, false), new SimpleStringFilter(
-						TABLE_PUBLISHER, event.getText(), true, false));
+						TABLE_PRODUCER, event.getText(), true, false));
 				containerTable.removeAllContainerFilters();
 				containerTable.addContainerFilter(filter);
 			}
 		});
 		/**
-		 * Opens the popup-window for adding a new book.
+		 * Opens the popup-window for adding a new book, empties all fields and
+		 * add the categories to the comboBox.
 		 */
 		buttonNewBook.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = -7433701329516481457L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				editTeachingMaterial = false;
-//				teachingMaterialInfo.set(new TeachingMaterial());
+				// teachingMaterialInfo.set(new TeachingMaterial());
 				emptyWindowFields();
 				windowEditBook.setCaption(WINDOW_NEW_BOOK);
 				UI.getCurrent().addWindow(windowEditBook);
+				for (Map.Entry<Integer, Category> category : categories.get()
+						.entrySet()) {
+					comboBoxCategory.addItem(category.getValue().getId());
+					comboBoxCategory.setItemCaption(
+							category.getValue().getId(), category.getValue()
+									.getName());
+				}
 			}
 		});
 		/**
-		 * Opens the popup-window for editing a book and inserts the data from the teachingMaterialInfo-State.
+		 * Opens the popup-window for editing a book and inserts the data from
+		 * the teachingMaterialInfo-State.
 		 */
 		buttonEditBook.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 563232762007381515L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				editTeachingMaterial = true;
 				windowEditBook.setCaption(WINDOW_EDIT_BOOK);
 				UI.getCurrent().addWindow(windowEditBook);
-				bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+				bookManagementViewModel.doFetchTeachingMaterial(Integer
+						.parseInt(tableTeachingMaterials.getValue().toString()));
 				TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
 				textFieldBookName.setValue(teachingMaterial.getName());
-				textFieldBookIdentifyer.setValue(teachingMaterial.getIdentifyingNumber());
+				textFieldBookIdentifyer.setValue(teachingMaterial
+						.getIdentifyingNumber());
 				textFieldProducer.setValue(teachingMaterial.getProducer());
-				textFieldFromGrade.setValue(Integer.toString(teachingMaterial.getFromGrade()));
-				textFieldToGrade.setValue(Integer.toString(teachingMaterial.getToGrade()));
-				
+				textFieldFromGrade.setValue(Integer.toString(teachingMaterial
+						.getFromGrade()));
+				textFieldToGrade.setValue(Integer.toString(teachingMaterial
+						.getToGrade()));
+				textAreaComment.setValue(teachingMaterial.getComment());
+				comboBoxFromGradeTerm.setValue(teachingMaterial.getFromTerm());
+				comboBoxToGradeTerm.setValue(teachingMaterial.getToTerm());
+				for (Map.Entry<Integer, Category> category : categories.get()
+						.entrySet()) {
+					comboBoxCategory.addItem(category.getValue().getId());
+					comboBoxCategory.setItemCaption(
+							category.getValue().getId(), category.getValue()
+									.getName());
+				}
+				comboBoxCategory.setValue(teachingMaterial.getCategory()
+						.getId());
+				comboBoxProfiles.setValue(teachingMaterial.getProfile());
 			}
 		});
 	}
@@ -296,9 +423,14 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		verticalLayoutWindowContent.addComponent(textFieldBookName);
 		verticalLayoutWindowContent.addComponent(textFieldBookIdentifyer);
+		verticalLayoutWindowContent.addComponent(comboBoxCategory);
 		verticalLayoutWindowContent.addComponent(textFieldProducer);
+		verticalLayoutWindowContent.addComponent(comboBoxProfiles);
 		verticalLayoutWindowContent.addComponent(textFieldFromGrade);
+		verticalLayoutWindowContent.addComponent(comboBoxFromGradeTerm);
 		verticalLayoutWindowContent.addComponent(textFieldToGrade);
+		verticalLayoutWindowContent.addComponent(comboBoxToGradeTerm);
+		verticalLayoutWindowContent.addComponent(textAreaComment);
 
 		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
 		horizontalLayoutWindowBar.addComponent(buttonWindowSave);
@@ -316,6 +448,10 @@ public class BookManagementView extends VerticalLayout implements View,
 		textFieldProducer.setValue("");
 		textFieldFromGrade.setValue("");
 		textFieldToGrade.setValue("");
+		textAreaComment.setValue("");
+		textFieldProducer.setValue("");
+		comboBoxFromGradeTerm.setValue(1);
+		comboBoxToGradeTerm.setValue(2);
 	}
 
 	@Override
