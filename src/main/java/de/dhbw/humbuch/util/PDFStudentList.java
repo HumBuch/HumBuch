@@ -114,7 +114,7 @@ public final class PDFStudentList extends PDFHandler{
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
 		String[] contentArray = {"Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
-		                         "Klasse: ", "" + this.student.getGrade().getGrade(),
+		                         "Klasse: ", "" + this.student.getGrade().getGrade() + this.student.getGrade().getSuffix(),
 		                         "Schuljahr: ", "#SCHOOLYEAR",
 		                         "Sprachen: ", SubjectHandler.getLanguageProfile(this.student.getProfile()),
 					             "Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile()) + "\n"};
