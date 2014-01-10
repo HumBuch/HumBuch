@@ -24,7 +24,7 @@ public class NavigationBar extends CustomComponent {
 	private static final String[][] navigationButtons = new String[][] {
 			{ "Aufgaben", MainUI.HOME_VIEW }, { "Ausleihe", MainUI.LENDING_VIEW },
 			{ "Rückgabe", MainUI.RETURN_VIEW }, { "Lehrmittel", MainUI.BOOK_MANAGEMENT_VIEW },
-			{ "Mahnungen", MainUI.DUNNING_VIEW }, { "Import", MainUI.IMPORT_VIEW } };
+			{ "Mahnungen", MainUI.DUNNING_VIEW }, { "Schüler", MainUI.STUDENT_INFORMATION_VIEW } };
 
 	private VerticalLayout verticalLayoutNavBar;
 
