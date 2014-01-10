@@ -14,6 +14,7 @@ import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.GradeTest;
+import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
@@ -24,6 +25,7 @@ public class PDFTest {
 		testStudentPDF();
 		testClassPDF();	
 		testDunningPDF();
+		testDunningPDFWithParent();
 	}
 	
 	public static void testStudentPDF(){
@@ -105,6 +107,43 @@ public class PDFTest {
 		Set<Student> students = new LinkedHashSet<Student>();
 		students.add(student);
 		PDFDunning.createFirstDunning(students, student.getBorrowedList()).savePDF("./testfiles/DunningPdf.pdf");
+	}
+	
+	public static void testDunningPDFWithParent(){
+		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
+		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
+		
+		TeachingMaterial teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(6);
+		teachingMaterial.setName("Bio1 - Bugs");
+		teachingMaterial.setPrice(79.75);
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		teachingMaterial = new TeachingMaterial();
+
+		teachingMaterial.setToGrade(11);
+		teachingMaterial.setName("German1 - Faust");
+		teachingMaterial.setPrice(22.49);
+		borrowedMaterial = new BorrowedMaterial();
+		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		borrowedMaterialList.add(borrowedMaterial);
+		
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+		}
+		catch (ParseException e) {
+			System.err.println("Could not format date " + e.getStackTrace());
+		}		
+		Grade grade = new Grade.Builder("11au").build();
+		Parent parent = new Parent.Builder("Penny", "Wise").build();
+		Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+		Set<Student> students = new LinkedHashSet<Student>();
+		students.add(student);
+		PDFDunning.createSecondDunning(students, student.getBorrowedList(), parent).savePDF("./testfiles/secondDunningPdf.pdf");
 	}
 
 }

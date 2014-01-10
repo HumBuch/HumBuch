@@ -29,8 +29,10 @@ public class PDFDunning extends PDFHandler {
 		return pdfDunning;
 	}
 	
-	public static PDFDunning createSecondDunning(Parent parent){
+	public static PDFDunning createSecondDunning(Set<Student> students, List<BorrowedMaterial> borrowedMaterials, Parent parent){
 		PDFDunning pdfDunning = new PDFDunning();
+		pdfDunning.students = students;
+		pdfDunning.borrowedMaterials = borrowedMaterials;
 		pdfDunning.parent = parent;
 		return pdfDunning;
 	}
@@ -49,8 +51,19 @@ public class PDFDunning extends PDFHandler {
 
 	protected void addContent(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
+		String dunningText = "";
+		if(this.parent == null){
+			dunningText = "Wir bitten darum, folgende Bücher zurückzugeben: \n";
+		}
+		else{
+			dunningText = "Sehr geehrte Eltern, \n\n"
+					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
+							+ " Bücher nicht zurückgegeben hat. Wir bitten daher um schnellstmögliche Rückgabe. \n\n"
+							+ "Mit freundlichen Grüßen \n"
+							+ "Schulverwaltung";
+		}
 		PDFHandler.fillTableWithContent(table, false,
-				new String[]{"Folgende Bücher wurden nicht rechtzeitig zurückgegeben: \n"}, false);
+				new String[]{dunningText}, false);
 		try {
 			document.add(table);
 		}
