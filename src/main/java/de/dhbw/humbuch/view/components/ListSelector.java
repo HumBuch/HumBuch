@@ -176,19 +176,19 @@ public class ListSelector extends CustomComponent {
 			if (clickedButton == buttonClassList) {
 				title = "Klassen Liste";
 				Set<Student> s = createTestStudents();
-				ByteArrayOutputStream baos = new PDFStudentList(s).createByteArrayOutputStreamForPDF();
+				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
 				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "ClassList.pdf");
 			}
 			else if (clickedButton == buttonMaterialList) {
 				title = "Material Liste";
 				Student s = createTestStudent();
-				ByteArrayOutputStream baos = new PDFStudentList(s).createByteArrayOutputStreamForPDF();
+				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
 				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "MaterialList.pdf");
 			}
 			else if (clickedButton == buttonStudentList) {
 				title = "Schüler Liste";
 				Student s = createTestStudent();
-				ByteArrayOutputStream baos = new PDFStudentList(s).createByteArrayOutputStreamForPDF();
+				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
 				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "StudentList.pdf");
 			}
 			else {

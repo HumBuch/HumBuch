@@ -1,6 +1,8 @@
 package de.dhbw.humbuch.util;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.lowagie.text.Document;
@@ -14,27 +16,18 @@ import de.dhbw.humbuch.model.entity.Student;
 public final class PDFStudentList extends PDFHandler{
 	private Student student;
 	private Set<Student> students;
-
-	public PDFStudentList(Student student) {
-		super();	
-		this.student = student;
-	}
+	private List<BorrowedMaterial> returnList;
+	private List<BorrowedMaterial> lendingList;
 	
-	public PDFStudentList(Set<Student> students) {
+	public PDFStudentList(Builder builder){
 		super();
-		this.students = students;
-	
+		this.students = builder.students;
+		this.returnList = builder.returnList;
+		this.lendingList = builder.lendingList;
 	}
 	
 	protected void insertDocumentParts(Document document){
-		if(this.student != null){
-			this.addHeading(document, "Ausgabe-Liste 2013");
-			this.addStudentInformation(document);
-			this.addContent(document);
-			this.addRentalDisclosure(document);
-			this.addSignatureField(document, "Schüler");
-		}
-		else if(this.students != null){
+		if(this.students != null){
 			for(Student student : this.students){
 				this.addHeading(document, "Ausgabe-Liste 2013");
 				this.student = student;
@@ -68,6 +61,48 @@ public final class PDFStudentList extends PDFHandler{
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	    
+	    if(this.returnList != null && this.returnList.isEmpty()){
+	    	table = this.createTableWithRentalInformationHeader();
+			
+			iterator = this.returnList.iterator();
+			while(iterator.hasNext()){
+				borrowedMaterial = (BorrowedMaterial) iterator.next();
+				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+				                         borrowedMaterial.getTeachingMaterial().getName(),
+				                      	 "" };
+				PDFHandler.fillTableWithContent(table, true, contentArray);		
+			}
+		    
+		    try {
+				document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+	    }
+	    if(this.lendingList != null && this.lendingList.isEmpty()){
+	    	table = this.createTableWithRentalInformationHeader();
+			
+			iterator = this.lendingList.iterator();
+			while(iterator.hasNext()){
+				borrowedMaterial = (BorrowedMaterial) iterator.next();
+				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+				                         borrowedMaterial.getTeachingMaterial().getName(),
+				                      	 "" };
+				PDFHandler.fillTableWithContent(table, true, contentArray);		
+			}
+		    
+		    try {
+				document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+	    }
+	    
 	}
 	
 	/**
@@ -110,5 +145,35 @@ public final class PDFStudentList extends PDFHandler{
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static class Builder{
+		private Set<Student> students;
+		private List<BorrowedMaterial> returnList;
+		private List<BorrowedMaterial> lendingList;
+				
+		public Builder(Student student){
+			this.students = new LinkedHashSet<Student>();
+			this.students.add(student);
+		}
+		
+		public Builder(Set<Student> students){
+			this.students = students;
+		}
+		
+		public Builder returnList(List<BorrowedMaterial> borrowedMaterial){
+			this.returnList = borrowedMaterial;
+			return this;
+		}
+		
+		public Builder lendingList(List<BorrowedMaterial> borrowedMaterial){
+			this.lendingList = borrowedMaterial;
+			return this;
+		}
+		
+		public PDFStudentList build(){
+			return new PDFStudentList(this);
+		}
+		
 	}
 }
