@@ -32,6 +32,11 @@ public class LendingViewModel {
 	
 	public interface StudentsWithUnreceivedBorrowedMaterials extends State<Map<Grade, List<Student>>> {};
 	public interface MaterialListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
+	
+	@Deprecated
+	public interface Students extends State<Collection<Student>> {};
+	@Deprecated
+	public interface Grades extends State<Collection<Grade>> {};
 
 	@ProvidesState(StudentsWithUnreceivedBorrowedMaterials.class)
 	public State<Map<Grade, List<Student>>> studentsWithUnreceivedBorrowedMaterials = new BasicState<>(Map.class);
