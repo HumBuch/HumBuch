@@ -142,7 +142,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		
 		return unreceivedBorrowedMaterials;
 	}
-
+	
+	public List<BorrowedMaterial> getReceivedBorrowedMaterials() {
+		List<BorrowedMaterial> receivedBorrowedMaterials = getBorrowedList();
+		receivedBorrowedMaterials.removeAll(getUnreceivedBorrowedList());
+		return receivedBorrowedMaterials;
+	}
+	
 	public boolean hasUnreceivedBorrowedMaterials() {
 		for(BorrowedMaterial borrowedMaterial : getBorrowedList()) {
 			if(!borrowedMaterial.isReceived()) {
