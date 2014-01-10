@@ -32,8 +32,6 @@ public class LendingViewModel {
 	
 	public interface StudentsWithUnreceivedBorrowedMaterials extends State<Map<Grade, List<Student>>> {};
 	public interface MaterialListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
-	public interface Students extends State<Collection<Student>> {};
-	public interface Grades extends State<Collection<Grade>> {};
 
 	@ProvidesState(StudentsWithUnreceivedBorrowedMaterials.class)
 	public State<Map<Grade, List<Student>>> studentsWithUnreceivedBorrowedMaterials = new BasicState<>(Map.class);
@@ -67,8 +65,6 @@ public class LendingViewModel {
 			Map<TeachingMaterial, Integer> gradeMap = new LinkedHashMap<TeachingMaterial, Integer>();
 			
 			for(Student student : grade.getStudents()) {
-//				List<TeachingMaterial> studentLendingList = getNewTeachingMaterials(student);
-				
 				for(BorrowedMaterial borrowedMaterial : student.getUnreceivedBorrowedList()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 					if(gradeMap.containsKey(teachingMaterial)) {
@@ -77,14 +73,6 @@ public class LendingViewModel {
 						gradeMap.put(teachingMaterial, 1);
 					}
 				}
-				
-//				for (TeachingMaterial teachingMaterial : studentLendingList) {
-//					if(gradeMap.containsKey(teachingMaterial)) {
-//						gradeMap.put(teachingMaterial, gradeMap.get(teachingMaterial) + 1);
-//					} else {
-//						gradeMap.put(teachingMaterial, 1);
-//					}
-//				}
 			}
 			
 			materialList.put(grade, gradeMap);
