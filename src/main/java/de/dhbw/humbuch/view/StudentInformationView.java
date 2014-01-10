@@ -2,7 +2,9 @@ package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.NoSuchElementException;
 
 import com.google.inject.Inject;
@@ -22,8 +24,10 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -32,14 +36,17 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.data.Property;
 
 import de.davherrmann.mvvm.BasicState;
+import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.ImportResult;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 /**
  * Provides a overview over all students and the possibility to import new ones.
@@ -57,7 +64,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private static final String TITLE = "Schülerübersicht";
 	private static final String TABLE_FIRSTNAME = "Vorname";
 	private static final String TABLE_NAME = "Name";
-	private static final String FILTER_TEXT = "Filter";
 	private static final String TABLE_GRADE = "Klasse";
 	private static final String TABLE_BIRTHDAY = "Geburtsdatum";
 	private static final String TABLE_GENDER = "Geschlecht";
@@ -71,17 +77,19 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private TextField filter;
 	private Table studentsTable;
 
-	protected StudentInformationViewModel studentInformationViewModel;
+	protected StudentInformationViewModel studenInformationViewModel;
 	@BindState(ImportResult.class)
 	private BasicState<String> importResult = new BasicState<String>(
 			String.class);
 
 	/**
-	 * TODO: Bind the State to the view-model
-	 * 
-	 * @BindState(Students.class)
+	 * Layout for Windows
 	 */
-	public BasicState<Collection<Student>> students = new BasicState<>(
+	private Window showBooksWindow;
+	private Button buttonWindowClose;
+
+	@BindState(Students.class)
+	public State<Collection<Student>> students = new BasicState<>(
 			Collection.class);
 	private IndexedContainer tableData;
 
@@ -94,7 +102,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 	@Inject
 	public StudentInformationView(ViewModelComposer viewModelComposer,
 			StudentInformationViewModel importViewModel) {
-		this.studentInformationViewModel = importViewModel;
+		this.studenInformationViewModel = importViewModel;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, importViewModel);
@@ -113,25 +121,38 @@ public class StudentInformationView extends VerticalLayout implements View,
 		// Filter
 		filter = new TextField();
 		filter.setImmediate(true);
-		filter.setInputPrompt(FILTER_TEXT);
+		filter.setInputPrompt("Filter");
 		filter.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		
-        head.addComponent(filter);
-        head.setExpandRatio(filter, 1);
-        head.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
-        
+
+		head.addComponent(filter);
+		head.setExpandRatio(filter, 1);
+		head.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
+
 		// Upload
 		upload = new Upload();
 		upload.setReceiver(receiver);
 		upload.setImmediate(true);
 		upload.addSucceededListener(receiver);
 		upload.setButtonCaption("Importieren");
-		
+
 		head.addComponent(upload);
 		head.setComponentAlignment(upload, Alignment.MIDDLE_RIGHT);
 
 		// Table
-		studentsTable = new Table();
+		studentsTable = new Table() {
+			private static final long serialVersionUID = 1885098955441122118L;
+
+			@Override
+			protected String formatPropertyValue(Object rowId, Object colId,
+					Property<?> property) {
+				if (colId.equals(TABLE_BIRTHDAY)) {
+					SimpleDateFormat df = new SimpleDateFormat();
+					df.applyPattern("MM.dd.yyyy");
+					return df.format(((Date) property.getValue()).getTime());
+				}
+				return super.formatPropertyValue(rowId, colId, property);
+			}
+		};
 		studentsTable.setSelectable(true);
 		studentsTable.setImmediate(true);
 		studentsTable.setSizeFull();
@@ -142,56 +163,81 @@ public class StudentInformationView extends VerticalLayout implements View,
 		tableData.addContainerProperty(TABLE_NAME, String.class, null);
 		tableData.addContainerProperty(TABLE_FIRSTNAME, String.class, null);
 		tableData.addContainerProperty(TABLE_GRADE, String.class, null);
-		tableData.addContainerProperty(TABLE_BIRTHDAY, String.class, null);
+		tableData.addContainerProperty(TABLE_BIRTHDAY, Date.class, null);
 		tableData.addContainerProperty(TABLE_GENDER, String.class, null);
-		
+
 		studentsTable.setContainerDataSource(tableData);
+
+		/**
+		 * TODO: Sorting of the table seems not to work
+		 * studentsTable.sort(new Object[] { TABLE_NAME }, new boolean[] { true });
+		 */
+
+		// show all books window
+		showBooksWindow = new Window();
+		showBooksWindow.center();
+
+		VerticalLayout windowContent = new VerticalLayout();
+		windowContent.setMargin(true);
+		windowContent.setSpacing(true);
+		buttonWindowClose = new Button("Schließen");
+		windowContent.addComponent(buttonWindowClose);
+		showBooksWindow.setContent(windowContent);
 
 		this.addListener();
 	}
 
 	/**
-	 * Adds all listener to their corresponding components.
+	 * Adds all listener to their corresponding components
 	 */
 	private void addListener() {
-		
+
+		/**
+		 * Closes the popup window
+		 */
+		buttonWindowClose.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 4111242410277636186L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				showBooksWindow.close();
+			}
+		});
+
 		/**
 		 * Implements the right click menu
 		 */
-        studentsTable.addActionHandler(new Handler() {
+		studentsTable.addActionHandler(new Handler() {
 
 			private static final long serialVersionUID = 5717528972959000947L;
 
 			private Action details = new Action("Details anzeigen");
 
-            private Action showBooks = new Action("Entliehene Bücher anzeigen");
+			private Action showBooks = new Action("Entliehene Bücher anzeigen");
 
-            @Override
-            public void handleAction(Action action, Object sender, Object target) {
-                if (action == details) {
-                    Notification.show("Not yet implemented");
-                } else if (action == showBooks) {
-                    /*
-                     * Item item = ((Table) sender).getItem(target);
-                   
-                    if (item != null) {
-                        Window w = new MovieDetailsWindow(DataProvider
-                                .getMovieForTitle(item.getItemProperty("Title")
-                                        .getValue().toString()), null);
-                        UI.getCurrent().addWindow(w);
-                        w.focus();
-                    }  */
-                }
-            }
+			@Override
+			public void handleAction(Action action, Object sender, Object target) {
+				if (action == details) {
+					Notification.show("Not yet implemented");
+				} else if (action == showBooks) {
+					Item item = ((Table) sender).getItem(target);
 
-            @Override
-            public Action[] getActions(Object target, Object sender) {
-                return new Action[] { details, showBooks };
-            }
-        });
+					if (item != null) {
+						/**
+						 * TODO: Provide the corresponding PDF (Hat-Zustand)
+						 */
+						UI.getCurrent().addWindow(showBooksWindow);
+						showBooksWindow.focus();
+					}
+				}
+			}
 
+			@Override
+			public Action[] getActions(Object target, Object sender) {
+				return new Action[] { details, showBooks };
+			}
+		});
 
-		
 		/**
 		 * Displays the import result
 		 */
@@ -228,8 +274,12 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 				tableData.removeAllItems();
 				for (Student student : students.get()) {
-					studentsTable.addItem(new Object[] { student.getLastname(),
-							student.getFirstname() }, student.getId());
+					studentsTable.addItem(
+							new Object[] { student.getLastname(),
+									student.getFirstname(),
+									student.getGrade().toString(),
+									student.getBirthday(), student.getGender() },
+							student.getId());
 				}
 			}
 		});
@@ -249,12 +299,12 @@ public class StudentInformationView extends VerticalLayout implements View,
 	}
 
 	/**
-	 * Builds the layout by adding all components in their specific order.
+	 * Builds the layout by adding the components to the view
 	 */
 	private void buildLayout() {
 		addComponent(head);
 		addComponent(studentsTable);
-        setExpandRatio(studentsTable, 1);
+		setExpandRatio(studentsTable, 1);
 	}
 
 	@Override
@@ -307,7 +357,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 		public void uploadSucceeded(Upload.SucceededEvent event) {
 			if (!interrupted) {
-				studentInformationViewModel.receiveUploadByteOutputStream(outputStream);
+				studenInformationViewModel
+						.receiveUploadByteOutputStream(outputStream);
 			}
 		}
 
