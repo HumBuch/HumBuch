@@ -51,13 +51,13 @@ public class PDFTest {
 		Date date = null;
 		try {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+			Grade grade = new Grade.Builder("11au").build();
+			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+			new PDFStudentList.Builder(student).build().savePDF("./testfiles/FirstPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
 		}		
-		Grade grade = new Grade.Builder("11au").build();
-		Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-		new PDFStudentList.Builder(student).build().savePDF("./testfiles/FirstPdf.pdf");
 	}
 	
 	public static void testClassPDF(){
@@ -86,15 +86,15 @@ public class PDFTest {
 		Date date = null;
 		try {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+			Grade grade = new Grade.Builder("11au").build();
+			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+			Set<Student> students = new LinkedHashSet<Student>();
+			students.add(student);
+			PDFDunning.createFirstDunning(students, student.getBorrowedList()).savePDF("./testfiles/DunningPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
 		}		
-		Grade grade = new Grade.Builder("11au").build();
-		Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-		Set<Student> students = new LinkedHashSet<Student>();
-		students.add(student);
-		PDFDunning.createFirstDunning(students, student.getBorrowedList()).savePDF("./testfiles/DunningPdf.pdf");
 	}
 	
 	public static void testDunningPDFWithParent(){
@@ -112,16 +112,17 @@ public class PDFTest {
 		Date date = null;
 		try {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
+			Grade grade = new Grade.Builder("11au").build();
+			Parent parent = new Parent.Builder("Penny", "Wise").build();
+			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+			Set<Student> students = new LinkedHashSet<Student>();
+			students.add(student);
+			PDFDunning.createSecondDunning(students, student.getBorrowedList(), parent).savePDF("./testfiles/secondDunningPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
 		}		
-		Grade grade = new Grade.Builder("11au").build();
-		Parent parent = new Parent.Builder("Penny", "Wise").build();
-		Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-		Set<Student> students = new LinkedHashSet<Student>();
-		students.add(student);
-		PDFDunning.createSecondDunning(students, student.getBorrowedList(), parent).savePDF("./testfiles/secondDunningPdf.pdf");
+		
 	}
 
 }
