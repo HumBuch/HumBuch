@@ -61,9 +61,6 @@ public class PDFTest {
 	}
 	
 	public static void testClassPDF(){
-//		Grade grade = GradeTest.prepareGradeTest();
-//		new PDFClassList(grade).savePDF("./testfiles/FirstPdfClass.pdf");
-		
 		Map<Grade, Map<TeachingMaterial, Integer>> gradeMap = GradeTest.prepareGradeTest();
 		new PDFClassList(gradeMap).savePDF("./testfiles/SecondPdfClass.pdf");
 		
