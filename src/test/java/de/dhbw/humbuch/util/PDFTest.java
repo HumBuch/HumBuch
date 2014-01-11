@@ -32,22 +32,12 @@ public class PDFTest {
 		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
-		TeachingMaterial teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(6);
-		teachingMaterial.setName("Bio1 - Bugs");
-		teachingMaterial.setPrice(79.75);
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null, "Bio1 - Bugs", "123", null).price(79.75).toGrade(6).build();
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(11);
-		teachingMaterial.setName("German1 - Faust");
-		teachingMaterial.setPrice(22.49);
-		borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		teachingMaterial = new TeachingMaterial.Builder(null, "German1 - Faust", "123", null).price(22.49).toGrade(11).build();
+		borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		Date date = null;
@@ -77,22 +67,12 @@ public class PDFTest {
 		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
-		TeachingMaterial teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(6);
-		teachingMaterial.setName("Bio1 - Bugs");
-		teachingMaterial.setPrice(79.75);
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null, "Bio1 - Bugs", "123", null).price(79.75).toGrade(6).build();
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(11);
-		teachingMaterial.setName("German1 - Faust");
-		teachingMaterial.setPrice(22.49);
-		borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		teachingMaterial = new TeachingMaterial.Builder(null, "German1 - Faust", "123", null).price(22.49).toGrade(11).build();
+		borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		Date date = null;
@@ -113,22 +93,12 @@ public class PDFTest {
 		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
 		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
 		
-		TeachingMaterial teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(6);
-		teachingMaterial.setName("Bio1 - Bugs");
-		teachingMaterial.setPrice(79.75);
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null, "Bio1 - Bugs", "123", null).price(79.75).toGrade(6).build();
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
-		teachingMaterial = new TeachingMaterial();
-
-		teachingMaterial.setToGrade(11);
-		teachingMaterial.setName("German1 - Faust");
-		teachingMaterial.setPrice(22.49);
-		borrowedMaterial = new BorrowedMaterial();
-		borrowedMaterial.setTeachingMaterial(teachingMaterial);
+		teachingMaterial = new TeachingMaterial.Builder(null, "German1 - Faust", "123", null).price(22.49).toGrade(11).build();
+		borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
 		borrowedMaterialList.add(borrowedMaterial);
 		
 		Date date = null;
