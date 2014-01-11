@@ -20,9 +20,6 @@ import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
- * 
- * @author Benjamin
- *
  * This class contains test data to generate PDFs.
  * It does NOT contain any JUnit tests.
  * Use this class to create PDFs. After the creation one has to check them manually!
@@ -53,7 +50,7 @@ public class PDFTest {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
 			Grade grade = new Grade.Builder("11au").build();
 			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-			new PDFStudentList.Builder(student).build().savePDF("./testfiles/FirstPdf.pdf");
+			new PDFStudentList.Builder(student).lendingList(borrowedMaterialList).returnList(borrowedMaterialList).build().savePDF("./testfiles/FirstPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());

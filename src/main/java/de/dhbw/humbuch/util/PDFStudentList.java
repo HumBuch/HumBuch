@@ -42,7 +42,17 @@ public final class PDFStudentList extends PDFHandler{
 	}
 	
 	protected void addContent(Document document) {
-		PdfPTable table = this.createTableWithRentalInformationHeader();
+		PdfPTable table = PDFHandler.createMyStandardTable(1);
+		PDFHandler.fillTableWithContent(table, false,
+				new String[]{"\nDie folgenden Bücher befinden im Besitz des Schülers/der Schülerin: \n"}, false);
+		 try {
+				document.add(table);
+		}
+		catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		
+		table = this.createTableWithRentalInformationHeader();
 		
 		Iterator<BorrowedMaterial> iterator = this.student.getBorrowedList().iterator();
 		BorrowedMaterial borrowedMaterial;
@@ -57,12 +67,23 @@ public final class PDFStudentList extends PDFHandler{
 	    
 	    try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 2);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
 	    
-	    if(this.returnList != null && this.returnList.isEmpty()){
+	    if(this.returnList != null && !this.returnList.isEmpty()){
+	        table = PDFHandler.createMyStandardTable(1);
+			PDFHandler.fillTableWithContent(table, false,
+					new String[]{"\n Die folgenden Bücher müssen zurückgegeben werden: \n"}, false);
+			 try {
+					document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+	    	
 	    	table = this.createTableWithRentalInformationHeader();
 			
 			iterator = this.returnList.iterator();
@@ -77,12 +98,23 @@ public final class PDFStudentList extends PDFHandler{
 		    
 		    try {
 				document.add(table);
+				PDFHandler.addEmptyLineToDocument(document, 2);
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
 			}
 	    }
-	    if(this.lendingList != null && this.lendingList.isEmpty()){
+	    if(this.lendingList != null && !this.lendingList.isEmpty()){
+	    	table = PDFHandler.createMyStandardTable(1);
+			PDFHandler.fillTableWithContent(table, false,
+					new String[]{"\n Die folgenden Bücher sollen ausgeliehen werden: \n"}, false);
+			 try {
+					document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}	    	
+	    	
 	    	table = this.createTableWithRentalInformationHeader();
 			
 			iterator = this.lendingList.iterator();
