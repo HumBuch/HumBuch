@@ -50,6 +50,13 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	private Date validFrom;
 	private Date validUntil;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public TeachingMaterial() {}
 
 	public int getId() {

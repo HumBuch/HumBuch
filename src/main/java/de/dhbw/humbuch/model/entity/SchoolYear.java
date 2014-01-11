@@ -17,7 +17,14 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity {
 	private Date to;
 	private Date endFirstTerm;
 	private Date beginSecondTerm;
-	
+
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public SchoolYear() {}
 
 	public int getYear() {

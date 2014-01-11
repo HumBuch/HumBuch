@@ -16,6 +16,13 @@ public class Permission implements de.dhbw.humbuch.model.entity.Entity {
 	private String name;
 	private String description;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Permission() {}
 
 	public int getId() {

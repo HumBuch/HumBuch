@@ -35,6 +35,13 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	private boolean defect;
 	private String defectComment;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public BorrowedMaterial() {}
 
 	public int getId() {
