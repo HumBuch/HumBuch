@@ -10,7 +10,6 @@ import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
-import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 
 
