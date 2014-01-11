@@ -115,7 +115,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	public void setBorrowedList(List<BorrowedMaterial> borrowedList) {
 		this.borrowedList = borrowedList;
 	}
-
+	
 	public Set<Subject> getProfile() {
 		return profile;
 	}
@@ -130,6 +130,33 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 
 	public void setLeavingSchool(boolean leavingSchool) {
 		this.leavingSchool = leavingSchool;
+	}
+
+	public List<BorrowedMaterial> getUnreceivedBorrowedList() {
+		List<BorrowedMaterial> unreceivedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
+		for (BorrowedMaterial borrowedMaterial : getBorrowedList()) {
+			if(!borrowedMaterial.isReceived()) {
+				unreceivedBorrowedMaterials.add(borrowedMaterial);
+			}
+		}
+		
+		return unreceivedBorrowedMaterials;
+	}
+	
+	public List<BorrowedMaterial> getReceivedBorrowedMaterials() {
+		List<BorrowedMaterial> receivedBorrowedMaterials = getBorrowedList();
+		receivedBorrowedMaterials.removeAll(getUnreceivedBorrowedList());
+		return receivedBorrowedMaterials;
+	}
+	
+	public boolean hasUnreceivedBorrowedMaterials() {
+		for(BorrowedMaterial borrowedMaterial : getBorrowedList()) {
+			if(!borrowedMaterial.isReceived()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public static class Builder {
@@ -218,15 +245,5 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 		if (id != other.id)
 			return false;
 		return true;
-	}
-	
-	public boolean hasUnreceivedBorrowedMaterials() {
-		for(BorrowedMaterial borrowedMaterial : getBorrowedList()) {
-			if(!borrowedMaterial.isReceived()) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 }
