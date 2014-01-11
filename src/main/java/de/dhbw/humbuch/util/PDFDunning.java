@@ -101,7 +101,7 @@ public class PDFDunning extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
 		String[] contentArray = {"Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
-		                         "Klasse: ", "" + this.student.getGrade().getGrade() + this.student.getGrade().getSuffix(),
+		                         "Klasse: ", "" + this.student.getGrade().toString(),
 		                         "Schuljahr: ", "#SCHOOLYEAR",
 		                         "Sprachen: ", SubjectHandler.getLanguageProfile(this.student.getProfile()),
 					             "Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile()) + "\n"};
