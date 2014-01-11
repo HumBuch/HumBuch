@@ -1,5 +1,7 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +11,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="parent")
-public class Parent implements de.dhbw.humbuch.model.entity.Entity {
+public class Parent implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -969816596774143705L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

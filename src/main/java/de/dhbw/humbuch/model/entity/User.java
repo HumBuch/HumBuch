@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="user")
-public class User implements de.dhbw.humbuch.model.entity.Entity {
-	
+public class User implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = 12872765838454735L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
