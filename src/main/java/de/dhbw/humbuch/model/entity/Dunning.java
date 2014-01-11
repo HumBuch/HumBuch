@@ -6,45 +6,63 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
+import javax.persistence.Table;
 
 @Entity
-public class Dunning {
+@Table(name="dunning")
+public class Dunning implements de.dhbw.humbuch.model.entity.Entity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name="studentId", referencedColumnName="id")
 	private Student student;
 	
-	@ElementCollection(targetClass = Type.class)
 	@Enumerated(EnumType.STRING)
-//	@CollectionTable(name="dunning", joinColumns = @JoinColumn(name="studentId"))
 	@Column(name="type")
 	private Type type = Type.TYPE1;
 	
-	@ElementCollection(targetClass = Status.class)
 	@Enumerated(EnumType.STRING)
-//	@CollectionTable(name="dunning", joinColumns = @JoinColumn(name="studentId"))
 	@Column(name="status")
 	private Status status = Status.OPENED;
 	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			name="dunning_has_borrowedMaterial",
+			joinColumns={@JoinColumn(name="dunningId", referencedColumnName="id")},
+			inverseJoinColumns={@JoinColumn(name="borrowedMaterialId", referencedColumnName="id"),
+								@JoinColumn(name="borrowedMaterial_studentId", referencedColumnName="studentId")}
+			)
 	private Set<BorrowedMaterial> borrowedMaterials = new HashSet<BorrowedMaterial>();
 	
-//	private Date openingDate;
-//	private Date sentDate;
-//	private Date closedDate;
-	
+	@ElementCollection
+	@MapKeyEnumerated(EnumType.STRING)
+	@MapKeyColumn(name="status")
+	@CollectionTable(name="dunningDate", joinColumns = @JoinColumn(name="dunningId"))
+	@Column(name="statusDate")
 	private Map<Status, Date> statusDateMapping = new HashMap<Status, Date>();
 	
 	/**
+	 * Required by Hibernate.<p>
 	 * Use the {@link Builder} instead.
 	 * 
 	 * @see Builder
