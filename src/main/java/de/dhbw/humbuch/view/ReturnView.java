@@ -28,14 +28,14 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void init() {
-		studentMaterialSelector = new StudentMaterialSelector(StudentMaterialSelector.Process.RETURNING);
+//		studentMaterialSelector = new StudentMaterialSelector(StudentMaterialSelector.Process.RETURNING);
 		
 		setSpacing(true);
 		setMargin(true);
 	}
 
 	private void buildLayout() {
-		addComponent(studentMaterialSelector);
+//		addComponent(studentMaterialSelector);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

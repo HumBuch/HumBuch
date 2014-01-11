@@ -10,19 +10,21 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
+import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
 
 
 public class LendingView extends VerticalLayout implements View, ViewInformation {
@@ -42,7 +44,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private ThemeResource themeResourceIconPrint;
 	private LendingViewModel lendingViewModel;
 
-	//	@BindState(StudentWithUnreceivedBorrowedMaterials.class)
+	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
 	private State<Map<Grade, List<Student>>> gradeAndStudents = new BasicState<Map<Grade, List<Student>>>(Map.class);
 
 	@Inject
@@ -67,7 +69,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		horizontalLayoutButtonBar.setSpacing(true);
 		setSpacing(true);
 		setMargin(true);
-		
+
 		addListeners();
 	}
 
@@ -82,9 +84,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		addComponent(studentMaterialSelector);
 		addComponent(horizontalLayoutButtonBar);
 	}
-	
+
 	private void addListeners() {
 		gradeAndStudents.addStateChangeListener(new StateChangeListener() {
+
 			@Override
 			public void stateChange(Object value) {
 				if (value == null) {
@@ -93,16 +96,19 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				studentMaterialSelector.setStudentsWithUnreceivedBorrowedMaterials(gradeAndStudents.get());
 			}
 		});
-		
+		studentMaterialSelector.setStudentsWithUnreceivedBorrowedMaterials(gradeAndStudents.get());
+
 		buttonClassList.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = -5697082042876285467L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
-//				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
+				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		});
 	}
-	
+
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {

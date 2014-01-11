@@ -1,16 +1,23 @@
 package de.dhbw.humbuch.view.components;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 
@@ -19,8 +26,12 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private static final long serialVersionUID = -618911643102742679L;
 
+	private final static Logger LOG = LoggerFactory.getLogger(StudentMaterialSelector.class);
+
 	private static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String SEARCH_STUDENTS = "Schüler durchsuchen";
+	private static final String ALL_GRADES = "Alle Klassen";
+	private static final String GRADE_LEVEL = "Klassenstufe ";
 
 	private VerticalLayout verticalLayoutContent;
 	private TextField textFieldSearchBar;
@@ -35,8 +46,9 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public void setStudentsWithUnreceivedBorrowedMaterials(Map<Grade, List<Student>> gradeAndStudents) {
 		this.gradeAndStudents = gradeAndStudents;
+		buildTable();
 	}
-	
+
 	public Set<Grade> getCurrentlySelectedGrades() {
 		return null;
 	}
@@ -52,7 +64,6 @@ public class StudentMaterialSelector extends CustomComponent {
 		treeTableContent.setWidth("100%");
 		treeTableContent.setPageLength(0);
 		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
-		buildTreeTable();
 	}
 
 	private void buildLayout() {
@@ -62,46 +73,110 @@ public class StudentMaterialSelector extends CustomComponent {
 		setCompositionRoot(verticalLayoutContent);
 	}
 
-	private void buildTreeTable() {
-		// root
-		treeTableContent.addItem(new Object[] { new CheckBox("Alle Klassen") }, 1);
-		// class levels
-		treeTableContent.addItem(new Object[] { new CheckBox("Klassenstufe 5") }, 2);
-		treeTableContent.addItem(new Object[] { new CheckBox("Klassenstufe 6") }, 3);
-		treeTableContent.addItem(new Object[] { new CheckBox("Klassenstufe 7") }, 4);
-		// classes
-		treeTableContent.addItem(new Object[] { new CheckBox("5a") }, 5);
-		treeTableContent.addItem(new Object[] { new CheckBox("5b") }, 6);
-		treeTableContent.addItem(new Object[] { new CheckBox("6a") }, 7);
-		treeTableContent.addItem(new Object[] { new CheckBox("6b") }, 8);
-		treeTableContent.addItem(new Object[] { new CheckBox("7a") }, 9);
-		treeTableContent.addItem(new Object[] { new CheckBox("7b") }, 10);
-		// students
-		treeTableContent.addItem(new Object[] { new CheckBox("Hans Wurst") }, 11);
-		treeTableContent.addItem(new Object[] { new CheckBox("Max Mustermann") }, 12);
-		treeTableContent.addItem(new Object[] { new CheckBox("Micky Mouse") }, 13);
-		// borrowed materials
-		treeTableContent.addItem(new Object[] { new CheckBox("Englisch Buch") }, 14);
-		treeTableContent.setChildrenAllowed(14, false);
-		treeTableContent.addItem(new Object[] { new CheckBox("Mathe Buch") }, 15);
-		treeTableContent.setChildrenAllowed(15, false);
-		treeTableContent.addItem(new Object[] { new CheckBox("Französisch Buch") }, 16);
-		treeTableContent.setChildrenAllowed(16, false);
-		// hierarchy
-		treeTableContent.setParent(2, 1);
-		treeTableContent.setParent(3, 1);
-		treeTableContent.setParent(4, 1);
-		treeTableContent.setParent(5, 2);
-		treeTableContent.setParent(6, 2);
-		treeTableContent.setParent(7, 3);
-		treeTableContent.setParent(8, 3);
-		treeTableContent.setParent(9, 4);
-		treeTableContent.setParent(10, 4);
-		treeTableContent.setParent(11, 5);
-		treeTableContent.setParent(12, 7);
-		treeTableContent.setParent(13, 9);
-		treeTableContent.setParent(14, 11);
-		treeTableContent.setParent(15, 12);
-		treeTableContent.setParent(16, 13);
+	private void buildTable() {
+		if (treeTableContent.removeAllItems()) {
+			// Build root of tree table
+			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
+			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
+
+			Set<Integer> gradeLevels = getAllGradeLevels();
+			LOG.warn("found " + gradeLevels.size() + " grade levels");
+			
+			// Collect all grade level checkboxes for selecting purposes
+			ArrayList<CheckBox> gradeLevelCheckBoxes = new ArrayList<CheckBox>();
+			// Add all the grade levels below the root
+			for (Integer gradeLevel : gradeLevels) {
+				CheckBox checkBoxGradeLevel = new CheckBox(GRADE_LEVEL + gradeLevel);
+				gradeLevelCheckBoxes.add(checkBoxGradeLevel);
+				Object gradeLevelItemId = treeTableContent.addItem(new Object[] { checkBoxGradeLevel }, null);
+				treeTableContent.setParent(gradeLevelItemId, rootItemId);
+
+				Set<Grade> grades = getAllGradesForGradeLevel(gradeLevel);
+				LOG.warn("found " + grades.size() + " grades");
+				
+				// Collect all grade checkboxes for selecting purposes
+				ArrayList<CheckBox> gradeCheckBoxes = new ArrayList<CheckBox>();
+				// Add all grades below the grade level
+				for (Grade grade : grades) {
+					CheckBox checkBoxGrade = new CheckBox("" + grade.getGrade() + grade.getSuffix());
+					gradeCheckBoxes.add(checkBoxGrade);
+					Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
+					treeTableContent.setParent(gradeItemId, gradeLevelItemId);
+
+					List<Student> students = gradeAndStudents.get(grade);
+					LOG.warn("found " + students.size() + " students");
+
+					// Collect all student checkboxes for selecting purposes
+					ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
+					// Add all students below the grade level 
+					for (Student student : students) {
+						CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
+						studentCheckBoxes.add(checkBoxStudent);
+						Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
+						treeTableContent.setParent(studentItemId, gradeItemId);
+
+						List<BorrowedMaterial> materials = student.getUnreceivedBorrowedList();
+						LOG.warn("found " + materials.size() + " materials");
+						
+						// Collect all borrowed materials checkboxes for selecting purposes
+						ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
+						for (BorrowedMaterial material : materials) {
+							CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
+							borrowedMaterialCheckBoxes.add(checkBoxMaterial);
+							Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
+							treeTableContent.setParent(materialItemId, studentItemId);
+							treeTableContent.setChildrenAllowed(materialItemId, false);
+						}
+
+						// listener fur alle students damit sie BorrowedMaterial selecten
+					}
+
+					// listener fur alle grades damit sie die students selecten
+				}
+
+				// listener fur alle grade levels das sie die grades selecten
+			}
+
+			// Whenever the root changes change all grade levels
+			checkBoxRoot.addValueChangeListener(new ValueChangeListener() {
+
+				private static final long serialVersionUID = -7395293342050339912L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+
+				}
+
+			});
+		}
+		else {
+			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
+					+ "Continuing without changing the displayed data.");
+		}
+	}
+
+	private Set<Integer> getAllGradeLevels() {
+		Set<Grade> allGrades = gradeAndStudents.keySet();
+		HashSet<Integer> allGradeLevels = new HashSet<Integer>();
+
+		// collect all unique grade levels
+		for (Grade grade : allGrades) {
+			allGradeLevels.add(grade.getGrade());
+		}
+
+		return allGradeLevels;
+	}
+
+	private Set<Grade> getAllGradesForGradeLevel(Integer gradeLevel) {
+		Set<Grade> allGrades = gradeAndStudents.keySet();
+		HashSet<Grade> allGradesForGradeLevel = new HashSet<Grade>();
+
+		for (Grade grade : allGrades) {
+			if (grade.getGrade() == gradeLevel) {
+				allGradesForGradeLevel.add(grade);
+			}
+		}
+
+		return allGradesForGradeLevel;
 	}
 }
