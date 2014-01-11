@@ -50,6 +50,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@JoinColumn(name="parentId")
 	private Parent parent;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Student() {}
 
 	public int getId() {

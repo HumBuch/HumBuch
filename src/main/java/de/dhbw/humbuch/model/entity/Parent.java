@@ -24,6 +24,13 @@ public class Parent implements de.dhbw.humbuch.model.entity.Entity {
 	@OneToOne(mappedBy="parent")
 	private Student student;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Parent() {}
 
 	public int getId() {

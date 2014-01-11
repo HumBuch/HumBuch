@@ -29,6 +29,13 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity {
 	@OneToMany(mappedBy="grade")
 	private List<Student> students = new ArrayList<>();
 
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Grade() {}
 
 	public int getId() {
