@@ -3,6 +3,7 @@ package de.dhbw.humbuch.util;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.lowagie.text.Document;
@@ -16,14 +17,16 @@ import de.dhbw.humbuch.model.entity.Student;
 public final class PDFStudentList extends PDFHandler{
 	private Student student;
 	private Set<Student> students;
+	private Map<Student, List<BorrowedMaterial>> studentToReturnListsMap;
 	private List<BorrowedMaterial> returnList;
+	private Map<Student, List<BorrowedMaterial>> studentToLendingListsMap;
 	private List<BorrowedMaterial> lendingList;
 	
 	public PDFStudentList(Builder builder){
 		super();
 		this.students = builder.students;
-		this.returnList = builder.returnList;
-		this.lendingList = builder.lendingList;
+		this.studentToReturnListsMap = builder.studentToReturnListsMap;
+		this.studentToLendingListsMap = builder.studentToLendingListsMap;
 	}
 	
 	protected void insertDocumentParts(Document document){
@@ -31,6 +34,8 @@ public final class PDFStudentList extends PDFHandler{
 			for(Student student : this.students){
 				this.addHeading(document, "Ausgabe-Liste 2013");
 				this.student = student;
+				this.returnList = studentToReturnListsMap.get(student);
+				this.lendingList = studentToLendingListsMap.get(student);
 				this.addStudentInformation(document);
 				this.addContent(document);
 				this.addRentalDisclosure(document);
@@ -181,8 +186,8 @@ public final class PDFStudentList extends PDFHandler{
 	
 	public static class Builder{
 		private Set<Student> students;
-		private List<BorrowedMaterial> returnList;
-		private List<BorrowedMaterial> lendingList;
+		private Map<Student, List<BorrowedMaterial>> studentToReturnListsMap;
+		private Map<Student, List<BorrowedMaterial>> studentToLendingListsMap;
 				
 		public Builder(Student student){
 			this.students = new LinkedHashSet<Student>();
@@ -193,13 +198,13 @@ public final class PDFStudentList extends PDFHandler{
 			this.students = students;
 		}
 		
-		public Builder returnList(List<BorrowedMaterial> borrowedMaterial){
-			this.returnList = borrowedMaterial;
+		public Builder returnMap(Map<Student, List<BorrowedMaterial>> studentToBorrowedMaterialMap){
+			this.studentToReturnListsMap = studentToBorrowedMaterialMap;
 			return this;
 		}
 		
-		public Builder lendingList(List<BorrowedMaterial> borrowedMaterial){
-			this.lendingList = borrowedMaterial;
+		public Builder lendingMap(Map<Student, List<BorrowedMaterial>> studentToBorrowedMaterialMap){
+			this.studentToLendingListsMap = studentToBorrowedMaterialMap;
 			return this;
 		}
 		

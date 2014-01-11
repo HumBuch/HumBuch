@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +51,13 @@ public class PDFTest {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
 			Grade grade = new Grade.Builder("11au").build();
 			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
-			new PDFStudentList.Builder(student).lendingList(borrowedMaterialList).returnList(borrowedMaterialList).build().savePDF("./testfiles/FirstPdf.pdf");
+			
+			Map<Student, List<BorrowedMaterial>> lendingMap = new LinkedHashMap<Student, List<BorrowedMaterial>>();
+			lendingMap.put(student, borrowedMaterialList);
+			Map<Student, List<BorrowedMaterial>> returnMap = new LinkedHashMap<Student, List<BorrowedMaterial>>();
+			returnMap.put(student, borrowedMaterialList);
+			
+			new PDFStudentList.Builder(student).lendingMap(lendingMap).returnMap(returnMap).build().savePDF("./testfiles/FirstPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
