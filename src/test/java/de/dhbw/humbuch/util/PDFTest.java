@@ -117,7 +117,7 @@ public class PDFTest {
 			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
 			Set<Student> students = new LinkedHashSet<Student>();
 			students.add(student);
-			PDFDunning.createSecondDunning(students, student.getBorrowedList(), parent).savePDF("./testfiles/secondDunningPdf.pdf");
+			PDFDunning.createSecondDunning(students, student.getBorrowedList()).savePDF("./testfiles/secondDunningPdf.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
