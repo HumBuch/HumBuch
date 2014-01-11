@@ -19,6 +19,14 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
+/**
+ * 
+ * @author Benjamin
+ *
+ * This class contains test data to generate PDFs.
+ * It does NOT contain any JUnit tests.
+ * Use this class to create PDFs. After the creation one has to check them manually!
+ */
 
 public class PDFTest {
 	public static void main(String[] args){
