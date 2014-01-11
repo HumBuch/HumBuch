@@ -17,7 +17,7 @@ import de.dhbw.humbuch.model.entity.Student;
 public class PDFDunning extends PDFHandler {
 	Student student;
 	Set<Student> students;
-	Parent parent;
+	boolean secondDunning;
 	List<BorrowedMaterial> borrowedMaterials;
 	
 	private PDFDunning(){};
@@ -26,14 +26,15 @@ public class PDFDunning extends PDFHandler {
 		PDFDunning pdfDunning = new PDFDunning();
 		pdfDunning.students = students;
 		pdfDunning.borrowedMaterials = borrowedMaterials;
+		pdfDunning.secondDunning = false;
 		return pdfDunning;
 	}
 	
-	public static PDFDunning createSecondDunning(Set<Student> students, List<BorrowedMaterial> borrowedMaterials, Parent parent){
+	public static PDFDunning createSecondDunning(Set<Student> students, List<BorrowedMaterial> borrowedMaterials){
 		PDFDunning pdfDunning = new PDFDunning();
 		pdfDunning.students = students;
 		pdfDunning.borrowedMaterials = borrowedMaterials;
-		pdfDunning.parent = parent;
+		pdfDunning.secondDunning = true;
 		return pdfDunning;
 	}
 
@@ -52,7 +53,7 @@ public class PDFDunning extends PDFHandler {
 	protected void addContent(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		String dunningText = "";
-		if(this.parent == null){
+		if(!this.secondDunning){
 			dunningText = "Wir bitten darum, folgende Bücher zurückzugeben: \n";
 		}
 		else{
