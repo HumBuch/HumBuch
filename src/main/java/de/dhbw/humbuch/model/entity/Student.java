@@ -52,6 +52,9 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	@JoinColumn(name="parentId")
 	private Parent parent;
 	
+	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
+	private List<Dunning> dunningList = new ArrayList<Dunning>();
+	
 	public Student() {}
 
 	public int getId() {
@@ -132,6 +135,10 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 
 	public void setLeavingSchool(boolean leavingSchool) {
 		this.leavingSchool = leavingSchool;
+	}
+	
+	public List<Dunning> getDunningList() {
+		return dunningList;
 	}
 
 	public List<BorrowedMaterial> getUnreceivedBorrowedList() {
