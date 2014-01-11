@@ -114,7 +114,7 @@ public class PDFTest {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
 			Grade grade = new Grade.Builder("11au").build();
 			Parent parent = new Parent.Builder("Penny", "Wise").build();
-			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).parent(parent).build();
 			Set<Student> students = new LinkedHashSet<Student>();
 			students.add(student);
 			PDFDunning.createSecondDunning(students, student.getBorrowedList()).savePDF("./testfiles/secondDunningPdf.pdf");
