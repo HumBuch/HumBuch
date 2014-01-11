@@ -56,7 +56,7 @@ public class PDFDunning extends PDFHandler {
 			dunningText = "Wir bitten darum, folgende Bücher zurückzugeben: \n";
 		}
 		else{
-			dunningText = "Sehr geehrte Eltern, \n\n"
+			dunningText = "Sehr geehrte/r, " + student.getParent().getTitle() + " " + student.getParent().getLastname()  + "\n\n"
 					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
 							+ " Bücher nicht zurückgegeben hat. Wir bitten daher um schnellstmögliche Rückgabe. \n\n"
 							+ "Mit freundlichen Grüßen \n"
