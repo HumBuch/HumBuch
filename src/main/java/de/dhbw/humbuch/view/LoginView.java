@@ -7,15 +7,15 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
@@ -27,25 +27,29 @@ import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogin;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.LoginError;
 
+/**
+ * Provides the UI for the login
+ * 
+ * @author Johannes
+ * 
+ */
 public class LoginView extends VerticalLayout implements View {
-
 	private static final long serialVersionUID = 5187769743375079627L;
 
-	private VerticalLayout viewLayout;
-	
-	private TextField username = new TextField("Nutzername:");
-	private PasswordField password = new PasswordField("Passwort:");;
+	private VerticalLayout loginLayout;
+	private CssLayout loginPanel;
 
+	private TextField username = new TextField("Username");
+	private PasswordField password = new PasswordField("Passwort");
 	@BindAction(value = DoLogin.class, source = { "username", "password" })
-	private Button loginButton = new Button("Login");
+	private Button btnLogin = new Button("Login");
 
 	@BindState(IsLoggedIn.class)
 	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
 			Boolean.class);
-	
+
 	@BindState(LoginError.class)
-	private BasicState<String> loginError = new BasicState<String>(
-			String.class);
+	private BasicState<String> loginError = new BasicState<String>(String.class);
 
 	@Inject
 	public LoginView(ViewModelComposer viewModelComposer,
@@ -57,46 +61,71 @@ public class LoginView extends VerticalLayout implements View {
 
 	private void init() {
 
-		// Create the user input field
-		username.setWidth("300px");
-		username.setRequired(true);
-		username.setInvalidAllowed(false);
+		loginLayout = new VerticalLayout();
+		loginLayout.setSizeFull();
+		loginLayout.addStyleName("login-layout");
 
-		// Create the password input field
-		password.setWidth("300px");
+		loginPanel = new CssLayout();
+		loginPanel.addStyleName("login-panel");
+
+		// Labels
+		HorizontalLayout labels = new HorizontalLayout();
+		labels.setWidth("100%");
+		labels.setMargin(true);
+		labels.addStyleName("labels");
+		loginPanel.addComponent(labels);
+
+		// Welcome
+		Label welcome = new Label("Herzlich Willkommen");
+		welcome.setSizeUndefined();
+		welcome.addStyleName("h4");
+		labels.addComponent(welcome);
+		labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
+
+		// HumBuch
+		Label title = new Label("HumBuch Schulbuchverwaltung");
+
+		title.addStyleName("h2");
+		labels.addComponent(title);
+		labels.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
+
+		// Input fields
+		HorizontalLayout fields = new HorizontalLayout();
+		fields.setSpacing(true);
+		fields.setMargin(true);
+		fields.addStyleName("fields");
+
+		// Username
+		username.setRequired(true);
+		username.setNullRepresentation("");
+		username.setInvalidAllowed(false);
+		fields.addComponent(username);
+
+		// Password
 		password.setRequired(true);
 		password.setValue("");
 		password.setNullRepresentation("");
-		
-		// Add both to a panel
-		final VerticalLayout loginPanel = new VerticalLayout(username, password, loginButton);
-		loginPanel.setCaption("Bitte melden Sie sich an, um die Anwendung zu nutzen. Name: admin Pw: 1234");
-		loginPanel.setSpacing(true);
-		loginPanel.setMargin(new MarginInfo(true, true, true, false));
-		loginPanel.setSizeUndefined();
+		fields.addComponent(password);
 
-		// The view root layout
-		viewLayout = new VerticalLayout(loginPanel);
-		viewLayout.setSizeFull();
-		viewLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
-		viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
+		// Button
+		btnLogin.addStyleName("default");
+		fields.addComponent(btnLogin);
+		fields.setComponentAlignment(btnLogin, Alignment.BOTTOM_LEFT);
 
-		final ShortcutListener enter = new ShortcutListener("Sign In",
-				KeyCode.ENTER, null) {
+		loginPanel.addComponent(fields);
 
-			private static final long serialVersionUID = 2980349254427801100L;
+		loginLayout.addComponent(loginPanel);
+		loginLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
 
-			@Override
-			public void handleAction(Object sender, Object target) {
-				loginButton.click();
-			}
-		};
+		attachListeners();
 
-		// Listeners
-		username.addShortcutListener(enter);
-		password.addShortcutListener(enter);
+	}
 
-		// Check for a successful login
+	private void attachListeners() {
+
+		/**
+		 * Checks for a successful login and navigates to home_view
+		 */
 		isLoggedIn.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
@@ -110,31 +139,54 @@ public class LoginView extends VerticalLayout implements View {
 
 			}
 		});
-		
+
+		/**
+		 * Listens for login errors and displays them
+		 */
 		loginError.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
 				if (!isLoggedIn.get()) {
-					
-                   if (loginPanel.getComponentCount() > 3) {
-                        // Remove the previous error message
-                        loginPanel.removeComponent(loginPanel.getComponent(3));
-                    }
-					
+
+					if (loginPanel.getComponentCount() > 2) {
+						// Remove the previous error message
+						loginPanel.removeComponent(loginPanel.getComponent(2));
+					}
+
 					Label error = new Label(loginError.get(), ContentMode.HTML);
-					error.setStyleName("error-box");
+					error.setStyleName("error");
 					error.setSizeUndefined();
+					// add animation
+					error.addStyleName("v-animate-reveal");
 					loginPanel.addComponent(error);
+					username.focus();
 				}
 
 			}
 		});
+
+		/**
+		 * Listens for key press <enter>
+		 */
+		final ShortcutListener enter = new ShortcutListener("Sign In",
+				KeyCode.ENTER, null) {
+
+			private static final long serialVersionUID = 2980349254427801100L;
+
+			@Override
+			public void handleAction(Object sender, Object target) {
+				btnLogin.click();
+			}
+		};
+
+		username.addShortcutListener(enter);
+		password.addShortcutListener(enter);
 	}
 	
+
 	private void buildLayout() {
-		setSizeFull();	
-		
-		addComponent(viewLayout);
+		setSizeFull();
+		addComponent(loginLayout);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

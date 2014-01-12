@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +28,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="dunning")
-public class Dunning implements de.dhbw.humbuch.model.entity.Entity {
+public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -6187908554803908912L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

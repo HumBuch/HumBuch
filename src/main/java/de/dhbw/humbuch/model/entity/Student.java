@@ -55,6 +55,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
 	private List<Dunning> dunningList = new ArrayList<Dunning>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Student() {}
 
 	public int getId() {

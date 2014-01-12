@@ -124,5 +124,4 @@ public class User implements de.dhbw.humbuch.model.entity.Entity, Serializable {
 			return false;
 		return true;
 	}
-	
 }
