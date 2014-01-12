@@ -2,14 +2,14 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
-DROP SCHEMA IF EXISTS `humbuch` ;
-CREATE SCHEMA IF NOT EXISTS `humbuch` DEFAULT CHARACTER SET utf8 ;
-USE `humbuch` ;
+DROP SCHEMA IF EXISTS `humbuch_test` ;
+CREATE SCHEMA IF NOT EXISTS `humbuch_test` DEFAULT CHARACTER SET utf8 ;
+USE `humbuch_test` ;
 
 -- -----------------------------------------------------
--- Table `humbuch`.`grade`
+-- Table `humbuch_test`.`grade`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`grade` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`grade` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `grade` INT(2) NOT NULL,
   `suffix` VARCHAR(45) NOT NULL,
@@ -19,9 +19,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`parent`
+-- Table `humbuch_test`.`parent`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`parent` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`parent` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NULL,
   `firstname` VARCHAR(45) NOT NULL,
@@ -34,9 +34,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`student`
+-- Table `humbuch_test`.`student`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`student` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`student` (
   `id` INT(11) NOT NULL,
   `gradeId` INT(11) NOT NULL,
   `lastname` VARCHAR(45) NOT NULL,
@@ -50,12 +50,12 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`student` (
   INDEX `fk_student_parent1_idx` (`parentId` ASC),
   CONSTRAINT `fk_student_class1`
     FOREIGN KEY (`gradeId`)
-    REFERENCES `humbuch`.`grade` (`id`)
+    REFERENCES `humbuch_test`.`grade` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_student_parent1`
     FOREIGN KEY (`parentId`)
-    REFERENCES `humbuch`.`parent` (`id`)
+    REFERENCES `humbuch_test`.`parent` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -63,9 +63,9 @@ AUTO_INCREMENT = 7;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`category`
+-- Table `humbuch_test`.`category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`category` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`category` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(128) NULL,
@@ -76,9 +76,9 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`teachingMaterial`
+-- Table `humbuch_test`.`teachingMaterial`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterial` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`teachingMaterial` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `categoryId` INT(11) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterial` (
   INDEX `fk_Lehrmittel_Kategorie1_idx` (`categoryId` ASC),
   CONSTRAINT `fk_TeachingMaterial_Category1`
     FOREIGN KEY (`categoryId`)
-    REFERENCES `humbuch`.`category` (`id`)
+    REFERENCES `humbuch_test`.`category` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -104,9 +104,9 @@ AUTO_INCREMENT = 15;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`borrowedMaterial`
+-- Table `humbuch_test`.`borrowedMaterial`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`borrowedMaterial` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`borrowedMaterial` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `studentId` INT(11) NOT NULL,
   `teachingMaterialId` INT(11) NOT NULL,
@@ -121,21 +121,21 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`borrowedMaterial` (
   INDEX `fk_Ausleihliste_Lehrmittel1_idx` (`teachingMaterialId` ASC),
   CONSTRAINT `fk_Borrowed_Student1`
     FOREIGN KEY (`studentId`)
-    REFERENCES `humbuch`.`student` (`id`)
+    REFERENCES `humbuch_test`.`student` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_Borrowed_TeachingMaterial1`
     FOREIGN KEY (`teachingMaterialId`)
-    REFERENCES `humbuch`.`teachingMaterial` (`id`)
+    REFERENCES `humbuch_test`.`teachingMaterial` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`user`
+-- Table `humbuch_test`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`user` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`user` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
@@ -146,9 +146,9 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`role`
+-- Table `humbuch_test`.`role`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`role` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`role` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(45) NULL,
@@ -157,9 +157,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`permission`
+-- Table `humbuch_test`.`permission`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`permission` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`permission` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(45) NULL,
@@ -168,9 +168,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`user_has_role`
+-- Table `humbuch_test`.`user_has_role`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`user_has_role` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`user_has_role` (
   `user_id` INT(11) NOT NULL,
   `role_id` INT NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`),
@@ -178,21 +178,21 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`user_has_role` (
   INDEX `fk_user_has_role_user1_idx` (`user_id` ASC),
   CONSTRAINT `fk_user_has_role_user1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `humbuch`.`user` (`id`)
+    REFERENCES `humbuch_test`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_user_has_role_role1`
     FOREIGN KEY (`role_id`)
-    REFERENCES `humbuch`.`role` (`id`)
+    REFERENCES `humbuch_test`.`role` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`role_has_permission`
+-- Table `humbuch_test`.`role_has_permission`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`role_has_permission` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`role_has_permission` (
   `role_id` INT NOT NULL,
   `permission_id` INT NOT NULL,
   PRIMARY KEY (`role_id`, `permission_id`),
@@ -200,21 +200,21 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`role_has_permission` (
   INDEX `fk_role_has_privilege_role1_idx` (`role_id` ASC),
   CONSTRAINT `fk_role_has_privilege_role1`
     FOREIGN KEY (`role_id`)
-    REFERENCES `humbuch`.`role` (`id`)
+    REFERENCES `humbuch_test`.`role` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_role_has_privilege_permission1`
     FOREIGN KEY (`permission_id`)
-    REFERENCES `humbuch`.`permission` (`id`)
+    REFERENCES `humbuch_test`.`permission` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`schoolYear`
+-- Table `humbuch_test`.`schoolYear`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`schoolYear` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`schoolYear` (
   `year` INT NOT NULL,
   `from` DATE NOT NULL,
   `to` DATE NOT NULL,
@@ -225,9 +225,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`studentSubject`
+-- Table `humbuch_test`.`studentSubject`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`studentSubject` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`studentSubject` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `studentId` INT(11) NOT NULL,
   `subject` VARCHAR(45) NOT NULL,
@@ -235,16 +235,16 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`studentSubject` (
   INDEX `fk_studentProfile_student1_idx` (`studentId` ASC),
   CONSTRAINT `fk_studentProfile_student1`
     FOREIGN KEY (`studentId`)
-    REFERENCES `humbuch`.`student` (`id`)
+    REFERENCES `humbuch_test`.`student` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`teachingMaterialSubject`
+-- Table `humbuch_test`.`teachingMaterialSubject`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterialSubject` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`teachingMaterialSubject` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `teachingMaterialId` INT(11) NOT NULL,
   `subject` VARCHAR(45) NOT NULL,
@@ -252,16 +252,16 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterialSubject` (
   INDEX `fk_teachingMaterialSubject_teachingMaterial1_idx` (`teachingMaterialId` ASC),
   CONSTRAINT `fk_teachingMaterialSubject_teachingMaterial1`
     FOREIGN KEY (`teachingMaterialId`)
-    REFERENCES `humbuch`.`teachingMaterial` (`id`)
+    REFERENCES `humbuch_test`.`teachingMaterial` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`dunning`
+-- Table `humbuch_test`.`dunning`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`dunning` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`dunning` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `studentId` INT(11) NOT NULL,
   `type` VARCHAR(45) NOT NULL,
@@ -270,16 +270,16 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`dunning` (
   INDEX `fk_dunning_student1_idx` (`studentId` ASC),
   CONSTRAINT `fk_dunning_student1`
     FOREIGN KEY (`studentId`)
-    REFERENCES `humbuch`.`student` (`id`)
+    REFERENCES `humbuch_test`.`student` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`dunning_has_borrowedMaterial`
+-- Table `humbuch_test`.`dunning_has_borrowedMaterial`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`dunning_has_borrowedMaterial` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`dunning_has_borrowedMaterial` (
   `dunningId` INT NOT NULL,
   `borrowedMaterialId` INT(11) NOT NULL,
   `borrowedMaterial_studentId` INT(11) NOT NULL,
@@ -288,21 +288,21 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`dunning_has_borrowedMaterial` (
   INDEX `fk_dunning_has_borrowedMaterial_dunning1_idx` (`dunningId` ASC),
   CONSTRAINT `fk_dunning_has_borrowedMaterial_dunning1`
     FOREIGN KEY (`dunningId`)
-    REFERENCES `humbuch`.`dunning` (`id`)
+    REFERENCES `humbuch_test`.`dunning` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_dunning_has_borrowedMaterial_borrowedMaterial1`
     FOREIGN KEY (`borrowedMaterialId` , `borrowedMaterial_studentId`)
-    REFERENCES `humbuch`.`borrowedMaterial` (`id` , `studentId`)
+    REFERENCES `humbuch_test`.`borrowedMaterial` (`id` , `studentId`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `humbuch`.`dunningDate`
+-- Table `humbuch_test`.`dunningDate`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `humbuch`.`dunningDate` (
+CREATE TABLE IF NOT EXISTS `humbuch_test`.`dunningDate` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `dunningId` INT NOT NULL,
   `status` VARCHAR(45) NOT NULL,
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`dunningDate` (
   INDEX `fk_dunningDate_dunning1_idx` (`dunningId` ASC),
   CONSTRAINT `fk_dunningDate_dunning1`
     FOREIGN KEY (`dunningId`)
-    REFERENCES `humbuch`.`dunning` (`id`)
+    REFERENCES `humbuch_test`.`dunning` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
