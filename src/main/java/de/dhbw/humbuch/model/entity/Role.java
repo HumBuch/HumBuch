@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="role")
-public class Role implements de.dhbw.humbuch.model.entity.Entity {
-	
+public class Role implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = 193511645036784700L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -30,13 +32,6 @@ public class Role implements de.dhbw.humbuch.model.entity.Entity {
 			)
 	private List<Permission> permissions = new ArrayList<Permission>();
 	
-	/**
-	 * Required by Hibernate.<p>
-	 * Use the {@link Builder} instead.
-	 * 
-	 * @see Builder
-	 */
-	@Deprecated
 	public Role() {}
 
 	public int getId() {

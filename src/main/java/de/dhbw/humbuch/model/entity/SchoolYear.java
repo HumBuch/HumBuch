@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -8,7 +9,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="schoolYear")
-public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity {
+public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -3752454317452902743L;
 
 	@Id
 	private int year;
@@ -17,14 +19,7 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity {
 	private Date to;
 	private Date endFirstTerm;
 	private Date beginSecondTerm;
-
-	/**
-	 * Required by Hibernate.<p>
-	 * Use the {@link Builder} instead.
-	 * 
-	 * @see Builder
-	 */
-	@Deprecated
+	
 	public SchoolYear() {}
 
 	public int getYear() {

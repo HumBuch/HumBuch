@@ -230,7 +230,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `humbuch`.`studentSubject` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `studentId` INT(11) NOT NULL,
-  `subject` VARCHAR(45) NULL,
+  `subject` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`, `studentId`),
   INDEX `fk_studentProfile_student1_idx` (`studentId` ASC),
   CONSTRAINT `fk_studentProfile_student1`
@@ -247,12 +247,71 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterialSubject` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `teachingMaterialId` INT(11) NOT NULL,
-  `subject` VARCHAR(45) NULL,
+  `subject` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`, `teachingMaterialId`),
   INDEX `fk_teachingMaterialSubject_teachingMaterial1_idx` (`teachingMaterialId` ASC),
   CONSTRAINT `fk_teachingMaterialSubject_teachingMaterial1`
     FOREIGN KEY (`teachingMaterialId`)
     REFERENCES `humbuch`.`teachingMaterial` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `humbuch`.`dunning`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `humbuch`.`dunning` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `studentId` INT(11) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_dunning_student1_idx` (`studentId` ASC),
+  CONSTRAINT `fk_dunning_student1`
+    FOREIGN KEY (`studentId`)
+    REFERENCES `humbuch`.`student` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `humbuch`.`dunning_has_borrowedMaterial`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `humbuch`.`dunning_has_borrowedMaterial` (
+  `dunningId` INT NOT NULL,
+  `borrowedMaterialId` INT(11) NOT NULL,
+  `borrowedMaterial_studentId` INT(11) NOT NULL,
+  PRIMARY KEY (`dunningId`, `borrowedMaterialId`, `borrowedMaterial_studentId`),
+  INDEX `fk_dunning_has_borrowedMaterial_borrowedMaterial1_idx` (`borrowedMaterialId` ASC, `borrowedMaterial_studentId` ASC),
+  INDEX `fk_dunning_has_borrowedMaterial_dunning1_idx` (`dunningId` ASC),
+  CONSTRAINT `fk_dunning_has_borrowedMaterial_dunning1`
+    FOREIGN KEY (`dunningId`)
+    REFERENCES `humbuch`.`dunning` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_dunning_has_borrowedMaterial_borrowedMaterial1`
+    FOREIGN KEY (`borrowedMaterialId` , `borrowedMaterial_studentId`)
+    REFERENCES `humbuch`.`borrowedMaterial` (`id` , `studentId`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `humbuch`.`dunningDate`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `humbuch`.`dunningDate` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `dunningId` INT NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `statusDate` DATE NOT NULL,
+  PRIMARY KEY (`id`, `dunningId`),
+  INDEX `fk_dunningDate_dunning1_idx` (`dunningId` ASC),
+  CONSTRAINT `fk_dunningDate_dunning1`
+    FOREIGN KEY (`dunningId`)
+    REFERENCES `humbuch`.`dunning` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;

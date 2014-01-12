@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
@@ -21,7 +22,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="teachingMaterial")
-public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
+public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -6153270685462221761L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,13 +52,6 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity {
 	private Date validFrom;
 	private Date validUntil;
 	
-	/**
-	 * Required by Hibernate.<p>
-	 * Use the {@link Builder} instead.
-	 * 
-	 * @see Builder
-	 */
-	@Deprecated
 	public TeachingMaterial() {}
 
 	public int getId() {

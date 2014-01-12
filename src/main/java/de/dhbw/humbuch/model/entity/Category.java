@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="category")
-public class Category implements de.dhbw.humbuch.model.entity.Entity {
-
+public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -1497919629033299136L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -24,13 +26,6 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity {
 	@OneToMany(mappedBy="category", fetch=FetchType.LAZY)
 	private List<TeachingMaterial> teachingMaterials = new ArrayList<>();
 	
-	/**
-	 * Required by Hibernate.<p>
-	 * Use the {@link Builder} instead.
-	 * 
-	 * @see Builder
-	 */
-	@Deprecated
 	public Category() {}
 
 	public int getId() {

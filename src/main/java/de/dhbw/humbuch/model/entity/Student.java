@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -23,8 +24,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="student")
-public class Student implements de.dhbw.humbuch.model.entity.Entity {
-	
+public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -3020872456290703528L;
+
 	@Id
 	private int id;
 	
@@ -49,6 +51,9 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 	@OneToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="parentId")
 	private Parent parent;
+	
+	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
+	private List<Dunning> dunningList = new ArrayList<Dunning>();
 	
 	/**
 	 * Required by Hibernate.<p>
@@ -137,6 +142,10 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity {
 
 	public void setLeavingSchool(boolean leavingSchool) {
 		this.leavingSchool = leavingSchool;
+	}
+	
+	public List<Dunning> getDunningList() {
+		return dunningList;
 	}
 
 	public List<BorrowedMaterial> getUnreceivedBorrowedList() {

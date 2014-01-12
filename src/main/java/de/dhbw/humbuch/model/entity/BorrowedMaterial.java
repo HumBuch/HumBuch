@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -14,8 +15,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="borrowedMaterial")
-public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity {
-	
+public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+	private static final long serialVersionUID = -7956138735111492455L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
