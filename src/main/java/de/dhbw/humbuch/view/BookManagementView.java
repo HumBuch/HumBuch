@@ -17,6 +17,7 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -24,6 +25,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -155,7 +157,7 @@ public class BookManagementView extends VerticalLayout implements View,
 				}
 				Collection<TeachingMaterial> tableData = (Collection<TeachingMaterial>) value;
 				for (TeachingMaterial teachingMaterial : tableData) {
-
+				// Gets the string representatives of each teaching material profile 
 					Map<String, Set<Subject>> profiles = Profile
 							.getProfileMap();
 					for (Entry<String, Set<Subject>> profile : profiles
@@ -375,33 +377,38 @@ public class BookManagementView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				editTeachingMaterial = true;
-				windowEditBook.setCaption(WINDOW_EDIT_BOOK);
-				UI.getCurrent().addWindow(windowEditBook);
-				bookManagementViewModel.doFetchTeachingMaterial(Integer
-						.parseInt(tableTeachingMaterials.getValue().toString()));
-				TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
-				textFieldBookName.setValue(teachingMaterial.getName());
-				textFieldBookIdentifyer.setValue(teachingMaterial
-						.getIdentifyingNumber());
-				textFieldProducer.setValue(teachingMaterial.getProducer());
-				textFieldFromGrade.setValue(Integer.toString(teachingMaterial
-						.getFromGrade()));
-				textFieldToGrade.setValue(Integer.toString(teachingMaterial
-						.getToGrade()));
-				textAreaComment.setValue(teachingMaterial.getComment());
-				comboBoxFromGradeTerm.setValue(teachingMaterial.getFromTerm());
-				comboBoxToGradeTerm.setValue(teachingMaterial.getToTerm());
-				for (Map.Entry<Integer, Category> category : categories.get()
-						.entrySet()) {
-					comboBoxCategory.addItem(category.getValue().getId());
-					comboBoxCategory.setItemCaption(
-							category.getValue().getId(), category.getValue()
-									.getName());
+				if(tableTeachingMaterials.getValue() == null) {
+					new Notification("Bitte ein Lehrmittel auswählen!", Notification.TYPE_HUMANIZED_MESSAGE).show(Page.getCurrent());
 				}
-				comboBoxCategory.setValue(teachingMaterial.getCategory()
-						.getId());
-				comboBoxProfiles.setValue(teachingMaterial.getProfile());
+				else {
+					editTeachingMaterial = true;
+					windowEditBook.setCaption(WINDOW_EDIT_BOOK);
+					UI.getCurrent().addWindow(windowEditBook);				
+					bookManagementViewModel.doFetchTeachingMaterial(Integer
+							.parseInt(tableTeachingMaterials.getValue().toString()));
+					TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
+					textFieldBookName.setValue(teachingMaterial.getName());
+					textFieldBookIdentifyer.setValue(teachingMaterial
+							.getIdentifyingNumber());
+					textFieldProducer.setValue(teachingMaterial.getProducer());
+					textFieldFromGrade.setValue(Integer.toString(teachingMaterial
+							.getFromGrade()));
+					textFieldToGrade.setValue(Integer.toString(teachingMaterial
+							.getToGrade()));
+					textAreaComment.setValue(teachingMaterial.getComment());
+					comboBoxFromGradeTerm.setValue(teachingMaterial.getFromTerm());
+					comboBoxToGradeTerm.setValue(teachingMaterial.getToTerm());
+					for (Map.Entry<Integer, Category> category : categories.get()
+							.entrySet()) {
+						comboBoxCategory.addItem(category.getValue().getId());
+						comboBoxCategory.setItemCaption(
+								category.getValue().getId(), category.getValue()
+										.getName());
+					}
+					comboBoxCategory.setValue(teachingMaterial.getCategory()
+							.getId());
+					comboBoxProfiles.setValue(teachingMaterial.getProfile());
+				}
 			}
 		});
 	}
