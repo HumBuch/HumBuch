@@ -205,6 +205,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		textFieldSearchBar.setImmediate(true);
 		textFieldSearchBar.setTextChangeEventMode(TextChangeEventMode.EAGER);
 
+		//TODO https://vaadin.com/forum#!/thread/617239 + edit button to add new category
+		
 		comboBoxFromGradeTerm.addItem(1);
 		comboBoxFromGradeTerm.addItem(2);
 		comboBoxToGradeTerm.addItem(1);
