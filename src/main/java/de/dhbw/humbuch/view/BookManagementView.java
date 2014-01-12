@@ -395,7 +395,7 @@ public class BookManagementView extends VerticalLayout implements View,
 							.getFromGrade()));
 					textFieldToGrade.setValue(Integer.toString(teachingMaterial
 							.getToGrade()));
-					textAreaComment.setValue(teachingMaterial.getComment());
+					textAreaComment.setValue((teachingMaterial.getComment()==null) ? "" : teachingMaterial.getComment() );
 					comboBoxFromGradeTerm.setValue(teachingMaterial.getFromTerm());
 					comboBoxToGradeTerm.setValue(teachingMaterial.getToTerm());
 					for (Map.Entry<Integer, Category> category : categories.get()
