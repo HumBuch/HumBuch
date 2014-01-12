@@ -49,6 +49,8 @@ public class LoginViewModel {
 		
 		// Es muss sichergestellt sein, dass es keine zwei User mit selber Name/Passwort Kombination gibt
 		if (username.equals("") || password.equals("")) {
+			// Set the loginError to empty string --> state change --> user feedback in the view
+			loginError.set("");
 			loginError.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
 			return;
 		} else {
@@ -56,6 +58,7 @@ public class LoginViewModel {
 			if(!user.isEmpty()) {
 				isLoggedIn.set(new Boolean(true));
 			} else {
+				loginError.set("");
 				loginError.set("Username oder Passwort stimmen nicht überein.");
 			}
 		}
