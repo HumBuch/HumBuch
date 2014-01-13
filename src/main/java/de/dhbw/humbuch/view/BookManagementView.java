@@ -204,13 +204,13 @@ public class BookManagementView extends VerticalLayout implements View,
 		textFieldSearchBar = new TextField(SEARCH_BOOK);
 		textFieldSearchBar.setImmediate(true);
 		textFieldSearchBar.setTextChangeEventMode(TextChangeEventMode.EAGER);
-
-		//TODO https://vaadin.com/forum#!/thread/617239 + edit button to add new category
 		
 		comboBoxFromGradeTerm.addItem(1);
 		comboBoxFromGradeTerm.addItem(2);
+		comboBoxFromGradeTerm.setNullSelectionAllowed(false);
 		comboBoxToGradeTerm.addItem(1);
 		comboBoxToGradeTerm.addItem(2);
+		comboBoxToGradeTerm.setNullSelectionAllowed(false);
 		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
 		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
 			comboBoxProfiles.addItem(profile.getValue());
@@ -218,6 +218,8 @@ public class BookManagementView extends VerticalLayout implements View,
 					profile.getKey());
 		}
 		comboBoxCategory.setNewItemsAllowed(true);
+		comboBoxCategory.setNullSelectionAllowed(false);
+		comboBoxProfiles.setNullSelectionAllowed(false);
 
 		tableTeachingMaterials = new Table();
 		tableTeachingMaterials.setSelectable(true);
