@@ -36,6 +36,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private VerticalLayout verticalLayoutContent;
 	private TextField textFieldSearchBar;
 	private TreeTable treeTableContent;
+	//	private IndexedContainer indexedContainerForTreeTable;
 	private Map<Grade, List<Student>> gradeAndStudents;
 	private HashSet<Grade> currentlySelectedGrades;
 
@@ -44,19 +45,21 @@ public class StudentMaterialSelector extends CustomComponent {
 		buildLayout();
 	}
 
-	public void setStudentsWithUnreceivedBorrowedMaterials(Map<Grade, List<Student>> gradeAndStudents) {
+	public void setGradesAndStudents(Map<Grade, List<Student>> gradeAndStudents) {
 		this.gradeAndStudents = gradeAndStudents;
 		buildTable();
 	}
 
 	public Set<Grade> getCurrentlySelectedGrades() {
-		return null;
+		return currentlySelectedGrades;
 	}
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
 		textFieldSearchBar = new TextField(SEARCH_STUDENTS);
 		treeTableContent = new TreeTable();
+		currentlySelectedGrades = new HashSet<Grade>();
+		//		indexedContainerForTreeTable = new IndexedContainer();
 
 		verticalLayoutContent.setSpacing(true);
 		textFieldSearchBar.setWidth("50%");
@@ -64,6 +67,10 @@ public class StudentMaterialSelector extends CustomComponent {
 		treeTableContent.setWidth("100%");
 		treeTableContent.setPageLength(0);
 		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
+
+		//		indexedContainerForTreeTable.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
+		//		treeTableContent.setContainerDataSource(indexedContainerForTreeTable);
+		//		addFilterToContainer();
 	}
 
 	private void buildLayout() {
@@ -72,6 +79,20 @@ public class StudentMaterialSelector extends CustomComponent {
 
 		setCompositionRoot(verticalLayoutContent);
 	}
+
+	//	private void addFilterToContainer() {
+	//		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
+	//
+	//			private static final long serialVersionUID = 1909461513444694234L;
+	//
+	//			@Override
+	//			public void textChange(TextChangeEvent event) {
+	//				SimpleCheckBoxFilter filter = new SimpleCheckBoxFilter(TREE_TABLE_HEADER, event.getText(), true, false);
+	//				indexedContainerForTreeTable.removeAllContainerFilters();
+	//				indexedContainerForTreeTable.addContainerFilter(filter);
+	//			}
+	//		});
+	//	}
 
 	private void buildTable() {
 		if (treeTableContent.removeAllItems()) {
@@ -97,6 +118,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				// Add all grades below the grade level
 				for (Grade grade : grades) {
 					final CheckBox checkBoxGrade = new CheckBox("" + grade.getGrade() + grade.getSuffix());
+					checkBoxGrade.setData(grade);
 					gradeCheckBoxes.add(checkBoxGrade);
 					Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
 					treeTableContent.setParent(gradeItemId, gradeLevelItemId);
@@ -146,8 +168,15 @@ public class StudentMaterialSelector extends CustomComponent {
 
 						@Override
 						public void valueChange(ValueChangeEvent event) {
+							boolean gradeSelected = checkBoxGrade.getValue();
 							for (CheckBox checkBoxStudent : studentCheckBoxes) {
-								checkBoxStudent.setValue(checkBoxGrade.getValue());
+								if (gradeSelected) {
+									currentlySelectedGrades.add((Grade) checkBoxGrade.getData());
+								}
+								else {
+									currentlySelectedGrades.remove(checkBoxGrade.getData());
+								}
+								checkBoxStudent.setValue(gradeSelected);
 							}
 						}
 
@@ -161,8 +190,16 @@ public class StudentMaterialSelector extends CustomComponent {
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
+						boolean gradeLevelSelected = checkBoxGradeLevel.getValue();
 						for (CheckBox checkBoxGrade : gradeCheckBoxes) {
-							checkBoxGrade.setValue(checkBoxGradeLevel.getValue());
+							if (gradeLevelSelected) {
+								currentlySelectedGrades.add((Grade) checkBoxGrade.getData());
+							}
+							else {
+								currentlySelectedGrades.remove(checkBoxGrade.getData());
+							}
+
+							checkBoxGrade.setValue(gradeLevelSelected);
 						}
 					}
 
@@ -176,8 +213,16 @@ public class StudentMaterialSelector extends CustomComponent {
 
 				@Override
 				public void valueChange(ValueChangeEvent event) {
+					boolean rootSelected = checkBoxRoot.getValue();
 					for (CheckBox checkBoxGradeLevel : gradeLevelCheckBoxes) {
-						checkBoxGradeLevel.setValue(checkBoxRoot.getValue());
+						if (rootSelected) {
+							currentlySelectedGrades.addAll(gradeAndStudents.keySet());
+						}
+						else {
+							currentlySelectedGrades.removeAll(gradeAndStudents.keySet());
+						}
+
+						checkBoxGradeLevel.setValue(rootSelected);
 					}
 				}
 
@@ -213,4 +258,96 @@ public class StudentMaterialSelector extends CustomComponent {
 
 		return allGradesForGradeLevel;
 	}
+
+	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
+	//	private class SimpleCheckBoxFilter implements Filter {
+	//
+	//		private final Object propertyId;
+	//		private final String filterString;
+	//		private final boolean ignoreCase;
+	//		private final boolean onlyMatchPrefix;
+	//
+	//		public SimpleCheckBoxFilter(Object propertyId, String filterString, boolean ignoreCase, boolean onlyMatchPrefix) {
+	//			this.propertyId = propertyId;
+	//			this.filterString = filterString;
+	//			this.ignoreCase = ignoreCase;
+	//			this.onlyMatchPrefix = onlyMatchPrefix;
+	//		}
+	//
+	//		@Override
+	//		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+	//			final Property<?> p = item.getItemProperty(propertyId);
+	//			if (p == null) {
+	//				return false;
+	//			}
+	//			Object propertyValue = p.getValue();
+	//			if (propertyValue == null || !(propertyValue instanceof CheckBox)) {
+	//				return false;
+	//			}
+	//			CheckBox checkBoxProperty = (CheckBox) propertyValue;
+	//			final String value = ignoreCase ? checkBoxProperty.getCaption()
+	//					.toLowerCase() : checkBoxProperty.getCaption();
+	//			if (onlyMatchPrefix) {
+	//				if (!value.startsWith(filterString)) {
+	//					return false;
+	//				}
+	//			}
+	//			else {
+	//				if (!value.contains(filterString)) {
+	//					return false;
+	//				}
+	//			}
+	//			return true;
+	//		}
+	//
+	//		@Override
+	//		public boolean appliesToProperty(Object propertyId) {
+	//			return this.propertyId.equals(propertyId);
+	//		}
+	//
+	//		@Override
+	//		public boolean equals(Object obj) {
+	//
+	//			// Only ones of the objects of the same class can be equal
+	//			if (!(obj instanceof SimpleStringFilter)) {
+	//				return false;
+	//			}
+	//			final SimpleStringFilter o = (SimpleStringFilter) obj;
+	//
+	//			// Checks the properties one by one
+	//			if (propertyId != o.getPropertyId() && o.getPropertyId() != null
+	//					&& !o.getPropertyId().equals(propertyId)) {
+	//				return false;
+	//			}
+	//			if (filterString != o.getFilterString() && o.getFilterString() != null
+	//					&& !o.getFilterString().equals(filterString)) {
+	//				return false;
+	//			}
+	//			if (ignoreCase != o.isIgnoreCase()) {
+	//				return false;
+	//			}
+	//			if (onlyMatchPrefix != o.isOnlyMatchPrefix()) {
+	//				return false;
+	//			}
+	//
+	//			return true;
+	//		}
+	//
+	//		public Object getPropertyId() {
+	//			return propertyId;
+	//		}
+	//
+	//		public String getFilterString() {
+	//			return filterString;
+	//		}
+	//
+	//		public boolean isIgnoreCase() {
+	//			return ignoreCase;
+	//		}
+	//
+	//		public boolean isOnlyMatchPrefix() {
+	//			return onlyMatchPrefix;
+	//		}
+	//
+	//	}
 }

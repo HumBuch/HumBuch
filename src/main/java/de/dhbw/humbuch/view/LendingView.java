@@ -32,9 +32,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private static final long serialVersionUID = -6400075534193735694L;
 
 	private static final String TITLE = "Ausleihe";
-	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher zurückgegeben";
+	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher erhalten";
 	private static final String CLASS_LIST = "Klassenliste für Auswahl drucken";
-	private static final String STUDENT_LIST = "Schülerliste für Auswahl drücken";
+	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
 
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private StudentMaterialSelector studentMaterialSelector;
@@ -71,6 +71,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setMargin(true);
 
 		addListeners();
+		updateStudentsWithUnreceivedBorrowedMaterials();
 	}
 
 	private void buildLayout() {
@@ -93,10 +94,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				if (value == null) {
 					return;
 				}
-				studentMaterialSelector.setStudentsWithUnreceivedBorrowedMaterials(gradeAndStudents.get());
+				updateStudentsWithUnreceivedBorrowedMaterials();
 			}
 		});
-		studentMaterialSelector.setStudentsWithUnreceivedBorrowedMaterials(gradeAndStudents.get());
 
 		buttonClassList.addClickListener(new ClickListener() {
 
@@ -104,9 +104,13 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
+				//				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		});
+	}
+
+	private void updateStudentsWithUnreceivedBorrowedMaterials() {
+		studentMaterialSelector.setGradesAndStudents(gradeAndStudents.get());
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
