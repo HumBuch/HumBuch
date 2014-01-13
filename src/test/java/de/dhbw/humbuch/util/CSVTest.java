@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import au.com.bytecode.opencsv.CSVReader;
 import de.dhbw.humbuch.model.GradeHandler;
-import de.dhbw.humbuch.model.entity.Parent;
 
 public class CSVTest {
 	

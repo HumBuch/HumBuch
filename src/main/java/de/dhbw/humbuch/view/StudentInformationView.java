@@ -148,7 +148,12 @@ public class StudentInformationView extends VerticalLayout implements View,
 				if (colId.equals(TABLE_BIRTHDAY)) {
 					SimpleDateFormat df = new SimpleDateFormat();
 					df.applyPattern("MM.dd.yyyy");
-					return df.format(((Date) property.getValue()).getTime());
+					if (property.getValue() == null) {
+						return null;
+					} else {
+						return df
+								.format(((Date) property.getValue()).getTime());
+					}
 				}
 				return super.formatPropertyValue(rowId, colId, property);
 			}
@@ -169,8 +174,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 		studentsTable.setContainerDataSource(tableData);
 
 		/**
-		 * TODO: Sorting of the table seems not to work
-		 * studentsTable.sort(new Object[] { TABLE_NAME }, new boolean[] { true });
+		 * TODO: Sorting of the table seems not to work studentsTable.sort(new
+		 * Object[] { TABLE_NAME }, new boolean[] { true });
 		 */
 
 		// show all books window
