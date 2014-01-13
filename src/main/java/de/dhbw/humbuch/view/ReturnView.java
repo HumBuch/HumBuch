@@ -1,6 +1,11 @@
 package de.dhbw.humbuch.view;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
@@ -11,9 +16,17 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.davherrmann.mvvm.BasicState;
+import de.davherrmann.mvvm.State;
+import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
+import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
 
 
 public class ReturnView extends VerticalLayout implements View, ViewInformation {
@@ -28,6 +41,9 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	private StudentMaterialSelector studentMaterialSelector;
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
+
+	@BindState(ReturnListStudent.class)
+	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> returnListStudent = new BasicState<>(Map.class);
 
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
@@ -49,6 +65,9 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 
 		setSpacing(true);
 		setMargin(true);
+
+		addListeners();
+		updateReturnList();
 	}
 
 	private void buildLayout() {
@@ -59,6 +78,32 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 
 		addComponent(studentMaterialSelector);
 		addComponent(horizontalLayoutButtonBar);
+	}
+
+	private void addListeners() {
+		returnListStudent.addStateChangeListener(new StateChangeListener() {
+
+			@Override
+			public void stateChange(Object value) {
+				if (value == null) {
+					return;
+				}
+				updateReturnList();
+			}
+		});
+	}
+
+	private void updateReturnList() {
+		Map<Grade, List<Student>> dataForStudentMaterialSelector = new HashMap<Grade, List<Student>>();
+		Set<Grade> grades = returnListStudent.get().keySet();
+		System.out.println("== update return list ==");
+		for (Grade grade : grades) {
+			Map<Student, List<BorrowedMaterial>> data = returnListStudent.get().get(grade);
+			System.out.println("grade: " + grade.getGrade() + grade.getSuffix() + " / no of student: " + data.keySet().size());
+			dataForStudentMaterialSelector.put(grade, new ArrayList<Student>(data.keySet()));
+		}
+
+		studentMaterialSelector.setGradesAndStudents(dataForStudentMaterialSelector);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

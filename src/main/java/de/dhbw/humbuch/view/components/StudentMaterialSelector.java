@@ -96,6 +96,10 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void buildTable() {
 		if (treeTableContent.removeAllItems()) {
+			if(gradeAndStudents.isEmpty()) {
+				return;
+			}
+			
 			// Build root of tree table
 			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
 			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
