@@ -16,6 +16,7 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
+import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.User;
@@ -35,27 +36,14 @@ public class BasicModule extends ServletModule {
 		filter("/*").through(PersistFilter.class);
 		serve("/*").with(BasicServlet.class);
 
-		bind(new TypeLiteral<DAO<Student>>() {
-		}).to(new TypeLiteral<DAOImpl<Student>>() {
-		});
-		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {
-		}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {
-		});
-		bind(new TypeLiteral<DAO<TeachingMaterial>>() {
-		}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {
-		});
-		bind(new TypeLiteral<DAO<Grade>>() {
-		}).to(new TypeLiteral<DAOImpl<Grade>>() {
-		});
-		bind(new TypeLiteral<DAO<Parent>>() {
-		}).to(new TypeLiteral<DAOImpl<Parent>>() {
-		});
-		bind(new TypeLiteral<DAO<User>>() {
-		}).to(new TypeLiteral<DAOImpl<User>>() {
-		});
-		bind(new TypeLiteral<DAO<Category>>() {
-		}).to(new TypeLiteral<DAOImpl<Category>>() {
-		});
+		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
+		bind(new TypeLiteral<DAO<BorrowedMaterial>>() {}).to(new TypeLiteral<DAOImpl<BorrowedMaterial>>() {});
+		bind(new TypeLiteral<DAO<TeachingMaterial>>() {}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {});
+		bind(new TypeLiteral<DAO<Grade>>() {}).to(new TypeLiteral<DAOImpl<Grade>>() {});
+		bind(new TypeLiteral<DAO<Parent>>() {}).to(new TypeLiteral<DAOImpl<Parent>>() {});
+		bind(new TypeLiteral<DAO<User>>() {}).to(new TypeLiteral<DAOImpl<User>>() {});
+		bind(new TypeLiteral<DAO<Category>>() {}).to(new TypeLiteral<DAOImpl<Category>>() {});
+		bind(new TypeLiteral<DAO<SchoolYear>>() {}).to(new TypeLiteral<DAOImpl<SchoolYear>>() {});
 
 		bind(ViewModelComposer.class).asEagerSingleton();
 		bind(MVVMConfig.class).asEagerSingleton();
