@@ -99,10 +99,10 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Category))
 			return false;
 		Category other = (Category) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}

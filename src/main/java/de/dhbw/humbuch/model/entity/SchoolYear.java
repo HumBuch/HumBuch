@@ -114,10 +114,10 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof SchoolYear))
 			return false;
 		SchoolYear other = (SchoolYear) obj;
-		if (year != other.year)
+		if (getYear() != other.getYear())
 			return false;
 		return true;
 	}

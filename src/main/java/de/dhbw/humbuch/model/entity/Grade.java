@@ -125,10 +125,10 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity, Serializable 
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Grade))
 			return false;
 		Grade other = (Grade) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}
