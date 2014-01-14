@@ -148,6 +148,28 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		borrowedMaterials = builder.borrowedMaterials;
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Dunning))
+			return false;
+		Dunning other = (Dunning) obj;
+		if (getId() != other.getId())
+			return false;
+		return true;
+	}
+
 	public enum Status {
 		OPENED("zu senden"),
 		SENT("gesendet"),

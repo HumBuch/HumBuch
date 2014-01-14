@@ -148,10 +148,10 @@ public class Parent implements de.dhbw.humbuch.model.entity.Entity, Serializable
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Parent))
 			return false;
 		Parent other = (Parent) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}

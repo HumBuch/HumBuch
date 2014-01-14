@@ -191,10 +191,10 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof BorrowedMaterial))
 			return false;
 		BorrowedMaterial other = (BorrowedMaterial) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}
