@@ -53,8 +53,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
 	private static final String CLASS_LIST_WINDOW_TITLE = "Klassen Liste";
-	private static final String STUDENT_LIST_PDF = "SchuelerListe.pdf";
-	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Liste";
+	private static final String STUDENT_LIST_PDF = "SchuelerAusleihListe.pdf";
+	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Ausleih Liste";
 
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private StudentMaterialSelector studentMaterialSelector;
@@ -175,6 +175,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private void doClassListPrinting() {
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
+			System.out.println("map size: " + gradesAndTeachingMaterials.size());
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), CLASS_LIST_PDF);
 
@@ -188,6 +189,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private void doStudentListPrinting() {
 		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
 		if (selectedStudents != null) {
+			System.out.println("map size: " + selectedStudents.size());
 			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
 
