@@ -1,8 +1,11 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.hibernate.criterion.Restrictions;
 
 import com.google.inject.Inject;
 
@@ -13,6 +16,7 @@ import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
@@ -29,6 +33,8 @@ public class BookManagementViewModel {
 	}
 	public interface DoFetchTeachingMaterial extends ActionHandler{
 	}
+	public interface DoDeleteTeachingMaterial extends ActionHandler{
+	}
 	public interface DoUpdateCategory extends ActionHandler{
 	}
 
@@ -43,6 +49,7 @@ public class BookManagementViewModel {
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
+	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	/**
 	 * Constructor
 	 * 
@@ -100,6 +107,25 @@ public class BookManagementViewModel {
 	@HandlesAction(DoFetchTeachingMaterial.class)
 	public void doFetchTeachingMaterial(int id) {
 		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
+	}
+
+	/**
+	 * Deletes the teaching material or sets the validUntil date to the current Date. 
+	 * This decision depends on whether the teaching material is borrowed by a student.
+	 * @param teachingMaterial
+	 * 			the teacing material to be updated or deleted
+	 */
+	@HandlesAction(DoDeleteTeachingMaterial.class)
+	public void doDeleteTeachingMaterial(TeachingMaterial teachingMaterial) {
+		Collection<BorrowedMaterial> borrowedMaterial = daoBorrowedMaterial.findAllWithCriteria(
+						Restrictions.eq("teachingMaterialId", teachingMaterial.getId()));
+		if(borrowedMaterial.size()==0) {
+			daoTeachingMaterial.delete(teachingMaterial);
+		}
+		else {
+			teachingMaterial.setValidUntil(new Date());
+			daoTeachingMaterial.update(teachingMaterial);
+		}
 	}
 	
 	/**
