@@ -20,6 +20,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
@@ -45,7 +46,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private LendingViewModel lendingViewModel;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
-	private State<Map<Grade, List<Student>>> gradeAndStudents = new BasicState<Map<Grade, List<Student>>>(Map.class);
+	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
 
 	@Inject
 	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
@@ -87,7 +88,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void addListeners() {
-		gradeAndStudents.addStateChangeListener(new StateChangeListener() {
+		gradeAndStudentsWithMaterials.addStateChangeListener(new StateChangeListener() {
 
 			@Override
 			public void stateChange(Object value) {
@@ -110,7 +111,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector.setGradesAndStudents(gradeAndStudents.get());
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

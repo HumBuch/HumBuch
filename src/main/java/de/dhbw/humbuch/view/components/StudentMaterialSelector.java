@@ -37,7 +37,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private TextField textFieldSearchBar;
 	private TreeTable treeTableContent;
 	//	private IndexedContainer indexedContainerForTreeTable;
-	private Map<Grade, List<Student>> gradeAndStudents;
+	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private HashSet<Grade> currentlySelectedGrades;
 
 	public StudentMaterialSelector() {
@@ -45,8 +45,8 @@ public class StudentMaterialSelector extends CustomComponent {
 		buildLayout();
 	}
 
-	public void setGradesAndStudents(Map<Grade, List<Student>> gradeAndStudents) {
-		this.gradeAndStudents = gradeAndStudents;
+	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
+		this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
 		buildTable();
 	}
 
@@ -96,10 +96,10 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void buildTable() {
 		if (treeTableContent.removeAllItems()) {
-			if(gradeAndStudents.isEmpty()) {
+			if (gradeAndStudentsWithMaterials.isEmpty()) {
 				return;
 			}
-			
+
 			// Build root of tree table
 			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
 			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
@@ -127,7 +127,7 @@ public class StudentMaterialSelector extends CustomComponent {
 					Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
 					treeTableContent.setParent(gradeItemId, gradeLevelItemId);
 
-					List<Student> students = gradeAndStudents.get(grade);
+					List<Student> students = getAllStudentsForGrade(grade);
 
 					// Collect all student checkboxes for selecting purposes
 					final ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
@@ -138,7 +138,7 @@ public class StudentMaterialSelector extends CustomComponent {
 						Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
 						treeTableContent.setParent(studentItemId, gradeItemId);
 
-						List<BorrowedMaterial> materials = student.getUnreceivedBorrowedList();
+						List<BorrowedMaterial> materials = gradeAndStudentsWithMaterials.get(grade).get(student);
 
 						// Collect all borrowed materials checkboxes for selecting purposes
 						final ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
@@ -220,10 +220,10 @@ public class StudentMaterialSelector extends CustomComponent {
 					boolean rootSelected = checkBoxRoot.getValue();
 					for (CheckBox checkBoxGradeLevel : gradeLevelCheckBoxes) {
 						if (rootSelected) {
-							currentlySelectedGrades.addAll(gradeAndStudents.keySet());
+							currentlySelectedGrades.addAll(gradeAndStudentsWithMaterials.keySet());
 						}
 						else {
-							currentlySelectedGrades.removeAll(gradeAndStudents.keySet());
+							currentlySelectedGrades.removeAll(gradeAndStudentsWithMaterials.keySet());
 						}
 
 						checkBoxGradeLevel.setValue(rootSelected);
@@ -239,7 +239,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	private Set<Integer> getAllGradeLevels() {
-		Set<Grade> allGrades = gradeAndStudents.keySet();
+		Set<Grade> allGrades = gradeAndStudentsWithMaterials.keySet();
 		HashSet<Integer> allGradeLevels = new HashSet<Integer>();
 
 		// collect all unique grade levels
@@ -251,7 +251,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	private Set<Grade> getAllGradesForGradeLevel(Integer gradeLevel) {
-		Set<Grade> allGrades = gradeAndStudents.keySet();
+		Set<Grade> allGrades = gradeAndStudentsWithMaterials.keySet();
 		HashSet<Grade> allGradesForGradeLevel = new HashSet<Grade>();
 
 		for (Grade grade : allGrades) {
@@ -261,6 +261,12 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 
 		return allGradesForGradeLevel;
+	}
+
+	private List<Student> getAllStudentsForGrade(Grade grade) {
+		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
+		List<Student> studentList = new ArrayList<Student>(studentsWithMaterials.keySet());
+		return studentList;
 	}
 
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes

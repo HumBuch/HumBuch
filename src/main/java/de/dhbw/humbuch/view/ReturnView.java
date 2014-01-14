@@ -1,11 +1,8 @@
 package de.dhbw.humbuch.view;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
@@ -43,7 +40,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	private Button buttonStudentList;
 
 	@BindState(ReturnListStudent.class)
-	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> returnListStudent = new BasicState<>(Map.class);
+	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<>(Map.class);
 
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
@@ -81,7 +78,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void addListeners() {
-		returnListStudent.addStateChangeListener(new StateChangeListener() {
+		gradeAndStudentsWithMaterials.addStateChangeListener(new StateChangeListener() {
 
 			@Override
 			public void stateChange(Object value) {
@@ -94,16 +91,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void updateReturnList() {
-		Map<Grade, List<Student>> dataForStudentMaterialSelector = new HashMap<Grade, List<Student>>();
-		Set<Grade> grades = returnListStudent.get().keySet();
-		System.out.println("== update return list ==");
-		for (Grade grade : grades) {
-			Map<Student, List<BorrowedMaterial>> data = returnListStudent.get().get(grade);
-			System.out.println("grade: " + grade.getGrade() + grade.getSuffix() + " / no of student: " + data.keySet().size());
-			dataForStudentMaterialSelector.put(grade, new ArrayList<Student>(data.keySet()));
-		}
-
-		studentMaterialSelector.setGradesAndStudents(dataForStudentMaterialSelector);
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
