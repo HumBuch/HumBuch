@@ -30,16 +30,17 @@ public class LendingViewModel {
 	public interface GenerateMaterialListGrades extends ActionHandler {};
 	public interface SetBorrowedMaterialsReceived extends ActionHandler {};
 	
-	public interface StudentsWithUnreceivedBorrowedMaterials extends State<Map<Grade, List<Student>>> {};
+	public interface StudentsWithUnreceivedBorrowedMaterials extends State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> {};
 	public interface MaterialListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
-	
+
 	@Deprecated
 	public interface Students extends State<Collection<Student>> {};
+	
 	@Deprecated
 	public interface Grades extends State<Collection<Grade>> {};
-
+	
 	@ProvidesState(StudentsWithUnreceivedBorrowedMaterials.class)
-	public State<Map<Grade, List<Student>>> studentsWithUnreceivedBorrowedMaterials = new BasicState<>(Map.class);
+	public State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> studentsWithUnreceivedBorrowedMaterials = new BasicState<>(Map.class);
 	
 	@ProvidesState(MaterialListGrades.class)
 	public State<Map<Grade, Map<TeachingMaterial, Integer>>> materialListGrades = new BasicState<>(Map.class);
@@ -104,14 +105,14 @@ public class LendingViewModel {
 	}
 
 	private void updateUnreceivedBorrowedMaterialsState() {
-		Map<Grade, List<Student>> unreceivedMap = new HashMap<Grade, List<Student>>();
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new HashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
 		for (Grade grade : daoGrade.findAll()) {
-			List<Student> studentsWithUnreceivedBorrowedMaterials = new ArrayList<Student>();
+			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new HashMap<Student, List<BorrowedMaterial>>();
 			
 			for (Student student : grade.getStudents()) {
 				if(student.hasUnreceivedBorrowedMaterials()) {
-					studentsWithUnreceivedBorrowedMaterials.add(student);
+					studentsWithUnreceivedBorrowedMaterials.put(student, student.getUnreceivedBorrowedList());
 				}
 			}
 			
