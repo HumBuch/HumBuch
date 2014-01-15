@@ -53,7 +53,7 @@ public final class PDFStudentList extends PDFHandler{
 	protected void addContent(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		PDFHandler.fillTableWithContent(table, false,
-				new String[]{"\nDie folgenden Bücher befinden im Besitz des Schülers/der Schülerin: \n"}, false);
+				new String[]{"\nDie folgenden Bücher befinden sich im Besitz des Schülers/der Schülerin: \n"}, false);
 		 try {
 				document.add(table);
 		}
@@ -76,7 +76,7 @@ public final class PDFStudentList extends PDFHandler{
 	    
 	    try {
 			document.add(table);
-			PDFHandler.addEmptyLineToDocument(document, 2);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -107,7 +107,7 @@ public final class PDFStudentList extends PDFHandler{
 		    
 		    try {
 				document.add(table);
-				PDFHandler.addEmptyLineToDocument(document, 2);
+				PDFHandler.addEmptyLineToDocument(document, 1);
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
