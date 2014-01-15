@@ -1,13 +1,14 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.vaadin.navigator.View;
@@ -40,8 +41,6 @@ import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
 public class ReturnView extends VerticalLayout implements View, ViewInformation {
 
 	private static final long serialVersionUID = -525078997965992622L;
-
-	private final static Logger LOG = LoggerFactory.getLogger(ReturnView.class);
 
 	private static final String TITLE = "Rückgabe";
 	private static final String SAVE_SELECTED_RETURNING = "Ausgewählte Bücher zurückgegeben";
@@ -134,16 +133,44 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void doStudentListPrinting() {
-//		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
-//		if (selectedStudents != null) {
-//			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
-//			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
-//
-//			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
-//		}
-//		else {
-//			LOG.warn("No students selected. No list will be generated / shown.");
-//		}
+		Map<Student, List<BorrowedMaterial>> informationForPdf = getPdfInformationFromStundentMaterialSelector();
+
+		if (informationForPdf != null) {
+			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
+			for (Student student : informationForPdf.keySet()) {
+
+				PDFStudentList.Builder builder = new PDFStudentList.Builder().lendingList(informationForPdf.get(student));
+				builders.add(builder);
+			}
+			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
+
+			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
+			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+
+			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+		}
+	}
+
+	private Map<Student, List<BorrowedMaterial>> getPdfInformationFromStundentMaterialSelector() {
+		Set<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		Map<Student, List<BorrowedMaterial>> informationForPdf = new HashMap<Student, List<BorrowedMaterial>>();
+
+		for (BorrowedMaterial material : allSelectedMaterials) {
+			Student student = material.getStudent();
+			List<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
+
+			if (informationForPdf.containsKey(student)) {
+				materials = informationForPdf.get(student);
+				materials.add(material);
+				informationForPdf.put(student, materials);
+			}
+			else {
+				materials.add(material);
+				informationForPdf.put(student, materials);
+			}
+		}
+
+		return informationForPdf;
 	}
 
 	private void updateReturnList() {

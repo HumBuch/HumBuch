@@ -1,6 +1,10 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -159,6 +163,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				System.out.println("button click");
 				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		});
@@ -201,7 +206,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), CLASS_LIST_PDF);
+
+			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + CLASS_LIST_PDF;
+			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
 
 			new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
 		}
@@ -211,17 +218,45 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void doStudentListPrinting() {
-//		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
-//		if (selectedStudents != null) {
-//			System.out.println("map size: " + selectedStudents.size());
-//			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
-//			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
-//
-//			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
-//		}
-//		else {
-//			LOG.warn("No students selected. No list will be generated / shown.");
-//		}
+
+		Map<Student, List<BorrowedMaterial>> informationForPdf = getPdfInformationFromStundentMaterialSelector();
+
+		if (informationForPdf != null) {
+			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
+			for (Student student : informationForPdf.keySet()) {
+
+				PDFStudentList.Builder builder = new PDFStudentList.Builder().lendingList(informationForPdf.get(student));
+				builders.add(builder);
+			}
+			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
+
+			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
+			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+
+			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+		}
+	}
+
+	private Map<Student, List<BorrowedMaterial>> getPdfInformationFromStundentMaterialSelector() {
+		Set<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		Map<Student, List<BorrowedMaterial>> informationForPdf = new HashMap<Student, List<BorrowedMaterial>>();
+
+		for (BorrowedMaterial material : allSelectedMaterials) {
+			Student student = material.getStudent();
+			List<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
+
+			if (informationForPdf.containsKey(student)) {
+				materials = informationForPdf.get(student);
+				materials.add(material);
+				informationForPdf.put(student, materials);
+			}
+			else {
+				materials.add(material);
+				informationForPdf.put(student, materials);
+			}
+		}
+
+		return informationForPdf;
 	}
 
 	private void showManualLendingPopup() {
