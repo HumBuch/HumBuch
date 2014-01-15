@@ -57,9 +57,10 @@ public class BookManagementViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory) {
+	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory, DAO<BorrowedMaterial> daoBorrowedMaterial) {
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoCategory = daoCategory;
+		this.daoBorrowedMaterial = daoBorrowedMaterial;
 	}
 
 	@AfterVMBinding
@@ -118,9 +119,10 @@ public class BookManagementViewModel {
 	@HandlesAction(DoDeleteTeachingMaterial.class)
 	public void doDeleteTeachingMaterial(TeachingMaterial teachingMaterial) {
 		Collection<BorrowedMaterial> borrowedMaterial = daoBorrowedMaterial.findAllWithCriteria(
-						Restrictions.eq("teachingMaterialId", teachingMaterial.getId()));
-		if(borrowedMaterial.size()==0) {
+						Restrictions.eq("teachingMaterial", teachingMaterial));
+		if(borrowedMaterial.isEmpty()) {
 			daoTeachingMaterial.delete(teachingMaterial);
+			updateTeachingMaterial();
 		}
 		else {
 			teachingMaterial.setValidUntil(new Date());
