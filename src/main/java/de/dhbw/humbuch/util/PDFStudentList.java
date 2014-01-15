@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.util;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public final class PDFStudentList extends PDFHandler{
 	private List<BorrowedMaterial> returnList;
 	private List<BorrowedMaterial> lendingList;
 	
-	private Builder[] builders;
+	private Set<Builder> builders;
 	
 	/**
 	 * The content of the PDFs is printed in the order of the students-set.
@@ -25,12 +26,25 @@ public final class PDFStudentList extends PDFHandler{
 	 */
 	public PDFStudentList(Builder... builder){
 		super();
+		this.builders = new LinkedHashSet<>();
+		for(Builder b : builder){
+			this.builders.add(b);
+		}
+	}
+	
+	public PDFStudentList(Set<Builder> builder){
+		super();
 		this.builders = builder;
 	}
 	
 	protected void insertDocumentParts(Document document){
 		for(Builder builder : builders){
-			this.student = builder.student;
+			if(builder.student != null){
+				this.student = builder.student;
+			}
+			else{
+				continue;
+			}
 			this.borrowedMaterialList = builder.borrowedMaterialList;
 			this.lendingList = builder.lendingList;
 			this.returnList = builder.returnList;
