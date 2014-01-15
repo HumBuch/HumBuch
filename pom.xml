@@ -116,6 +116,11 @@
 			<version>1.7.5</version>
 		</dependency>
 		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>15.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>3.0</version>
@@ -286,47 +291,47 @@
 					<scanIntervalSeconds>1</scanIntervalSeconds>
 				</configuration>
 			</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sql-maven-plugin</artifactId>
-					<version>1.5</version>
-					<dependencies>
-						<dependency>
-							<groupId>mysql</groupId>
-							<artifactId>mysql-connector-java</artifactId>
-							<version>5.1.21</version>
-						</dependency>
-					</dependencies>
-					<configuration>
-						<driver>com.mysql.jdbc.Driver</driver>
-						<url>jdbc:mysql://${db.url}:${db.port}</url>
-						<username>${db.user}</username>
-						<password>${db.passwd}</password>
-						<encoding>UTF-8</encoding>
-						<orderFile>ascending</orderFile>
-						<keepFormat>true</keepFormat>
-						<driverProperties>characterEncoding=utf8,
-							connectionCollation=utf8_general_ci,
-							sql_mode=STRICT_TRANS_TABLES</driverProperties>
-					</configuration>
-					<executions>
-						<execution>
-							<id>create_db_schema</id>
-							<phase>process-test-resources</phase>
-							<goals>
-								<goal>execute</goal>
-							</goals>
-							<configuration>
-								<url>jdbc:mysql://${db.url}:${db.port}</url>
-								<delimiterType>normal</delimiterType>
-								<srcFiles>
-									<srcFile>${basedir}/src/test/sql/schema/create_db_test_[MySQL].sql</srcFile>
-									<srcFile>${basedir}/src/test/sql/data/inserts_db_test_[MySQL].sql</srcFile>
-								</srcFiles>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<version>1.5</version>
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.21</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://${db.url}:${db.port}</url>
+					<username>${db.user}</username>
+					<password>${db.passwd}</password>
+					<encoding>UTF-8</encoding>
+					<orderFile>ascending</orderFile>
+					<keepFormat>true</keepFormat>
+					<driverProperties>characterEncoding=utf8,
+						connectionCollation=utf8_general_ci,
+						sql_mode=STRICT_TRANS_TABLES</driverProperties>
+				</configuration>
+				<executions>
+					<execution>
+						<id>create_db_schema</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<url>jdbc:mysql://${db.url}:${db.port}</url>
+							<delimiterType>normal</delimiterType>
+							<srcFiles>
+								<srcFile>${basedir}/src/test/sql/schema/create_db_test_[MySQL].sql</srcFile>
+								<srcFile>${basedir}/src/test/sql/data/inserts_db_test_[MySQL].sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
