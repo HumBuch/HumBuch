@@ -211,17 +211,17 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void doStudentListPrinting() {
-		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
-		if (selectedStudents != null) {
-			System.out.println("map size: " + selectedStudents.size());
-			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
-
-			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
-		}
-		else {
-			LOG.warn("No students selected. No list will be generated / shown.");
-		}
+//		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
+//		if (selectedStudents != null) {
+//			System.out.println("map size: " + selectedStudents.size());
+//			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
+//			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
+//
+//			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+//		}
+//		else {
+//			LOG.warn("No students selected. No list will be generated / shown.");
+//		}
 	}
 
 	private void showManualLendingPopup() {
