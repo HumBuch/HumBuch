@@ -25,6 +25,7 @@ import de.dhbw.humbuch.view.MVVMConfig;
 import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
+import de.dhbw.humbuch.viewmodel.Properties;
 
 
 public class BasicModule extends ServletModule {
@@ -50,6 +51,7 @@ public class BasicModule extends ServletModule {
 
 		bind(LoginViewModel.class).in(SessionScoped.class);
 		bind(LendingViewModel.class).in(UIScoped.class);
+		bind(Properties.class).in(SessionScoped.class);
 
 		bind(LoginView.class);
 
