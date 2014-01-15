@@ -31,8 +31,7 @@ public class DAOImpl<EntityType extends Entity> implements
 
 	@Transactional
 	public EntityType insert(EntityType entity) {
-		getEntityManager().persist(entity);
-		return entity;
+		return getEntityManager().merge(entity);
 	}
 
 	public EntityType find(final Object id) {
