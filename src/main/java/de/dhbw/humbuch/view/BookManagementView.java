@@ -237,7 +237,8 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		windowEditTeachingMaterial = new Window();
 		windowEditTeachingMaterial.center();
-		
+		windowEditTeachingMaterial.setResizable(false);
+		windowEditTeachingMaterial.setDraggable(false);
 		verticalLayoutWindowContent = new VerticalLayout();
 		verticalLayoutWindowContent.setMargin(true);
 		horizontalLayoutWindowBar = new HorizontalLayout();
