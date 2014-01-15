@@ -291,9 +291,7 @@ public class BookManagementView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				bookManagementViewModel.doFetchTeachingMaterial(Integer
 						.parseInt(tableTeachingMaterials.getValue().toString()));
-				TeachingMaterial tm = teachingMaterialInfo.get();
-				System.out.println(tm.getId());
-				bookManagementViewModel.doDeleteTeachingMaterial(tm);
+				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
 			}
 		});
 		/**
