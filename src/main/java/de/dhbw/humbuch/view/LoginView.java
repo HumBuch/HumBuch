@@ -201,6 +201,8 @@ public class LoginView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		username.setValue("");
+		password.setValue("");
 		username.focus();
 	}
 }
