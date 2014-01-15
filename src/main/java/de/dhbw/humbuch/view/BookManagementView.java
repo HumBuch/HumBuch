@@ -207,19 +207,17 @@ public class BookManagementView extends VerticalLayout implements View,
 		
 		comboBoxFromGradeTerm.addItem(1);
 		comboBoxFromGradeTerm.addItem(2);
-		comboBoxFromGradeTerm.setNullSelectionAllowed(false);
+		
 		comboBoxToGradeTerm.addItem(1);
 		comboBoxToGradeTerm.addItem(2);
-		comboBoxToGradeTerm.setNullSelectionAllowed(false);
+		
 		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
 		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
 			comboBoxProfiles.addItem(profile.getValue());
 			comboBoxProfiles.setItemCaption(profile.getValue(),
 					profile.getKey());
 		}
-		comboBoxCategory.setNewItemsAllowed(true);
-		comboBoxCategory.setNullSelectionAllowed(false);
-		comboBoxProfiles.setNullSelectionAllowed(false);
+		
 
 		tableTeachingMaterials = new Table();
 		tableTeachingMaterials.setSelectable(true);
@@ -247,6 +245,24 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		this.addListener();
 		this.setInputPrompts();
+		this.setFormOptions();
+	}
+
+	private void setFormOptions() {
+		comboBoxCategory.setNullSelectionAllowed(false);
+		comboBoxProfiles.setNullSelectionAllowed(false);
+		comboBoxToGradeTerm.setNullSelectionAllowed(false);
+		comboBoxFromGradeTerm.setNullSelectionAllowed(false);
+		textFieldBookIdentifyer.setRequired(true);
+		textFieldBookName.setRequired(true);
+		textFieldFromGrade.setRequired(true);
+		textFieldToGrade.setRequired(true);
+		textFieldProducer.setRequired(true);
+		comboBoxCategory.setRequired(true);
+		comboBoxFromGradeTerm.setRequired(true);
+		comboBoxToGradeTerm.setRequired(true);
+		comboBoxProfiles.setRequired(true);
+		
 	}
 
 	/**
@@ -285,50 +301,52 @@ public class BookManagementView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				TeachingMaterial teachingMaterial;
-				if (!editTeachingMaterial) {
-					teachingMaterial = new TeachingMaterial.Builder(categories
-							.get().get((int) comboBoxCategory.getValue()),
-							textFieldBookName.getValue(),
-							textFieldBookIdentifyer.getValue(), new Date())
-							.build();
-					teachingMaterial.setProducer(textFieldProducer.getValue());
-					teachingMaterial.setFromGrade(Integer
-							.parseInt(textFieldFromGrade.getValue()));
-					teachingMaterial.setToGrade(Integer
-							.parseInt(textFieldToGrade.getValue()));
-					teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
-							.getValue());
-					teachingMaterial.setToTerm((int) comboBoxToGradeTerm
-							.getValue());
-					teachingMaterial.setComment(textAreaComment.getValue());
-					teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
-							.getValue());
-				} else {
-					teachingMaterial = teachingMaterialInfo.get();
-					teachingMaterial.setName(textFieldBookName.getValue());
-					teachingMaterial
-							.setIdentifyingNumber(textFieldBookIdentifyer
-									.getValue());
-					teachingMaterial.setProducer(textFieldProducer.getValue());
-					teachingMaterial.setFromGrade(Integer
-							.parseInt(textFieldFromGrade.getValue()));
-					teachingMaterial.setToGrade(Integer
-							.parseInt(textFieldToGrade.getValue()));
-					teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
-							.getValue());
-					teachingMaterial.setToTerm((int) comboBoxToGradeTerm
-							.getValue());
-					teachingMaterial.setComment(textAreaComment.getValue());
-					teachingMaterial.setCategory(categories.get().get(
-							(int) comboBoxCategory.getValue()));
-					teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
-							.getValue());
-				}
+				if(FormFieldsValid()) {
+					TeachingMaterial teachingMaterial;
+					if (!editTeachingMaterial) {
+						teachingMaterial = new TeachingMaterial.Builder(categories
+								.get().get((int) comboBoxCategory.getValue()),
+								textFieldBookName.getValue(),
+								textFieldBookIdentifyer.getValue(), new Date())
+								.build();
+						teachingMaterial.setProducer(textFieldProducer.getValue());
+						teachingMaterial.setFromGrade(Integer
+								.parseInt(textFieldFromGrade.getValue()));
+						teachingMaterial.setToGrade(Integer
+								.parseInt(textFieldToGrade.getValue()));
+						teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
+								.getValue());
+						teachingMaterial.setToTerm((int) comboBoxToGradeTerm
+								.getValue());
+						teachingMaterial.setComment(textAreaComment.getValue());
+						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
+								.getValue());
+					} else {
+						teachingMaterial = teachingMaterialInfo.get();
+						teachingMaterial.setName(textFieldBookName.getValue());
+						teachingMaterial
+								.setIdentifyingNumber(textFieldBookIdentifyer
+										.getValue());
+						teachingMaterial.setProducer(textFieldProducer.getValue());
+						teachingMaterial.setFromGrade(Integer
+								.parseInt(textFieldFromGrade.getValue()));
+						teachingMaterial.setToGrade(Integer
+								.parseInt(textFieldToGrade.getValue()));
+						teachingMaterial.setFromTerm((int) comboBoxFromGradeTerm
+								.getValue());
+						teachingMaterial.setToTerm((int) comboBoxToGradeTerm
+								.getValue());
+						teachingMaterial.setComment(textAreaComment.getValue());
+						teachingMaterial.setCategory(categories.get().get(
+								(int) comboBoxCategory.getValue()));
+						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles
+								.getValue());
+					}
 
-				bookManagementViewModel
-						.doUpdateTeachingMaterial(teachingMaterial);
-				windowEditBook.close();
+					bookManagementViewModel
+							.doUpdateTeachingMaterial(teachingMaterial);
+					windowEditBook.close();
+				}				
 			}
 		});
 
@@ -415,6 +433,40 @@ public class BookManagementView extends VerticalLayout implements View,
 				}
 			}
 		});
+	}
+
+	private boolean FormFieldsValid() {
+		//Validate if a field is empty
+		if(textFieldBookName.getValue() == null
+				|| textFieldBookIdentifyer.getValue() == null
+				|| textFieldFromGrade.getValue() == null
+				|| textFieldProducer.getValue() == null
+				|| textFieldToGrade.getValue() == null
+				|| comboBoxCategory.getValue() == null
+				|| comboBoxProfiles.getValue() == null) {
+			new Notification("Bitte alle Pflichtfelder ausfüllen").show(Page.getCurrent());
+			return false;
+		}
+		//No field is empty, validate now for right values and lengths
+		else {
+			if(textFieldBookName.getValue().length()<2){
+				new Notification("Der Titel muss mindestens 2 Zeichen enthalten").show(Page.getCurrent());
+				return false;
+			}
+			if(textFieldFromGrade.getValue().length()>2 
+					|| textFieldToGrade.getValue().length()>2 ){
+				new Notification("Die Klassenstufen dürfen höchstens 2 Zeichen enthalten").show(Page.getCurrent());
+				return false;
+			}
+			try{
+				Integer.parseInt(textFieldToGrade.getValue());
+				Integer.parseInt(textFieldFromGrade.getValue());
+			} catch(NumberFormatException e) {
+				new Notification("Die Klassenstufen dürfen nur Zahlen enthalten").show(Page.getCurrent());
+				return false;
+			}
+			return true;
+		}
 	}
 
 	/**

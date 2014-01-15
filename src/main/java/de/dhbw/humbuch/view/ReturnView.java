@@ -18,10 +18,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
@@ -33,6 +31,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
@@ -135,31 +134,16 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void doStudentListPrinting() {
-		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
-		if (selectedStudents != null) {
+//		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
+//		if (selectedStudents != null) {
 //			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
 //			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
 //
-//			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
-		}
-		else {
-			LOG.warn("No students selected. No list will be generated / shown.");
-		}
-	}
-
-	private void showPdfInWindow(StreamResource sr, String title) {
-		Window window = new Window(title);
-		window.setSizeFull();
-
-		Embedded embedded = new Embedded();
-		embedded.setSizeFull();
-		embedded.setType(Embedded.TYPE_BROWSER);
-		// Set the right mime type
-		sr.setMIMEType("application/pdf");
-
-		embedded.setSource(sr);
-		window.setContent(embedded);
-		getUI().addWindow(window);
+//			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+//		}
+//		else {
+//			LOG.warn("No students selected. No list will be generated / shown.");
+//		}
 	}
 
 	private void updateReturnList() {

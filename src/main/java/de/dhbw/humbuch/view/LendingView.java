@@ -19,7 +19,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -36,6 +35,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.util.PDFClassList;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
@@ -50,6 +50,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private static final String TITLE = "Ausleihe";
 	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher erhalten";
+	private static final String MANUAL_LENDING = "Manuell Material ausleihen";
 	private static final String CLASS_LIST = "Klassenliste für Auswahl drucken";
 	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
@@ -62,8 +63,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private Button buttonClassList;
+	private Button buttonManualLending;
 	private ThemeResource themeResourceIconPrint;
 	private LendingViewModel lendingViewModel;
+	private ManualLendingPopupView manualLendingPopupView;
+	private Window windowManualLending;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
@@ -85,15 +89,24 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_LENDING);
 		buttonClassList = new Button(CLASS_LIST);
 		buttonStudentList = new Button(STUDENT_LIST);
+		buttonManualLending = new Button(MANUAL_LENDING);
 		themeResourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
+		manualLendingPopupView = new ManualLendingPopupView();
+		windowManualLending = new Window();
 
 		buttonClassList.setIcon(themeResourceIconPrint);
 		buttonStudentList.setIcon(themeResourceIconPrint);
 		buttonSaveSelectedData.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
+		studentMaterialSelector.registerAsObserver(this);
+
 		horizontalLayoutButtonBar.setSpacing(true);
 		setSpacing(true);
 		setMargin(true);
+
+		windowManualLending.setCaption(manualLendingPopupView.getTitle());
+		windowManualLending.center();
+		windowManualLending.setContent(manualLendingPopupView);
 
 		addListeners();
 		updateStudentsWithUnreceivedBorrowedMaterials();
@@ -171,16 +184,27 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				LendingView.this.lendingViewModel.setBorrowedMaterialsReceived(studentMaterialSelector.getCurrentlySelectedBorrowedMaterials());
 			}
 		});
+
+		buttonManualLending.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = -526627937959389240L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (buttonManualLending.isVisible()) {
+					showManualLendingPopup();
+				}
+			}
+		});
 	}
 
 	private void doClassListPrinting() {
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
-			System.out.println("map size: " + gradesAndTeachingMaterials.size());
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), CLASS_LIST_PDF);
 
-			showPdfInWindow(sr, CLASS_LIST_WINDOW_TITLE);
+			new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
 		}
 		else {
 			LOG.warn("Grades and Teaching materials are null. No list will be generated / shown.");
@@ -201,26 +225,24 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
 
-			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
+			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
 		}
 		else {
 			LOG.warn("No students selected. No list will be generated / shown.");
 		}
 	}
 
-	private void showPdfInWindow(StreamResource sr, String title) {
-		Window window = new Window(title);
-		window.setSizeFull();
+	private void showManualLendingPopup() {
+		getUI().addWindow(windowManualLending);
+	}
 
-		Embedded embedded = new Embedded();
-		embedded.setSizeFull();
-		embedded.setType(Embedded.TYPE_BROWSER);
-		// Set the right mime type
-		sr.setMIMEType("application/pdf");
-
-		embedded.setSource(sr);
-		window.setContent(embedded);
-		getUI().addWindow(window);
+	public void update(boolean singleStudentSelected) {
+		if (singleStudentSelected) {
+			horizontalLayoutButtonBar.addComponent(buttonManualLending);
+		}
+		else {
+			horizontalLayoutButtonBar.removeComponent(buttonManualLending);
+		}
 	}
 	
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
