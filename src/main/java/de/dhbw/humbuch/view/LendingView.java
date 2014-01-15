@@ -18,7 +18,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -35,6 +34,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.util.PDFClassList;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
@@ -200,11 +200,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private void doClassListPrinting() {
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
-			System.out.println("map size: " + gradesAndTeachingMaterials.size());
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), CLASS_LIST_PDF);
 
-			showPdfInWindow(sr, CLASS_LIST_WINDOW_TITLE);
+			new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
 		}
 		else {
 			LOG.warn("Grades and Teaching materials are null. No list will be generated / shown.");
@@ -218,26 +217,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
 
-			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
+			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
 		}
 		else {
 			LOG.warn("No students selected. No list will be generated / shown.");
 		}
-	}
-
-	private void showPdfInWindow(StreamResource sr, String title) {
-		Window window = new Window(title);
-		window.setSizeFull();
-
-		Embedded embedded = new Embedded();
-		embedded.setSizeFull();
-		embedded.setType(Embedded.TYPE_BROWSER);
-		// Set the right mime type
-		sr.setMIMEType("application/pdf");
-
-		embedded.setSource(sr);
-		window.setContent(embedded);
-		getUI().addWindow(window);
 	}
 
 	private void showManualLendingPopup() {
