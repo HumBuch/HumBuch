@@ -8,21 +8,26 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.davherrmann.guice.vaadin.ScopedUI;
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.util.ResourceLoader;
 import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
 import de.dhbw.humbuch.view.components.NavigationBar;
@@ -58,6 +63,8 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private StudentInformationView studentInformationView;
+	@Inject
+	private HelpView helpView;
 
 	@Inject
 	private Header header;
@@ -67,6 +74,7 @@ public class MainUI extends ScopedUI {
 	private Footer footer;
 	private NavigationBar navigationBar;
 	private Panel panelContent = new Panel();
+	private View currentView;
 
 	public Navigator navigator;
 
@@ -158,7 +166,8 @@ public class MainUI extends ScopedUI {
 
 			@Override
 			public boolean beforeViewChange(ViewChangeEvent event) {
-				boolean isLoginView = event.getNewView() instanceof LoginView;
+				currentView = event.getNewView();
+				boolean isLoginView = currentView instanceof LoginView;
 
 				if (!isLoggedIn.get() && !isLoginView) {
 					// Redirect to login view always if a user has not yet
@@ -209,6 +218,38 @@ public class MainUI extends ScopedUI {
 			}
 
 		});
+
+		header.getHelpButton().addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Window window = createHelpWindow(new ResourceLoader("help/"
+						+ currentView.getClass().getSimpleName()
+						+ ".html").getContent());
+				getUI().addWindow(window);
+				getUI().setFocusedComponent(window);
+			}
+		});
+	}
+
+	/**
+	 * Creates a {@link Window} with a specified help text
+	 * 
+	 * @param helpText {@link String} containing the help text
+	 * @return {@link Window}
+	 */
+	protected Window createHelpWindow(String helpText) {
+		HelpView helpView = new HelpView();
+		if (helpText != null) {
+			helpView.setHelpText(helpText);
+		}
+		
+		Window window = new Window("Hilfe", helpView);
+		window.center();
+		window.setModal(true);
+		window.setResizable(false);
+		window.setCloseShortcut(KeyCode.ESCAPE, null);
+		
+		return window;
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
