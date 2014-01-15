@@ -3,14 +3,15 @@ package de.dhbw.humbuch.view;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.Action;
@@ -22,20 +23,16 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.data.Property;
 
 import de.davherrmann.mvvm.BasicState;
@@ -43,7 +40,11 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.util.PDFHandler;
+import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.ImportResult;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
@@ -62,11 +63,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 * Constants
 	 */
 	private static final String TITLE = "Schülerübersicht";
-	private static final String TABLE_FIRSTNAME = "Vorname";
-	private static final String TABLE_NAME = "Name";
-	private static final String TABLE_GRADE = "Klasse";
-	private static final String TABLE_BIRTHDAY = "Geburtsdatum";
-	private static final String TABLE_GENDER = "Geschlecht";
+	private static final String TABLE_FIRSTNAME = "firstname";
+	private static final String TABLE_LASTNAME = "lastname";
+	private static final String TABLE_GRADE = "grade";
+	private static final String TABLE_BIRTHDAY = "birthday";
+	private static final String TABLE_GENDER = "gender";
 
 	/**
 	 * Layout
@@ -82,16 +83,10 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private BasicState<String> importResult = new BasicState<String>(
 			String.class);
 
-	/**
-	 * Layout for Windows
-	 */
-	private Window showBooksWindow;
-	private Button buttonWindowClose;
-
 	@BindState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(
 			Collection.class);
-	private IndexedContainer tableData;
+	private BeanItemContainer<Student> tableData;
 
 	/**
 	 * constructor
@@ -110,6 +105,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 	/**
 	 * Initializes the components and sets attributes.
+	 */
+	/**
+	 * 
 	 */
 	private void init() {
 
@@ -158,36 +156,27 @@ public class StudentInformationView extends VerticalLayout implements View,
 				return super.formatPropertyValue(rowId, colId, property);
 			}
 		};
+		studentsTable.addStyleName("borderless");
 		studentsTable.setSelectable(true);
 		studentsTable.setImmediate(true);
 		studentsTable.setSizeFull();
 		studentsTable.setColumnCollapsingAllowed(true);
 		studentsTable.setColumnReorderingAllowed(true);
-
-		tableData = new IndexedContainer();
-		tableData.addContainerProperty(TABLE_NAME, String.class, null);
-		tableData.addContainerProperty(TABLE_FIRSTNAME, String.class, null);
-		tableData.addContainerProperty(TABLE_GRADE, String.class, null);
-		tableData.addContainerProperty(TABLE_BIRTHDAY, Date.class, null);
-		tableData.addContainerProperty(TABLE_GENDER, String.class, null);
-
+		
+		tableData = new BeanItemContainer<Student>(Student.class);
 		studentsTable.setContainerDataSource(tableData);
-
+		
+		studentsTable.setVisibleColumns(new Object[] { "lastname", "firstname", "grade", "birthday", "gender" });
+		studentsTable.setColumnHeader(TABLE_LASTNAME, "Name");
+		studentsTable.setColumnHeader(TABLE_FIRSTNAME, "Vorname");
+		studentsTable.setColumnHeader(TABLE_GRADE, "Klasse");
+		studentsTable.setColumnHeader(TABLE_BIRTHDAY, "Geburtstag");
+		studentsTable.setColumnHeader(TABLE_GENDER, "Geschlecht");
+		
 		/**
 		 * TODO: Sorting of the table seems not to work studentsTable.sort(new
 		 * Object[] { TABLE_NAME }, new boolean[] { true });
 		 */
-
-		// show all books window
-		showBooksWindow = new Window();
-		showBooksWindow.center();
-
-		VerticalLayout windowContent = new VerticalLayout();
-		windowContent.setMargin(true);
-		windowContent.setSpacing(true);
-		buttonWindowClose = new Button("Schließen");
-		windowContent.addComponent(buttonWindowClose);
-		showBooksWindow.setContent(windowContent);
 
 		this.addListener();
 	}
@@ -198,48 +187,47 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private void addListener() {
 
 		/**
-		 * Closes the popup window
-		 */
-		buttonWindowClose.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 4111242410277636186L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				showBooksWindow.close();
-			}
-		});
-
-		/**
 		 * Implements the right click menu
 		 */
 		studentsTable.addActionHandler(new Handler() {
 
 			private static final long serialVersionUID = 5717528972959000947L;
 
-			private Action details = new Action("Details anzeigen");
-
 			private Action showBooks = new Action("Entliehene Bücher anzeigen");
 
 			@Override
 			public void handleAction(Action action, Object sender, Object target) {
-				if (action == details) {
-					Notification.show("Not yet implemented");
-				} else if (action == showBooks) {
-					Item item = ((Table) sender).getItem(target);
+				if (action == showBooks) {
+					((Table) sender).select(target);
+					Student item = (Student) ((Table) sender).getValue();
 
 					if (item != null) {
-						/**
-						 * TODO: Provide the corresponding PDF (Hat-Zustand)
-						 */
-						UI.getCurrent().addWindow(showBooksWindow);
-						showBooksWindow.focus();
+						
+						List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();;
+						
+						for (BorrowedMaterial bm : item.getBorrowedList()) {
+							if (bm.isReceived() && bm.getReturnDate() == null) {
+								borrowedMaterials.add(bm);
+							}
+						}
+						
+						if (!borrowedMaterials.isEmpty()) {
+							PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(item.getBorrowedList());
+							ByteArrayOutputStream boas = new PDFStudentList(builder).createByteArrayOutputStreamForPDF();
+							
+							StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(boas), "Infoliste_" + item.getLastname() + "_" + item.getFirstname() + ".pdf");
+							
+							new PrintingComponent(sr, "Ausgeliehene Materialien von " + item.getLastname() + ", " + item.getFirstname());
+						} else {
+							Notification.show("Der Schüler '" + item.getLastname() + ", " + item.getFirstname() + "' hat keine Materialien ausgeliehen.");
+						}
 					}
 				}
 			}
 
 			@Override
 			public Action[] getActions(Object target, Object sender) {
-				return new Action[] { details, showBooks };
+				return new Action[] { showBooks };
 			}
 		});
 
@@ -263,7 +251,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 			@Override
 			public void textChange(TextChangeEvent event) {
 
-				SimpleStringFilter cond1 = new SimpleStringFilter(TABLE_NAME,
+				SimpleStringFilter cond1 = new SimpleStringFilter(TABLE_LASTNAME,
 						event.getText(), true, false);
 				SimpleStringFilter cond2 = new SimpleStringFilter(
 						TABLE_FIRSTNAME, event.getText(), true, false);
@@ -273,18 +261,15 @@ public class StudentInformationView extends VerticalLayout implements View,
 			}
 		});
 
+		/**
+		 * Listens for changes in all students collection an adds them to the container
+		 */
 		students.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object value) {
-
 				tableData.removeAllItems();
 				for (Student student : students.get()) {
-					studentsTable.addItem(
-							new Object[] { student.getLastname(),
-									student.getFirstname(),
-									student.getGrade().toString(),
-									student.getBirthday(), student.getGender() },
-							student.getId());
+					studentsTable.addItem(student);
 				}
 			}
 		});
