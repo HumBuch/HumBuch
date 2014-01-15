@@ -169,45 +169,45 @@ public class ListSelector extends CustomComponent {
 
 		@Override
 		public void buttonClick(ClickEvent event) {
-			Button clickedButton = event.getButton();
-			StreamResource sr;
-			String title = "Default Liste";
-			// TODO: get all entities needed for printing actual lists.
-			if (clickedButton == buttonClassList) {
-				title = "Klassen Liste";
-				Set<Student> s = createTestStudents();
-				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
-				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "ClassList.pdf");
-			}
-			else if (clickedButton == buttonMaterialList) {
-				title = "Material Liste";
-				Student s = createTestStudent();
-				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
-				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "MaterialList.pdf");
-			}
-			else if (clickedButton == buttonStudentList) {
-				title = "Schüler Liste";
-				Student s = createTestStudent();
-				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
-				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "StudentList.pdf");
-			}
-			else {
-				LOG.warn("Could not determine which button was pressed.");
-				return;
-			}
-
-			Window window = new Window(title);
-			window.setSizeFull();
-
-			Embedded embedded = new Embedded();
-			embedded.setSizeFull();
-			embedded.setType(Embedded.TYPE_BROWSER);
-			// Set the right mime type
-			sr.setMIMEType("application/pdf");
-
-			embedded.setSource(sr);
-			window.setContent(embedded);
-			getUI().addWindow(window);
+//			Button clickedButton = event.getButton();
+//			StreamResource sr;
+//			String title = "Default Liste";
+//			// TODO: get all entities needed for printing actual lists.
+////			if (clickedButton == buttonClassList) {
+////				title = "Klassen Liste";
+////				Set<Student> s = createTestStudents();
+////				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
+////				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "ClassList.pdf");
+////			}
+////			else if (clickedButton == buttonMaterialList) {
+////				title = "Material Liste";
+////				Student s = createTestStudent();
+////				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
+////				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "MaterialList.pdf");
+////			}
+////			else if (clickedButton == buttonStudentList) {
+////				title = "Schüler Liste";
+////				Student s = createTestStudent();
+////				ByteArrayOutputStream baos = new PDFStudentList.Builder(s).build().createByteArrayOutputStreamForPDF();
+////				sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), "StudentList.pdf");
+////			}
+////			else {
+////				LOG.warn("Could not determine which button was pressed.");
+////				return;
+////			}
+//
+//			Window window = new Window(title);
+//			window.setSizeFull();
+//
+//			Embedded embedded = new Embedded();
+//			embedded.setSizeFull();
+//			embedded.setType(Embedded.TYPE_BROWSER);
+//			// Set the right mime type
+//			sr.setMIMEType("application/pdf");
+//
+//			embedded.setSource(sr);
+//			window.setContent(embedded);
+//			getUI().addWindow(window);
 		}
 	}
 
