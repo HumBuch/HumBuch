@@ -46,9 +46,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private String comment;
 	
 	private int fromGrade;
-	private int fromTerm;
 	private int toGrade;
-	private int toTerm;
+	private Integer term;
 	private Date validFrom;
 	private Date validUntil;
 	
@@ -118,14 +117,6 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.fromGrade = fromGrade;
 	}
 
-	public int getFromTerm() {
-		return fromTerm;
-	}
-
-	public void setFromTerm(int fromTerm) {
-		this.fromTerm = fromTerm;
-	}
-
 	public int getToGrade() {
 		return toGrade;
 	}
@@ -134,12 +125,12 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.toGrade = toGrade;
 	}
 
-	public int getToTerm() {
-		return toTerm;
+	public Integer getToTerm() {
+		return term;
 	}
 
-	public void setToTerm(int toTerm) {
-		this.toTerm = toTerm;
+	public void setToTerm(Integer term) {
+		this.term = term;
 	}
 
 	public Date getValidFrom() {
@@ -177,9 +168,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private double price;
 		private String comment;
 		private int fromGrade;
-		private int fromTerm;
 		private int toGrade;
-		private int toTerm;
+		private Integer term;
 		private Date validUntil;
 		
 		public Builder(Category category, String name, String identifyingNumber, Date validFrom) {
@@ -214,18 +204,13 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder fromTerm(int fromTerm) {
-			this.fromTerm = fromTerm;
-			return this;
-		}
-		
 		public Builder toGrade(int toGrade) {
 			this.toGrade = toGrade;
 			return this;
 		}
 		
-		public Builder toTerm(int toTerm) {
-			this.toTerm = toTerm;
+		public Builder term(Integer term) {
+			this.term = term;
 			return this;
 		}
 		
@@ -250,9 +235,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.price = builder.price;
 		this.comment = builder.comment;
 		this.fromGrade = builder.fromGrade;
-		this.fromTerm = builder.fromTerm;
 		this.toGrade = builder.toGrade;
-		this.toTerm = builder.toTerm;
+		this.term = builder.term;
 		this.validUntil = builder.validUntil;
 	}
 

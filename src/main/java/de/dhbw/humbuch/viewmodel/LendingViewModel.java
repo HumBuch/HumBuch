@@ -22,6 +22,7 @@ import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
@@ -47,18 +48,24 @@ public class LendingViewModel {
 	private DAO<Grade> daoGrade;
 	private DAO<Student> daoStudent;
 	private DAO<TeachingMaterial> daoTeachingMaterial;
-	private DAO<BorrowedMaterial> daoBorrowedMaterial; 
+	private DAO<BorrowedMaterial> daoBorrowedMaterial;
+	private DAO<SchoolYear> daoSchoolYear; 
+	
+	private SchoolYear currentSchoolYear;
 	
 	@Inject
-	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial) {
+	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, 
+			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoStudent = daoStudent;
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoGrade = daoGrade;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
+		this.daoSchoolYear = daoSchoolYear;
 	}
 	
 	@AfterVMBinding
 	private void afterVMBinding() {
+		updateSchoolYear();
 		updateTeachingMaterials();
 		updateAllStudentsBorrowedMaterials();
 	}
@@ -108,15 +115,19 @@ public class LendingViewModel {
 		}
 	}
 	
-	private void updateAllStudentsBorrowedMaterials() {
+	public void updateAllStudentsBorrowedMaterials() {
 		for(Student student : daoStudent.findAll()) {
 			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
 			updateUnreceivedBorrowedMaterialsState();
 		}
 	}
 
-	private void updateTeachingMaterials() {
+	public void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
+	}
+	
+	private void updateSchoolYear() {
+//		daoSchoolYear.findAllWithCriteria(criteriaArray)
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
@@ -147,8 +158,10 @@ public class LendingViewModel {
 						, Restrictions.le("validFrom", new Date())
 						, Restrictions.or(
 								Restrictions.ge("validUntil", new Date())
-								, Restrictions.isNull("validUntil")
-						)
+								, Restrictions.isNull("validUntil"))
+						, Restrictions.or(
+								Restrictions.eq("term", 2)
+								, Restrictions.isNull("term"))
 				));
 		//TODO: restrictions with TM's term
 
