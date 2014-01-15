@@ -196,11 +196,7 @@ public final class PDFStudentList extends PDFHandler{
 		private List<BorrowedMaterial> lendingList;
 		private List<BorrowedMaterial> returnList;
 				
-		public Builder(Student student){
-		}
-		
-		public Builder(Set<Student> students){
-		}
+		public Builder(){}
 		
 		public Builder borrowedMaterialList(List<BorrowedMaterial> borrowedMaterialList){
 			this.borrowedMaterialList = borrowedMaterialList;
