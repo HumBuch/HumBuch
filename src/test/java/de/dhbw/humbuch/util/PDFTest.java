@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -35,29 +34,29 @@ public class PDFTest {
 	}
 	
 	public static void testStudentPDF(){
-		Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
-		List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
-		
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null, "Bio1 - Bugs", "123", null).price(79.75).toGrade(6).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
-		borrowedMaterialList.add(borrowedMaterial);
-		
-		teachingMaterial = new TeachingMaterial.Builder(null, "German1 - Faust", "123", null).price(22.49).toGrade(11).build();
-		borrowedMaterial = new BorrowedMaterial.Builder(null, teachingMaterial, null).build();
-		borrowedMaterialList.add(borrowedMaterial);
-		
+		Student student;		
 		Date date = null;
 		try {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse("12.04.1970");
 			Grade grade = new Grade.Builder("11au").build();
-			Student student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).borrowedList(borrowedMaterialList).build();
+			Set<Subject> profileTypeSet = SubjectHandler.createProfile(new String[]{"E", "", "F"}, "ev");
+			List<BorrowedMaterial> borrowedMaterialList = new ArrayList<BorrowedMaterial>();
+			student = new Student.Builder(4,"Karl","August", date, grade).profile(profileTypeSet).build();
+
+			TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null, "Bio1 - Bugs", "123", null).price(79.75).toGrade(6).build();
+			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
+			borrowedMaterialList.add(borrowedMaterial);
 			
-			Map<Student, List<BorrowedMaterial>> lendingMap = new LinkedHashMap<Student, List<BorrowedMaterial>>();
-			lendingMap.put(student, borrowedMaterialList);
-			Map<Student, List<BorrowedMaterial>> returnMap = new LinkedHashMap<Student, List<BorrowedMaterial>>();
-			returnMap.put(student, borrowedMaterialList);
+			teachingMaterial = new TeachingMaterial.Builder(null, "German1 - Faust", "123", null).price(22.49).toGrade(11).build();
+			borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
+			borrowedMaterialList.add(borrowedMaterial);
 			
-			new PDFStudentList.Builder(student).lendingMap(lendingMap).returnMap(returnMap).build().savePDF("./testfiles/FirstPdf.pdf");
+			student.setBorrowedList(borrowedMaterialList);
+			
+			PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterialList).
+					lendingList(borrowedMaterialList).returnList(borrowedMaterialList);
+			
+			new PDFStudentList(builder).savePDF("./testfiles/StudentPDF.pdf");					
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
@@ -69,7 +68,7 @@ public class PDFTest {
 		new PDFClassList(gradeMap).savePDF("./testfiles/SecondPdfClass.pdf");
 		
 		Map<Grade, Map<TeachingMaterial, Integer>> multipleGradesMap = GradeTest.prepareMultipleGradeTest();
-		new PDFClassList(multipleGradesMap).savePDF("./testfiles/MultiPdfClass.pdf");
+		new PDFClassList(multipleGradesMap).savePDF("./testfiles/MultiClassPDF.pdf");
 	}
 	
 	public static void testDunningPDF(){
