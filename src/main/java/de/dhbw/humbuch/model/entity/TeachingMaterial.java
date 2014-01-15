@@ -270,10 +270,10 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof TeachingMaterial))
 			return false;
 		TeachingMaterial other = (TeachingMaterial) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}

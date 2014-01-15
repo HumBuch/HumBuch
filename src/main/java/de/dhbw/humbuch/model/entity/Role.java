@@ -104,10 +104,10 @@ public class Role implements de.dhbw.humbuch.model.entity.Entity, Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Role))
 			return false;
 		Role other = (Role) obj;
-		if (id != other.id)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}
