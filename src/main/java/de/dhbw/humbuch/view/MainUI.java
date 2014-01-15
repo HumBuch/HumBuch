@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -17,6 +19,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -27,6 +30,7 @@ import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
 import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
@@ -84,8 +88,9 @@ public class MainUI extends ScopedUI {
 
 	@Inject
 	public MainUI(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel) {
+			LoginViewModel loginViewModel, EventBus eventBus) {
 		bindViewModel(viewModelComposer, loginViewModel);
+		eventBus.register(this);
 	}
 
 	@Override
@@ -250,6 +255,16 @@ public class MainUI extends ScopedUI {
 		window.setCloseShortcut(KeyCode.ESCAPE, null);
 		
 		return window;
+	}
+	
+	/**
+	 * Example for handling events posted via the {@link EventBus}
+	 * 
+	 * @param loginEvent a {@link LoginEvent}
+	 */
+	@Subscribe
+	public void handleLoginEvent(LoginEvent loginEvent) {
+		Notification.show(loginEvent.message);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
