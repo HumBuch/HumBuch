@@ -3,6 +3,7 @@ package de.dhbw.humbuch.viewmodel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -119,8 +120,15 @@ public class StudentInformationViewModel {
 	 * @param outputStream
 	 */
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
-		CSVReader reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
-		persistStudents(CSVHandler.createStudentObjectsFromCSV(reader));
+		CSVReader reader;
+		try {
+			reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), "UTF-8"), ';', '\'', 0);
+			persistStudents(CSVHandler.createStudentObjectsFromCSV(reader));
+		}
+		catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 //	private void setImportResult(String importResult) {

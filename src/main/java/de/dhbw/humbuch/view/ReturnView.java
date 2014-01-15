@@ -137,10 +137,10 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	private void doStudentListPrinting() {
 		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
 		if (selectedStudents != null) {
-			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
-
-			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
+//			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
+//			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
+//
+//			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
 		}
 		else {
 			LOG.warn("No students selected. No list will be generated / shown.");

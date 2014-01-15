@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -190,7 +191,14 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		Set<Student> selectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
 		if (selectedStudents != null) {
 			System.out.println("map size: " + selectedStudents.size());
-			ByteArrayOutputStream baos = new PDFStudentList.Builder(selectedStudents).build().createByteArrayOutputStreamForPDF();
+			
+			Set<PDFStudentList.Builder> builders = new LinkedHashSet<>();
+			for(Student student : selectedStudents){
+				PDFStudentList.Builder builder = new PDFStudentList.Builder().lendingList(student.getUnreceivedBorrowedList());
+				builders.add(builder);
+			}
+			
+			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
 			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), STUDENT_LIST_PDF);
 
 			showPdfInWindow(sr, STUDENT_LIST_WINDOW_TITLE);
@@ -214,7 +222,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		window.setContent(embedded);
 		getUI().addWindow(window);
 	}
-
+	
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
