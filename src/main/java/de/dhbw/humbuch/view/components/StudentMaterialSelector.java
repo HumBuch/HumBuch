@@ -20,6 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.view.LendingView;
 
 
 public class StudentMaterialSelector extends CustomComponent {
@@ -41,6 +42,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private HashSet<Grade> currentlySelectedGrades;
 	private HashSet<Student> currentlySelectedStudents;
 	private HashSet<BorrowedMaterial> currentlySelectedBorrowedMaterials;
+	private LendingView registeredObserver;
 
 	public StudentMaterialSelector() {
 		init();
@@ -71,6 +73,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		currentlySelectedGrades = new HashSet<Grade>();
 		currentlySelectedStudents = new HashSet<Student>();
 		currentlySelectedBorrowedMaterials = new HashSet<BorrowedMaterial>();
+
 		//		indexedContainerForTreeTable = new IndexedContainer();
 
 		verticalLayoutContent.setSpacing(true);
@@ -195,6 +198,7 @@ public class StudentMaterialSelector extends CustomComponent {
 										currentlySelectedStudents.remove(student);
 									}
 									updateCurrentlySelectedMaterials();
+									notifyObserver();
 
 									checkBoxMaterial.setValue(studentSelected);
 								}
@@ -320,6 +324,7 @@ public class StudentMaterialSelector extends CustomComponent {
 			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
 			currentlySelectedStudents.addAll(new ArrayList<Student>(studentsWithMaterials.keySet()));
 		}
+		notifyObserver();
 	}
 
 	private void updateCurrentlySelectedMaterials() {
@@ -333,6 +338,24 @@ public class StudentMaterialSelector extends CustomComponent {
 			}
 		}
 	}
+
+	public void registerAsObserver(LendingView lendingView) {
+		registeredObserver = lendingView;
+	}
+
+	public void notifyObserver() {
+		if (registeredObserver == null) {
+			return;
+		}
+
+		if (currentlySelectedStudents.size() == 1) {
+			registeredObserver.update(true);
+		}
+		else {
+			registeredObserver.update(false);
+		}
+	}
+
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
 	//	private class SimpleCheckBoxFilter implements Filter {
 	//
