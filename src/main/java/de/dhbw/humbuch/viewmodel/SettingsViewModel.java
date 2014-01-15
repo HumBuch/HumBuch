@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import de.davherrmann.mvvm.ActionHandler;
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
+import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
@@ -63,12 +64,31 @@ public class SettingsViewModel {
 		this.daoUser = daoUser;
 		this.daoCategory = daoCategory;
 		this.currentUser = properties.currentUser;
+		this.currentUser.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object value) {
+				if(value != null)
+					updateUser();
+			}
+		});
 	}
 	
 	@AfterVMBinding
 	private void afterAMBindung() {
+		updateSchoolYears();
+		updateCategories();
+		updateUser();
+	}
+	
+	private void updateSchoolYears() {
 		schoolYears.set(daoSchoolYear.findAll());
+	}
+	
+	private void updateCategories() {
 		categories.set(daoCategory.findAll());
+	}
+	
+	private void updateUser() {
 		userName.set(currentUser.get().getUsername());
 		userEmail.set(currentUser.get().getEmail());
 	}
