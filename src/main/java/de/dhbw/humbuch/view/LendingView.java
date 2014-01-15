@@ -49,6 +49,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private static final String TITLE = "Ausleihe";
 	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher erhalten";
+	private static final String MANUAL_LENDING = "Manuell Material ausleihen";
 	private static final String CLASS_LIST = "Klassenliste für Auswahl drucken";
 	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
@@ -61,8 +62,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private Button buttonClassList;
+	private Button buttonManualLending;
 	private ThemeResource themeResourceIconPrint;
 	private LendingViewModel lendingViewModel;
+	private ManualLendingPopupView manualLendingPopupView;
+	private Window windowManualLending;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
@@ -84,15 +88,24 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_LENDING);
 		buttonClassList = new Button(CLASS_LIST);
 		buttonStudentList = new Button(STUDENT_LIST);
+		buttonManualLending = new Button(MANUAL_LENDING);
 		themeResourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
+		manualLendingPopupView = new ManualLendingPopupView();
+		windowManualLending = new Window();
 
 		buttonClassList.setIcon(themeResourceIconPrint);
 		buttonStudentList.setIcon(themeResourceIconPrint);
 		buttonSaveSelectedData.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
+		studentMaterialSelector.registerAsObserver(this);
+
 		horizontalLayoutButtonBar.setSpacing(true);
 		setSpacing(true);
 		setMargin(true);
+
+		windowManualLending.setCaption(manualLendingPopupView.getTitle());
+		windowManualLending.center();
+		windowManualLending.setContent(manualLendingPopupView);
 
 		addListeners();
 		updateStudentsWithUnreceivedBorrowedMaterials();
@@ -170,6 +183,18 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				LendingView.this.lendingViewModel.setBorrowedMaterialsReceived(studentMaterialSelector.getCurrentlySelectedBorrowedMaterials());
 			}
 		});
+
+		buttonManualLending.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = -526627937959389240L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (buttonManualLending.isVisible()) {
+					showManualLendingPopup();
+				}
+			}
+		});
 	}
 
 	private void doClassListPrinting() {
@@ -213,6 +238,19 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		embedded.setSource(sr);
 		window.setContent(embedded);
 		getUI().addWindow(window);
+	}
+
+	private void showManualLendingPopup() {
+		getUI().addWindow(windowManualLending);
+	}
+
+	public void update(boolean singleStudentSelected) {
+		if (singleStudentSelected) {
+			horizontalLayoutButtonBar.addComponent(buttonManualLending);
+		}
+		else {
+			horizontalLayoutButtonBar.removeComponent(buttonManualLending);
+		}
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
