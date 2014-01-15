@@ -34,8 +34,12 @@ public final class PDFStudentList extends PDFHandler{
 			for(Student student : this.students){
 				this.addHeading(document, "Ausgabe-Liste 2013");
 				this.student = student;
-				this.returnList = studentToReturnListsMap.get(student);
-				this.lendingList = studentToLendingListsMap.get(student);
+				if(studentToReturnListsMap != null){
+					this.returnList = studentToReturnListsMap.get(student);
+				}
+				if(studentToLendingListsMap != null){
+					this.lendingList = studentToLendingListsMap.get(student);
+				}
 				this.addStudentInformation(document);
 				this.addContent(document);
 				this.addRentalDisclosure(document);
