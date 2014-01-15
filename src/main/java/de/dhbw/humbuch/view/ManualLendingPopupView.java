@@ -38,9 +38,15 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
+		textFieldSearchBar.setWidth("66%");
+
 		tableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
+		tableTeachingMaterials.setWidth("100%");
 
 		fillTable();
+
+		setSpacing(true);
+		setMargin(true);
 	}
 
 	private void buildLayout() {
