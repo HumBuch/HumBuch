@@ -71,8 +71,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`category` (
   `description` VARCHAR(128) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = latin1;
+AUTO_INCREMENT = 4;
 
 
 -- -----------------------------------------------------
@@ -141,8 +140,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`user` (
   `password` VARCHAR(32) NOT NULL,
   `email` VARCHAR(60) NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = latin1;
+ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -215,12 +213,13 @@ ENGINE = InnoDB;
 -- Table `humbuch`.`schoolYear`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `humbuch`.`schoolYear` (
-  `year` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `year` VARCHAR(45) NOT NULL,
   `from` DATE NOT NULL,
   `to` DATE NOT NULL,
   `endFirstTerm` DATE NULL,
   `beginSecondTerm` DATE NULL,
-  PRIMARY KEY (`year`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 

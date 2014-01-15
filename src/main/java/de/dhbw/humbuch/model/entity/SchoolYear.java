@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,8 +15,10 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	private static final long serialVersionUID = -3752454317452902743L;
 
 	@Id
-	private int year;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
 	
+	private String year;
 	private Date from;
 	private Date to;
 	private Date endFirstTerm;
@@ -22,11 +26,19 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	
 	public SchoolYear() {}
 
-	public int getYear() {
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 
@@ -63,14 +75,14 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	}
 	
 	public static class Builder {
-		private final int year;
+		private final String year;
 		private final Date from;
 		private final Date to;
 		
 		private Date endFirstTerm;
 		private Date beginSecondTerm;
 		
-		public Builder(int year, Date from, Date to) {
+		public Builder(String year, Date from, Date to) {
 			this.year = year;
 			this.from = from;
 			this.to = to;
@@ -104,7 +116,7 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + year;
+		result = prime * result + id;
 		return result;
 	}
 
@@ -114,10 +126,10 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof SchoolYear))
 			return false;
 		SchoolYear other = (SchoolYear) obj;
-		if (year != other.year)
+		if (getId() != other.getId())
 			return false;
 		return true;
 	}
