@@ -66,6 +66,10 @@ public class Header extends CustomComponent {
 		horizontalLayoutHeader.setWidth("100%");
 	}
 	
+	public Button getHelpButton() {
+		return buttonHelp;
+	}
+	
 	private void buildLayout() {
 		horizontalLayoutHeaderBar.addComponent(buttonHelp);
 		horizontalLayoutHeaderBar.setComponentAlignment(buttonHelp, Alignment.TOP_RIGHT);

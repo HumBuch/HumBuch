@@ -1,9 +1,7 @@
 package de.dhbw.humbuch.util;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.lowagie.text.Document;
@@ -16,74 +14,82 @@ import de.dhbw.humbuch.model.entity.Student;
 
 public final class PDFStudentList extends PDFHandler{
 	private Student student;
-	private Set<Student> students;
-	private Map<Student, List<BorrowedMaterial>> studentToReturnListsMap;
+	private List<BorrowedMaterial> borrowedMaterialList;
 	private List<BorrowedMaterial> returnList;
-	private Map<Student, List<BorrowedMaterial>> studentToLendingListsMap;
 	private List<BorrowedMaterial> lendingList;
 	
-	public PDFStudentList(Builder builder){
+	private Set<Builder> builders;
+	
+	/**
+	 * The content of the PDFs is printed in the order of the students-set.
+	 * @param builder
+	 */
+	public PDFStudentList(Builder... builder){
 		super();
-		this.students = builder.students;
-		this.studentToReturnListsMap = builder.studentToReturnListsMap;
-		this.studentToLendingListsMap = builder.studentToLendingListsMap;
+		this.builders = new LinkedHashSet<>();
+		for(Builder b : builder){
+			this.builders.add(b);
+		}
+	}
+	
+	public PDFStudentList(Set<Builder> builder){
+		super();
+		this.builders = builder;
 	}
 	
 	protected void insertDocumentParts(Document document){
-		if(this.students != null){
-			for(Student student : this.students){
-				this.addHeading(document, "Ausgabe-Liste 2013");
-				this.student = student;
-				if(studentToReturnListsMap != null){
-					this.returnList = studentToReturnListsMap.get(student);
-				}
-				if(studentToLendingListsMap != null){
-					this.lendingList = studentToLendingListsMap.get(student);
-				}
-				this.addStudentInformation(document);
-				this.addContent(document);
-				this.addRentalDisclosure(document);
-				this.addSignatureField(document, "Schüler");
-				document.newPage();
-				this.resetPageNumber();
+		for(Builder builder : builders){
+			if(builder.student != null){
+				this.student = builder.student;
 			}
-		}
+			else{
+				continue;
+			}
+			this.borrowedMaterialList = builder.borrowedMaterialList;
+			this.lendingList = builder.lendingList;
+			this.returnList = builder.returnList;
+
+			this.addHeading(document, "Ausgabe-Liste 2013");
+			this.addStudentInformation(document);
+			this.addContent(document);
+			this.addRentalDisclosure(document);
+			this.addSignatureField(document, "Schüler");
+			document.newPage();
+			this.resetPageNumber();
+		}		
 	}
 	
 	protected void addContent(Document document) {
-		PdfPTable table = PDFHandler.createMyStandardTable(1);
-		PDFHandler.fillTableWithContent(table, false,
-				new String[]{"\nDie folgenden Bücher befinden im Besitz des Schülers/der Schülerin: \n"}, false);
-		 try {
+		if(this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()){
+			PdfPTable table = PDFHandler.createMyStandardTable(1);
+			PDFHandler.fillTableWithContent(table, false,
+					new String[]{"\nDie folgenden Bücher befinden sich im Besitz des Schülers/der Schülerin: \n"}, false);
+			 try {
+					document.add(table);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			
+			table = this.createTableWithRentalInformationHeader();
+
+			for(BorrowedMaterial borrowedMaterial : this.borrowedMaterialList){
+				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
+				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
+				                         borrowedMaterial.getTeachingMaterial().getName(),
+				                      	 "" };
+				PDFHandler.fillTableWithContent(table, true, contentArray);		
+			}
+		    try {
 				document.add(table);
+				PDFHandler.addEmptyLineToDocument(document, 1);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		
-		table = this.createTableWithRentalInformationHeader();
-		
-		Iterator<BorrowedMaterial> iterator = this.student.getBorrowedList().iterator();
-		BorrowedMaterial borrowedMaterial;
-		while(iterator.hasNext()){
-			borrowedMaterial = (BorrowedMaterial) iterator.next();
-			String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
-			                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
-			                         borrowedMaterial.getTeachingMaterial().getName(),
-			                      	 "" };
-			PDFHandler.fillTableWithContent(table, true, contentArray);		
-		}
-	    
-	    try {
-			document.add(table);
-			PDFHandler.addEmptyLineToDocument(document, 2);
-		}
-		catch (DocumentException e) {
-			e.printStackTrace();
-		}
-	    
 	    if(this.returnList != null && !this.returnList.isEmpty()){
-	        table = PDFHandler.createMyStandardTable(1);
+	    	PdfPTable table = PDFHandler.createMyStandardTable(1);
 			PDFHandler.fillTableWithContent(table, false,
 					new String[]{"\n Die folgenden Bücher müssen zurückgegeben werden: \n"}, false);
 			 try {
@@ -95,9 +101,7 @@ public final class PDFStudentList extends PDFHandler{
 	    	
 	    	table = this.createTableWithRentalInformationHeader();
 			
-			iterator = this.returnList.iterator();
-			while(iterator.hasNext()){
-				borrowedMaterial = (BorrowedMaterial) iterator.next();
+	    	for(BorrowedMaterial borrowedMaterial : this.returnList){				
 				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
 				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
 				                         borrowedMaterial.getTeachingMaterial().getName(),
@@ -107,14 +111,14 @@ public final class PDFStudentList extends PDFHandler{
 		    
 		    try {
 				document.add(table);
-				PDFHandler.addEmptyLineToDocument(document, 2);
+				PDFHandler.addEmptyLineToDocument(document, 1);
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
 			}
 	    }
 	    if(this.lendingList != null && !this.lendingList.isEmpty()){
-	    	table = PDFHandler.createMyStandardTable(1);
+	    	PdfPTable table = PDFHandler.createMyStandardTable(1);
 			PDFHandler.fillTableWithContent(table, false,
 					new String[]{"\n Die folgenden Bücher sollen ausgeliehen werden: \n"}, false);
 			 try {
@@ -125,10 +129,8 @@ public final class PDFStudentList extends PDFHandler{
 			}	    	
 	    	
 	    	table = this.createTableWithRentalInformationHeader();
-			
-			iterator = this.lendingList.iterator();
-			while(iterator.hasNext()){
-				borrowedMaterial = (BorrowedMaterial) iterator.next();
+	    	
+	    	for(BorrowedMaterial borrowedMaterial : this.lendingList){
 				String[] contentArray = {//borrowedMaterial.getTeachingMaterial().getSubject().getName(),
 				                         ""+borrowedMaterial.getTeachingMaterial().getToGrade(),
 				                         borrowedMaterial.getTeachingMaterial().getName(),
@@ -188,30 +190,39 @@ public final class PDFStudentList extends PDFHandler{
 		}
 	}
 	
-	public static class Builder{
-		private Set<Student> students;
-		private Map<Student, List<BorrowedMaterial>> studentToReturnListsMap;
-		private Map<Student, List<BorrowedMaterial>> studentToLendingListsMap;
+	public static class Builder{		
+		private Student student;
+		private List<BorrowedMaterial> borrowedMaterialList;
+		private List<BorrowedMaterial> lendingList;
+		private List<BorrowedMaterial> returnList;
 				
-		public Builder(Student student){
-			this.students = new LinkedHashSet<Student>();
-			this.students.add(student);
-		}
+		public Builder(){}
 		
-		public Builder(Set<Student> students){
-			this.students = students;
-		}
-		
-		public Builder returnMap(Map<Student, List<BorrowedMaterial>> studentToBorrowedMaterialMap){
-			this.studentToReturnListsMap = studentToBorrowedMaterialMap;
+		public Builder borrowedMaterialList(List<BorrowedMaterial> borrowedMaterialList){
+			this.borrowedMaterialList = borrowedMaterialList;
+			if(borrowedMaterialList != null){
+				this.student = borrowedMaterialList.get(0).getStudent();
+			}
 			return this;
 		}
 		
-		public Builder lendingMap(Map<Student, List<BorrowedMaterial>> studentToBorrowedMaterialMap){
-			this.studentToLendingListsMap = studentToBorrowedMaterialMap;
+		public Builder lendingList(List<BorrowedMaterial> borrowedMaterialList){
+			this.lendingList = borrowedMaterialList;
+			if(borrowedMaterialList != null){
+				this.student = borrowedMaterialList.get(0).getStudent();
+			}
 			return this;
 		}
 		
+		public Builder returnList(List<BorrowedMaterial> borrowedMaterialList){
+			this.returnList = borrowedMaterialList;
+			if(borrowedMaterialList != null){
+				this.student = borrowedMaterialList.get(0).getStudent();
+			}
+			return this;
+		}
+		
+		@Deprecated
 		public PDFStudentList build(){
 			return new PDFStudentList(this);
 		}

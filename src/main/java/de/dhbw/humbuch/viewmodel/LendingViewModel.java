@@ -29,22 +29,21 @@ public class LendingViewModel {
 
 	public interface GenerateMaterialListGrades extends ActionHandler {};
 	public interface SetBorrowedMaterialsReceived extends ActionHandler {};
+	public interface DoManualLending extends ActionHandler {};
 	
 	public interface StudentsWithUnreceivedBorrowedMaterials extends State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> {};
 	public interface MaterialListGrades extends State<Map<Grade, Map<TeachingMaterial, Integer>>> {};
+	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {};
 
-	@Deprecated
-	public interface Students extends State<Collection<Student>> {};
-	
-	@Deprecated
-	public interface Grades extends State<Collection<Grade>> {};
-	
 	@ProvidesState(StudentsWithUnreceivedBorrowedMaterials.class)
 	public State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> studentsWithUnreceivedBorrowedMaterials = new BasicState<>(Map.class);
 	
 	@ProvidesState(MaterialListGrades.class)
 	public State<Map<Grade, Map<TeachingMaterial, Integer>>> materialListGrades = new BasicState<>(Map.class);
 
+	@ProvidesState(TeachingMaterials.class)
+	public State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
+	
 	private DAO<Grade> daoGrade;
 	private DAO<Student> daoStudent;
 	private DAO<TeachingMaterial> daoTeachingMaterial;
@@ -60,6 +59,7 @@ public class LendingViewModel {
 	
 	@AfterVMBinding
 	private void afterVMBinding() {
+		updateTeachingMaterials();
 		updateAllStudentsBorrowedMaterials();
 	}
 	
@@ -96,7 +96,18 @@ public class LendingViewModel {
 		
 		updateAllStudentsBorrowedMaterials();
 	}
-
+	
+	@HandlesAction(DoManualLending.class)
+	public void doManualLending(Map<Student, List<TeachingMaterial>> toLend) {
+		for(Map.Entry<Student, List<TeachingMaterial>> entry : toLend.entrySet()) {
+			persistBorrowedMaterials(entry.getKey(), entry.getValue());
+		}
+		
+		if(!toLend.isEmpty()) {
+			updateAllStudentsBorrowedMaterials();
+		}
+	}
+	
 	private void updateAllStudentsBorrowedMaterials() {
 		for(Student student : daoStudent.findAll()) {
 			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
@@ -104,6 +115,10 @@ public class LendingViewModel {
 		}
 	}
 
+	private void updateTeachingMaterials() {
+		teachingMaterials.set(daoTeachingMaterial.findAll());
+	}
+	
 	private void updateUnreceivedBorrowedMaterialsState() {
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new HashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
