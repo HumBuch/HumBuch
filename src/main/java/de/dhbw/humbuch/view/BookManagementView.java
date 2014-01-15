@@ -289,7 +289,11 @@ public class BookManagementView extends VerticalLayout implements View,
 			private static final long serialVersionUID = 563232762007381515L;
 			@Override
 			public void buttonClick(ClickEvent event) {
-				
+				bookManagementViewModel.doFetchTeachingMaterial(Integer
+						.parseInt(tableTeachingMaterials.getValue().toString()));
+				TeachingMaterial tm = teachingMaterialInfo.get();
+				System.out.println(tm.getId());
+				bookManagementViewModel.doDeleteTeachingMaterial(tm);
 			}
 		});
 		/**
