@@ -207,8 +207,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `humbuch_test`.`schoolYear` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `year` VARCHAR(45) NOT NULL,
-  `from` DATE NOT NULL,
-  `to` DATE NOT NULL,
+  `fromDate` DATE NOT NULL,
+  `toDate` DATE NOT NULL,
   `endFirstTerm` DATE NULL,
   `beginSecondTerm` DATE NULL,
   PRIMARY KEY (`id`))
@@ -428,7 +428,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `from`, `to`, `endFirstTerm`, `beginSecondTerm`) VALUES (1, '2013/2014', '2013-08-01', '2014-07-31', '2014-01-31', '2014-02-01');
+INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `fromDate`, `toDate`, `endFirstTerm`, `beginSecondTerm`) VALUES (1, '2013/2014', '2013-08-01', '2014-07-31', '2014-01-31', '2014-02-01');
 
 COMMIT;
 

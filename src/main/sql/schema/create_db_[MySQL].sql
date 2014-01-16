@@ -215,8 +215,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `humbuch`.`schoolYear` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `year` VARCHAR(45) NOT NULL,
-  `from` DATE NOT NULL,
-  `to` DATE NOT NULL,
+  `fromDate` DATE NOT NULL,
+  `toDate` DATE NOT NULL,
   `endFirstTerm` DATE NULL,
   `beginSecondTerm` DATE NULL,
   PRIMARY KEY (`id`))
