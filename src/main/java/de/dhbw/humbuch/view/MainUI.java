@@ -20,6 +20,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -31,6 +32,7 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.LoginEvent;
+import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
 import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
@@ -67,8 +69,6 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private StudentInformationView studentInformationView;
-	@Inject
-	private HelpView helpView;
 
 	@Inject
 	private Header header;
@@ -228,8 +228,8 @@ public class MainUI extends ScopedUI {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Window window = createHelpWindow(new ResourceLoader("help/"
-						+ currentView.getClass().getSimpleName()
-						+ ".html").getContent());
+						+ currentView.getClass().getSimpleName() + ".html")
+						.getContent());
 				getUI().addWindow(window);
 				getUI().setFocusedComponent(window);
 			}
@@ -239,7 +239,8 @@ public class MainUI extends ScopedUI {
 	/**
 	 * Creates a {@link Window} with a specified help text
 	 * 
-	 * @param helpText {@link String} containing the help text
+	 * @param helpText
+	 *            {@link String} containing the help text
 	 * @return {@link Window}
 	 */
 	protected Window createHelpWindow(String helpText) {
@@ -247,24 +248,48 @@ public class MainUI extends ScopedUI {
 		if (helpText != null) {
 			helpView.setHelpText(helpText);
 		}
-		
+
 		Window window = new Window("Hilfe", helpView);
 		window.center();
 		window.setModal(true);
 		window.setResizable(false);
 		window.setCloseShortcut(KeyCode.ESCAPE, null);
-		
+
 		return window;
 	}
-	
+
 	/**
 	 * Example for handling events posted via the {@link EventBus}
 	 * 
-	 * @param loginEvent a {@link LoginEvent}
+	 * @param loginEvent
+	 *            a {@link LoginEvent}
 	 */
 	@Subscribe
 	public void handleLoginEvent(LoginEvent loginEvent) {
 		Notification.show(loginEvent.message);
+	}
+
+	/**
+	 * Handles {@link MessageEvent}s showing the message in a Vaadin
+	 * {@link Notification}
+	 * 
+	 * @param messageEvent {@link MessageEvent} containing the message to show
+	 */
+	@Subscribe
+	public void handleMessageEvent(MessageEvent messageEvent) {
+		Type notificationType;
+		switch (messageEvent.type) {
+		case ERROR:
+			notificationType = Type.ERROR_MESSAGE;
+			break;
+		case WARNING:
+			notificationType = Type.WARNING_MESSAGE;
+			break;
+		case INFO:
+		default:
+			notificationType = Type.HUMANIZED_MESSAGE;
+		}
+		Notification.show(messageEvent.message, notificationType);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

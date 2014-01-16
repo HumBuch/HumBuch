@@ -227,6 +227,7 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		windowEditTeachingMaterial = new Window();
 		windowEditTeachingMaterial.center();
+		windowEditTeachingMaterial.setModal(true);
 		windowEditTeachingMaterial.setResizable(false);
 		windowEditTeachingMaterial.setDraggable(false);
 		verticalLayoutWindowContent = new VerticalLayout();
@@ -278,7 +279,11 @@ public class BookManagementView extends VerticalLayout implements View,
 			private static final long serialVersionUID = 563232762007381515L;
 			@Override
 			public void buttonClick(ClickEvent event) {
-				bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+				if(tableTeachingMaterials.getValue() == null) {
+					Notification.show("Bitte ein Lehrmittel auswählen");
+					return;
+				}
+				bookManagementViewModel.doFetchTeachingMaterial(Integer	.parseInt(tableTeachingMaterials.getValue().toString()));
 				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
 			}
 		});
@@ -362,7 +367,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonNewTeachingMaterial.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = -7433701329516481457L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				editTeachingMaterial = false;
@@ -383,7 +388,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonEditTeachingMaterial.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 563232762007381515L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(tableTeachingMaterials.getValue() == null) {

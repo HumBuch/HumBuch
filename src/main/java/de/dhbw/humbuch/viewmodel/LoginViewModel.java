@@ -13,6 +13,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.event.LoginEvent;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.User;
 
@@ -48,6 +50,7 @@ public class LoginViewModel {
 		if (username.equals("") || password.equals("")) {
 			// Set the loginError to empty string --> state change --> user feedback in the view
 			loginError.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
+			eventBus.post(new MessageEvent("Name + Passwort angeben", Type.ERROR));
 			return;
 		} else {
 			List<User> user = (List<User>) daoUser.findAllWithCriteria(Restrictions.eq("username", username), Restrictions.eq("password", password));
