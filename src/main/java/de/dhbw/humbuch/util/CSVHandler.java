@@ -174,15 +174,15 @@ public final class CSVHandler {
 	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
 		String headerValue = (String) properties.getProperty(attributeName);
 		if (headerValue != null) {
-			int indexHeader = -1;
-			if (indexMap.get(headerValue) != null) {
-				indexHeader = indexMap.get(headerValue);
+			try{
+				int indexHeader = indexMap.get(headerValue);
+				return indexHeader;
+
 			}
-			else {
+			catch(Exception e){
 				throw new UnsupportedOperationException("Ein CSV-Spaltenname konnte nicht zugeordnet werden. "
-						+ "Bitte die Einstellungsdatei mit der CSV-Datei abgleichen");
+						+ "Bitte die Einstellungsdatei mit der CSV-Datei abgleichen. Spaltenname: " + headerValue);
 			}
-			return indexHeader;
 		}
 
 		return -1;
@@ -190,7 +190,7 @@ public final class CSVHandler {
 
 	private static boolean checkForValidityOfAttributes(ArrayList<String> attributeList) {
 		for (String str : attributeList) {
-			if (str == "-1") {
+			if (str.equals("-1")) {
 				return false;
 			}
 		}
