@@ -108,9 +108,13 @@ public class DunningView extends VerticalLayout implements View,
 					buttonNewDunning.setEnabled(true);
 					buttonSecondDunning.setEnabled(false);
 				}
-				if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
+				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(true);
+				}
+				else {
+					buttonNewDunning.setEnabled(false);
+					buttonSecondDunning.setEnabled(false);
 				}
 			}
 		});
@@ -123,7 +127,6 @@ public class DunningView extends VerticalLayout implements View,
 				setStudent.add(selectedDunning.getStudent());
 				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
 				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				PDFDunning pdfDunning =PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial);
 				ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
 //				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
@@ -144,7 +147,6 @@ public class DunningView extends VerticalLayout implements View,
 				setStudent.add(selectedDunning.getStudent());
 				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
 				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				PDFDunning pdfDunning =PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial);
 				ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
 //				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
