@@ -1,8 +1,9 @@
 package de.dhbw.humbuch.view.components;
 
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Embedded;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 
@@ -24,14 +25,13 @@ public class PrintingComponent extends CustomComponent {
 		window = new Window(windowTitle);
 		window.setSizeFull();
 
-		Embedded embedded = new Embedded();
+		BrowserFrame embedded = new BrowserFrame();
 		embedded.setSizeFull();
-		embedded.setType(Embedded.TYPE_BROWSER);
 		// Set the right mime type
 		streamResource.setMIMEType("application/pdf");
 
 		embedded.setSource(streamResource);
 		window.setContent(embedded);
-		getUI().getCurrent().addWindow(window);
+		UI.getCurrent().addWindow(window);
 	}
 }

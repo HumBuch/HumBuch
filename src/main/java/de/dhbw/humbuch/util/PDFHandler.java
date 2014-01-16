@@ -115,7 +115,13 @@ public abstract class PDFHandler {
 			this.document.open();
 			this.addMetaData(document);
 			this.insertDocumentParts(document);
-			this.document.close();
+			
+			if(byteArrayOutputStream.size() > 0){
+				this.document.close();
+			}
+			else{
+				return null;
+			}
 			
 			return byteArrayOutputStream;
 		}

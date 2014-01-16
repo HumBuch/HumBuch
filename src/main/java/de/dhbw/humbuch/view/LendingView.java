@@ -206,11 +206,12 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
-
-			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + CLASS_LIST_PDF;
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-
-			new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
+			if(baos != null){
+				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + CLASS_LIST_PDF;
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+	
+				new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
+			}
 		}
 		else {
 			LOG.warn("Grades and Teaching materials are null. No list will be generated / shown.");
@@ -229,11 +230,12 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				builders.add(builder);
 			}
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
+			if(baos != null){
+				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
 
-			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-
-			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+				new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+			}
 		}
 	}
 

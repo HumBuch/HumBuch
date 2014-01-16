@@ -24,16 +24,17 @@ import de.dhbw.humbuch.model.entity.Subject;
 
 
 public final class CSVHandler {
-	
+
 	/**
 	 * Reads a csv file and creates student objects of it's records.
 	 * 
 	 * @param path
 	 *            a path to the csv which contains information about students
 	 * @return an ArrayList that contains student objects
+	 * @exception throws an UnsupportedOperationException if an error occurred
 	 * @see ArrayList
 	 */
-	public static ArrayList<Student> createStudentObjectsFromCSV(CSVReader csvReaderParam) {
+	public static ArrayList<Student> createStudentObjectsFromCSV(CSVReader csvReaderParam) throws UnsupportedOperationException {
 		ArrayList<Student> studentArrayList = new ArrayList<Student>();
 
 		try {
@@ -46,9 +47,9 @@ public final class CSVHandler {
 			Iterator<String[]> allRecordsIterator = allRecords.iterator();
 			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
 
-			if(allRecordsIterator.hasNext()) {
+			if (allRecordsIterator.hasNext()) {
 				String[] headerRecord = allRecordsIterator.next();
-	
+
 				for (int i = 0; i < headerRecord.length; i++) {
 					headerIndexMap.put(headerRecord[i], i);
 				}
@@ -58,15 +59,18 @@ public final class CSVHandler {
 				String[] record = allRecordsIterator.next();
 
 				Student student = createStudentObject(record, csvHeaderProperties, headerIndexMap);
-				if(student != null){
+				if (student != null) {
 					studentArrayList.add(student);
-				}				
+				}
+				else {
+					throw new UnsupportedOperationException("Mindestens ein Studenten-Datensatz war korrumpiert");
+				}
 			}
 
 			csvReader.close();
 		}
 		catch (IOException e) {
-			System.err.println("Could not read student's csv records. " + e.getStackTrace());
+			throw new UnsupportedOperationException("Die Studentendaten konnten nicht eingelesen werden");
 		}
 
 		return studentArrayList;
@@ -90,38 +94,56 @@ public final class CSVHandler {
 	/**
 	 * Creates a student object with the information in the record.
 	 * 
-	 * @param record is one line of the loaded csv-file
+	 * @param record
+	 *            is one line of the loaded csv-file
 	 * @return Student
 	 */
-	private static Student createStudentObject(String[] record, Properties properties, HashMap<String, Integer> index) {
-		String foreignLanguage1 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage1")];
-		String foreignLanguage2 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage2")];
-		String foreignLanguage3 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage3")];
-		String gradeString = record[getAttributeNameToHeaderIndex(properties, index, "grade")];
-		String firstName = record[getAttributeNameToHeaderIndex(properties, index, "firstName")];
-		String lastName = record[getAttributeNameToHeaderIndex(properties, index, "lastName")];
-		String gender = record[getAttributeNameToHeaderIndex(properties, index, "gender")];
-		String birthDay = record[getAttributeNameToHeaderIndex(properties, index, "birthDay")];
-		int id = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "id")]);
-		String religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
-		
+	private static Student createStudentObject(String[] record, Properties properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
+		String foreignLanguage1, foreignLanguage2, foreignLanguage3, gradeString, firstName, lastName, gender, birthDay, religion;
+		int id;
+
+		try {
+			foreignLanguage1 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage1")];
+			foreignLanguage2 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage2")];
+			foreignLanguage3 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage3")];
+			gradeString = record[getAttributeNameToHeaderIndex(properties, index, "grade")];
+			firstName = record[getAttributeNameToHeaderIndex(properties, index, "firstName")];
+			lastName = record[getAttributeNameToHeaderIndex(properties, index, "lastName")];
+			gender = record[getAttributeNameToHeaderIndex(properties, index, "gender")];
+			birthDay = record[getAttributeNameToHeaderIndex(properties, index, "birthDay")];
+			id = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "id")]);
+			religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
+		}
+		catch (ArrayIndexOutOfBoundsException a) {
+			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden.");
+		}
+		catch(NumberFormatException e){
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+		}
+
 		Parent parent = null;
-		try{
+		try {
 			String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
 			String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
 			String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
 			String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
 			int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
 			String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
-					
+
 			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
 					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
 		}
-		catch(NullPointerException npe){
+		catch (NullPointerException e) {
 			System.err.println("Could not create parent object to student");
+			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler");
+		}
+		catch(ArrayIndexOutOfBoundsException e){
+			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
+		}
+		catch(NumberFormatException e){
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
 		}
 
-		
 		ArrayList<String> checkValidityList = new ArrayList<String>();
 		checkValidityList.add(foreignLanguage1);
 		checkValidityList.add(foreignLanguage2);
@@ -131,13 +153,13 @@ public final class CSVHandler {
 		checkValidityList.add(lastName);
 		checkValidityList.add(gender);
 		checkValidityList.add(birthDay);
-		checkValidityList.add(""+id);
+		checkValidityList.add("" + id);
 		checkValidityList.add(religion);
-		
-		if(!checkForValidityOfAttributes(checkValidityList)){
+
+		if (!checkForValidityOfAttributes(checkValidityList)) {
 			return null;
 		}
-		
+
 		Date date = null;
 		try {
 			date = new SimpleDateFormat("dd.mm.yyyy", Locale.GERMAN).parse(birthDay);
@@ -154,23 +176,30 @@ public final class CSVHandler {
 		foreignLanguage[1] = foreignLanguage2;
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
-		
+
 		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).parent(parent).leavingSchool(false).build();
 	}
-	
-	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) {
-		String headerValue = (String)properties.getProperty(attributeName);
-		if(headerValue != null){
-			int indexHeader = indexMap.get(headerValue);
+
+	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
+		String headerValue = (String) properties.getProperty(attributeName);
+		if (headerValue != null) {
+			int indexHeader = -1;
+			if (indexMap.get(headerValue) != null) {
+				indexHeader = indexMap.get(headerValue);
+			}
+			else {
+				throw new UnsupportedOperationException("Ein CSV-Spaltenname konnte nicht zugeordnet werden. "
+						+ "Bitte die Einstellungsdatei mit der CSV-Datei abgleichen. Spaltenname: " + headerValue);
+			}
 			return indexHeader;
 		}
-		
+
 		return -1;
 	}
-	
-	private static boolean checkForValidityOfAttributes(ArrayList<String> attributeList){
-		for(String str : attributeList){
-			if(str == "-1"){
+
+	private static boolean checkForValidityOfAttributes(ArrayList<String> attributeList) {
+		for (String str : attributeList) {
+			if (str.equals("-1")) {
 				return false;
 			}
 		}
