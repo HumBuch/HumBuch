@@ -127,7 +127,12 @@ public class LendingViewModel {
 	}
 	
 	private void updateSchoolYear() {
-//		daoSchoolYear.findAllWithCriteria(criteriaArray)
+		//TODO: Aktuelles Schuljahr ermitteln
+		currentSchoolYear = ((List<SchoolYear>) daoSchoolYear.findAllWithCriteria(
+				Restrictions.le("fromDate", new Date()), 
+				Restrictions.ge("toDate", new Date())))
+				.get(0);
+		System.out.println("schoolyear " + currentSchoolYear.getId());
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
@@ -160,10 +165,9 @@ public class LendingViewModel {
 								Restrictions.ge("validUntil", new Date())
 								, Restrictions.isNull("validUntil"))
 						, Restrictions.or(
-								Restrictions.eq("term", 2)
+								Restrictions.eq("term", currentSchoolYear.getCurrentTerm())
 								, Restrictions.isNull("term"))
 				));
-		//TODO: restrictions with TM's term
 
 		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
 		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();

@@ -19,8 +19,8 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	private int id;
 	
 	private String year;
-	private Date from;
-	private Date to;
+	private Date fromDate;
+	private Date toDate;
 	private Date endFirstTerm;
 	private Date beginSecondTerm;
 	
@@ -42,20 +42,20 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		this.year = year;
 	}
 
-	public Date getFrom() {
-		return from;
+	public Date getFromDate() {
+		return fromDate;
 	}
 
-	public void setFrom(Date from) {
-		this.from = from;
+	public void setFromDate(Date from) {
+		this.fromDate = from;
 	}
 
-	public Date getTo() {
-		return to;
+	public Date getToDate() {
+		return toDate;
 	}
 
-	public void setTo(Date to) {
-		this.to = to;
+	public void setToDate(Date to) {
+		this.toDate = to;
 	}
 
 	public Date getEndFirstTerm() {
@@ -84,16 +84,16 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	
 	public static class Builder {
 		private final String year;
-		private final Date from;
-		private final Date to;
+		private final Date fromDate;
+		private final Date toDate;
 		
 		private Date endFirstTerm;
 		private Date beginSecondTerm;
 		
-		public Builder(String year, Date from, Date to) {
+		public Builder(String year, Date fromDate, Date toDate) {
 			this.year = year;
-			this.from = from;
-			this.to = to;
+			this.fromDate = fromDate;
+			this.toDate = toDate;
 		}
 		
 		public Builder endFirstTerm(Date endFirstTerm) {
@@ -113,8 +113,8 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	
 	private SchoolYear(Builder builder) {
 		this.year = builder.year;
-		this.from = builder.from;
-		this.to = builder.to;
+		this.fromDate = builder.fromDate;
+		this.toDate = builder.toDate;
 
 		this.endFirstTerm = builder.endFirstTerm;
 		this.beginSecondTerm = builder.beginSecondTerm;
