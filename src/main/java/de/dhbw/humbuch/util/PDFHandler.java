@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
@@ -97,9 +100,10 @@ public abstract class PDFHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Creates a ByteArrayOutputStream which holds the PDF as a byte array.
+	 * 
 	 * @return the byteArrayOutputStream the PDF is stored in.
 	 * @return null if an error occurred.
 	 */
@@ -131,7 +135,7 @@ public abstract class PDFHandler {
 		
 		return null;
 	}
-		
+
 	/**
 	 * Adds meta data to the PDF document. The information of using iText must
 	 * be part of the meta data due to the license of the iText library!
@@ -154,7 +158,7 @@ public abstract class PDFHandler {
 	 * @param document
 	 *            reference of the pdfDocument object
 	 */
-	protected void addHeading(Document document, String listType) {
+	protected void addHeading(Document document) {
 		Paragraph paragraph = new Paragraph();
 		PdfPTable table = createMyStandardTable(2);
 
@@ -179,7 +183,9 @@ public abstract class PDFHandler {
 			e.printStackTrace();
 		}
 
-		cell = new PdfPCell(new Phrase(listType));
+		String date = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN).format(Calendar.getInstance().getTime());
+
+		cell = new PdfPCell(new Phrase(date));
 		cell.setBorder(0);
 		cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
@@ -207,7 +213,7 @@ public abstract class PDFHandler {
 	 */
 	protected void addSignatureField(Document document, String role) {
 		Paragraph paragraph = new Paragraph();
-		addEmptyLine(paragraph, 1);
+		//addEmptyLine(paragraph, 1);
 
 		//this table contains the signatureTable and the dataTable.
 		// this purpose makes it easier to format
@@ -215,36 +221,16 @@ public abstract class PDFHandler {
 
 		//the first column is double times greater than the second column
 		try {
-			table.setWidths(new float[] { 20f, 10f });
+			table.setWidths(new float[] { 10f, 20f });
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
 
-		//create and fill signature table
-		PdfPTable signatureTable = new PdfPTable(1);
-		PdfPCell cell = new PdfPCell(new Phrase(""));
-		//just the bottom border will be displayed (line for signature)
-		cell.setBorderWidthTop(0);
-		cell.setBorderWidthLeft(0);
-		cell.setBorderWidthRight(0);
-
-		signatureTable.addCell(cell);
-
-		cell = new PdfPCell(new Phrase("Unterschrift " + role));
-		cell.setBorder(0);
-
-		signatureTable.addCell(cell);
-
-		//put signature table into the 'parent' table
-		cell = new PdfPCell(signatureTable);
-		cell.setBorder(0);
-		table.addCell(cell);
-
 		//create and fill date table
 		PdfPTable dateTable = new PdfPTable(1);
 
-		cell = new PdfPCell(new Phrase(""));
+		PdfPCell cell = new PdfPCell(new Phrase(""));
 		//just the bottom border will be displayed (line for date)
 		cell.setBorderWidthTop(0);
 		cell.setBorderWidthLeft(0);
@@ -259,6 +245,26 @@ public abstract class PDFHandler {
 
 		//put date table into the 'parent' table
 		cell = new PdfPCell(dateTable);
+		cell.setBorder(0);
+		table.addCell(cell);
+
+		//create and fill signature table
+		PdfPTable signatureTable = new PdfPTable(1);
+		cell = new PdfPCell(new Phrase(""));
+		//just the bottom border will be displayed (line for signature)
+		cell.setBorderWidthTop(0);
+		cell.setBorderWidthLeft(0);
+		cell.setBorderWidthRight(0);
+
+		signatureTable.addCell(cell);
+
+		cell = new PdfPCell(new Phrase("Unterschrift " + role));
+		cell.setBorder(0);
+
+		signatureTable.addCell(cell);
+
+		//put signature table into the 'parent' table
+		cell = new PdfPCell(signatureTable);
 		cell.setBorder(0);
 		table.addCell(cell);
 
@@ -278,14 +284,14 @@ public abstract class PDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader() {
-		PdfPTable table = createMyStandardTable(3, new float[] { 1f, 3f, 1f });
+		PdfPTable table = createMyStandardTable(3, new float[] { 3f, 1f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		fillTableWithContent(table, true,
 				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-				new String[] { "Klasse", "Bezeichnung Lehrmittel", "Unterschrift" }, font);
+				new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }, font);
 		return table;
 	}
-	
+
 	/**
 	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
 	 * Anzahl
@@ -293,15 +299,26 @@ public abstract class PDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
-		PdfPTable table = createMyStandardTable(3, new float[] { 1f, 3f, 1f });
+		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		fillTableWithContent(table, true,
-				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-				new String[] { "Klasse", "Bezeichnung Lehrmittel", "Anzahl" }, font);
+				new String[] { "Bezeichnung Lehrmittel", "Anzahl" }, font);
 		return table;
 	}
 	
-	protected void resetPageNumber(){
+	protected void addInformationAboutDocument(Document document, String informationText){
+		PdfPTable table = createMyStandardTable(1);
+		fillTableWithContent(table, false, new String[]{informationText}, false, FontFactory.getFont("Helvetica", 12, Font.BOLD));
+		
+		try {
+			document.add(table);
+		}
+		catch (DocumentException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void resetPageNumber() {
 		this.event.resetPageNumber();
 	}
 
@@ -375,29 +392,6 @@ public abstract class PDFHandler {
 	 *            if true a standard border is used, if false no border is used
 	 * @param contentArray
 	 *            an array with all cell contents
-	 */
-	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray) {
-		PdfPCell cell = null;
-		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  "));
-			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			table.addCell(cell);
-		}
-	}
-
-	/**
-	 * Convenience method to add content to a table in a standard way
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
 	 * @param isAlignedCenter
 	 *            if true the content is horizontally and vertically aligned
 	 */
@@ -407,6 +401,7 @@ public abstract class PDFHandler {
 		for (int i = 0; i < contentArray.length; i++) {
 			//append '\n' to each String to have an empty space-line before cell ends
 			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  "));
+			cell.setLeading(1.25f, 1.25f);
 			if (isAlignedCenter) {
 				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -444,6 +439,61 @@ public abstract class PDFHandler {
 			table.addCell(cell);
 		}
 	}
+	
+
+	/**
+	 * Convenience method to add content to a table in a standard way
+	 * 
+	 * @param table
+	 * @param withBorder
+	 *            if true a standard border is used, if false no border is used
+	 * @param contentArray
+	 *            an array with all cell contents
+	 * @param isAlignedCenter
+	 *            if true the content is horizontally and vertically aligned
+	 */
+	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter, Font font) {
+		PdfPCell cell = null;
+
+		for (int i = 0; i < contentArray.length; i++) {
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  ", font));
+			cell.setLeading(1.25f, 1.25f);
+			if (isAlignedCenter) {
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			}
+
+			if (withBorder == false) {
+				cell.setBorder(0);
+			}
+			table.addCell(cell);
+		}
+	}
+	
+	/**
+	 * Convenience method to add content to a table in a standard way
+	 * 
+	 * @param table
+	 * @param withBorder
+	 *            if true a standard border is used, if false no border is used
+	 * @param contentArray
+	 *            an array with all cell contents
+	 * @param font
+	 *            set a font for the cell content
+	 */
+	protected static void fillTableWithContentWithoutAlignment(PdfPTable table, boolean withBorder, String[] contentArray, Font font) {
+		PdfPCell cell = null;
+
+		for (int i = 0; i < contentArray.length; i++) {
+			//append '\n' to each String to have an empty space-line before cell ends
+			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  ", font));
+			if (withBorder == false) {
+				cell.setBorder(0);
+			}
+			table.addCell(cell);
+		}
+	}
 
 	/**
 	 * Cell entry is not followed by \n
@@ -454,15 +504,21 @@ public abstract class PDFHandler {
 	 * @param contentArray
 	 *            an array with all cell contents
 	 */
-	protected static void fillTableWithContentWithoutSpace(PdfPTable table, boolean withBorder, String[] contentArray) {
+	protected static void fillTableWithContentWithoutSpace(PdfPTable table, boolean withBorder,
+			String[] contentArray, boolean isAlignedCenter, float padding) {
 		PdfPCell cell = null;
 
 		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
+
 			cell = new PdfPCell(new Phrase(contentArray[i]));
+			if (isAlignedCenter) {
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			}
 			if (withBorder == false) {
 				cell.setBorder(0);
 			}
+			cell.setPadding(padding);
 			table.addCell(cell);
 		}
 	}
@@ -483,87 +539,93 @@ public abstract class PDFHandler {
 	 *            represents the PDF before it is saved
 	 */
 	protected abstract void addContent(Document document);
-		
+
+
 	/** Inner class to add a header and a footer. */
-    class HeaderFooter extends PdfPageEventHelper {
-        /** Alternating phrase for the header. */
-        Phrase[] header = new Phrase[2];
-        /** Current page number (will be reset for every chapter). */
-        int pagenumber;
- 
-        /**
-         * Initialize one of the headers.
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(
-         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
-        public void onOpenDocument(PdfWriter writer, Document document) {
-            header[0] = new Phrase("Movie history");
-        }
- 
-        /**
-         * Initialize one of the headers, based on the chapter title;
-         * reset the page number.
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onChapter(
-         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document, float,
-         *      com.itextpdf.text.Paragraph)
-         */
-        public void onChapter(PdfWriter writer, Document document,
-                float paragraphPosition, Paragraph title) {
-            header[1] = new Phrase(title.getContent());
-            pagenumber = 1;
-        }
- 
-        /**
-         * Increase the page number.
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onStartPage(
-         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
-        public void onStartPage(PdfWriter writer, Document document) {
-            pagenumber++;
-        }
- 
-        /**
-         * Adds the header and the footer.
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(
-         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
-        public void onEndPage(PdfWriter writer, Document document) {
-            Rectangle rect = writer.getBoxSize("art");
-//            switch(writer.getPageNumber() % 2) {
-//            case 0:
-//                ColumnText.showTextAligned(writer.getDirectContent(),
-//                        Element.ALIGN_RIGHT, header[0],
-//                        rect.getRight(), rect.getTop(), 0);
-//                break;
-//            case 1:
-//                ColumnText.showTextAligned(writer.getDirectContent(),
-//                        Element.ALIGN_LEFT, header[0],
-//                        rect.getLeft(), rect.getTop(), 0);
-//                break;
-//            }
-            ColumnText.showTextAligned(writer.getDirectContent(),
-                    Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
-                    (rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
-        }
-        
-        public void resetPageNumber(){
-        	this.pagenumber = 1;
-        }
-    }
-    
-    public static class PDFStreamSource implements StreamSource {
-    	
+	class HeaderFooter extends PdfPageEventHelper {
+
+		/** Alternating phrase for the header. */
+		Phrase[] header = new Phrase[2];
+		/** Current page number (will be reset for every chapter). */
+		int pagenumber;
+
+		/**
+		 * Initialize one of the headers.
+		 * 
+		 * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(com.itextpdf.text.pdf.PdfWriter,
+		 *      com.itextpdf.text.Document)
+		 */
+		public void onOpenDocument(PdfWriter writer, Document document) {
+			header[0] = new Phrase("Movie history");
+		}
+
+		/**
+		 * Initialize one of the headers, based on the chapter title; reset the
+		 * page number.
+		 * 
+		 * @see com.itextpdf.text.pdf.PdfPageEventHelper#onChapter(com.itextpdf.text.pdf.PdfWriter,
+		 *      com.itextpdf.text.Document, float, com.itextpdf.text.Paragraph)
+		 */
+		public void onChapter(PdfWriter writer, Document document,
+				float paragraphPosition, Paragraph title) {
+			header[1] = new Phrase(title.getContent());
+			pagenumber = 1;
+		}
+
+		/**
+		 * Increase the page number.
+		 * 
+		 * @see com.itextpdf.text.pdf.PdfPageEventHelper#onStartPage(com.itextpdf.text.pdf.PdfWriter,
+		 *      com.itextpdf.text.Document)
+		 */
+		public void onStartPage(PdfWriter writer, Document document) {
+			pagenumber++;
+		}
+
+		/**
+		 * Adds the header and the footer.
+		 * 
+		 * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(com.itextpdf.text.pdf.PdfWriter,
+		 *      com.itextpdf.text.Document)
+		 */
+		public void onEndPage(PdfWriter writer, Document document) {
+			Rectangle rect = writer.getBoxSize("art");
+			//            switch(writer.getPageNumber() % 2) {
+			//            case 0:
+			//                ColumnText.showTextAligned(writer.getDirectContent(),
+			//                        Element.ALIGN_RIGHT, header[0],
+			//                        rect.getRight(), rect.getTop(), 0);
+			//                break;
+			//            case 1:
+			//                ColumnText.showTextAligned(writer.getDirectContent(),
+			//                        Element.ALIGN_LEFT, header[0],
+			//                        rect.getLeft(), rect.getTop(), 0);
+			//                break;
+			//            }
+			ColumnText.showTextAligned(writer.getDirectContent(),
+					Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
+					(rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
+		}
+
+		public void resetPageNumber() {
+			this.pagenumber = 1;
+		}
+	}
+
+
+	public static class PDFStreamSource implements StreamSource {
+
 		private static final long serialVersionUID = 1L;
 		ByteArrayOutputStream byteArrayOutputstream;
-    	
-    	public PDFStreamSource(ByteArrayOutputStream byteArrayOutputStream){
-    		this.byteArrayOutputstream = byteArrayOutputStream;
-    	}
-		
-    	@Override
+
+		public PDFStreamSource(ByteArrayOutputStream byteArrayOutputStream) {
+			this.byteArrayOutputstream = byteArrayOutputStream;
+		}
+
+		@Override
 		public InputStream getStream() {
-    		// Here we return the pdf contents as a byte-array
-            return new ByteArrayInputStream(this.byteArrayOutputstream.toByteArray());
-		}  	
-    }
-} 
+			// Here we return the pdf contents as a byte-array
+			return new ByteArrayInputStream(this.byteArrayOutputstream.toByteArray());
+		}
+	}
+}
