@@ -47,7 +47,9 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	
 	private int fromGrade;
 	private int toGrade;
-	private Integer term;
+	
+	@Enumerated(EnumType.ORDINAL)
+	private Term term;
 	private Date validFrom;
 	private Date validUntil;
 	
@@ -125,11 +127,11 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.toGrade = toGrade;
 	}
 
-	public Integer getToTerm() {
+	public Term getTerm() {
 		return term;
 	}
 
-	public void setToTerm(Integer term) {
+	public void setTerm(Term term) {
 		this.term = term;
 	}
 
@@ -157,6 +159,23 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.profile = profile;
 	}
 
+	public enum Term {
+		BOTH("Beide"),
+		FIRST("1"),
+		SECOND("2");
+		
+		private String value;
+		
+		private Term(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
 	public static class Builder {
 		private final Category category;
 		private final String name;
@@ -169,7 +188,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private String comment;
 		private int fromGrade;
 		private int toGrade;
-		private Integer term;
+		private Term term;
 		private Date validUntil;
 		
 		public Builder(Category category, String name, String identifyingNumber, Date validFrom) {
@@ -209,7 +228,7 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder term(Integer term) {
+		public Builder term(Term term) {
 			this.term = term;
 			return this;
 		}
