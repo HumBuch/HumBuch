@@ -1,11 +1,14 @@
 package de.dhbw.humbuch.view;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.google.inject.Inject;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -18,10 +21,12 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.DefaultFieldFactory;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TabSheet;
@@ -38,7 +43,9 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel;
+import de.dhbw.humbuch.viewmodel.SettingsViewModel.Categories;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.SchoolYears;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.ChangeStatus;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.UserEmail;
@@ -58,6 +65,8 @@ public class SettingsView extends VerticalLayout implements View,
 	private static final String YEAR_TO = "toDate";
 	private static final String YEAR_END_FIRST = "endFirstTerm";
 	private static final String YEAR_BEGIN_SEC = "beginSecondTerm";
+	private static final String CAT_NAME = "name";
+	private static final String CAT_DESCRIPTION = "description";
 
 	private SettingsViewModel settingsViewModel;
 
@@ -117,7 +126,18 @@ public class SettingsView extends VerticalLayout implements View,
 	 * Categories
 	 */
 	private Table catTable = new Table();
-	private FormLayout catEditor = new FormLayout();
+	private BeanItemContainer<Category> catData = new BeanItemContainer<Category>(
+			Category.class);
+	@BindState(Categories.class)
+	private State<Collection<Category>> categories = new BasicState<>(
+			Collection.class);
+	private Button catAdd = new Button("Hinzufügen");
+	private Button catDelete = new Button("Löschen");
+	private Button catEdit = new Button("Bearbeiten");
+	private Button catCancel = new Button("Abbrechen");
+	private Button catSave = new Button("Speichern");
+	@SuppressWarnings("rawtypes")
+	private List<Field> catFields = new ArrayList<Field>();
 
 	@Inject
 	public SettingsView(ViewModelComposer viewModelComposer,
@@ -202,26 +222,208 @@ public class SettingsView extends VerticalLayout implements View,
 	/**
 	 * Categories
 	 */
+	@SuppressWarnings("serial")
 	private void buildCategoryTab() {
 
 		VerticalLayout tabCategories = new VerticalLayout();
-		HorizontalLayout catContent = new HorizontalLayout();
-		catContent.setMargin(true);
-		catContent.setSpacing(true);
+		tabCategories.setMargin(true);
+		tabCategories.setSpacing(true);
+		tabCategories.setSizeFull();
+
+		final HorizontalLayout catEditButtons = new HorizontalLayout();
+		
+		catEdit.setEnabled(false);
+		catSave.setVisible(false);
+		catSave.addStyleName("default");
+		catCancel.setVisible(false);
+
+		catEditButtons.addComponent(catEdit);
+		catEditButtons.addComponent(catCancel);
+		catEditButtons.addComponent(catSave);
+
+		final HorizontalLayout catAddButtons = new HorizontalLayout();
+		catAddButtons.addComponent(catAdd);
+		catAddButtons.addComponent(catDelete);
+
+		tabCategories.addComponent(new HorizontalLayout() {
+			{
+				setWidth("100%");
+				addComponent(catAddButtons);
+				addComponent(catEditButtons);
+				setComponentAlignment(catEditButtons, Alignment.MIDDLE_RIGHT);
+			}
+		});
 
 		// Table
-		catTable.addContainerProperty("Lehrmittelkategorie", String.class, null);
-		catTable.addContainerProperty("Beschreibung", String.class, null);
-		catTable.setEditable(true);
-		catContent.addComponent(catTable);
+		catTable.setSizeFull();
+		catTable.setSelectable(true);
+		catTable.setImmediate(true);
 
-		// Editor
-		catEditor.setMargin(true);
-		catContent.addComponent(catEditor);
+		catTable.setContainerDataSource(catData);
+		catTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
+		catTable.setColumnHeader(CAT_NAME, "Kategorie");
+		catTable.setColumnHeader(CAT_DESCRIPTION, "Beschreibung");
 
-		// Add to parent component
-		tabCategories.addComponent(catContent);
+		tabCategories.addComponent(catTable);
 		tabs.addTab(tabCategories, "Lehrmittelkategorien");
+
+		/*
+		 * Listeners
+		 */
+
+		catTable.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Category item = (Category) catTable.getValue();
+				catEdit.setEnabled(item!=null);
+			}
+		});
+		
+		// Edit
+		catEdit.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				catConfigureEditable(true);
+
+			}
+		});
+
+		// Cancel
+		catCancel.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				catDiscard();
+				catConfigureEditable(false);
+			}
+		});
+
+		// Save
+		catSave.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Category item = (Category) catTable.getValue();
+				if (item != null) {
+					catCommit();
+					catConfigureEditable(false);
+					settingsViewModel.doUpdateCategory(item);
+					catTable.removeItem(item);
+				}
+			}
+		});
+
+		// Add
+		catAdd.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Category item = new Category.Builder("").description("").build();
+				catData.addBean(item);
+				catTable.select(item);
+				catConfigureEditable(true);
+				catCancel.setVisible(false);
+			}
+		});
+
+		// Delete
+		catDelete.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Category item = (Category) catTable.getValue();
+				settingsViewModel.doDeleteCategory(item);
+				catData.removeItem(item);
+			}
+		});
+		
+		// Fill table container
+		categories.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				catData.addAll(categories.get());
+			}
+		});
+
+		// define field factory
+		catTable.setTableFieldFactory(new DefaultFieldFactory() {
+			private static final long serialVersionUID = 1L;
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public Field<?> createField(Container container, Object itemId,
+					Object propertyId, Component uiContext) {
+
+				// If its not the currently selected item in the table, don't
+				// generate fields
+				if (!itemId.equals(catTable.getValue())) {
+					return null;
+				}
+
+				Field field = super.createField(container, itemId, propertyId,
+						uiContext);
+
+				// Let us discard the value
+				field.setBuffered(true);
+
+				// Let's keep track of all of the attached fields
+				field.addAttachListener(new AttachListener() {
+					@Override
+					public void attach(AttachEvent attachEvent) {
+						catFields.add((Field) attachEvent.getConnector());
+					}
+				});
+				field.addDetachListener(new DetachListener() {
+					@Override
+					public void detach(DetachEvent event) {
+						catFields.remove((Field) event.getConnector());
+					}
+				});
+
+				return field;
+
+			}
+
+		});
+
+	}
+
+	/**
+	 * Commit all field edits.
+	 * 
+	 * NB: Should handle validation problems here
+	 */
+	@SuppressWarnings("rawtypes")
+	protected void catCommit() {
+		for (Field field : catFields) {
+			field.commit();
+		}
+	}
+
+	/**
+	 * Discard any field edits
+	 */
+	@SuppressWarnings("rawtypes")
+	protected void catDiscard() {
+		for (Field field : catFields) {
+			field.discard();
+		}
+	}
+
+	/**
+	 * Configure the categories-table for edit (or not)
+	 * 
+	 * @param editable
+	 *            Whether the table should be editable or not
+	 */
+	public void catConfigureEditable(boolean editable) {
+		catTable.setSelectable(!editable);
+		catTable.setEditable(editable);
+		catSave.setVisible(editable);
+		catCancel.setVisible(editable);
+		catEdit.setVisible(!editable);
+		if (editable && !catFields.isEmpty()) {
+			catFields.get(0).focus();
+		}
 
 	}
 
@@ -230,7 +432,10 @@ public class SettingsView extends VerticalLayout implements View,
 	 */
 	private void buildDueDatesTab() {
 
-		HorizontalSplitPanel tabDates = new HorizontalSplitPanel();
+		VerticalLayout tabDates = new VerticalLayout();
+		tabDates.setSizeFull();
+		tabDates.setMargin(true);
+		tabDates.setSpacing(true);
 
 		initYearTable();
 		initYearDetails();
@@ -260,9 +465,11 @@ public class SettingsView extends VerticalLayout implements View,
 				SchoolYear item = (SchoolYear) yearTable.getValue();
 				if (item != null) {
 					settingsViewModel.doDeleteSchoolYear(item);
+					yearCancel.click();
 				}
 			}
 		});
+		yearDelete.setEnabled(false);
 
 		yearLeftLayout.addComponent(new HorizontalLayout() {
 			private static final long serialVersionUID = 1L;
@@ -303,7 +510,8 @@ public class SettingsView extends VerticalLayout implements View,
 			}
 		};
 
-		yearTable.setSizeFull();
+		yearTable.setWidth("100%");
+		yearTable.setHeight("200px");
 		yearTable.setSelectable(true);
 		yearTable.setImmediate(true);
 
@@ -343,7 +551,7 @@ public class SettingsView extends VerticalLayout implements View,
 				if (yearId != null) {
 					yearFields.setItemDataSource(yearTable.getItem(yearId));
 				}
-
+				yearDelete.setEnabled(yearId != null);
 				yearDetails.setVisible(yearId != null);
 			}
 
@@ -355,6 +563,7 @@ public class SettingsView extends VerticalLayout implements View,
 
 		yearDetails.setMargin(true);
 		yearDetails.setVisible(false);
+		yearDetails.addStyleName("content-box");
 
 		year = new TextField("Schuljahr:");
 		yearDetails.addComponent(year);
@@ -389,7 +598,7 @@ public class SettingsView extends VerticalLayout implements View,
 		yearSave = new Button("Speichern");
 		yearSave.addStyleName("default");
 		buttons.addComponent(yearSave);
-		
+
 		yearCancel.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -399,19 +608,20 @@ public class SettingsView extends VerticalLayout implements View,
 				yearDetails.setVisible(false);
 			}
 		});
-		
+
 		yearSave.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = -901115327116315724L;
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
-				
+				SchoolYear fieldsItem = ((BeanItem<SchoolYear>) yearFields
+						.getItemDataSource()).getBean();
 				// Update item
 				try {
 					yearFields.commit();
-					SchoolYear fieldsItem = ((BeanItem<SchoolYear>) yearFields.getItemDataSource()).getBean();
 					settingsViewModel.doUpdateSchoolYear(fieldsItem);
+					yearCancel.click();
 				} catch (CommitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -468,7 +678,8 @@ public class SettingsView extends VerticalLayout implements View,
 				currentPassword.setValue("");
 				newPassword.setValue("");
 				newPasswordVerified.setValue("");
-
+				Notification warn = new Notification(
+						"Bitte füllen Sie alle Felder aus.");
 				switch (status) {
 				case SUCCESSFULL:
 					changePwWindow.close();
@@ -478,7 +689,9 @@ public class SettingsView extends VerticalLayout implements View,
 					Notification.show("Aktuelles Passwort nicht korrekt!");
 					break;
 				case EMPTY_FIELDS:
-					Notification.show("Bitte füllen Sie alle Felder aus.");
+
+					warn.show(UI.getCurrent().getPage());
+					System.out.println("Bitte alle Felder");
 					break;
 				case NEW_PASSWORD_NOT_EQUALS:
 					Notification
