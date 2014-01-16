@@ -1,100 +1,100 @@
 Fremdsprache1;Fremdsprache2;Fremdsprache3;Fremdsprache4;Fremdsprachen;Geburtstag;Geschlecht;id;Klasse;Name;Ort;Plz;Profil;Profil2;StrasseNr;TeilnahmeRu;Vorname;Erz1Anrede;Erz1Name;Erz1Vorname;Erz1StrasseNr;Erz1PLZ;Erz1Ort
-E;;;;E;01.01.1989;m;100;5a;Zöller;Karlsruhe;76187;;;Adlerstr. 1;rk;Aaron;Test;Test;Test;Test;Test;Test
-E;;;;E;02.01.1989;m;2;5a;Zivko;Karlsruhe;76187;;;Albert-Einstein-Str. 2;ev;Adelina;Test;Test;Test;Test;Test;Test
-E;;;;E ;03.01.1989;m;3;5a;Zircher;Karlsruhe;76187;;;Alte Friedrichstr. 115;Ethik;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;04.01.1989;w;4;5a;Zipperling;Karlsruhe;76187;;;Alter Postweg 15;ev;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;05.01.1989;w;5;5a;Zipperling;Karlsruhe;76187;;;Alter Postweg 9;ev;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;06.01.1989;w;6;5b;Zippel;Karlsruhe;76187;;;Am Bach 12a;ev;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;07.01.1989;m;7;5b;Zippel;Karlsruhe;76187;;;Am Bach 18a;ev;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;08.01.1989;m;8;5b;Zimmermann;Karlsruhe;76187;;;Am Bach 36b;Ethik;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;09.01.1989;m;9;5b;Zimmermann;Karlsruhe;76187;;;Am Bach 7a;rk;Adrian;Test;Test;Test;Test;Test;Test
-E;;;;E;10.01.1989;m;10;5b;Zimmermann;Karlsruhe;76187;;;Am Brurain 13;rk;Adrian Max William;Test;Test;Test;Test;Test;Test
-E;F;;;E F;11.01.1989;m;11;6a;Zimmermann;Karlsruhe;76187;;;Am Fuchsheck 4;rk;Agnes Dorothea;Test;Test;Test;Test;Test;Test
-E;L;;;E L;12.01.1989;m;12;6a;Zilly;Karlsruhe;76187;;;Am Gartenberg 259;rk;Aileen;Test;Test;Test;Test;Test;Test
-E;L;;;E L;13.01.1989;m;13;6a;Ziemba;Karlsruhe;76187;;;Am Gartenberg 363;ev;Aileen Nina;Test;Test;Test;Test;Test;Test
-E;F;;;E F;14.01.1989;m;14;6b;Ziegler;Karlsruhe;76187;;;Am Gartenberg 363;ev;Aleksandra;Test;Test;Test;Test;Test;Test
-E;F;;;E F;15.01.1989;w;15;6b;Zenk;Karlsruhe;76187;;;Am Gartenberg 363;ev;Alena;Test;Test;Test;Test;Test;Test
-E;L;;;E L;16.01.1989;w;16;6b;Zdebor;Karlsruhe;76187;;;Am Hang 8a;ev;Alena Sophie;Test;Test;Test;Test;Test;Test
-E;F;;;E F;17.01.1989;w;17;7a;Zafiriou;Karlsruhe;76187;;;Am Hang 8A;nein;Alessa;Test;Test;Test;Test;Test;Test
-E;L;;;E L;18.01.1989;m;18;7a;Zafiriou;Karlsruhe;76187;;;Am Hochgestade 14;ev;Alexander;Test;Test;Test;Test;Test;Test
-E;L;;;E L;19.01.1989;m;19;7a;Wurz;Karlsruhe;76187;;;Am Hochgestade 9;nein;Alexander;Test;Test;Test;Test;Test;Test
-E;F;;;E F;20.01.1989;w;20;7b;Wurz;Karlsruhe;76187;;;Am Langen Berg 13a;ev;Alexander;Test;Test;Test;Test;Test;Test
-E;F;;;E F;21.01.1989;m;21;7b;Wurz;Karlsruhe;76187;;;Am Nebenbruch 4;ev;Alexander;Test;Test;Test;Test;Test;Test
-E;L;;;E L;22.01.1989;w;22;7b;Wunsch;Karlsruhe;76187;;;Am Pfarrgarten 3a;ev;Alexander;Test;Test;Test;Test;Test;Test
-E;L;;;E L;23.01.1989;m;23;8a;Wunderlich;Karlsruhe;76187;;;Am Pfarrgarten 3a;rk;Alexander;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;24.01.1989;m;24;8a;Wörle;Karlsruhe;76187;;;Am Rennbuckel 16;rk;Alexander;Test;Test;Test;Test;Test;Test
-E;L;;;E L;25.01.1989;m;25;8a;Wörle;Karlsruhe;76187;;;Am Rennbuckel 3;rk;Alexander Ferdinand;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;26.01.1989;m;26;8b;Wöntz-Freeman;Karlsruhe;76187;;;Am Rennbuckel 42;ev;Alexandra;Test;Test;Test;Test;Test;Test
-E;F;;;E F;27.01.1989;m;27;8b;Wollbaum;Karlsruhe;76187;;;Am Rennbuckel 43;rk;Alexandra;Test;Test;Test;Test;Test;Test
-E;F;;;E F;28.01.1989;m;28;8b;Wolff;Karlsruhe;76187;;;Am Rennbuckel 43;ev;Alexandra;Test;Test;Test;Test;Test;Test
-E;F;;;E F;29.01.1989;m;29;9a;Wolf;Karlsruhe;76187;;;Am Rugbiegel 16;ev;Alexandra;Test;Test;Test;Test;Test;Test
-E;F;;;E F;30.01.1989;m;30;9a;Wolf;Karlsruhe;76187;;;Am Sandberg 43;ev;Alexandra Maria;Test;Test;Test;Test;Test;Test
-E;L;;;E L;31.01.1989;m;31;9a;Wolf;Karlsruhe;76187;;;Am Sandberg 43;nein;Alexia Marie Gertrud;Test;Test;Test;Test;Test;Test
-E;F;;;E F;01.02.1989;m;32;9b;Wolf;Karlsruhe;76187;;;Am Sandberg 51;ev;Alica;Test;Test;Test;Test;Test;Test
-E;L;;;E L;02.02.1989;m;33;9b;Wolf;Karlsruhe;76187;;;Am Sandberg 51;Ethik;Alina;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;03.02.1989;w;34;9b;Woidasky;Karlsruhe;76187;;;Am Sandberg 57;Ethik;Alina;Test;Test;Test;Test;Test;Test
-E;F;;;E F;04.02.1989;m;35;10a;Wohlfart;Karlsruhe;76187;;;Am Sandberg 75;Ethik;Alina Maria;Test;Test;Test;Test;Test;Test
-E;F;;;E F;05.02.1989;m;36;10a;Wirth;Karlsruhe;76187;;;Am Wald 24;ev;Aline;Test;Test;Test;Test;Test;Test
-E;F;;;E F;06.02.1989;w;37;10a;Wirth;Karlsruhe;76187;;;Am Wald 28;nein;Aline;Test;Test;Test;Test;Test;Test
-E;F;;;E F;07.02.1989;m;38;10b;Wirth;Karlsruhe;76187;;;Am Wald 46;Ethik;Alisa;Test;Test;Test;Test;Test;Test
-E;F;;;E F;08.02.1989;m;39;10b;Wiotte;Karlsruhe;76187;;;Am Ziehr 8;Ethik;Alisa;Test;Test;Test;Test;Test;Test
-E;F;;;E F;09.02.1989;w;40;10b;Wingert;Karlsruhe;76187;;;An der Bahn 21;rk;Amelie;Test;Test;Test;Test;Test;Test
-E;F;;;E F;10.02.1989;m;41;11lik;Willig;Karlsruhe;76187;;;An der Bahn 43;nein;Amelie;Test;Test;Test;Test;Test;Test
-E;F;;;E F;11.02.1989;m;42;11lik;Wilhelm;Karlsruhe;76187;;;Anebosweg 25;Ethik;Amelie;Test;Test;Test;Test;Test;Test
-E;F;;;E F;12.02.1989;m;43;11lik;Wilhelm;Karlsruhe;76187;;;Anebosweg 29;Ethik;Amina;Test;Test;Test;Test;Test;Test
-E;F;;;E F;13.02.1989;m;44;11hur;Wieser;Karlsruhe;76187;;;Anebosweg 29;Ethik;Amon Sidney;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;14.02.1989;m;45;11hur;Wieser;Karlsruhe;76187;;;Anebosweg 6;ev;Amrush;Test;Test;Test;Test;Test;Test
-E;F;;;E F;15.02.1989;m;46;11hur;Wiese;Karlsruhe;76187;;;Anebosweg 6;ev;Anass;Test;Test;Test;Test;Test;Test
-E;F;;;E F;16.02.1989;m;47;11mül;Wiens;Karlsruhe;76187;;;Ankerberg 6a;ev;Andrea;Test;Test;Test;Test;Test;Test
-E;F;;;E F;17.02.1989;m;48;11mül;Wiener;Karlsruhe;76187;;;Ankerberg 6a;rk;Andreas;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;18.02.1989;w;49;11mül;Weyershausen;Karlsruhe;76187;;;Ankerberg 9;rk;Andreas Markus;Test;Test;Test;Test;Test;Test
-E;F;;;E F;19.02.1989;w;50;12uzi;Westenfelder;Karlsruhe;76187;;;Auf die Bell 10;rk;Andreas Roland;Test;Test;Test;Test;Test;Test
-E;F;;;E F;20.02.1989;m;51;12uzi;Westenfelder;Karlsruhe;76187;;;Auf die Viehtrift 36;rk;Andrija;Test;Test;Test;Test;Test;Test
-E;F;;;E F;21.02.1989;m;52;12uzi;Westendarp;Karlsruhe;76187;;;Auf die Viehtrift 4;rk;Angelina Madeleine;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;22.02.1989;w;53;12uzi;Westendarp;Karlsruhe;76187;;;Auf die Viehtrift 4;rk;Anja;Test;Test;Test;Test;Test;Test
-E;F;;;E F;23.02.1989;w;54;12uzi;Wespatat;Karlsruhe;76187;;;Auf die Viehtrift 43;ev;Anja Jessica;Test;Test;Test;Test;Test;Test
-E;F;;;E F;24.02.1989;m;55;12uzi;Werner;Karlsruhe;76187;;;Auf die Viehtrift 43;ev;Anna;Test;Test;Test;Test;Test;Test
-E;F;;;E F;25.02.1989;m;56;12uzi;Werling;Karlsruhe;76187;;;Auf die Viehtrift 6;ev;Anna;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;26.02.1989;w;57;12uzi;Werhahn-Moná;Karlsruhe;76187;;;Auf die Viehtrift 6;ev;Anna;Test;Test;Test;Test;Test;Test
-E;F;;;E F;27.02.1989;w;58;12uzi;Werdin;Karlsruhe;76187;;;Augartenstr. 66;rk;Anna Magdalena;Test;Test;Test;Test;Test;Test
-E;F;;;E F;28.02.1989;w;59;12uzi;Wenzel;Karlsruhe;76187;;;August-Bebel-Str. 40;ev;Anna Sophie;Test;Test;Test;Test;Test;Test
-E;L;;;E L;01.03.1989;m;60;12uzi;Wenz;Karlsruhe;76187;;;August-Bebel-Str. 47;ev;Annabelle;Test;Test;Test;Test;Test;Test
-E;L;;;E L;02.03.1989;m;61;12uzi;Welte;Karlsruhe;76187;;;August-Bebel-Str. 51;rk;Annalena;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;03.03.1989;w;62;12uzi;Weitzel;Karlsruhe;76187;;;August-Bebel-Str. 57;rk;Anna-Lena;Test;Test;Test;Test;Test;Test
-E;F;;;E F;04.03.1989;w;63;12uzi;Weitzel;Karlsruhe;76187;;;August-Bebel-Str. 57;ev;Anna-Sarah;Test;Test;Test;Test;Test;Test
-E;F;;;E F;05.03.1989;m;64;12uzi;Weiss;Karlsruhe;76187;;;August-Bebel-Str. 57;ev;Anne;Test;Test;Test;Test;Test;Test
-E;L;;;E L;06.03.1989;m;65;12uzi;Weiskopf;Karlsruhe;76187;;;August-Bebel-Str. 68;ev;Anne;Test;Test;Test;Test;Test;Test
-E;L;;;E L;07.03.1989;w;66;12uzi;Weisenburger;Karlsruhe;76187;;;August-Bebel-Str. 68;ev;Anne;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;08.03.1989;w;67;12uzi;Weisenburger;Karlsruhe;76187;;;August-Bebel-Str. 74;ev;Anne;Test;Test;Test;Test;Test;Test
-E;F;;;E F;09.03.1989;w;68;12her;Weisbender;Karlsruhe;76187;;;August-Bebel-Str. 87;rk;Anne-Cathérine;Test;Test;Test;Test;Test;Test
-E;F;;;E F;10.03.1989;w;69;12her;Weisbender;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annik;Test;Test;Test;Test;Test;Test
-E;L;;;E L;11.03.1989;m;70;12her;Weis;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annika;Test;Test;Test;Test;Test;Test
-E;L;;;E L;12.03.1989;m;71;12her;Weis;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annika;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;13.03.1989;w;72;12her;Weinmann;Karlsruhe;76187;;;Bächlestr. 28;rk;Annika;Test;Test;Test;Test;Test;Test
-E;F;;;E F;14.03.1989;w;73;12her;Weinig;Karlsruhe;76187;;;Bächlestr. 55;nein;Annika;Test;Test;Test;Test;Test;Test
-E;F;;;E F;15.03.1989;m;74;12her;Weingart;Karlsruhe;76187;;;Bächlestr. 55;Ethik;Annika Franziska;Test;Test;Test;Test;Test;Test
-E;L;;;E L;16.03.1989;m;75;12her;Weimar;Karlsruhe;76187;;;Bächlestr. 95;Ethik;Ann-Kathrin;Test;Test;Test;Test;Test;Test
-E;L;;;E L;17.03.1989;w;76;12her;Weidlandt;Karlsruhe;76187;;;Bachstelzenweg 24;nein;Annsophie;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;18.03.1989;w;77;12her;Weidlandt;Karlsruhe;76187;;;Bachstr. 21;nein;Arne;Test;Test;Test;Test;Test;Test
-E;F;;;E F;19.03.1989;w;78;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 20;rk;Artus Maria;Test;Test;Test;Test;Test;Test
-E;F;;;E F;20.03.1989;m;79;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 33;rk;Ayla;Test;Test;Test;Test;Test;Test
-E;L;;;E L;21.03.1989;m;80;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 35c;rk;Bastian;Test;Test;Test;Test;Test;Test
-E;L;;;E L;22.03.1989;w;81;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 38;rk;Beatrix Sophie;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;23.03.1989;m;82;12her;Wanhorst;Karlsruhe;76187;;;Bahnhofstr. 39b;rk;Benedict;Test;Test;Test;Test;Test;Test
-E;F;;;E F;24.03.1989;m;83;12her;Walz;Karlsruhe;76187;;;Bahnhofstr. 40;ev;Benedikt;Test;Test;Test;Test;Test;Test
-E;F;;;E F;25.03.1989;w;84;12her;Walz;Karlsruhe;76187;;;Bärenweg 26;ev;Benedikt;Test;Test;Test;Test;Test;Test
-E;L;;;E L;26.03.1989;w;85;12her;Walz;Karlsruhe;76187;;;Baumannstr. 4b;ev;Benjamin;Test;Test;Test;Test;Test;Test
-E;L;;;E L;27.03.1989;m;86;12her;Walz;Karlsruhe;76187;;;Beethovenstr. 13h;ev;Benjamin;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;28.03.1989;m;87;12ulf;Walter;Karlsruhe;76187;;;Beiertheimer Allee 7;ev;Benjamin;Test;Test;Test;Test;Test;Test
-E;F;;;E F;29.03.1989;w;88;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;rk;Benjamin Johannes;Test;Test;Test;Test;Test;Test
-E;F;;;E F;30.03.1989;m;89;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;Ethik;Benno;Test;Test;Test;Test;Test;Test
-E;L;;;E L;31.03.1989;w;90;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Berit;Test;Test;Test;Test;Test;Test
-E;L;;;E L;01.04.1989;w;91;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Berit;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;02.04.1989;m;92;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;Ethik;Bernhard;Test;Test;Test;Test;Test;Test
-E;F;;;E F;03.04.1989;m;93;12ulf;Wallbaum;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Bianca Nadine;Test;Test;Test;Test;Test;Test
-E;F;;;E F;04.04.1989;w;94;12ulf;Wagner-Nagy;Karlsruhe;76187;;;Bergzaberner Str. 31;ev;Binh Dominik;Test;Test;Test;Test;Test;Test
-E;L;;;E L;05.04.1989;m;95;12ulf;Wagner;Karlsruhe;76187;;;Bergzaberner Str. 57;ev;Björn;Test;Test;Test;Test;Test;Test
-E;L;;;E L;06.04.1989;m;96;12ulf;Wagner;Karlsruhe;76187;;;Berliner Str. 15;ev;Björn Torben;Test;Test;Test;Test;Test;Test
-E;F;;;E F;07.04.1989;w;97;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 31;rk;Brenda;Test;Test;Test;Test;Test;Test
-E;F;;;E F;08.04.1989;w;98;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 31;ev;Brian;Test;Test;Test;Test;Test;Test
-E;L;F;;E L F;09.04.1989;m;99;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 55;ev;Carina;Test;Test;Test;Test;Test;Test
+E;;;;E;01.01.1989;m;100;5a;Zöller;Karlsruhe;76187;;;Adlerstr. 1;rk;Aaron;Test;Test;Test;Test;1;Test
+E;;;;E;02.01.1989;m;2;5a;Zivko;Karlsruhe;76187;;;Albert-Einstein-Str. 2;ev;Adelina;Test;Test;Test;Test;1;Test
+E;;;;E ;03.01.1989;m;3;5a;Zircher;Karlsruhe;76187;;;Alte Friedrichstr. 115;Ethik;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;04.01.1989;w;4;5a;Zipperling;Karlsruhe;76187;;;Alter Postweg 15;ev;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;05.01.1989;w;5;5a;Zipperling;Karlsruhe;76187;;;Alter Postweg 9;ev;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;06.01.1989;w;6;5b;Zippel;Karlsruhe;76187;;;Am Bach 12a;ev;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;07.01.1989;m;7;5b;Zippel;Karlsruhe;76187;;;Am Bach 18a;ev;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;08.01.1989;m;8;5b;Zimmermann;Karlsruhe;76187;;;Am Bach 36b;Ethik;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;09.01.1989;m;9;5b;Zimmermann;Karlsruhe;76187;;;Am Bach 7a;rk;Adrian;Test;Test;Test;Test;1;Test
+E;;;;E;10.01.1989;m;10;5b;Zimmermann;Karlsruhe;76187;;;Am Brurain 13;rk;Adrian Max William;Test;Test;Test;Test;1;Test
+E;F;;;E F;11.01.1989;m;11;6a;Zimmermann;Karlsruhe;76187;;;Am Fuchsheck 4;rk;Agnes Dorothea;Test;Test;Test;Test;1;Test
+E;L;;;E L;12.01.1989;m;12;6a;Zilly;Karlsruhe;76187;;;Am Gartenberg 259;rk;Aileen;Test;Test;Test;Test;1;Test
+E;L;;;E L;13.01.1989;m;13;6a;Ziemba;Karlsruhe;76187;;;Am Gartenberg 363;ev;Aileen Nina;Test;Test;Test;Test;1;Test
+E;F;;;E F;14.01.1989;m;14;6b;Ziegler;Karlsruhe;76187;;;Am Gartenberg 363;ev;Aleksandra;Test;Test;Test;Test;1;Test
+E;F;;;E F;15.01.1989;w;15;6b;Zenk;Karlsruhe;76187;;;Am Gartenberg 363;ev;Alena;Test;Test;Test;Test;1;Test
+E;L;;;E L;16.01.1989;w;16;6b;Zdebor;Karlsruhe;76187;;;Am Hang 8a;ev;Alena Sophie;Test;Test;Test;Test;1;Test
+E;F;;;E F;17.01.1989;w;17;7a;Zafiriou;Karlsruhe;76187;;;Am Hang 8A;nein;Alessa;Test;Test;Test;Test;1;Test
+E;L;;;E L;18.01.1989;m;18;7a;Zafiriou;Karlsruhe;76187;;;Am Hochgestade 14;ev;Alexander;Test;Test;Test;Test;1;Test
+E;L;;;E L;19.01.1989;m;19;7a;Wurz;Karlsruhe;76187;;;Am Hochgestade 9;nein;Alexander;Test;Test;Test;Test;1;Test
+E;F;;;E F;20.01.1989;w;20;7b;Wurz;Karlsruhe;76187;;;Am Langen Berg 13a;ev;Alexander;Test;Test;Test;Test;1;Test
+E;F;;;E F;21.01.1989;m;21;7b;Wurz;Karlsruhe;76187;;;Am Nebenbruch 4;ev;Alexander;Test;Test;Test;Test;1;Test
+E;L;;;E L;22.01.1989;w;22;7b;Wunsch;Karlsruhe;76187;;;Am Pfarrgarten 3a;ev;Alexander;Test;Test;Test;Test;1;Test
+E;L;;;E L;23.01.1989;m;23;8a;Wunderlich;Karlsruhe;76187;;;Am Pfarrgarten 3a;rk;Alexander;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;24.01.1989;m;24;8a;Wörle;Karlsruhe;76187;;;Am Rennbuckel 16;rk;Alexander;Test;Test;Test;Test;1;Test
+E;L;;;E L;25.01.1989;m;25;8a;Wörle;Karlsruhe;76187;;;Am Rennbuckel 3;rk;Alexander Ferdinand;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;26.01.1989;m;26;8b;Wöntz-Freeman;Karlsruhe;76187;;;Am Rennbuckel 42;ev;Alexandra;Test;Test;Test;Test;1;Test
+E;F;;;E F;27.01.1989;m;27;8b;Wollbaum;Karlsruhe;76187;;;Am Rennbuckel 43;rk;Alexandra;Test;Test;Test;Test;1;Test
+E;F;;;E F;28.01.1989;m;28;8b;Wolff;Karlsruhe;76187;;;Am Rennbuckel 43;ev;Alexandra;Test;Test;Test;Test;1;Test
+E;F;;;E F;29.01.1989;m;29;9a;Wolf;Karlsruhe;76187;;;Am Rugbiegel 16;ev;Alexandra;Test;Test;Test;Test;1;Test
+E;F;;;E F;30.01.1989;m;30;9a;Wolf;Karlsruhe;76187;;;Am Sandberg 43;ev;Alexandra Maria;Test;Test;Test;Test;1;Test
+E;L;;;E L;31.01.1989;m;31;9a;Wolf;Karlsruhe;76187;;;Am Sandberg 43;nein;Alexia Marie Gertrud;Test;Test;Test;Test;1;Test
+E;F;;;E F;01.02.1989;m;32;9b;Wolf;Karlsruhe;76187;;;Am Sandberg 51;ev;Alica;Test;Test;Test;Test;1;Test
+E;L;;;E L;02.02.1989;m;33;9b;Wolf;Karlsruhe;76187;;;Am Sandberg 51;Ethik;Alina;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;03.02.1989;w;34;9b;Woidasky;Karlsruhe;76187;;;Am Sandberg 57;Ethik;Alina;Test;Test;Test;Test;1;Test
+E;F;;;E F;04.02.1989;m;35;10a;Wohlfart;Karlsruhe;76187;;;Am Sandberg 75;Ethik;Alina Maria;Test;Test;Test;Test;1;Test
+E;F;;;E F;05.02.1989;m;36;10a;Wirth;Karlsruhe;76187;;;Am Wald 24;ev;Aline;Test;Test;Test;Test;1;Test
+E;F;;;E F;06.02.1989;w;37;10a;Wirth;Karlsruhe;76187;;;Am Wald 28;nein;Aline;Test;Test;Test;Test;1;Test
+E;F;;;E F;07.02.1989;m;38;10b;Wirth;Karlsruhe;76187;;;Am Wald 46;Ethik;Alisa;Test;Test;Test;Test;1;Test
+E;F;;;E F;08.02.1989;m;39;10b;Wiotte;Karlsruhe;76187;;;Am Ziehr 8;Ethik;Alisa;Test;Test;Test;Test;1;Test
+E;F;;;E F;09.02.1989;w;40;10b;Wingert;Karlsruhe;76187;;;An der Bahn 21;rk;Amelie;Test;Test;Test;Test;1;Test
+E;F;;;E F;10.02.1989;m;41;11lik;Willig;Karlsruhe;76187;;;An der Bahn 43;nein;Amelie;Test;Test;Test;Test;1;Test
+E;F;;;E F;11.02.1989;m;42;11lik;Wilhelm;Karlsruhe;76187;;;Anebosweg 25;Ethik;Amelie;Test;Test;Test;Test;1;Test
+E;F;;;E F;12.02.1989;m;43;11lik;Wilhelm;Karlsruhe;76187;;;Anebosweg 29;Ethik;Amina;Test;Test;Test;Test;1;Test
+E;F;;;E F;13.02.1989;m;44;11hur;Wieser;Karlsruhe;76187;;;Anebosweg 29;Ethik;Amon Sidney;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;14.02.1989;m;45;11hur;Wieser;Karlsruhe;76187;;;Anebosweg 6;ev;Amrush;Test;Test;Test;Test;1;Test
+E;F;;;E F;15.02.1989;m;46;11hur;Wiese;Karlsruhe;76187;;;Anebosweg 6;ev;Anass;Test;Test;Test;Test;1;Test
+E;F;;;E F;16.02.1989;m;47;11mül;Wiens;Karlsruhe;76187;;;Ankerberg 6a;ev;Andrea;Test;Test;Test;Test;1;Test
+E;F;;;E F;17.02.1989;m;48;11mül;Wiener;Karlsruhe;76187;;;Ankerberg 6a;rk;Andreas;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;18.02.1989;w;49;11mül;Weyershausen;Karlsruhe;76187;;;Ankerberg 9;rk;Andreas Markus;Test;Test;Test;Test;1;Test
+E;F;;;E F;19.02.1989;w;50;12uzi;Westenfelder;Karlsruhe;76187;;;Auf die Bell 10;rk;Andreas Roland;Test;Test;Test;Test;1;Test
+E;F;;;E F;20.02.1989;m;51;12uzi;Westenfelder;Karlsruhe;76187;;;Auf die Viehtrift 36;rk;Andrija;Test;Test;Test;Test;1;Test
+E;F;;;E F;21.02.1989;m;52;12uzi;Westendarp;Karlsruhe;76187;;;Auf die Viehtrift 4;rk;Angelina Madeleine;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;22.02.1989;w;53;12uzi;Westendarp;Karlsruhe;76187;;;Auf die Viehtrift 4;rk;Anja;Test;Test;Test;Test;1;Test
+E;F;;;E F;23.02.1989;w;54;12uzi;Wespatat;Karlsruhe;76187;;;Auf die Viehtrift 43;ev;Anja Jessica;Test;Test;Test;Test;1;Test
+E;F;;;E F;24.02.1989;m;55;12uzi;Werner;Karlsruhe;76187;;;Auf die Viehtrift 43;ev;Anna;Test;Test;Test;Test;1;Test
+E;F;;;E F;25.02.1989;m;56;12uzi;Werling;Karlsruhe;76187;;;Auf die Viehtrift 6;ev;Anna;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;26.02.1989;w;57;12uzi;Werhahn-Moná;Karlsruhe;76187;;;Auf die Viehtrift 6;ev;Anna;Test;Test;Test;Test;1;Test
+E;F;;;E F;27.02.1989;w;58;12uzi;Werdin;Karlsruhe;76187;;;Augartenstr. 66;rk;Anna Magdalena;Test;Test;Test;Test;1;Test
+E;F;;;E F;28.02.1989;w;59;12uzi;Wenzel;Karlsruhe;76187;;;August-Bebel-Str. 40;ev;Anna Sophie;Test;Test;Test;Test;1;Test
+E;L;;;E L;01.03.1989;m;60;12uzi;Wenz;Karlsruhe;76187;;;August-Bebel-Str. 47;ev;Annabelle;Test;Test;Test;Test;1;Test
+E;L;;;E L;02.03.1989;m;61;12uzi;Welte;Karlsruhe;76187;;;August-Bebel-Str. 51;rk;Annalena;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;03.03.1989;w;62;12uzi;Weitzel;Karlsruhe;76187;;;August-Bebel-Str. 57;rk;Anna-Lena;Test;Test;Test;Test;1;Test
+E;F;;;E F;04.03.1989;w;63;12uzi;Weitzel;Karlsruhe;76187;;;August-Bebel-Str. 57;ev;Anna-Sarah;Test;Test;Test;Test;1;Test
+E;F;;;E F;05.03.1989;m;64;12uzi;Weiss;Karlsruhe;76187;;;August-Bebel-Str. 57;ev;Anne;Test;Test;Test;Test;1;Test
+E;L;;;E L;06.03.1989;m;65;12uzi;Weiskopf;Karlsruhe;76187;;;August-Bebel-Str. 68;ev;Anne;Test;Test;Test;Test;1;Test
+E;L;;;E L;07.03.1989;w;66;12uzi;Weisenburger;Karlsruhe;76187;;;August-Bebel-Str. 68;ev;Anne;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;08.03.1989;w;67;12uzi;Weisenburger;Karlsruhe;76187;;;August-Bebel-Str. 74;ev;Anne;Test;Test;Test;Test;1;Test
+E;F;;;E F;09.03.1989;w;68;12her;Weisbender;Karlsruhe;76187;;;August-Bebel-Str. 87;rk;Anne-Cathérine;Test;Test;Test;Test;1;Test
+E;F;;;E F;10.03.1989;w;69;12her;Weisbender;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annik;Test;Test;Test;Test;1;Test
+E;L;;;E L;11.03.1989;m;70;12her;Weis;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annika;Test;Test;Test;Test;1;Test
+E;L;;;E L;12.03.1989;m;71;12her;Weis;Karlsruhe;76187;;;August-Bebel-Str. 89;ev;Annika;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;13.03.1989;w;72;12her;Weinmann;Karlsruhe;76187;;;Bächlestr. 28;rk;Annika;Test;Test;Test;Test;1;Test
+E;F;;;E F;14.03.1989;w;73;12her;Weinig;Karlsruhe;76187;;;Bächlestr. 55;nein;Annika;Test;Test;Test;Test;1;Test
+E;F;;;E F;15.03.1989;m;74;12her;Weingart;Karlsruhe;76187;;;Bächlestr. 55;Ethik;Annika Franziska;Test;Test;Test;Test;1;Test
+E;L;;;E L;16.03.1989;m;75;12her;Weimar;Karlsruhe;76187;;;Bächlestr. 95;Ethik;Ann-Kathrin;Test;Test;Test;Test;1;Test
+E;L;;;E L;17.03.1989;w;76;12her;Weidlandt;Karlsruhe;76187;;;Bachstelzenweg 24;nein;Annsophie;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;18.03.1989;w;77;12her;Weidlandt;Karlsruhe;76187;;;Bachstr. 21;nein;Arne;Test;Test;Test;Test;1;Test
+E;F;;;E F;19.03.1989;w;78;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 20;rk;Artus Maria;Test;Test;Test;Test;1;Test
+E;F;;;E F;20.03.1989;m;79;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 33;rk;Ayla;Test;Test;Test;Test;1;Test
+E;L;;;E L;21.03.1989;m;80;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 35c;rk;Bastian;Test;Test;Test;Test;1;Test
+E;L;;;E L;22.03.1989;w;81;12her;Weber;Karlsruhe;76187;;;Bahnhofstr. 38;rk;Beatrix Sophie;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;23.03.1989;m;82;12her;Wanhorst;Karlsruhe;76187;;;Bahnhofstr. 39b;rk;Benedict;Test;Test;Test;Test;1;Test
+E;F;;;E F;24.03.1989;m;83;12her;Walz;Karlsruhe;76187;;;Bahnhofstr. 40;ev;Benedikt;Test;Test;Test;Test;1;Test
+E;F;;;E F;25.03.1989;w;84;12her;Walz;Karlsruhe;76187;;;Bärenweg 26;ev;Benedikt;Test;Test;Test;Test;1;Test
+E;L;;;E L;26.03.1989;w;85;12her;Walz;Karlsruhe;76187;;;Baumannstr. 4b;ev;Benjamin;Test;Test;Test;Test;1;Test
+E;L;;;E L;27.03.1989;m;86;12her;Walz;Karlsruhe;76187;;;Beethovenstr. 13h;ev;Benjamin;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;28.03.1989;m;87;12ulf;Walter;Karlsruhe;76187;;;Beiertheimer Allee 7;ev;Benjamin;Test;Test;Test;Test;1;Test
+E;F;;;E F;29.03.1989;w;88;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;rk;Benjamin Johannes;Test;Test;Test;Test;1;Test
+E;F;;;E F;30.03.1989;m;89;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;Ethik;Benno;Test;Test;Test;Test;1;Test
+E;L;;;E L;31.03.1989;w;90;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Berit;Test;Test;Test;Test;1;Test
+E;L;;;E L;01.04.1989;w;91;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Berit;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;02.04.1989;m;92;12ulf;Walter;Karlsruhe;76187;;;Bellheimer Str. 2;Ethik;Bernhard;Test;Test;Test;Test;1;Test
+E;F;;;E F;03.04.1989;m;93;12ulf;Wallbaum;Karlsruhe;76187;;;Bellheimer Str. 2;ev;Bianca Nadine;Test;Test;Test;Test;1;Test
+E;F;;;E F;04.04.1989;w;94;12ulf;Wagner-Nagy;Karlsruhe;76187;;;Bergzaberner Str. 31;ev;Binh Dominik;Test;Test;Test;Test;1;Test
+E;L;;;E L;05.04.1989;m;95;12ulf;Wagner;Karlsruhe;76187;;;Bergzaberner Str. 57;ev;Björn;Test;Test;Test;Test;1;Test
+E;L;;;E L;06.04.1989;m;96;12ulf;Wagner;Karlsruhe;76187;;;Berliner Str. 15;ev;Björn Torben;Test;Test;Test;Test;1;Test
+E;F;;;E F;07.04.1989;w;97;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 31;rk;Brenda;Test;Test;Test;Test;1;Test
+E;F;;;E F;08.04.1989;w;98;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 31;ev;Brian;Test;Test;Test;Test;1;Test
+E;L;F;;E L F;09.04.1989;m;99;12ulf;Wadle;Karlsruhe;76187;;;Berliner Str. 55;ev;Carina;Test;Test;Test;Test;1;Test

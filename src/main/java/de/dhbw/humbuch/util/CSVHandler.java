@@ -117,6 +117,9 @@ public final class CSVHandler {
 		catch (ArrayIndexOutOfBoundsException a) {
 			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden.");
 		}
+		catch(NumberFormatException e){
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+		}
 
 		Parent parent = null;
 		try {
@@ -136,6 +139,9 @@ public final class CSVHandler {
 		}
 		catch(ArrayIndexOutOfBoundsException e){
 			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
+		}
+		catch(NumberFormatException e){
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
 		}
 
 		ArrayList<String> checkValidityList = new ArrayList<String>();
