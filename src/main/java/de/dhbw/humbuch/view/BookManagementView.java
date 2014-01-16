@@ -237,6 +237,7 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		windowEditTeachingMaterial = new Window();
 		windowEditTeachingMaterial.center();
+		windowEditTeachingMaterial.setModal(true);
 		windowEditTeachingMaterial.setResizable(false);
 		windowEditTeachingMaterial.setDraggable(false);
 		verticalLayoutWindowContent = new VerticalLayout();
@@ -388,7 +389,6 @@ public class BookManagementView extends VerticalLayout implements View,
 			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				closeExistingWindow();
 				editTeachingMaterial = false;
 				emptyWindowFields();
 				windowEditTeachingMaterial.setCaption(WINDOW_NEW_TEACHING_MATERIAL);
@@ -415,7 +415,6 @@ public class BookManagementView extends VerticalLayout implements View,
 					new Notification("Bitte ein Lehrmittel auswählen!", Notification.TYPE_HUMANIZED_MESSAGE).show(Page.getCurrent());
 				}
 				else {
-					closeExistingWindow();
 					editTeachingMaterial = true;
 					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
 					UI.getCurrent().addWindow(windowEditTeachingMaterial);				
@@ -446,12 +445,6 @@ public class BookManagementView extends VerticalLayout implements View,
 				}
 			}
 		});
-	}
-
-	protected void closeExistingWindow() {
-		if(windowEditTeachingMaterial.isAttached()) {
-			windowEditTeachingMaterial.close();
-		}
 	}
 
 	private boolean FormFieldsValid() {
