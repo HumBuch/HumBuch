@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.guice;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
@@ -27,6 +28,7 @@ import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.Properties;
+import de.dhbw.humbuch.viewmodel.SettingsViewModel;
 
 
 public class BasicModule extends ServletModule {
@@ -54,6 +56,8 @@ public class BasicModule extends ServletModule {
 		bind(LoginViewModel.class).in(SessionScoped.class);
 		bind(LendingViewModel.class).in(UIScoped.class);
 		bind(Properties.class).in(SessionScoped.class);
+		bind(EventBus.class).in(SessionScoped.class);
+		bind(SettingsViewModel.class).in(UIScoped.class);
 
 		bind(LoginView.class);
 
