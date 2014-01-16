@@ -46,9 +46,10 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private String comment;
 	
 	private int fromGrade;
-	private int fromTerm;
 	private int toGrade;
-	private int toTerm;
+	
+	@Enumerated(EnumType.ORDINAL)
+	private Term term;
 	private Date validFrom;
 	private Date validUntil;
 	
@@ -118,14 +119,6 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.fromGrade = fromGrade;
 	}
 
-	public int getFromTerm() {
-		return fromTerm;
-	}
-
-	public void setFromTerm(int fromTerm) {
-		this.fromTerm = fromTerm;
-	}
-
 	public int getToGrade() {
 		return toGrade;
 	}
@@ -134,12 +127,12 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.toGrade = toGrade;
 	}
 
-	public int getToTerm() {
-		return toTerm;
+	public Term getTerm() {
+		return term;
 	}
 
-	public void setToTerm(int toTerm) {
-		this.toTerm = toTerm;
+	public void setTerm(Term term) {
+		this.term = term;
 	}
 
 	public Date getValidFrom() {
@@ -166,6 +159,23 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.profile = profile;
 	}
 
+	public enum Term {
+		BOTH("Beide"),
+		FIRST("1"),
+		SECOND("2");
+		
+		private String value;
+		
+		private Term(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
 	public static class Builder {
 		private final Category category;
 		private final String name;
@@ -177,9 +187,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private double price;
 		private String comment;
 		private int fromGrade;
-		private int fromTerm;
 		private int toGrade;
-		private int toTerm;
+		private Term term;
 		private Date validUntil;
 		
 		public Builder(Category category, String name, String identifyingNumber, Date validFrom) {
@@ -214,18 +223,13 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder fromTerm(int fromTerm) {
-			this.fromTerm = fromTerm;
-			return this;
-		}
-		
 		public Builder toGrade(int toGrade) {
 			this.toGrade = toGrade;
 			return this;
 		}
 		
-		public Builder toTerm(int toTerm) {
-			this.toTerm = toTerm;
+		public Builder term(Term term) {
+			this.term = term;
 			return this;
 		}
 		
@@ -250,9 +254,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.price = builder.price;
 		this.comment = builder.comment;
 		this.fromGrade = builder.fromGrade;
-		this.fromTerm = builder.fromTerm;
 		this.toGrade = builder.toGrade;
-		this.toTerm = builder.toTerm;
+		this.term = builder.term;
 		this.validUntil = builder.validUntil;
 	}
 

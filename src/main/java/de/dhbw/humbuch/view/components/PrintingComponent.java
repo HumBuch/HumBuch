@@ -6,7 +6,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-
 public class PrintingComponent extends CustomComponent {
 
 	private static final long serialVersionUID = 7241708455406233966L;

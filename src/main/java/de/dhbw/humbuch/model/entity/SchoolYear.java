@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import de.dhbw.humbuch.model.entity.TeachingMaterial.Term;
+
 @Entity
 @Table(name="schoolYear")
 public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable {
@@ -72,6 +74,14 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 
 	public void setBeginSecondTerm(Date beginSecondTerm) {
 		this.beginSecondTerm = beginSecondTerm;
+	}
+	
+	public Term getCurrentTerm() {
+		if(getEndFirstTerm().after(new Date())) {
+			return Term.FIRST;
+		} else {
+			return Term.SECOND;
+		}
 	}
 	
 	public static class Builder {

@@ -69,8 +69,6 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private StudentInformationView studentInformationView;
-	@Inject
-	private HelpView helpView;
 
 	@Inject
 	private Header header;

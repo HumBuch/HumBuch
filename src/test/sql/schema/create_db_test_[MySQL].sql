@@ -86,9 +86,8 @@ CREATE TABLE IF NOT EXISTS `humbuch_test`.`teachingMaterial` (
   `price` DECIMAL(5,2) NULL DEFAULT 0.00,
   `comment` VARCHAR(45) NULL,
   `fromGrade` INT(11) NULL,
-  `fromTerm` INT(1) NULL,
   `toGrade` INT(11) NULL,
-  `toTerm` INT(2) NULL,
+  `term` INT(2) NULL,
   `validFrom` DATE NOT NULL,
   `validUntil` DATE NULL,
   PRIMARY KEY (`id`),
@@ -110,11 +109,8 @@ CREATE TABLE IF NOT EXISTS `humbuch_test`.`borrowedMaterial` (
   `studentId` INT(11) NOT NULL,
   `teachingMaterialId` INT(11) NOT NULL,
   `borrowFrom` DATE NOT NULL,
-  `borrowUntil` DATE NULL,
   `returnDate` DATE NULL,
   `received` TINYINT(1) NULL,
-  `defect` TINYINT(1) NULL,
-  `defectComment` TEXT NULL,
   PRIMARY KEY (`id`, `studentId`),
   INDEX `fk_Ausleihliste_Schueler1_idx` (`studentId` ASC),
   INDEX `fk_Ausleihliste_Lehrmittel1_idx` (`teachingMaterialId` ASC),
@@ -139,7 +135,9 @@ CREATE TABLE IF NOT EXISTS `humbuch_test`.`user` (
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
   `email` VARCHAR(60) NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB;
 
 
@@ -314,8 +312,3 @@ CREATE TABLE IF NOT EXISTS `humbuch_test`.`dunningDate` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
