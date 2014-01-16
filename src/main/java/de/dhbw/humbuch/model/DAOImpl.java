@@ -1,6 +1,6 @@
 package de.dhbw.humbuch.model;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -41,7 +41,7 @@ public class DAOImpl<EntityType extends Entity> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<EntityType> findAllWithCriteria(
+	public List<EntityType> findAllWithCriteria(
 			final Criterion... criteriaArray) {
 		Session session = (Session) getEntityManager().getDelegate();
 		Criteria criteria = session.createCriteria(getEntityClass());
@@ -70,9 +70,19 @@ public class DAOImpl<EntityType extends Entity> implements
 	}
 
 	@Override
-	public Collection<EntityType> findAll() {
+	public List<EntityType> findAll() {
 		return getEntityManager().createQuery(
 				"from " + getEntityClass().getSimpleName(), getEntityClass())
 				.getResultList();
+	}
+
+	@Override
+	public EntityType findSingleWithCriteria(Criterion... criteriaArray) {
+		List<EntityType> resultList = findAllWithCriteria(criteriaArray);
+		if (resultList.size() > 0) {
+			return resultList.get(0);
+		} else {
+			return null;
+		}
 	}
 }
