@@ -385,11 +385,11 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonNewTeachingMaterial.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = -7433701329516481457L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
+				closeExistingWindow();
 				editTeachingMaterial = false;
-				// teachingMaterialInfo.set(new TeachingMaterial());
 				emptyWindowFields();
 				windowEditTeachingMaterial.setCaption(WINDOW_NEW_TEACHING_MATERIAL);
 				UI.getCurrent().addWindow(windowEditTeachingMaterial);
@@ -408,13 +408,14 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		buttonEditTeachingMaterial.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 563232762007381515L;
-
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(tableTeachingMaterials.getValue() == null) {
 					new Notification("Bitte ein Lehrmittel auswählen!", Notification.TYPE_HUMANIZED_MESSAGE).show(Page.getCurrent());
 				}
 				else {
+					closeExistingWindow();
 					editTeachingMaterial = true;
 					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
 					UI.getCurrent().addWindow(windowEditTeachingMaterial);				
@@ -445,6 +446,12 @@ public class BookManagementView extends VerticalLayout implements View,
 				}
 			}
 		});
+	}
+
+	protected void closeExistingWindow() {
+		if(windowEditTeachingMaterial.isAttached()) {
+			windowEditTeachingMaterial.close();
+		}
 	}
 
 	private boolean FormFieldsValid() {
