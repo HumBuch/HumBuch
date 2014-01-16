@@ -130,9 +130,12 @@ public final class CSVHandler {
 			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
 					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
 		}
-		catch (NullPointerException npe) {
+		catch (NullPointerException e) {
 			System.err.println("Could not create parent object to student");
 			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler");
+		}
+		catch(ArrayIndexOutOfBoundsException e){
+			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
 		}
 
 		ArrayList<String> checkValidityList = new ArrayList<String>();
@@ -174,15 +177,15 @@ public final class CSVHandler {
 	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
 		String headerValue = (String) properties.getProperty(attributeName);
 		if (headerValue != null) {
-			try{
-				int indexHeader = indexMap.get(headerValue);
-				return indexHeader;
-
+			int indexHeader = -1;
+			if (indexMap.get(headerValue) != null) {
+				indexHeader = indexMap.get(headerValue);
 			}
-			catch(Exception e){
+			else {
 				throw new UnsupportedOperationException("Ein CSV-Spaltenname konnte nicht zugeordnet werden. "
 						+ "Bitte die Einstellungsdatei mit der CSV-Datei abgleichen. Spaltenname: " + headerValue);
 			}
+			return indexHeader;
 		}
 
 		return -1;
