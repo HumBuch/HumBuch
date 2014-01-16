@@ -18,20 +18,15 @@ import de.dhbw.humbuch.model.entity.User;
 
 public class LoginViewModel {
 
-	public interface IsLoggedIn extends State<Boolean> {
-	}
-	
-	public interface LoginError extends State<String> {
-	}
+	public interface IsLoggedIn extends State<Boolean> {}
+	public interface LoginError extends State<String> {}
 
-	public interface DoLogout extends ActionHandler {
-	}
-
-	public interface DoLogin extends ActionHandler {
-	}
+	public interface DoLogout extends ActionHandler {}
+	public interface DoLogin extends ActionHandler {}
 	
 	private DAO<User> daoUser;
 	private EventBus eventBus;
+	private Properties properties;
 
 	@ProvidesState(IsLoggedIn.class)
 	public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
@@ -40,7 +35,8 @@ public class LoginViewModel {
 	public final BasicState<String> loginError = new BasicState<String>(String.class);
 	
 	@Inject
-	public LoginViewModel(DAO<User> daoUser, EventBus eventBus) {
+	public LoginViewModel(DAO<User> daoUser, Properties properties, EventBus eventBus) {
+		this.properties = properties;
 		this.eventBus = eventBus;
 		this.daoUser = daoUser;
 		isLoggedIn.set(new Boolean(false));
@@ -48,30 +44,26 @@ public class LoginViewModel {
 
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
-		// loginSuccessful.set(daoStudent.find(1).getFirstname());
-		
 		// Es muss sichergestellt sein, dass es keine zwei User mit selber Name/Passwort Kombination gibt
 		if (username.equals("") || password.equals("")) {
 			// Set the loginError to empty string --> state change --> user feedback in the view
-			loginError.set("");
 			loginError.set("Bitte geben Sie einen Nutzernamen und Passwort an.");
 			return;
 		} else {
 			List<User> user = (List<User>) daoUser.findAllWithCriteria(Restrictions.eq("username", username), Restrictions.eq("password", password));
 			if(!user.isEmpty()) {
 				isLoggedIn.set(new Boolean(true));
+				properties.currentUser.set(user.get(0));
 			} else {
-				loginError.set("");
 				loginError.set("Username oder Passwort stimmen nicht überein.");
+				eventBus.post(new LoginEvent("Username oder Passwort stimmen nicht überein."));
 			}
 		}
-		eventBus.post(new LoginEvent("LoginEvent posted..."));
 	}
 
 	@HandlesAction(DoLogout.class)
 	public void doLogout(Object obj) {
 		isLoggedIn.set(new Boolean(false));
-		System.out.println("LoginViewModel->doLogout()");
 	}
 
 }
