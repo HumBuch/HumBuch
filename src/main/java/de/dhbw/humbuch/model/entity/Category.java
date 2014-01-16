@@ -107,4 +107,8 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
