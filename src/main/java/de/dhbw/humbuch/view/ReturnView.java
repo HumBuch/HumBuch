@@ -143,11 +143,12 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 				builders.add(builder);
 			}
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
-
-			String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
-			StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-
-			new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+			if(baos != null){
+				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+	
+				new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
+			}
 		}
 	}
 
