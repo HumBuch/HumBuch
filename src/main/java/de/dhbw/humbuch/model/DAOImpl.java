@@ -56,8 +56,9 @@ public class DAOImpl<EntityType extends Entity> implements
 		getEntityManager().merge(entity);
 	}
 
+	@Transactional
 	public void delete(EntityType entity) {
-		getEntityManager().remove(entity);
+		getEntityManager().remove(getEntityManager().merge(entity));
 	}
 
 	public EntityManager getEntityManager() {

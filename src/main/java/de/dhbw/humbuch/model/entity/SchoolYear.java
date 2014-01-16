@@ -46,16 +46,16 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		return fromDate;
 	}
 
-	public void setFromDate(Date from) {
-		this.fromDate = from;
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
 	public Date getToDate() {
 		return toDate;
 	}
 
-	public void setToDate(Date to) {
-		this.toDate = to;
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public Date getEndFirstTerm() {
