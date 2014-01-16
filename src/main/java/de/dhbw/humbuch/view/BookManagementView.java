@@ -38,6 +38,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.Subject;
@@ -290,6 +291,10 @@ public class BookManagementView extends VerticalLayout implements View,
 			private static final long serialVersionUID = 563232762007381515L;
 			@Override
 			public void buttonClick(ClickEvent event) {
+				if(tableTeachingMaterials.getValue() == null) {
+					new Notification("Bitte ein Lehrmittel auswählen").show(Page.getCurrent());
+					return;
+				}
 				bookManagementViewModel.doFetchTeachingMaterial(Integer
 						.parseInt(tableTeachingMaterials.getValue().toString()));
 				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
