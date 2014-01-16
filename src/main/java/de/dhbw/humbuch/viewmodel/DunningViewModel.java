@@ -1,7 +1,6 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
 
@@ -45,8 +44,8 @@ public class DunningViewModel {
 	}
 	
 	private void updateStates() {
-		Collection<Dunning> alreadyDunned = daoDunning.findAllWithCriteria(Restrictions.eq("stats", Dunning.Status.SENT));
-		Collection<Dunning> toBeDunned = daoDunning.findAllWithCriteria(Restrictions.eq("stats", Dunning.Status.OPENED));
+		Collection<Dunning> alreadyDunned = daoDunning.findAllWithCriteria(Restrictions.eq("status", Dunning.Status.SENT));
+		Collection<Dunning> toBeDunned = daoDunning.findAllWithCriteria(Restrictions.eq("status", Dunning.Status.OPENED));
 		studentsDunned.set(alreadyDunned);
 		studentsToDun.set(toBeDunned);		
 	}
