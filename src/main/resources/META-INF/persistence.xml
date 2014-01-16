@@ -16,7 +16,7 @@
 			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/humbuch" />
 			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="" />
+			<property name="hibernate.connection.password" value="Start123" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<!-- <property name="hibernate.hbm2ddl.auto" value="update" />  --> <!-- man kann auch "create" nehmen -->
 			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>

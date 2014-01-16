@@ -31,11 +31,8 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private TeachingMaterial teachingMaterial;
 	
 	private Date borrowFrom;
-	private Date borrowUntil;
 	private Date returnDate;
 	private boolean received;
-	private boolean defect;
-	private String defectComment;
 	
 	/**
 	 * Required by Hibernate.<p>
@@ -78,36 +75,12 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.borrowFrom = borrowFrom;
 	}
 
-	public Date getBorrowUntil() {
-		return borrowUntil;
-	}
-
-	public void setBorrowUntil(Date borrowUntil) {
-		this.borrowUntil = borrowUntil;
-	}
-
 	public Date getReturnDate() {
 		return returnDate;
 	}
 
 	public void setReturnDate(Date returnDate) {
 		this.returnDate = returnDate;
-	}
-
-	public boolean isDefect() {
-		return defect;
-	}
-
-	public void setDefect(boolean defect) {
-		this.defect = defect;
-	}
-
-	public String getDefectComment() {
-		return defectComment;
-	}
-
-	public void setDefectComment(String defectComment) {
-		this.defectComment = defectComment;
 	}
 
 	public boolean isReceived() {
@@ -123,21 +96,13 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private final TeachingMaterial teachingMaterial;
 		private final Date borrowFrom;
 		
-		private Date borrowUntil;
 		private Date returnDate;
 		private boolean received;
-		private boolean defect;
-		private String defectComment;
 		
 		public Builder(Student student, TeachingMaterial teachingMaterial, Date borrowFrom) {
 			this.student = student;
 			this.teachingMaterial = teachingMaterial;
 			this.borrowFrom = borrowFrom;
-		}
-		
-		public Builder borrowUntil(Date borrowUntil) {
-			this.borrowUntil = borrowUntil;
-			return this;
 		}
 		
 		public Builder returnDate(Date returnDate) {
@@ -147,16 +112,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		
 		public Builder received(boolean received) {
 			this.received = received;
-			return this;
-		}
-		
-		public Builder defect(boolean defect) {
-			this.defect = defect;
-			return this;
-		}
-		
-		public Builder defectComment(String defectComment) {
-			this.defectComment = defectComment;
 			return this;
 		}
 		
@@ -170,11 +125,8 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.teachingMaterial = builder.teachingMaterial;
 		this.borrowFrom = builder.borrowFrom;
 		
-		this.borrowUntil = builder.borrowUntil;
 		this.returnDate = builder.returnDate;
 		this.received = builder.received;
-		this.defect = builder.defect;
-		this.defectComment = builder.defectComment;
 	}
 
 	@Override

@@ -22,34 +22,29 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class BookManagementViewModel {
 
-	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {
-	}
-	public interface TeachingMaterialInfo extends State<TeachingMaterial>{
-	}
-	public interface Categories extends State<Collection<Category>> {
-	}
+	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}
+	public interface TeachingMaterialInfo extends State<TeachingMaterial>{}
+	public interface Categories extends State<Collection<Category>> {}
 
-	public interface DoUpdateTeachingMaterial extends ActionHandler {
-	}
-	public interface DoFetchTeachingMaterial extends ActionHandler{
-	}
-	public interface DoDeleteTeachingMaterial extends ActionHandler{
-	}
-	public interface DoUpdateCategory extends ActionHandler{
-	}
+	public interface DoUpdateTeachingMaterial extends ActionHandler {}
+	public interface DoFetchTeachingMaterial extends ActionHandler{}
+	public interface DoDeleteTeachingMaterial extends ActionHandler{}
+	public interface DoUpdateCategory extends ActionHandler{}
 
 
 	@ProvidesState(TeachingMaterials.class)
-	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
-			Collection.class);
+	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
+	
 	@ProvidesState(TeachingMaterialInfo.class)
 	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(TeachingMaterial.class);
+	
 	@ProvidesState(Categories.class)
 	public final State<Map<Integer,Category>> categories = new BasicState<>(Map.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
+	
 	/**
 	 * Constructor
 	 * 
@@ -57,7 +52,8 @@ public class BookManagementViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory, DAO<BorrowedMaterial> daoBorrowedMaterial) {
+	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory, 
+			DAO<BorrowedMaterial> daoBorrowedMaterial) {
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoCategory = daoCategory;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
@@ -70,7 +66,7 @@ public class BookManagementViewModel {
 	}
 	
 	private void updateTeachingMaterial() {
-		teachingMaterials.set(daoTeachingMaterial.findAll());	
+		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 	
 	private void updateCategory() {
@@ -123,8 +119,7 @@ public class BookManagementViewModel {
 		if(borrowedMaterial.isEmpty()) {
 			daoTeachingMaterial.delete(teachingMaterial);
 			updateTeachingMaterial();
-		}
-		else {
+		} else {
 			teachingMaterial.setValidUntil(new Date());
 			daoTeachingMaterial.update(teachingMaterial);
 		}
