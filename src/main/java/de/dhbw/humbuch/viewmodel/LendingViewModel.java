@@ -25,6 +25,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.model.entity.TeachingMaterial.Term;
 
 public class LendingViewModel {
 
@@ -164,7 +165,7 @@ public class LendingViewModel {
 								, Restrictions.isNull("validUntil"))
 						, Restrictions.or(
 								Restrictions.eq("term", currentSchoolYear.getCurrentTerm())
-								, Restrictions.isNull("term"))
+								, Restrictions.eq("term", Term.BOTH))
 				));
 
 		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
