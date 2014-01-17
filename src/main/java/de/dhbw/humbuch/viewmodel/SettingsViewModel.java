@@ -20,11 +20,6 @@ import de.dhbw.humbuch.model.entity.User;
 
 public class SettingsViewModel {
 	
-	public interface DoUpdateSchoolYear extends ActionHandler {}
-	public interface DoDeleteSchoolYear extends ActionHandler {}
-	public interface DoInsertSchoolYear extends ActionHandler {}
-	public interface DoUpdateCategory extends ActionHandler {}
-	public interface DoInsertCategory extends ActionHandler {}
 	public interface DoUpdateUser extends ActionHandler {}
 	public interface DoPasswordChange extends ActionHandler {}
 	
@@ -93,29 +88,26 @@ public class SettingsViewModel {
 		userEmail.set(currentUser.get().getEmail());
 	}
 	
-	@HandlesAction(DoUpdateSchoolYear.class)
 	public void doUpdateSchoolYear(SchoolYear schoolYear) {
 		daoSchoolYear.update(schoolYear);
 	}
 	
-	@HandlesAction(DoDeleteSchoolYear.class)
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
 		daoSchoolYear.delete(schoolYear);
+		updateSchoolYears();
 	}
 	
-	@HandlesAction(DoInsertSchoolYear.class)
-	public void doInsertSchoolYear(SchoolYear schoolYear) {
-		daoSchoolYear.insert(schoolYear);
-	}
-	
-	@HandlesAction(DoUpdateCategory.class)
 	public void doUpdateCategory(Category category) {
+		if (category.getName().isEmpty()  || category.getDescription().isEmpty()) {
+			// TODO: error Message: empty category!!
+			return;
+		}
 		daoCategory.update(category);
 	}
 	
-	@HandlesAction(DoInsertCategory.class)
-	public void doInsertCategory(Category category) {
-		daoCategory.insert(category);
+	public void doDeleteCategory(Category category) {
+		daoCategory.delete(category);
+		updateCategories();
 	}
 	
 	@HandlesAction(DoUpdateUser.class)
