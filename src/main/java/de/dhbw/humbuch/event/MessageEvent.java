@@ -39,6 +39,18 @@ public class MessageEvent {
 	}
 	
 	/**
+	 * Creates an event with the specified caption, empty message and type
+	 * 
+	 * @param caption
+	 * 			  {@link String} containing the caption
+	 * @param message
+	 *            {@link String} containing the message
+	 */
+	public MessageEvent(String caption, Type type) {
+		this(caption, "", type);
+	}
+	
+	/**
 	 * Creates an event with the specified caption, message and type
 	 * 
 	 * @param caption
