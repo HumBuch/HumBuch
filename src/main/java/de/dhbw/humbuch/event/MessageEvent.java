@@ -10,7 +10,7 @@ public class MessageEvent {
 	public final Type type;
 
 	public enum Type {
-		INFO, WARNING, ERROR;
+		INFO, TRAYINFO, WARNING, ERROR;
 	}
 
 	/**
