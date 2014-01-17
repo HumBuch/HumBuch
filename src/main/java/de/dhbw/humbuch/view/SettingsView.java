@@ -11,10 +11,8 @@ import com.google.inject.Inject;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -22,7 +20,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
@@ -103,24 +100,19 @@ public class SettingsView extends VerticalLayout implements View,
 	/**
 	 * Due dates
 	 */
-	@BindState(SchoolYears.class)
-	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(
-			Collection.class);
 	private Table yearTable;
 	private BeanItemContainer<SchoolYear> yearData = new BeanItemContainer<SchoolYear>(
 			SchoolYear.class);
-	private FormLayout yearDetails = new FormLayout();
-	private FieldGroup yearFields = new FieldGroup();
-	private TextField year;
-	private DateField yearFrom;
-	private DateField yearTo;
-	private DateField yearEndFirstTerm;
-	private DateField yearBeginSecondTerm;
-	private Button yearSave;
-	private Button yearCancel;
-	// TODO: @BindAction(value = DeleteYear.class, source = { "year" })
-	private Button yearDelete;
-	private Button yearNew;
+	@BindState(SchoolYears.class)
+	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(
+			Collection.class);
+	private Button yearAdd = new Button("Hinzufügen");
+	private Button yearDelete = new Button("Löschen");
+	private Button yearEdit = new Button("Bearbeiten");
+	private Button yearCancel = new Button("Abbrechen");
+	private Button yearSave = new Button("Speichern");
+	@SuppressWarnings("rawtypes")
+	private List<Field> yearFields = new ArrayList<Field>();
 
 	/**
 	 * Categories
@@ -164,6 +156,7 @@ public class SettingsView extends VerticalLayout implements View,
 	private void buildUserTab() {
 		tabUser.setMargin(true);
 		tabUser.setSpacing(true);
+		tabUser.setSizeFull();
 
 		tabUser.addComponent(userChangePw);
 
@@ -231,7 +224,8 @@ public class SettingsView extends VerticalLayout implements View,
 		tabCategories.setSizeFull();
 
 		final HorizontalLayout catEditButtons = new HorizontalLayout();
-		
+
+		catDelete.setEnabled(false);
 		catEdit.setEnabled(false);
 		catSave.setVisible(false);
 		catSave.addStyleName("default");
@@ -271,14 +265,16 @@ public class SettingsView extends VerticalLayout implements View,
 		 * Listeners
 		 */
 
+		// Enable/Disable edit button
 		catTable.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Category item = (Category) catTable.getValue();
-				catEdit.setEnabled(item!=null);
+				catEdit.setEnabled(item != null);
+				catDelete.setEnabled(item != null);
 			}
 		});
-		
+
 		// Edit
 		catEdit.addClickListener(new ClickListener() {
 
@@ -303,13 +299,10 @@ public class SettingsView extends VerticalLayout implements View,
 		catSave.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+				catCommit();
+				catConfigureEditable(false);
 				Category item = (Category) catTable.getValue();
-				if (item != null) {
-					catCommit();
-					catConfigureEditable(false);
-					settingsViewModel.doUpdateCategory(item);
-					catTable.removeItem(item);
-				}
+				settingsViewModel.doUpdateCategory(item);
 			}
 		});
 
@@ -318,7 +311,8 @@ public class SettingsView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Category item = new Category.Builder("").description("").build();
+				Category item = new Category.Builder("").description("")
+						.build();
 				catData.addBean(item);
 				catTable.select(item);
 				catConfigureEditable(true);
@@ -333,14 +327,27 @@ public class SettingsView extends VerticalLayout implements View,
 				Category item = (Category) catTable.getValue();
 				settingsViewModel.doDeleteCategory(item);
 				catData.removeItem(item);
+				catConfigureEditable(false);
 			}
 		});
-		
+
 		// Fill table container
 		categories.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
+				catData.removeAllItems();
 				catData.addAll(categories.get());
+			}
+		});
+
+		// Double click on a row: make it editable
+		catTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+				if (itemClickEvent.isDoubleClick() && !catTable.isEditable()) {
+					catTable.setValue(itemClickEvent.getItemId());
+					catConfigureEditable(true);
+				}
 			}
 		});
 
@@ -424,12 +431,12 @@ public class SettingsView extends VerticalLayout implements View,
 		if (editable && !catFields.isEmpty()) {
 			catFields.get(0).focus();
 		}
-
 	}
 
 	/**
 	 * Due dates
 	 */
+	@SuppressWarnings("serial")
 	private void buildDueDatesTab() {
 
 		VerticalLayout tabDates = new VerticalLayout();
@@ -437,58 +444,30 @@ public class SettingsView extends VerticalLayout implements View,
 		tabDates.setMargin(true);
 		tabDates.setSpacing(true);
 
-		initYearTable();
-		initYearDetails();
+		final HorizontalLayout yearEditButtons = new HorizontalLayout();
 
-		VerticalLayout yearLeftLayout = new VerticalLayout();
-		yearLeftLayout.setSizeFull();
-		yearLeftLayout.addComponent(yearTable);
-
-		yearNew = new Button("Schuljahr hinzufügen", new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void buttonClick(ClickEvent event) {
-				BeanItem<SchoolYear> item = new BeanItem<SchoolYear>(
-						new SchoolYear.Builder("Neues Schuljahr", new Date(),
-								new Date()).build());
-				if (item != null) {
-					yearFields.setItemDataSource(item);
-				}
-
-				yearDetails.setVisible(item != null);
-			}
-		});
-		yearDelete = new Button("Schuljahr löschen", new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void buttonClick(ClickEvent event) {
-				SchoolYear item = (SchoolYear) yearTable.getValue();
-				if (item != null) {
-					settingsViewModel.doDeleteSchoolYear(item);
-					yearCancel.click();
-				}
-			}
-		});
 		yearDelete.setEnabled(false);
+		yearEdit.setEnabled(false);
+		yearSave.setVisible(false);
+		yearSave.addStyleName("default");
+		yearCancel.setVisible(false);
+		
+		yearEditButtons.addComponent(yearEdit);
+		yearEditButtons.addComponent(yearCancel);
+		yearEditButtons.addComponent(yearSave);
 
-		yearLeftLayout.addComponent(new HorizontalLayout() {
-			private static final long serialVersionUID = 1L;
+		final HorizontalLayout yearAddButtons = new HorizontalLayout();
+		yearAddButtons.addComponent(yearAdd);
+		yearAddButtons.addComponent(yearDelete);
 
+		tabDates.addComponent(new HorizontalLayout() {
 			{
-				addComponent(yearNew);
-				addComponent(yearDelete);
+				setWidth("100%");
+				addComponent(yearAddButtons);
+				addComponent(yearEditButtons);
+				setComponentAlignment(yearEditButtons, Alignment.MIDDLE_RIGHT);
 			}
-
 		});
-
-		tabDates.addComponent(yearLeftLayout);
-		tabDates.addComponent(yearDetails);
-
-		tabs.addTab(tabDates, "Schuljahresdaten");
-
-	}
-
-	private void initYearTable() {
 
 		yearTable = new Table() {
 			private static final long serialVersionUID = 1L;
@@ -498,7 +477,7 @@ public class SettingsView extends VerticalLayout implements View,
 					Property<?> property) {
 				if (!colId.equals(YEAR_YEAR)) {
 					SimpleDateFormat df = new SimpleDateFormat();
-					df.applyPattern("MM.dd.yyyy");
+					df.applyPattern("dd.MM.yyyy");
 					if (property.getValue() == null) {
 						return null;
 					} else {
@@ -510,128 +489,198 @@ public class SettingsView extends VerticalLayout implements View,
 			}
 		};
 
-		yearTable.setWidth("100%");
-		yearTable.setHeight("200px");
+		yearTable.setSizeFull();
 		yearTable.setSelectable(true);
 		yearTable.setImmediate(true);
 
 		yearTable.setContainerDataSource(yearData);
 
 		yearTable.setVisibleColumns(new Object[] { YEAR_YEAR, YEAR_FROM,
-				YEAR_TO, YEAR_END_FIRST }); // , YEAR_BEGIN_SEC
+				YEAR_TO, YEAR_END_FIRST, YEAR_BEGIN_SEC });
 		yearTable.setColumnHeader(YEAR_YEAR, "Jahr");
 		yearTable.setColumnHeader(YEAR_FROM, "Beginn");
 		yearTable.setColumnHeader(YEAR_TO, "Ende");
 		yearTable.setColumnHeader(YEAR_END_FIRST, "Ende 1. Halbjahr");
 		yearTable.setColumnHeader(YEAR_BEGIN_SEC, "Begin 2. Halbjahr");
+		
+		yearTable.setColumnAlignment(YEAR_FROM, Table.Align.RIGHT);
+		yearTable.setColumnAlignment(YEAR_TO, Table.Align.RIGHT);
+		yearTable.setColumnAlignment(YEAR_END_FIRST, Table.Align.RIGHT);
+		yearTable.setColumnAlignment(YEAR_BEGIN_SEC, Table.Align.RIGHT);
 
-		/**
-		 * Listens for changes in schoolYears state
+		tabDates.addComponent(yearTable);
+		tabs.addTab(tabDates, "Schuljahresdaten");
+
+		/*
+		 * Listeners
 		 */
+
+		// Enable/Disable edit + delete button
+		yearTable.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				SchoolYear item = (SchoolYear) yearTable.getValue();
+				yearEdit.setEnabled(item != null);
+				yearDelete.setEnabled(item != null);
+			}
+		});
+
+		// Edit
+		yearEdit.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				yearConfigureEditable(true);
+
+			}
+		});
+
+		// Cancel
+		yearCancel.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				yearDiscard();
+				yearConfigureEditable(false);
+			}
+		});
+
+		// Save
+		yearSave.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				yearCommit();
+				yearConfigureEditable(false);
+				SchoolYear item = (SchoolYear) yearTable.getValue();
+				settingsViewModel.doUpdateSchoolYear(item);
+			}
+		});
+
+		// Add
+		yearAdd.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				SchoolYear item = new SchoolYear.Builder("", new Date(),
+						new Date()).build();
+				yearData.addBean(item);
+				yearTable.select(item);
+				yearConfigureEditable(true);
+				yearCancel.setVisible(false);
+			}
+		});
+
+		// Delete
+		yearDelete.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				SchoolYear item = (SchoolYear) yearTable.getValue();
+				settingsViewModel.doDeleteSchoolYear(item);
+				yearData.removeItem(item);
+				yearConfigureEditable(false);
+			}
+		});
+
+		// Fill table container
 		schoolYears.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
 				yearData.removeAllItems();
-				for (SchoolYear schoolYear : schoolYears.get()) {
-					yearData.addBean(schoolYear);
+				yearData.addAll(schoolYears.get());
+			}
+		});
+
+		// Double click on a row: make it editable
+		yearTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+
+				if (itemClickEvent.isDoubleClick() && !yearTable.isEditable()) {
+					yearTable.setValue(itemClickEvent.getItemId());
+					yearConfigureEditable(true);
 				}
 			}
 		});
 
-		/**
-		 * When clicked on a item in the table, the details view gets populated
-		 */
-		yearTable.addValueChangeListener(new Property.ValueChangeListener() {
+		// define field factory
+		yearTable.setTableFieldFactory(new DefaultFieldFactory() {
 			private static final long serialVersionUID = 1L;
 
+			@SuppressWarnings("rawtypes")
 			@Override
-			public void valueChange(ValueChangeEvent event) {
-				SchoolYear yearId = (SchoolYear) yearTable.getValue();
+			public Field<?> createField(Container container, Object itemId,
+					Object propertyId, Component uiContext) {
 
-				if (yearId != null) {
-					yearFields.setItemDataSource(yearTable.getItem(yearId));
+				// If its not the currently selected item in the table, don't
+				// generate fields
+				if (!itemId.equals(yearTable.getValue())) {
+					return null;
 				}
-				yearDelete.setEnabled(yearId != null);
-				yearDetails.setVisible(yearId != null);
+
+				Field field = super.createField(container, itemId, propertyId,
+						uiContext);
+
+				// Possibility to discard the value
+				field.setBuffered(true);
+
+				// keep track of all of the attached fields
+				field.addAttachListener(new AttachListener() {
+					@Override
+					public void attach(AttachEvent attachEvent) {
+						yearFields.add((Field) attachEvent.getConnector());
+					}
+				});
+				field.addDetachListener(new DetachListener() {
+					@Override
+					public void detach(DetachEvent event) {
+						yearFields.remove((Field) event.getConnector());
+					}
+				});
+
+				return field;
+
 			}
 
 		});
-
 	}
 
-	private void initYearDetails() {
+	/**
+	 * Commit all field edits.
+	 * 
+	 * NB: Should handle validation problems here
+	 */
+	@SuppressWarnings("rawtypes")
+	protected void yearCommit() {
+		for (Field field : yearFields) {
+			field.commit();
+		}
+	}
 
-		yearDetails.setMargin(true);
-		yearDetails.setVisible(false);
-		yearDetails.addStyleName("content-box");
+	/**
+	 * Discard any field edits
+	 */
+	@SuppressWarnings("rawtypes")
+	protected void yearDiscard() {
+		for (Field field : yearFields) {
+			field.discard();
+		}
+	}
 
-		year = new TextField("Schuljahr:");
-		yearDetails.addComponent(year);
-		yearFields.bind(year, YEAR_YEAR);
-
-		yearFrom = new DateField("Beginn:");
-		yearFrom.setDateFormat("dd.MM.yyyy");
-		yearDetails.addComponent(yearFrom);
-		yearFields.bind(yearFrom, YEAR_FROM);
-
-		yearTo = new DateField("Ende:");
-		yearTo.setDateFormat("dd.MM.yyyy");
-		yearDetails.addComponent(yearTo);
-		yearFields.bind(yearTo, YEAR_TO);
-
-		yearEndFirstTerm = new DateField("Ende 1. Halbjahr:");
-		yearEndFirstTerm.setDateFormat("dd.MM.yyyy");
-		yearDetails.addComponent(yearEndFirstTerm);
-		yearFields.bind(yearEndFirstTerm, YEAR_END_FIRST);
-
-		yearBeginSecondTerm = new DateField("Anfang 2. Halbjahr:");
-		yearBeginSecondTerm.setDateFormat("dd.MM.yyyy");
-		yearDetails.addComponent(yearBeginSecondTerm);
-		yearFields.bind(yearBeginSecondTerm, YEAR_BEGIN_SEC);
-
-		HorizontalLayout buttons = new HorizontalLayout();
-		yearDetails.addComponent(buttons);
-
-		yearCancel = new Button("Abbrechen");
-		buttons.addComponent(yearCancel);
-
-		yearSave = new Button("Speichern");
-		yearSave.addStyleName("default");
-		buttons.addComponent(yearSave);
-
-		yearCancel.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				yearTable.select(null);
-				yearDetails.setVisible(false);
-			}
-		});
-
-		yearSave.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = -901115327116315724L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void buttonClick(ClickEvent event) {
-				SchoolYear fieldsItem = ((BeanItem<SchoolYear>) yearFields
-						.getItemDataSource()).getBean();
-				// Update item
-				try {
-					yearFields.commit();
-					settingsViewModel.doUpdateSchoolYear(fieldsItem);
-					yearCancel.click();
-				} catch (CommitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		});
-
-		yearFields.setBuffered(true);
-
+	/**
+	 * Configure the year-table for edit (or not)
+	 * 
+	 * @param editable
+	 *            Whether the table should be editable or not
+	 */
+	public void yearConfigureEditable(boolean editable) {
+		yearTable.setSelectable(!editable);
+		yearTable.setEditable(editable);
+		yearSave.setVisible(editable);
+		yearCancel.setVisible(editable);
+		yearEdit.setVisible(!editable);
+		if (editable && !yearFields.isEmpty()) {
+			yearFields.get(0).focus();
+		}
 	}
 
 	/**
@@ -717,7 +766,6 @@ public class SettingsView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
