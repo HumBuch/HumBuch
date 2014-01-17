@@ -292,6 +292,8 @@ public class MainUI extends ScopedUI {
 		case WARNING:
 			notificationType = Type.WARNING_MESSAGE;
 			break;
+		case TRAYINFO:
+			notificationType = Type.TRAY_NOTIFICATION;
 		case INFO:
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
