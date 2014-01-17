@@ -23,8 +23,9 @@ public final class PDFClassList extends PDFHandler {
 		if(this.gradesMap != null){
 			for(Grade grade : this.gradesMap.keySet()){
 				this.grade = grade;
-				this.addHeading(document, "Ausgabe-Liste 2013");
+				this.addHeading(document);
 				this.addGradeInformation(document);
+				this.addInformationAboutDocument(document, "Klassen-Liste");
 				this.addContent(document);
 				document.newPage();
 				this.resetPageNumber();
@@ -36,12 +37,11 @@ public final class PDFClassList extends PDFHandler {
 		PdfPTable table = this.createTableWithRentalInformationHeaderForClass();
 
 		Map<TeachingMaterial, Integer> map = this.gradesMap.get(this.grade);
-		System.out.println(map.size());
+
 		for(TeachingMaterial teachingMaterial : map.keySet()) {
-			String[] contentArray = {""+teachingMaterial.getToGrade(),
-			                         	teachingMaterial.getName(),
+			String[] contentArray = {teachingMaterial.getName(),
 			                         ""+ map.get(teachingMaterial)};
-			PDFHandler.fillTableWithContent(table, true, contentArray);
+			PDFHandler.fillTableWithContentWithoutSpace(table, true, contentArray, true, 5f);
 		}
 
 		try {
@@ -60,14 +60,12 @@ public final class PDFClassList extends PDFHandler {
 	private void addGradeInformation(Document document){
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
 
-		String[] contentArray = {"Klasse: ", "" + this.grade.toString(),
-		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
+		String[] contentArray = {"Klasse: ", "" + this.grade.toString()}; 
 
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
+		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
 		
 		try {
 			document.add(table);
-			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();

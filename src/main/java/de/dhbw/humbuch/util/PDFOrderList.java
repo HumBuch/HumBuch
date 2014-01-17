@@ -15,7 +15,7 @@ public final class PDFOrderList extends PDFHandler {
 	}
 	
 	protected void insertDocumentParts(Document document) {
-		this.addHeading(document, "Bestell-Liste 2013");
+		this.addHeading(document);
 	}
 	
 	protected void addContent(Document document) {
