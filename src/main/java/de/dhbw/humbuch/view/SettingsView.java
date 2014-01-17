@@ -326,6 +326,7 @@ public class SettingsView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				Category item = (Category) catTable.getValue();
 				settingsViewModel.doDeleteCategory(item);
+				catTable.select(null);
 				catData.removeItem(item);
 				catConfigureEditable(false);
 			}
@@ -576,6 +577,7 @@ public class SettingsView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				SchoolYear item = (SchoolYear) yearTable.getValue();
 				settingsViewModel.doDeleteSchoolYear(item);
+				yearTable.select(null);
 				yearData.removeItem(item);
 				yearConfigureEditable(false);
 			}
