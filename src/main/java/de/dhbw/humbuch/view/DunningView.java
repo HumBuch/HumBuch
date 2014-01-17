@@ -127,13 +127,13 @@ public class DunningView extends VerticalLayout implements View,
 				setStudent.add(selectedDunning.getStudent());
 				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
 				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				//ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
 //				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
 				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname();
-				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				//StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
 				
-				new PrintingComponent(sr, "Mahnung");
+				//new PrintingComponent(sr, "Mahnung");
 				selectedDunning.setStatus(Dunning.Status.SENT);
 				tableDunnings.removeAllItems();
 				dunningViewModel.doUpdateDunning(selectedDunning);			}
@@ -147,13 +147,13 @@ public class DunningView extends VerticalLayout implements View,
 				setStudent.add(selectedDunning.getStudent());
 				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
 				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				//ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
 //				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
 				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname();
-				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				//StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
 				
-				new PrintingComponent(sr, "Mahnung");
+				//new PrintingComponent(sr, "Mahnung");
 				selectedDunning.setStatus(Dunning.Status.SENT);
 				tableDunnings.removeAllItems();
 				dunningViewModel.doUpdateDunning(selectedDunning);
