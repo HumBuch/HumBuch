@@ -30,6 +30,7 @@ import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
@@ -86,6 +87,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buildLayout();
 	}
 
+	@AfterVMBinding
+	private void afterVMBinding() {
+		updateStudentsWithUnreceivedBorrowedMaterials();
+	}
+	
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
@@ -112,7 +118,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		windowManualLending.setContent(manualLendingPopupView);
 
 		addListeners();
-		updateStudentsWithUnreceivedBorrowedMaterials();
 	}
 
 	private void buildLayout() {
