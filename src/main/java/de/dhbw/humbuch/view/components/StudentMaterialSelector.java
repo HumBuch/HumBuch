@@ -329,7 +329,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void updateCurrentlySelectedMaterials() {
 		currentlySelectedBorrowedMaterials.clear();
-		for (Grade grade : currentlySelectedGrades) {
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
 			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
 			for (Student student : currentlySelectedStudents) {
 				if (studentsWithMaterials.containsKey(student)) {

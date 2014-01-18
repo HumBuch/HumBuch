@@ -2,8 +2,10 @@ package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
+import de.dhbw.humbuch.viewmodel.LendingViewModel.TeachingMaterials;
 
 
 public class LendingView extends VerticalLayout implements View, ViewInformation {
@@ -78,6 +81,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@BindState(MaterialListGrades.class)
 	public State<Map<Grade, Map<TeachingMaterial, Integer>>> materialListGrades = new BasicState<>(Map.class);
 
+	@BindState(TeachingMaterials.class)
+	private State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
+
 	@Inject
 	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
 		this.lendingViewModel = lendingViewModel;
@@ -94,7 +100,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buttonStudentList = new Button(STUDENT_LIST);
 		buttonManualLending = new Button(MANUAL_LENDING);
 		themeResourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
-		manualLendingPopupView = new ManualLendingPopupView();
+		manualLendingPopupView = new ManualLendingPopupView(this);
 		windowManualLending = new Window();
 
 		buttonClassList.setIcon(themeResourceIconPrint);
@@ -206,10 +212,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
 		if (gradesAndTeachingMaterials != null) {
 			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
-			if(baos != null){
+			if (baos != null) {
 				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + CLASS_LIST_PDF;
 				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-	
+
 				new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
 			}
 		}
@@ -230,7 +236,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				builders.add(builder);
 			}
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
-			if(baos != null){
+			if (baos != null) {
 				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
 				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
 
@@ -262,7 +268,28 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void showManualLendingPopup() {
+		manualLendingPopupView.updateTeachingMaterials(teachingMaterials.get());
 		getUI().addWindow(windowManualLending);
+	}
+
+	private void doManualLending() {
+		Map<Student, List<TeachingMaterial>> toLend = new HashMap<Student, List<TeachingMaterial>>();
+		HashSet<Student> selectedStudent = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+
+		// This loop should only run once
+		for (Student student : selectedStudent) {
+			toLend.put(student, manualLendingPopupView.getCurrentlySelectedTeachingMaterials());
+		}
+
+		LendingView.this.lendingViewModel.doManualLending(toLend);
+	}
+
+	protected void closePopup(boolean saveData) {
+		if (saveData) {
+			doManualLending();
+		}
+
+		windowManualLending.close();
 	}
 
 	public void update(boolean singleStudentSelected) {
