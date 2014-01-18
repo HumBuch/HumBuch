@@ -298,7 +298,7 @@ public class MainUI extends ScopedUI {
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
 		}
-		Notification.show(messageEvent.message, notificationType);
+		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
