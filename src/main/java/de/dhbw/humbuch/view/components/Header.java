@@ -7,6 +7,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -14,6 +15,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
+import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogout;
 
@@ -56,6 +58,23 @@ public class Header extends CustomComponent {
 		buttonSettings.setIcon(new ThemeResource("images/icons/32/icon_settings_red.png"));
 		buttonSettings.setSizeFull();
 		buttonSettings.setStyleName(BaseTheme.BUTTON_LINK);
+		buttonSettings.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -7667662717938776495L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (!getUI().getNavigator().getState()
+						.equals(MainUI.SETTINGS_VIEW)) {
+					try {
+						getUI().getNavigator().navigateTo(MainUI.SETTINGS_VIEW);
+					}
+					catch (IllegalArgumentException e) {
+						getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
+					}
+				}
+			}
+			
+		});
 		
 		buttonHelp.setIcon(new ThemeResource("images/icons/32/icon_help_red.png"));
 		buttonHelp.setSizeFull();

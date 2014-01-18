@@ -19,7 +19,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -48,8 +47,8 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	@Column(name="subject")
 	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
-	@OneToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinColumn(name="parentId")
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name="parentId", referencedColumnName="id")
 	private Parent parent;
 	
 	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)

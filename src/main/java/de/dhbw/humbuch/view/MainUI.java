@@ -54,6 +54,7 @@ public class MainUI extends ScopedUI {
 	public static final String LENDING_VIEW = "lending_view";
 	public static final String RETURN_VIEW = "return_view";
 	public static final String STUDENT_INFORMATION_VIEW = "student_information_view";
+	public static final String SETTINGS_VIEW = "settings_view";
 
 	@Inject
 	private LoginView loginView;
@@ -69,6 +70,10 @@ public class MainUI extends ScopedUI {
 	private BookManagementView bookManagementView;
 	@Inject
 	private StudentInformationView studentInformationView;
+	@Inject
+	private HelpView helpView;
+	@Inject
+	private SettingsView settingsView;
 
 	@Inject
 	private Header header;
@@ -111,6 +116,7 @@ public class MainUI extends ScopedUI {
 		navigator.addView(LENDING_VIEW, lendingView);
 		navigator.addView(RETURN_VIEW, returnView);
 		navigator.addView(STUDENT_INFORMATION_VIEW, studentInformationView);
+		navigator.addView(SETTINGS_VIEW, settingsView);
 
 		if (!isLoggedIn.get()) {
 			buildMainView(true);
@@ -273,7 +279,8 @@ public class MainUI extends ScopedUI {
 	 * Handles {@link MessageEvent}s showing the message in a Vaadin
 	 * {@link Notification}
 	 * 
-	 * @param messageEvent {@link MessageEvent} containing the message to show
+	 * @param messageEvent
+	 *            {@link MessageEvent} containing the message to show
 	 */
 	@Subscribe
 	public void handleMessageEvent(MessageEvent messageEvent) {
@@ -285,11 +292,13 @@ public class MainUI extends ScopedUI {
 		case WARNING:
 			notificationType = Type.WARNING_MESSAGE;
 			break;
+		case TRAYINFO:
+			notificationType = Type.TRAY_NOTIFICATION;
 		case INFO:
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
 		}
-		Notification.show(messageEvent.message, notificationType);
+		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
