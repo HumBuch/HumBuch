@@ -127,10 +127,9 @@ public class LendingViewModel {
 	}
 	
 	private void updateSchoolYear() {
-		currentSchoolYear = ((List<SchoolYear>) daoSchoolYear.findAllWithCriteria(
+		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Restrictions.le("fromDate", new Date()), 
-				Restrictions.ge("toDate", new Date())))
-				.get(0);
+				Restrictions.ge("toDate", new Date()));
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
