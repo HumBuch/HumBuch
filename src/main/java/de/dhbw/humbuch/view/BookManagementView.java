@@ -73,9 +73,10 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TABLE_PRODUCER = "Hersteller";
 	private static final String TABLE_IDENTIFYER = "Eindeutige Nummer";
 	private static final String TABLE_CATEGORY = "Kategorie";
-	private static final String TABLE_CLASSFROM = "von Klasse";
-	private static final String TABLE_CLASSTO = "bis Klasse";
-	private static final String TABLE_TERM = "Halbjahr";
+	private static final String TABLE_CLASS_FROM = "von Klasse";
+	private static final String TABLE_CLASS_TO = "bis Klasse";
+	private static final String TABLE_TERM_FROM = "von Halbjahr";
+	private static final Object TABLE_TERM_TO = "bis Halbjahr";
 	private static final String TABLE_COMMENT = "Kommentar";
 	private static final String TABLE_PROFILE = "Profil";
 	private static final String WINDOW_NEW_TEACHING_MATERIAL = "Neues Lehrmittel eintragen";
@@ -91,7 +92,6 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TEXTFIELD_SEARCH_PLACEHOLDER = "Lehrmittel oder Hersteller";
 	private static final String TERM = "Halbjahr";
 	private static final String CATEGORY = "Kategorie";
-
 
 	/**
 	 * Layout components
@@ -131,9 +131,10 @@ public class BookManagementView extends VerticalLayout implements View,
 	private TextField textFieldFromGrade = new TextField(TEXTFIELD_FROMGRADE);
 	private TextField textFieldToGrade = new TextField(TEXTFIELD_TOGRADE);
 	private ComboBox comboBoxProfiles = new ComboBox(TABLE_PROFILE);
-	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
-	private ComboBox comboBoxTerm = new ComboBox(TERM);
+	private ComboBox comboBoxFromTerm = new ComboBox(TERM);
+	private ComboBox comboBoxToTerm = new ComboBox(TERM);
 	private ComboBox comboBoxCategory = new ComboBox(CATEGORY);
+	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
 	private Button buttonWindowSave = new Button(BUTTON_SAVE);
 	private Button buttonWindowCancel = new Button(BUTTON_CANCEL);
 
@@ -173,8 +174,9 @@ public class BookManagementView extends VerticalLayout implements View,
 									teachingMaterial.getIdentifyingNumber(),
 									teachingMaterialProfile,
 									teachingMaterial.getFromGrade(),
+									teachingMaterial.getFromTerm(),
 									teachingMaterial.getToGrade(),
-									teachingMaterial.getTerm(),
+									teachingMaterial.getToTerm(),
 									teachingMaterial.getCategory(),
 									teachingMaterial.getComment()},
 							teachingMaterial.getId());
@@ -198,9 +200,11 @@ public class BookManagementView extends VerticalLayout implements View,
 		textFieldSearchBar.setImmediate(true);
 		textFieldSearchBar.setTextChangeEventMode(TextChangeEventMode.EAGER);
 		
-		comboBoxTerm.addItem(Term.FIRST);
-		comboBoxTerm.addItem(Term.SECOND);
-		comboBoxTerm.addItem(Term.BOTH);
+		comboBoxFromTerm.addItem(Term.FIRST);
+		comboBoxFromTerm.addItem(Term.SECOND);
+		
+		comboBoxToTerm.addItem(Term.FIRST);
+		comboBoxToTerm.addItem(Term.SECOND);
 		
 		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
 		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
@@ -218,9 +222,10 @@ public class BookManagementView extends VerticalLayout implements View,
 		containerTable.addContainerProperty(TABLE_PRODUCER, String.class, null);
 		containerTable.addContainerProperty(TABLE_IDENTIFYER, String.class,	null);
 		containerTable.addContainerProperty(TABLE_PROFILE, String.class, null);
-		containerTable.addContainerProperty(TABLE_CLASSFROM, Integer.class, null);
-		containerTable.addContainerProperty(TABLE_CLASSTO, Integer.class, null);
-		containerTable.addContainerProperty(TABLE_TERM, Term.class, null);
+		containerTable.addContainerProperty(TABLE_CLASS_FROM, Integer.class, null);
+		containerTable.addContainerProperty(TABLE_TERM_FROM, Term.class, null);
+		containerTable.addContainerProperty(TABLE_CLASS_TO, Integer.class, null);
+		containerTable.addContainerProperty(TABLE_TERM_TO, Term.class, Term.SECOND);
 		containerTable.addContainerProperty(TABLE_CATEGORY, Category.class, null);
 		containerTable.addContainerProperty(TABLE_COMMENT, String.class, null);
 		tableTeachingMaterials.setContainerDataSource(containerTable);
@@ -242,14 +247,16 @@ public class BookManagementView extends VerticalLayout implements View,
 	private void setFormOptions() {
 		comboBoxCategory.setNullSelectionAllowed(false);
 		comboBoxProfiles.setNullSelectionAllowed(false);
-		comboBoxTerm.setNullSelectionAllowed(false);
+		comboBoxFromTerm.setNullSelectionAllowed(false);
+		comboBoxToTerm.setNullSelectionAllowed(false);
 		textFieldTeachingMaterialIdentifyer.setRequired(true);
 		textFieldTeachingMaterialName.setRequired(true);
 		textFieldFromGrade.setRequired(true);
 		textFieldToGrade.setRequired(true);
 		textFieldProducer.setRequired(true);
 		comboBoxCategory.setRequired(true);
-		comboBoxTerm.setRequired(true);
+		comboBoxFromTerm.setRequired(true);
+		comboBoxToTerm.setRequired(true);
 		comboBoxProfiles.setRequired(true);
 	}
 
@@ -320,7 +327,8 @@ public class BookManagementView extends VerticalLayout implements View,
 						teachingMaterial.setProducer(textFieldProducer.getValue());
 						teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
 						teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
-						teachingMaterial.setTerm((Term) comboBoxTerm.getValue());
+						teachingMaterial.setFromTerm((Term) comboBoxFromTerm.getValue());
+						teachingMaterial.setToTerm((Term) comboBoxToTerm.getValue());
 						teachingMaterial.setComment(textAreaComment.getValue());
 						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles.getValue());
 					} else {
@@ -330,7 +338,8 @@ public class BookManagementView extends VerticalLayout implements View,
 						teachingMaterial.setProducer(textFieldProducer.getValue());
 						teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
 						teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
-						teachingMaterial.setTerm((Term) comboBoxTerm.getValue());
+						teachingMaterial.setFromTerm((Term) comboBoxFromTerm.getValue());
+						teachingMaterial.setToTerm((Term) comboBoxToTerm.getValue());
 						teachingMaterial.setComment(textAreaComment.getValue());
 						teachingMaterial.setCategory(categories.get().get((int) comboBoxCategory.getValue()));
 						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles.getValue());
@@ -405,7 +414,8 @@ public class BookManagementView extends VerticalLayout implements View,
 					textFieldFromGrade.setValue(Integer.toString(teachingMaterial.getFromGrade()));
 					textFieldToGrade.setValue(Integer.toString(teachingMaterial.getToGrade()));
 					textAreaComment.setValue((teachingMaterial.getComment() == null) ? "" : teachingMaterial.getComment() );
-					comboBoxTerm.setValue(teachingMaterial.getTerm());
+					comboBoxFromTerm.setValue(teachingMaterial.getFromTerm());
+					comboBoxToTerm.setValue(teachingMaterial.getToTerm());
 					
 					for (Map.Entry<Integer, Category> category : categories.get().entrySet()) {
 						comboBoxCategory.addItem(category.getValue().getId());
@@ -474,8 +484,9 @@ public class BookManagementView extends VerticalLayout implements View,
 		verticalLayoutWindowContent.addComponent(textFieldProducer);
 		verticalLayoutWindowContent.addComponent(comboBoxProfiles);
 		verticalLayoutWindowContent.addComponent(textFieldFromGrade);
+		verticalLayoutWindowContent.addComponent(comboBoxFromTerm);
 		verticalLayoutWindowContent.addComponent(textFieldToGrade);
-		verticalLayoutWindowContent.addComponent(comboBoxTerm);
+		verticalLayoutWindowContent.addComponent(comboBoxToTerm);
 		verticalLayoutWindowContent.addComponent(textAreaComment);
 
 		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
@@ -496,7 +507,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		textFieldToGrade.setValue("");
 		textAreaComment.setValue("");
 		textFieldProducer.setValue("");
-		comboBoxTerm.setValue(Term.BOTH);
+		comboBoxFromTerm.setValue(Term.FIRST);
+		comboBoxToTerm.setValue(Term.SECOND);
 	}
 
 	@Override
