@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Restrictions;
+
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -18,7 +20,10 @@ import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
+import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.model.entity.TeachingMaterial.Term;
 
 public class ReturnViewModel {
 	
@@ -32,16 +37,20 @@ public class ReturnViewModel {
 	
 	private DAO<Grade> daoGrade;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
+	private DAO<SchoolYear> daoSchoolYear;
 	
+	private SchoolYear currentSchoolYear;
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoGrade = daoGrade;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
+		this.daoSchoolYear = daoSchoolYear;
 	}
 	
 	@AfterVMBinding
 	private void afterVMBinding() {
+		updateSchoolYear();
 		updateReturnList();
 	}
 	
@@ -58,7 +67,7 @@ public class ReturnViewModel {
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
 					if(borrowedMaterial.isReceived() //book is received 
 							&& borrowedMaterial.getReturnDate() == null //book hasn't returned yet
-							&& borrowedMaterial.getTeachingMaterial().getToGrade() <= student.getGrade().getGrade() + 1) { //book isn't needed next year
+							&& !isNeededNextTerm(borrowedMaterial)) { //book isn't needed next term
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					}
 				}
@@ -86,7 +95,24 @@ public class ReturnViewModel {
 		updateReturnList();
 	}
 	
+	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
+		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
+
+		int toGrade = teachingMaterial.getToGrade();
+		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
+		Term toTerm = teachingMaterial.getToTerm();
+		Term currentTerm = currentSchoolYear.getCurrentTerm();
+		
+		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm.compareTo(currentTerm) > 0)));
+	}
+
 	private void updateReturnList() {
 		generateStudentReturnList();
+	}
+	
+	private void updateSchoolYear() {
+		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
+				Restrictions.le("fromDate", new Date()), 
+				Restrictions.ge("toDate", new Date()));
 	}
 }
