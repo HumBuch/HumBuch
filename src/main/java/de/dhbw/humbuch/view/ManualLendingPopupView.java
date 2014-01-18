@@ -7,8 +7,13 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,6 +43,7 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
 	private Button buttonCancel;
+	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
 	private ArrayList<TeachingMaterial> currentlySelectedMaterials;
 	private LendingView lendingView;
@@ -55,12 +61,15 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 		buttonSave = new Button(SAVE);
 		buttonCancel = new Button(CANCEL);
 		currentlySelectedMaterials = new ArrayList<TeachingMaterial>();
+		containerTableTeachingMaterials = new IndexedContainer();
 
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
 		textFieldSearchBar.setWidth("66%");
 
-		tableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
+		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
+
+		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
 		tableTeachingMaterials.setWidth("100%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
@@ -71,7 +80,7 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 		setSpacing(true);
 		setMargin(true);
 
-		addButtonListeners();
+		addListeners();
 	}
 
 	private void buildLayout() {
@@ -118,7 +127,7 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 		});
 	}
 
-	private void addButtonListeners() {
+	private void addListeners() {
 		buttonCancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 3353625484974813579L;
@@ -136,6 +145,18 @@ public class ManualLendingPopupView extends VerticalLayout implements ViewInform
 			@Override
 			public void buttonClick(ClickEvent event) {
 				lendingView.closePopup(true);
+			}
+		});
+
+		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
+
+			private static final long serialVersionUID = -6281243106168356850L;
+
+			@Override
+			public void textChange(TextChangeEvent event) {
+				Filter filter = new SimpleStringFilter(TEACHING_MATERIAL_HEADER, event.getText(), true, false);
+				containerTableTeachingMaterials.removeAllContainerFilters();
+				containerTableTeachingMaterials.addContainerFilter(filter);
 			}
 		});
 	}
