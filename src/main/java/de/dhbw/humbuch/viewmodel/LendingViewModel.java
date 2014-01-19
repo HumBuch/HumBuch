@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -19,6 +20,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
@@ -115,14 +117,15 @@ public class LendingViewModel {
 		}
 	}
 	
-	public void updateAllStudentsBorrowedMaterials() {
+	private void updateAllStudentsBorrowedMaterials() {
 		for(Student student : daoStudent.findAll()) {
 			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
-			updateUnreceivedBorrowedMaterialsState();
 		}
+
+		updateUnreceivedBorrowedMaterialsState();
 	}
 
-	public void updateTeachingMaterials() {
+	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 	
@@ -189,7 +192,13 @@ public class LendingViewModel {
 		for(BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
 			owning.add(borrowedMaterial.getTeachingMaterial());
 		}
+		
 		return owning;
+	}
+	
+	@Subscribe
+	public void handleImportEvent(ImportSuccessEvent importEvent) {
+		updateAllStudentsBorrowedMaterials();
 	}
 }
 
