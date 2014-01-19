@@ -9,6 +9,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.Navigator;
@@ -43,6 +44,7 @@ import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 @Theme("humbuch")
 @SuppressWarnings("serial")
 @Widgetset("com.vaadin.DefaultWidgetSet")
+@Title("HumBuch Schulbuchverwaltung")
 public class MainUI extends ScopedUI {
 
 	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
@@ -102,9 +104,6 @@ public class MainUI extends ScopedUI {
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
-		/**
-		 * Add all views, that should be navigatable
-		 */
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
 		navigator.addView(LOGIN_VIEW, loginView);
