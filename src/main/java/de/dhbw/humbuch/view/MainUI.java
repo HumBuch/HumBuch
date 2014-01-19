@@ -71,8 +71,6 @@ public class MainUI extends ScopedUI {
 	@Inject
 	private StudentInformationView studentInformationView;
 	@Inject
-	private HelpView helpView;
-	@Inject
 	private SettingsView settingsView;
 
 	@Inject
@@ -294,6 +292,7 @@ public class MainUI extends ScopedUI {
 			break;
 		case TRAYINFO:
 			notificationType = Type.TRAY_NOTIFICATION;
+			break;
 		case INFO:
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
