@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +10,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.BeanItemContainer;
@@ -22,7 +27,6 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
@@ -40,13 +44,14 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
-import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.ImportResult;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 /**
@@ -56,12 +61,10 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
  */
 public class StudentInformationView extends VerticalLayout implements View,
 		ViewInformation {
-
 	private static final long serialVersionUID = -739081142499192817L;
 
-	/**
-	 * Constants
-	 */
+	private final static Logger LOG = LoggerFactory.getLogger(StudentInformationView.class);
+	
 	private static final String TITLE = "Schülerübersicht";
 	private static final String TABLE_FIRSTNAME = "firstname";
 	private static final String TABLE_LASTNAME = "lastname";
@@ -78,15 +81,13 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private TextField filter;
 	private Table studentsTable;
 
-	protected StudentInformationViewModel studenInformationViewModel;
-	@BindState(ImportResult.class)
-	private BasicState<String> importResult = new BasicState<String>(
-			String.class);
+	protected StudentInformationViewModel studentInformationViewModel;
 
 	@BindState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(
 			Collection.class);
 	private BeanItemContainer<Student> tableData;
+	private EventBus eventBus;
 
 	/**
 	 * constructor
@@ -96,8 +97,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 */
 	@Inject
 	public StudentInformationView(ViewModelComposer viewModelComposer,
-			StudentInformationViewModel importViewModel) {
-		this.studenInformationViewModel = importViewModel;
+			StudentInformationViewModel importViewModel, EventBus eventBus) {
+		this.studentInformationViewModel = importViewModel;
+		this.eventBus = eventBus;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, importViewModel);
@@ -232,16 +234,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 		});
 
 		/**
-		 * Displays the import result
-		 */
-		importResult.addStateChangeListener(new StateChangeListener() {
-			@Override
-			public void stateChange(Object arg0) {
-				Notification.show(importResult.get());
-			}
-		});
-
-		/**
 		 * Provides the live search of the table by adding a filter after every
 		 * keypress in the search field.
 		 */
@@ -339,7 +331,14 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public OutputStream receiveUpload(String filename, String MIMEType) {
-
+			if(!MIMEType.equals("text/csv")) {
+				upload.interruptUpload();
+				interrupted = true;
+				eventBus.post(new MessageEvent("Import nicht möglich.",
+						"Die ausgewählte Datei ist keine CSV-Datei.",
+						Type.ERROR));
+			}
+            reset();
 			this.outputStream = new ByteArrayOutputStream();
 			return outputStream;
 
@@ -347,10 +346,25 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 		public void uploadSucceeded(Upload.SucceededEvent event) {
 			if (!interrupted) {
-				studenInformationViewModel
+				studentInformationViewModel
 						.receiveUploadByteOutputStream(outputStream);
 			}
 		}
+		
+		/**
+		 * Resets the upload
+		 */
+        public void reset() {
+			interrupted = false;
+            if (outputStream != null) {
+                try {
+                	outputStream.close();
+                } catch (IOException ex) {
+                    LOG.trace("Couldn't close previous OutputStream");
+                }
+            }
+            outputStream = null;
+        }
 
 		/**
 		 * Interrupts the current upload
@@ -358,10 +372,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 		protected void interrupt() {
 			upload.interruptUpload();
 			interrupted = true;
-			new Notification(
-					"Import nicht möglich.",
-					"Die ausgewählte Datei ist zu groß. Bitte kontaktieren Sie einen Administrator.",
-					Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+			eventBus.post(new MessageEvent("Import nicht möglich.",
+					"Die ausgewählte Datei ist zu groß. Bitte kontaktieren Sie einen Entwickler.",
+					Type.ERROR));
 		}
 
 		@Override

@@ -3,6 +3,7 @@ package de.dhbw.humbuch.viewmodel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -19,6 +21,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
@@ -27,17 +31,14 @@ import de.dhbw.humbuch.util.CSVHandler;
 
 public class StudentInformationViewModel {
 
-	public interface ImportResult extends State<String> {}
 	public interface Students extends State<Collection<Student>> {}
 		
 	public interface PersistStudents extends ActionHandler {}
-	
-	@ProvidesState(ImportResult.class)
-	public State<String> importResult = new BasicState<>(String.class);
 
 	@ProvidesState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
 	
+	private EventBus eventBus;
 	private DAO<Student> daoStudent;
 	private DAO<Grade> daoGrade;
 	private DAO<Parent> daoParent;
@@ -49,10 +50,11 @@ public class StudentInformationViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent) {
+	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;
 		this.daoParent = daoParent;
+		this.eventBus = eventBus;
 	}
 	
 	@AfterVMBinding
@@ -109,7 +111,7 @@ public class StudentInformationViewModel {
 				daoStudent.update(student);
 			}
 		}
-		
+		eventBus.post(new MessageEvent("Import erfolgreich", "Alle Schüler wurden erfolgreich importiert", Type.TRAYINFO));
 		updateStudents();
 	}
 
@@ -120,10 +122,12 @@ public class StudentInformationViewModel {
 	 */
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
 		CSVReader reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
-		persistStudents(CSVHandler.createStudentObjectsFromCSV(reader));
+		try {
+			ArrayList<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
+			persistStudents(students);
+		} catch (UnsupportedOperationException uoe) {
+			eventBus.post(new MessageEvent("Import nicht möglich.", uoe.getMessage(), Type.ERROR));
+		}
 	}
 
-//	private void setImportResult(String importResult) {
-//		this.importResult.set(importResult);
-//	}
 }
