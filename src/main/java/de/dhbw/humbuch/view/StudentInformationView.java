@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -30,6 +31,9 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
@@ -80,7 +84,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private HorizontalLayout head;
 	private TextField filter;
 	private Table studentsTable;
-
+	private Button showMaterials;
+	
 	protected StudentInformationViewModel studentInformationViewModel;
 
 	@BindState(Students.class)
@@ -108,9 +113,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 	/**
 	 * Initializes the components and sets attributes.
 	 */
-	/**
-	 * 
-	 */
 	private void init() {
 
 		head = new HorizontalLayout();
@@ -128,15 +130,22 @@ public class StudentInformationView extends VerticalLayout implements View,
 		head.setExpandRatio(filter, 1);
 		head.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
 
-		// Upload
+		HorizontalLayout buttons = new HorizontalLayout();
+		
+		showMaterials = new Button("Entliehene Materialien anzeigen...");
+		showMaterials.setEnabled(false);
+		buttons.addComponent(showMaterials);
+		
+		// Import button
 		upload = new Upload();
 		upload.setReceiver(receiver);
 		upload.setImmediate(true);
 		upload.addSucceededListener(receiver);
 		upload.setButtonCaption("Importieren");
-
-		head.addComponent(upload);
-		head.setComponentAlignment(upload, Alignment.MIDDLE_RIGHT);
+		buttons.addComponent(upload);
+		
+		head.addComponent(buttons);
+		head.setComponentAlignment(buttons, Alignment.MIDDLE_RIGHT);
 
 		// Table
 		studentsTable = new Table() {
@@ -189,47 +198,25 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private void addListener() {
 
 		/**
-		 * Implements the right click menu
+		 * Implements the button click event to show all borrowed materials of a student
 		 */
-		studentsTable.addActionHandler(new Handler() {
-
-			private static final long serialVersionUID = 5717528972959000947L;
-
-			private Action showBooks = new Action("Entliehene Bücher anzeigen");
+		showMaterials.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 1947881830091475265L;
 
 			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (action == showBooks) {
-					((Table) sender).select(target);
-					Student item = (Student) ((Table) sender).getValue();
-
-					if (item != null) {
-						
-						List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();;
-						
-						for (BorrowedMaterial bm : item.getBorrowedList()) {
-							if (bm.isReceived() && bm.getReturnDate() == null) {
-								borrowedMaterials.add(bm);
-							}
-						}
-						
-						if (!borrowedMaterials.isEmpty()) {
-							PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(item.getBorrowedList());
-							ByteArrayOutputStream boas = new PDFStudentList(builder).createByteArrayOutputStreamForPDF();
-							
-							StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(boas), "Infoliste_" + item.getLastname() + "_" + item.getFirstname() + ".pdf");
-							
-							new PrintingComponent(sr, "Ausgeliehene Materialien von " + item.getLastname() + ", " + item.getFirstname());
-						} else {
-							Notification.show("Der Schüler '" + item.getLastname() + ", " + item.getFirstname() + "' hat keine Materialien ausgeliehen.");
-						}
-					}
-				}
+			public void buttonClick(ClickEvent event) {
+				doStudentListPrinting();
 			}
-
+		});
+		
+		/**
+		 * Enables/disables the show materials button
+		 */
+		studentsTable.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
-			public Action[] getActions(Object target, Object sender) {
-				return new Action[] { showBooks };
+			public void valueChange(ValueChangeEvent event) {
+				Student item = (Student) studentsTable.getValue();
+				showMaterials.setEnabled(item != null);
 			}
 		});
 
@@ -289,6 +276,34 @@ public class StudentInformationView extends VerticalLayout implements View,
 		setExpandRatio(studentsTable, 1);
 	}
 
+	private void doStudentListPrinting() {
+		
+		Student item = (Student) studentsTable.getValue();
+
+		if (item != null) {
+			
+			List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();;
+			
+			for (BorrowedMaterial bm : item.getBorrowedList()) {
+				if (bm.isReceived() && bm.getReturnDate() == null) {
+					borrowedMaterials.add(bm);
+				}
+			}
+			
+			if (!borrowedMaterials.isEmpty()) {
+				PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterials);
+				ByteArrayOutputStream boas = new PDFStudentList(builder).createByteArrayOutputStreamForPDF();
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(boas), "Infoliste_" + item.getLastname() + "_" + item.getFirstname() + ".pdf");
+				new PrintingComponent(sr, "Ausgeliehene Materialien von " + item.getLastname() + ", " + item.getFirstname());
+			} else {
+				/**
+				 * TODO: Implement EventBus
+				 */
+				Notification.show("Der Schüler '" + item.getLastname() + ", " + item.getFirstname() + "' hat keine Materialien ausgeliehen.");
+			}
+		}
+	}
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
