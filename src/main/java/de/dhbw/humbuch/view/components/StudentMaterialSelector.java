@@ -118,7 +118,8 @@ public class StudentMaterialSelector extends CustomComponent {
 			// Build root of tree table
 			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
 			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
-
+			treeTableContent.setCollapsed(rootItemId, false);
+			
 			Set<Integer> gradeLevels = getAllGradeLevels();
 
 			// Collect all grade level checkboxes for selecting purposes
@@ -129,6 +130,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				gradeLevelCheckBoxes.add(checkBoxGradeLevel);
 				Object gradeLevelItemId = treeTableContent.addItem(new Object[] { checkBoxGradeLevel }, null);
 				treeTableContent.setParent(gradeLevelItemId, rootItemId);
+				treeTableContent.setCollapsed(gradeLevelItemId, false);
 
 				Set<Grade> grades = getAllGradesForGradeLevel(gradeLevel);
 
