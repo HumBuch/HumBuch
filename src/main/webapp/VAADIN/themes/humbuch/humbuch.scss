@@ -4,14 +4,12 @@
 
 @import "mixins.scss";
 
-@mixin mytheme {
+@mixin humbuch {
 	
 	@include runo;
 	
 	
-	/*
-	 * Login view
-	 */
+	/********* Login View *********/
 	.v-slot-login-panel {
 		background: url("images/login-bg.jpg") no-repeat;
 		-webkit-transition: opacity 300ms linear;
@@ -55,6 +53,8 @@
 		padding-left: 14px;
 	}
 	
+	
+	/********* Animations *********/
 	.v-animate-reveal {
 		@include reveal;
 	}
@@ -62,6 +62,9 @@
 	.v-animate-hide {
 		@include hide;
 	}
+	
+	
+	
 	
 	.footer_background {
 		background: #953735;

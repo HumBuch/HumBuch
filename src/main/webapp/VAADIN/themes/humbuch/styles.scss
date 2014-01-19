@@ -1,13 +1,13 @@
 @import "addons.scss";
-@import "mytheme.scss";
+@import "humbuch.scss";
 
 @include dashboard-keyframes;
 
 /* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
-/* The actual styles should be defined in mytheme.scss */
-.mytheme {
+/* The actual styles should be defined in humbuch.scss */
+.humbuch {
   @include addons;
 
-  // Include mytheme theme styles in your theme
-  @include mytheme;
+  /* Include the humbuch theme*/
+  @include humbuch;
 }

@@ -40,7 +40,7 @@ import de.dhbw.humbuch.view.components.NavigationBar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 
-@Theme("mytheme")
+@Theme("humbuch")
 @SuppressWarnings("serial")
 @Widgetset("com.vaadin.DefaultWidgetSet")
 public class MainUI extends ScopedUI {
