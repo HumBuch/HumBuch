@@ -1,7 +1,7 @@
 package de.dhbw.humbuch.event;
 
 /**
- * Object for the Guava EventBus containing a message and a message tpye
+ * Object for the Guava EventBus containing a message and a message type
  * 
  */
 public class MessageEvent {

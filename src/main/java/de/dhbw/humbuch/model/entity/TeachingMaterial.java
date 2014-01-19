@@ -20,6 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import de.dhbw.humbuch.model.entity.SchoolYear.Term;
+
 @Entity
 @Table(name="teachingMaterial")
 public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
@@ -171,22 +173,6 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.profile = profile;
 	}
 
-	public enum Term {
-		FIRST("1. Halbjahr"),
-		SECOND("2. Halbjahr");
-		
-		private String value;
-		
-		private Term(String value) {
-			this.value = value;
-		}
-		
-		@Override
-		public String toString() {
-			return value;
-		}
-	}
-	
 	public static class Builder {
 		private final Category category;
 		private final String name;

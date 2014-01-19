@@ -3,7 +3,6 @@ package de.dhbw.humbuch.viewmodel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +20,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
@@ -112,6 +112,7 @@ public class StudentInformationViewModel {
 			}
 		}
 		eventBus.post(new MessageEvent("Import erfolgreich", "Alle Schüler wurden erfolgreich importiert", Type.TRAYINFO));
+		eventBus.post(new ImportSuccessEvent());
 		updateStudents();
 	}
 
@@ -123,7 +124,7 @@ public class StudentInformationViewModel {
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
 		CSVReader reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
 		try {
-			ArrayList<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
+			List<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
 			persistStudents(students);
 		} catch (UnsupportedOperationException uoe) {
 			eventBus.post(new MessageEvent("Import nicht möglich.", uoe.getMessage(), Type.ERROR));

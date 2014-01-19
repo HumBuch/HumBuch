@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -17,13 +18,14 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.model.entity.TeachingMaterial.Term;
 
 public class ReturnViewModel {
 	
@@ -114,5 +116,10 @@ public class ReturnViewModel {
 		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Restrictions.le("fromDate", new Date()), 
 				Restrictions.ge("toDate", new Date()));
+	}
+	
+	@Subscribe
+	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
+		generateStudentReturnList();
 	}
 }
