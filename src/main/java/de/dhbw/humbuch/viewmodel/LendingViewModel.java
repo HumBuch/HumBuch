@@ -197,7 +197,7 @@ public class LendingViewModel {
 	}
 	
 	@Subscribe
-	public void handleImportEvent(ImportSuccessEvent importEvent) {
+	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
 		updateAllStudentsBorrowedMaterials();
 	}
 }
