@@ -20,8 +20,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -213,6 +211,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 		 * Enables/disables the show materials button
 		 */
 		studentsTable.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Student item = (Student) studentsTable.getValue();
