@@ -65,8 +65,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 		ViewInformation {
 	private static final long serialVersionUID = -739081142499192817L;
 
-	private final static Logger LOG = LoggerFactory.getLogger(StudentInformationView.class);
-	
+	private final static Logger LOG = LoggerFactory
+			.getLogger(StudentInformationView.class);
+
 	private static final String TITLE = "Schülerübersicht";
 	private static final String TABLE_FIRSTNAME = "firstname";
 	private static final String TABLE_LASTNAME = "lastname";
@@ -83,7 +84,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private TextField filter;
 	private Table studentsTable;
 	private Button showMaterials;
-	
+
 	protected StudentInformationViewModel studentInformationViewModel;
 
 	@BindState(Students.class)
@@ -129,11 +130,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 		head.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
 
 		HorizontalLayout buttons = new HorizontalLayout();
-		
+
 		showMaterials = new Button("Entliehene Materialien anzeigen...");
 		showMaterials.setEnabled(false);
 		buttons.addComponent(showMaterials);
-		
+
 		// Import button
 		upload = new Upload();
 		upload.setReceiver(receiver);
@@ -141,7 +142,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 		upload.addSucceededListener(receiver);
 		upload.setButtonCaption("Importieren");
 		buttons.addComponent(upload);
-		
+
 		head.addComponent(buttons);
 		head.setComponentAlignment(buttons, Alignment.MIDDLE_RIGHT);
 
@@ -171,17 +172,18 @@ public class StudentInformationView extends VerticalLayout implements View,
 		studentsTable.setSizeFull();
 		studentsTable.setColumnCollapsingAllowed(true);
 		studentsTable.setColumnReorderingAllowed(true);
-		
+
 		tableData = new BeanItemContainer<Student>(Student.class);
 		studentsTable.setContainerDataSource(tableData);
-		
-		studentsTable.setVisibleColumns(new Object[] { "lastname", "firstname", "grade", "birthday", "gender" });
+
+		studentsTable.setVisibleColumns(new Object[] { "lastname", "firstname",
+				"grade", "birthday", "gender" });
 		studentsTable.setColumnHeader(TABLE_LASTNAME, "Name");
 		studentsTable.setColumnHeader(TABLE_FIRSTNAME, "Vorname");
 		studentsTable.setColumnHeader(TABLE_GRADE, "Klasse");
 		studentsTable.setColumnHeader(TABLE_BIRTHDAY, "Geburtstag");
 		studentsTable.setColumnHeader(TABLE_GENDER, "Geschlecht");
-		
+
 		/**
 		 * TODO: Sorting of the table seems not to work studentsTable.sort(new
 		 * Object[] { TABLE_NAME }, new boolean[] { true });
@@ -196,7 +198,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private void addListener() {
 
 		/**
-		 * Implements the button click event to show all borrowed materials of a student
+		 * Implements the button click event to show all borrowed materials of a
+		 * student
 		 */
 		showMaterials.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1947881830091475265L;
@@ -206,19 +209,20 @@ public class StudentInformationView extends VerticalLayout implements View,
 				doStudentListPrinting();
 			}
 		});
-		
+
 		/**
 		 * Enables/disables the show materials button
 		 */
-		studentsTable.addValueChangeListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = 1L;
+		studentsTable
+				.addValueChangeListener(new Property.ValueChangeListener() {
+					private static final long serialVersionUID = 1L;
 
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Student item = (Student) studentsTable.getValue();
-				showMaterials.setEnabled(item != null);
-			}
-		});
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						Student item = (Student) studentsTable.getValue();
+						showMaterials.setEnabled(item != null);
+					}
+				});
 
 		/**
 		 * Provides the live search of the table by adding a filter after every
@@ -230,8 +234,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 			@Override
 			public void textChange(TextChangeEvent event) {
 
-				SimpleStringFilter cond1 = new SimpleStringFilter(TABLE_LASTNAME,
-						event.getText(), true, false);
+				SimpleStringFilter cond1 = new SimpleStringFilter(
+						TABLE_LASTNAME, event.getText(), true, false);
 				SimpleStringFilter cond2 = new SimpleStringFilter(
 						TABLE_FIRSTNAME, event.getText(), true, false);
 				Filter filter = new Or(cond1, cond2);
@@ -241,7 +245,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 		});
 
 		/**
-		 * Listens for changes in all students collection an adds them to the container
+		 * Listens for changes in all students collection an adds them to the
+		 * container
 		 */
 		students.addStateChangeListener(new StateChangeListener() {
 			@Override
@@ -277,33 +282,44 @@ public class StudentInformationView extends VerticalLayout implements View,
 	}
 
 	private void doStudentListPrinting() {
-		
+
 		Student item = (Student) studentsTable.getValue();
 
 		if (item != null) {
-			
-			List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();;
-			
+			List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();
+			// Only borrowed Materials that are received and not yet returned
 			for (BorrowedMaterial bm : item.getBorrowedList()) {
 				if (bm.isReceived() && bm.getReturnDate() == null) {
 					borrowedMaterials.add(bm);
 				}
 			}
-			
 			if (!borrowedMaterials.isEmpty()) {
-				PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterials);
-				ByteArrayOutputStream boas = new PDFStudentList(builder).createByteArrayOutputStreamForPDF();
-				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(boas), "Infoliste_" + item.getLastname() + "_" + item.getFirstname() + ".pdf");
-				new PrintingComponent(sr, "Ausgeliehene Materialien von " + item.getLastname() + ", " + item.getFirstname());
+				// Build PDF
+				PDFStudentList.Builder builder = new PDFStudentList.Builder()
+						.borrowedMaterialList(borrowedMaterials);
+				ByteArrayOutputStream boas = new PDFStudentList(builder)
+						.createByteArrayOutputStreamForPDF();
+				String fileNameIncludingHash = "Infoliste_"
+						+ item.getLastname() + "_" + item.getFirstname()
+						+ new Date().hashCode() + ".pdf";
+				StreamResource sr = new StreamResource(
+						new PDFHandler.PDFStreamSource(boas),
+						fileNameIncludingHash);
+				sr.setCacheTime(0);
+
+				new PrintingComponent(sr, "Ausgeliehene Materialien von "
+						+ item.getLastname() + ", " + item.getFirstname());
 			} else {
 				/**
 				 * TODO: Implement EventBus
 				 */
-				Notification.show("Der Schüler '" + item.getLastname() + ", " + item.getFirstname() + "' hat keine Materialien ausgeliehen.");
+				Notification.show("Der Schüler '" + item.getLastname() + ", "
+						+ item.getFirstname()
+						+ "' hat keine Materialien ausgeliehen.");
 			}
 		}
 	}
-	
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
@@ -346,14 +362,14 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public OutputStream receiveUpload(String filename, String MIMEType) {
-			if(!MIMEType.equals("text/csv")) {
+			if (!MIMEType.equals("text/csv")) {
 				upload.interruptUpload();
 				interrupted = true;
 				eventBus.post(new MessageEvent("Import nicht möglich.",
 						"Die ausgewählte Datei ist keine CSV-Datei.",
 						Type.ERROR));
 			}
-            reset();
+			reset();
 			this.outputStream = new ByteArrayOutputStream();
 			return outputStream;
 
@@ -365,21 +381,21 @@ public class StudentInformationView extends VerticalLayout implements View,
 						.receiveUploadByteOutputStream(outputStream);
 			}
 		}
-		
+
 		/**
 		 * Resets the upload
 		 */
-        public void reset() {
+		public void reset() {
 			interrupted = false;
-            if (outputStream != null) {
-                try {
-                	outputStream.close();
-                } catch (IOException ex) {
-                    LOG.trace("Couldn't close previous OutputStream");
-                }
-            }
-            outputStream = null;
-        }
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException ex) {
+					LOG.trace("Couldn't close previous OutputStream");
+				}
+			}
+			outputStream = null;
+		}
 
 		/**
 		 * Interrupts the current upload
@@ -387,7 +403,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 		protected void interrupt() {
 			upload.interruptUpload();
 			interrupted = true;
-			eventBus.post(new MessageEvent("Import nicht möglich.",
+			eventBus.post(new MessageEvent(
+					"Import nicht möglich.",
 					"Die ausgewählte Datei ist zu groß. Bitte kontaktieren Sie einen Entwickler.",
 					Type.ERROR));
 		}
