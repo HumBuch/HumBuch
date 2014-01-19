@@ -118,9 +118,10 @@ public abstract class PDFHandler {
 
 			this.document.open();
 			this.addMetaData(document);
+			int initialDocumentSize = writer.getCurrentDocumentSize();
 			this.insertDocumentParts(document);
-			
-			if(byteArrayOutputStream.size() > 0){
+
+			if(byteArrayOutputStream.size() > 0 || writer.getCurrentDocumentSize() > initialDocumentSize){
 				this.document.close();
 			}
 			else{
