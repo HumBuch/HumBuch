@@ -21,9 +21,9 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.model.entity.TeachingMaterial.Term;
 
 public class ReturnViewModel {
 	
