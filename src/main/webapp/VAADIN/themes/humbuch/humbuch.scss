@@ -1,13 +1,31 @@
-@import "../runo/runo.scss";
+@import "../base/base.scss";
+
+@import "components/button.scss";
+@import "components/table.scss";
+@import "components/tabsheet.scss";
+@import "components/window.scss";
+@import "components/textfield.scss";
+@import "components/notification.scss";
+@import "components/label.scss";
+@import "components/combobox.scss";
 
 @import "keyframes.scss";
-
+@import "common.scss";
 @import "mixins.scss";
 
 @mixin humbuch {
 	
-	@include runo;
+	@include base;
+	@include humbuch-common;
 	
+	@include humbuch-button;
+	@include humbuch-table;
+	@include humbuch-tabsheet;
+	@include humbuch-window;
+	@include humbuch-textfield;
+	@include humbuch-notification;
+	@include humbuch-label;
+	@include humbuch-combobox;
 	
 	/********* Login View *********/
 	.v-slot-login-panel {
