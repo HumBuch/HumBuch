@@ -8,9 +8,8 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.davherrmann.mvvm.ViewModelComposer;
@@ -19,19 +18,14 @@ import de.dhbw.humbuch.view.MainUI;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogout;
 
-
-@Theme("mytheme")
-public class Header extends CustomComponent {
+public class Header extends HorizontalLayout {
 	private static final long serialVersionUID = 5218684938845793342L;
 	
-	private HorizontalLayout horizontalLayoutHeader;
-	private HorizontalLayout horizontalLayoutHeaderBar;
-	private Button buttonSettings;
-	private Button buttonHelp;
-	private Image imageLogo;
-	
+	private HorizontalLayout root;
 	@BindAction(value = DoLogout.class, source = {})
 	private Button buttonLogout = new Button();
+	private Button buttonSettings;
+	private NativeButton buttonHelp;
 
 	@Inject
 	public Header(ViewModelComposer viewModelComposer,
@@ -42,14 +36,12 @@ public class Header extends CustomComponent {
 	}
 
 	private void init() {
-		horizontalLayoutHeader = new HorizontalLayout();
-		horizontalLayoutHeaderBar = new HorizontalLayout();
+		
+		setWidth("100%");
+		
 		buttonLogout = new Button();
 		buttonSettings = new Button();
-		buttonHelp = new Button();
-
-		imageLogo = new Image(null, new ThemeResource("images/humbuch_logo_red.png"));
-		imageLogo.setHeight("100%");
+		buttonHelp = new NativeButton();
 		
 		buttonLogout.setIcon(new ThemeResource("images/icons/32/icon_logout_red.png"));
 		buttonLogout.setSizeFull();
@@ -79,30 +71,24 @@ public class Header extends CustomComponent {
 		buttonHelp.setIcon(new ThemeResource("images/icons/32/icon_help_red.png"));
 		buttonHelp.setSizeFull();
 		buttonHelp.setStyleName(BaseTheme.BUTTON_LINK);
-
-		horizontalLayoutHeaderBar.setSpacing(true);
-		horizontalLayoutHeader.setMargin(true);
-		horizontalLayoutHeader.setWidth("100%");
+		
+		root = new HorizontalLayout();
+		root.setSpacing(true);
+		root.setMargin(true);
+		
+		root.addComponent(buttonHelp);
+		root.addComponent(buttonSettings);
+		root.addComponent(buttonLogout);
+		
 	}
 	
 	public Button getHelpButton() {
 		return buttonHelp;
 	}
 	
-	private void buildLayout() {
-		horizontalLayoutHeaderBar.addComponent(buttonHelp);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonHelp, Alignment.TOP_RIGHT);
-		horizontalLayoutHeaderBar.addComponent(buttonSettings);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonSettings, Alignment.TOP_RIGHT);
-		horizontalLayoutHeaderBar.addComponent(buttonLogout);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonLogout, Alignment.TOP_RIGHT);
-
-		horizontalLayoutHeader.addComponent(imageLogo);
-		horizontalLayoutHeader.setComponentAlignment(imageLogo, Alignment.TOP_LEFT);
-		horizontalLayoutHeader.addComponent(horizontalLayoutHeaderBar);
-		horizontalLayoutHeader.setComponentAlignment(horizontalLayoutHeaderBar, Alignment.TOP_RIGHT);
-		
-		setCompositionRoot(horizontalLayoutHeader);
+	private void buildLayout() {		
+		addComponent(root);
+		setComponentAlignment(root, Alignment.MIDDLE_RIGHT);
 	}
 	
 	private void bindViewModel(ViewModelComposer viewModelComposer,
