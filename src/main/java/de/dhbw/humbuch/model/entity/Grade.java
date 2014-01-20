@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="grade")
-public class Grade implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class Grade implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Grade> {
 	private static final long serialVersionUID = 227472334995076701L;
 
 	@Id
@@ -136,6 +136,21 @@ public class Grade implements de.dhbw.humbuch.model.entity.Entity, Serializable 
 	@Override
 	public String toString() {
 		return grade + suffix;
+	}
+
+	@Override
+	public int compareTo(Grade o) {
+		int compareResult = Integer.compare(getGrade(), o.getGrade());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		compareResult = getSuffix().compareTo(o.getSuffix());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

@@ -24,7 +24,7 @@ import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 
 @Entity
 @Table(name="teachingMaterial")
-public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<TeachingMaterial> {
 	private static final long serialVersionUID = -6153270685462221761L;
 
 	@Id
@@ -285,6 +285,16 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(TeachingMaterial o) {
+		int compareResult = getName().compareTo(o.getName());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }
