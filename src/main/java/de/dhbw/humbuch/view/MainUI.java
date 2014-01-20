@@ -115,6 +115,9 @@ public class MainUI extends ScopedUI {
 		navigator.addView(STUDENT_INFORMATION_VIEW, studentInformationView);
 		navigator.addView(SETTINGS_VIEW, settingsView);
 
+		// Make the displayed view as big as possible
+		viewContainer.setSizeFull();
+		
 		if (!isLoggedIn.get()) {
 			buildMainView(true);
 		} else {
@@ -133,7 +136,6 @@ public class MainUI extends ScopedUI {
 	 */
 	private void buildMainView(boolean cancel) {
 		if (cancel) {
-			viewContainer.setSizeFull();
 			setContent(viewContainer);
 			return;
 		}
@@ -160,8 +162,6 @@ public class MainUI extends ScopedUI {
 		gridLayoutRoot.addComponent(navigationBar, 0, 1);
 		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
 
-		viewContainer.setSizeUndefined();
-		viewContainer.setWidth("100%");
 		setContent(gridLayoutRoot);
 	}
 
