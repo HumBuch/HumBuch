@@ -35,9 +35,8 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
-import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
-import de.dhbw.humbuch.view.components.NavigationBar;
+import de.dhbw.humbuch.view.components.Sidebar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 
@@ -78,10 +77,9 @@ public class MainUI extends ScopedUI {
 	@Inject
 	private Header header;
 	private VerticalLayout viewContainer = new VerticalLayout();;
-	private GridLayout gridLayoutRoot;
+	private GridLayout root;
 	private ComponentContainerViewDisplay ccViewDisplay;
-	private Footer footer;
-	private NavigationBar navigationBar;
+	private Sidebar sidebar;
 	private Panel panelContent = new Panel();
 	private View currentView;
 
@@ -140,29 +138,26 @@ public class MainUI extends ScopedUI {
 			return;
 		}
 
-		gridLayoutRoot = new GridLayout(2, 3);
+			root = new GridLayout(2, 2);
 
-		footer = new Footer();
-		navigationBar = new NavigationBar();
+		sidebar = new Sidebar();
 
 		panelContent.setSizeFull();
 		header.setWidth("100%");
-		footer.setWidth("100%");
-		navigationBar.setWidth("100%");
+		sidebar.setWidth("100%");
 
 		panelContent.setContent(viewContainer);
 
-		gridLayoutRoot.setSizeFull();
-		gridLayoutRoot.setRowExpandRatio(1, 1);
-		gridLayoutRoot.setColumnExpandRatio(0, 20);
-		gridLayoutRoot.setColumnExpandRatio(1, 80);
+		root.setSizeFull();
+		root.setRowExpandRatio(1, 1);
+		root.setColumnExpandRatio(0, 20);
+		root.setColumnExpandRatio(1, 80);
 
-		gridLayoutRoot.addComponent(panelContent, 1, 1);
-		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
-		gridLayoutRoot.addComponent(navigationBar, 0, 1);
-		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
+		root.addComponent(panelContent, 1, 1);
+		root.addComponent(header, 1, 0);
+		root.addComponent(sidebar, 0, 0, 0, 1);
 
-		setContent(gridLayoutRoot);
+		setContent(root);
 	}
 
 	private void attachListener() {
