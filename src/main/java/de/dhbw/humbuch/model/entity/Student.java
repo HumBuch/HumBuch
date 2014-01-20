@@ -23,7 +23,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="student")
-public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Student> {
 	private static final long serialVersionUID = -3020872456290703528L;
 
 	@Id
@@ -260,5 +260,20 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Student o) {
+		int compareResult = getLastname().compareTo(o.getLastname());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		compareResult = getFirstname().compareTo(o.getFirstname());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 }

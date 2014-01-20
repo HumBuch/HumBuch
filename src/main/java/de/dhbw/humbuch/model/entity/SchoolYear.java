@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="schoolYear")
-public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<SchoolYear> {
 	private static final long serialVersionUID = -3752454317452902743L;
 
 	@Id
@@ -156,6 +156,16 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(SchoolYear o) {
+		int compareResult = getFromDate().compareTo(o.getFromDate());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

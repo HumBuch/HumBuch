@@ -2,12 +2,12 @@ package de.dhbw.humbuch.viewmodel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.hibernate.criterion.Restrictions;
 
@@ -74,10 +74,10 @@ public class LendingViewModel {
 	
 	@HandlesAction(GenerateMaterialListGrades.class)
 	public void generateMaterialListGrades(Set<Grade> selectedGrades) {
-		Map<Grade, Map<TeachingMaterial, Integer>> materialList = new LinkedHashMap<Grade, Map<TeachingMaterial, Integer>>();
+		Map<Grade, Map<TeachingMaterial, Integer>> materialList = new TreeMap<Grade, Map<TeachingMaterial, Integer>>();
 		
 		for (Grade grade : selectedGrades) {
-			Map<TeachingMaterial, Integer> gradeMap = new LinkedHashMap<TeachingMaterial, Integer>();
+			Map<TeachingMaterial, Integer> gradeMap = new TreeMap<TeachingMaterial, Integer>();
 			
 			for(Student student : grade.getStudents()) {
 				for(BorrowedMaterial borrowedMaterial : student.getUnreceivedBorrowedList()) {
@@ -136,14 +136,16 @@ public class LendingViewModel {
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new HashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
 		for (Grade grade : daoGrade.findAll()) {
-			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new HashMap<Student, List<BorrowedMaterial>>();
+			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
 			for (Student student : grade.getStudents()) {
 				if(student.hasUnreceivedBorrowedMaterials()) {
-					studentsWithUnreceivedBorrowedMaterials.put(student, student.getUnreceivedBorrowedList());
+					List<BorrowedMaterial> unreceivedBorrowedList = student.getUnreceivedBorrowedList();
+					Collections.sort(unreceivedBorrowedList);
+					studentsWithUnreceivedBorrowedMaterials.put(student, unreceivedBorrowedList);
 				}
 			}
 			
@@ -151,7 +153,7 @@ public class LendingViewModel {
 				unreceivedMap.put(grade, studentsWithUnreceivedBorrowedMaterials);
 			}
 		}
-		
+
 		studentsWithUnreceivedBorrowedMaterials.set(unreceivedMap);
 	}
 

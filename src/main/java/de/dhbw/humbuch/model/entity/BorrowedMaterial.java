@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="borrowedMaterial")
-public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<BorrowedMaterial> {
 	private static final long serialVersionUID = -7956138735111492455L;
 
 	@Id
@@ -149,6 +149,16 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(BorrowedMaterial o) {
+		int compareResult = getTeachingMaterial().compareTo(o.getTeachingMaterial());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

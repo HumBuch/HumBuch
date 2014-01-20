@@ -2,10 +2,11 @@ package de.dhbw.humbuch.viewmodel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.hibernate.criterion.Restrictions;
 
@@ -58,10 +59,10 @@ public class ReturnViewModel {
 	
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new HashMap<Grade, Map<Student,List<BorrowedMaterial>>>();
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student,List<BorrowedMaterial>>>();
 		
 		for(Grade grade : daoGrade.findAll()) {
-			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new HashMap<Student, List<BorrowedMaterial>>();
+			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
 			for(Student student : grade.getStudents()) {
 
@@ -75,6 +76,7 @@ public class ReturnViewModel {
 				}
 				
 				if(!unreturnedBorrowedMaterials.isEmpty()) {
+					Collections.sort(unreturnedBorrowedMaterials);
 					studentWithUnreturnedBorrowedMaterials.put(student, unreturnedBorrowedMaterials);
 				}
 			}
