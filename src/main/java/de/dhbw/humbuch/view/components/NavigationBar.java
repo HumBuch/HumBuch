@@ -42,7 +42,6 @@ public class NavigationBar extends CustomComponent {
 
 						@Override
 						public void buttonClick(ClickEvent event) {
-							System.out.println(getUI());
 							event.getButton().addStyleName("selected");
 
 							if (!getUI().getNavigator().getState()
