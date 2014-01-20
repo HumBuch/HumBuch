@@ -1,5 +1,8 @@
 package de.dhbw.humbuch.view;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -9,15 +12,18 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.ActionHandler;
+import de.davherrmann.mvvm.ActionWrapper;
+import de.davherrmann.mvvm.SourceWrapper;
+import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.StateChangeWrapper;
-import de.davherrmann.mvvm.SourceWrapper;
-import de.davherrmann.mvvm.ActionWrapper;
-import de.davherrmann.mvvm.ActionHandler;
-import de.davherrmann.mvvm.State;
+import de.davherrmann.mvvm.ViewModelComposer;
 
 public class MVVMConfig {
+	
+	private final static Logger LOG = LoggerFactory
+			.getLogger(MVVMConfig.class);
 
 	@Inject
 	public MVVMConfig(ViewModelComposer viewModelComposer) {
@@ -71,7 +77,7 @@ public class MVVMConfig {
 											actionHandler.handle(event
 													.getProperty().getValue());
 										} catch (UnsupportedOperationException e) {
-											System.out.println(e.getMessage());
+											LOG.error("valueChange error", e);
 										}
 									}
 								});
