@@ -9,6 +9,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.Navigator;
@@ -34,15 +35,15 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
-import de.dhbw.humbuch.view.components.Footer;
 import de.dhbw.humbuch.view.components.Header;
-import de.dhbw.humbuch.view.components.NavigationBar;
+import de.dhbw.humbuch.view.components.Sidebar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 
-@Theme("mytheme")
+@Theme("humbuch")
 @SuppressWarnings("serial")
 @Widgetset("com.vaadin.DefaultWidgetSet")
+@Title("HumBuch Schulbuchverwaltung")
 public class MainUI extends ScopedUI {
 
 	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
@@ -73,16 +74,15 @@ public class MainUI extends ScopedUI {
 	@Inject
 	private SettingsView settingsView;
 
-	@Inject
-	private Header header;
+	private Header header = new Header();
 	private VerticalLayout viewContainer = new VerticalLayout();;
-	private GridLayout gridLayoutRoot;
+	private GridLayout root;
 	private ComponentContainerViewDisplay ccViewDisplay;
-	private Footer footer;
-	private NavigationBar navigationBar;
+	private Sidebar sidebar;
 	private Panel panelContent = new Panel();
 	private View currentView;
 
+	private LoginViewModel loginViewModel;
 	public Navigator navigator;
 
 	@BindState(IsLoggedIn.class)
@@ -94,6 +94,7 @@ public class MainUI extends ScopedUI {
 			LoginViewModel loginViewModel, EventBus eventBus) {
 		bindViewModel(viewModelComposer, loginViewModel);
 		eventBus.register(this);
+		this.loginViewModel = loginViewModel;
 	}
 
 	@Override
@@ -102,9 +103,6 @@ public class MainUI extends ScopedUI {
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
-		/**
-		 * Add all views, that should be navigatable
-		 */
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", homeView);
 		navigator.addView(LOGIN_VIEW, loginView);
@@ -116,6 +114,9 @@ public class MainUI extends ScopedUI {
 		navigator.addView(STUDENT_INFORMATION_VIEW, studentInformationView);
 		navigator.addView(SETTINGS_VIEW, settingsView);
 
+		// Make the displayed view as big as possible
+		viewContainer.setSizeFull();
+		
 		if (!isLoggedIn.get()) {
 			buildMainView(true);
 		} else {
@@ -134,36 +135,36 @@ public class MainUI extends ScopedUI {
 	 */
 	private void buildMainView(boolean cancel) {
 		if (cancel) {
-			viewContainer.setSizeFull();
 			setContent(viewContainer);
 			return;
 		}
 
-		gridLayoutRoot = new GridLayout(2, 3);
-
-		footer = new Footer();
-		navigationBar = new NavigationBar();
-
-		panelContent.setSizeFull();
+		root = new GridLayout(2, 2);
+		
 		header.setWidth("100%");
-		footer.setWidth("100%");
-		navigationBar.setWidth("100%");
-
+		sidebar = new Sidebar();
+		sidebar.setWidth("150px");
+		sidebar.getLogoutButton().addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				loginViewModel.doLogout(new Object());
+			}
+		});
+		
 		panelContent.setContent(viewContainer);
+		panelContent.setSizeFull();
 
-		gridLayoutRoot.setSizeFull();
-		gridLayoutRoot.setRowExpandRatio(1, 1);
-		gridLayoutRoot.setColumnExpandRatio(0, 20);
-		gridLayoutRoot.setColumnExpandRatio(1, 80);
+		root.setSizeFull();
+		root.setRowExpandRatio(1, 1);
+		root.setColumnExpandRatio(0, 0);
+		root.setColumnExpandRatio(1, 1);
+		root.addStyleName("main-view");
 
-		gridLayoutRoot.addComponent(panelContent, 1, 1);
-		gridLayoutRoot.addComponent(header, 0, 0, 1, 0);
-		gridLayoutRoot.addComponent(navigationBar, 0, 1);
-		gridLayoutRoot.addComponent(footer, 0, 2, 1, 2);
+		root.addComponent(panelContent, 1, 1);
+		root.addComponent(header, 1, 0);
+		root.addComponent(sidebar, 0, 0, 0, 1);
 
-		viewContainer.setSizeUndefined();
-		viewContainer.setWidth("100%");
-		setContent(gridLayoutRoot);
+		setContent(root);
 	}
 
 	private void attachListener() {
