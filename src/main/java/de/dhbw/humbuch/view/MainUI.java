@@ -74,8 +74,7 @@ public class MainUI extends ScopedUI {
 	@Inject
 	private SettingsView settingsView;
 
-	@Inject
-	private Header header;
+	private Header header = new Header();
 	private VerticalLayout viewContainer = new VerticalLayout();;
 	private GridLayout root;
 	private ComponentContainerViewDisplay ccViewDisplay;
@@ -83,6 +82,7 @@ public class MainUI extends ScopedUI {
 	private Panel panelContent = new Panel();
 	private View currentView;
 
+	private LoginViewModel loginViewModel;
 	public Navigator navigator;
 
 	@BindState(IsLoggedIn.class)
@@ -94,6 +94,7 @@ public class MainUI extends ScopedUI {
 			LoginViewModel loginViewModel, EventBus eventBus) {
 		bindViewModel(viewModelComposer, loginViewModel);
 		eventBus.register(this);
+		this.loginViewModel = loginViewModel;
 	}
 
 	@Override
@@ -138,20 +139,25 @@ public class MainUI extends ScopedUI {
 			return;
 		}
 
-			root = new GridLayout(2, 2);
-
-		sidebar = new Sidebar();
-
-		panelContent.setSizeFull();
+		root = new GridLayout(2, 2);
+		
 		header.setWidth("100%");
-		sidebar.setWidth("100%");
-
+		sidebar = new Sidebar();
+		sidebar.getLogoutButton().addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				loginViewModel.doLogout(new Object());
+			}
+		});
+		
 		panelContent.setContent(viewContainer);
+		panelContent.setSizeFull();
 
 		root.setSizeFull();
 		root.setRowExpandRatio(1, 1);
-		root.setColumnExpandRatio(0, 20);
-		root.setColumnExpandRatio(1, 80);
+		root.setColumnExpandRatio(0, 10);
+		root.setColumnExpandRatio(1, 90);
+		root.addStyleName("main-view");
 
 		root.addComponent(panelContent, 1, 1);
 		root.addComponent(header, 1, 0);

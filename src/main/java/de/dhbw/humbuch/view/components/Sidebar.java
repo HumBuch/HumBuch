@@ -35,8 +35,12 @@ public class Sidebar extends VerticalLayout {
 	private VerticalLayout menu;
 	private NativeButton btnLogout;
 	
-	@SuppressWarnings("serial")
 	public Sidebar() {
+		init();
+	}
+	
+	@SuppressWarnings("serial")
+	private void init() {
         CssLayout branding = new CssLayout() {
         	{
 				addStyleName("branding");
