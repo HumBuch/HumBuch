@@ -286,7 +286,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			toLend.put(student, manualLendingPopupView.getCurrentlySelectedTeachingMaterials());
 		}
 
-		LendingView.this.lendingViewModel.doManualLending(toLend);
+//		LendingView.this.lendingViewModel.doManualLending(toLend);
 	}
 
 	protected void closePopup(boolean saveData) {

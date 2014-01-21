@@ -79,7 +79,7 @@ public class LendingViewModel {
 		for (Grade grade : selectedGrades) {
 			Map<TeachingMaterial, Integer> gradeMap = new TreeMap<TeachingMaterial, Integer>();
 			
-			for(Student student : grade.getStudents()) {
+			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
 				for(BorrowedMaterial borrowedMaterial : student.getUnreceivedBorrowedList()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 					if(gradeMap.containsKey(teachingMaterial)) {
@@ -107,18 +107,13 @@ public class LendingViewModel {
 	}
 	
 	@HandlesAction(DoManualLending.class)
-	public void doManualLending(Map<Student, List<TeachingMaterial>> toLend) {
-		for(Map.Entry<Student, List<TeachingMaterial>> entry : toLend.entrySet()) {
-			persistBorrowedMaterials(entry.getKey(), entry.getValue());
-		}
-		
-		if(!toLend.isEmpty()) {
-			updateAllStudentsBorrowedMaterials();
-		}
+	public void doManualLending(Student student, TeachingMaterial toLend, Date borrowUntil) {
+		persistBorrowedMaterial(student, toLend, borrowUntil);
+		updateAllStudentsBorrowedMaterials();
 	}
 	
 	private void updateAllStudentsBorrowedMaterials() {
-		for(Student student : daoStudent.findAll()) {
+		for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false))) {
 			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
 		}
 
@@ -130,9 +125,10 @@ public class LendingViewModel {
 	}
 	
 	private void updateSchoolYear() {
+		Date today = new Date();
 		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
-				Restrictions.le("fromDate", new Date()), 
-				Restrictions.ge("toDate", new Date()));
+				Restrictions.le("fromDate", today), 
+				Restrictions.ge("toDate", today));
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
@@ -187,6 +183,11 @@ public class LendingViewModel {
 			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
 			daoBorrowedMaterial.insert(borrowedMaterial);
 		}
+	}
+	
+	private void persistBorrowedMaterial(Student student, TeachingMaterial teachingMaterial, Date borrowUntil) {
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).build();
+		daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 	
 	private List<TeachingMaterial> getOwningTeachingMaterials(Student student) {
