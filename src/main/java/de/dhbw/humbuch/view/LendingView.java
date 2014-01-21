@@ -203,7 +203,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (buttonManualLending.isEnabled()) {
 					HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
 					if (selectedStudents.size() == 0) {
 						SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(LendingView.this, students.get());
@@ -216,7 +215,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 							getUI().addWindow(mlpw);
 						}
 					}
-				}
+				
 			}
 		});
 	}
@@ -292,12 +291,42 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	//		LendingView.this.
 	//	}
 
-	public void update(int numberOfSelectedStudents) {
-		if (numberOfSelectedStudents <= 1) {
+	public void update() {		
+		// Get information about current selection of student material selector
+		HashSet<Student> students = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> materials = (HashSet<BorrowedMaterial>) studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Grade> grades = (HashSet<Grade>) studentMaterialSelector.getCurrentlySelectedGrades();
+		
+		// Adapt manual lending button
+		if (students.size() <= 1) {
 			buttonManualLending.setEnabled(true);
 		}
 		else {
 			buttonManualLending.setEnabled(false);
+		}
+		
+		// Adapt student list button
+		if(students.size() >= 1) {
+			buttonStudentList.setEnabled(true);
+		}
+		else {
+			buttonStudentList.setEnabled(false);
+		}
+		
+		// Adapt class list button
+		if(grades.size() >= 1) {
+			buttonClassList.setEnabled(true);
+		}
+		else {
+			buttonClassList.setEnabled(false);
+		}
+		
+		// Adapt save button
+		if(materials.size() >= 1) {
+			buttonSaveSelectedData.setEnabled(true);
+		}
+		else {
+			buttonSaveSelectedData.setEnabled(false);
 		}
 	}
 
@@ -311,6 +340,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
+		update();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
