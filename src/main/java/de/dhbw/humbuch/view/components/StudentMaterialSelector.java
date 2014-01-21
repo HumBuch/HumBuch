@@ -119,7 +119,7 @@ public class StudentMaterialSelector extends CustomComponent {
 			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
 			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
 			treeTableContent.setCollapsed(rootItemId, false);
-			
+
 			Set<Integer> gradeLevels = getAllGradeLevels();
 
 			// Collect all grade level checkboxes for selecting purposes
@@ -347,15 +347,10 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public void notifyObserver() {
 		if (registeredObserver == null) {
-			return;
+			registeredObserver.update(0);
 		}
-
-		if (currentlySelectedStudents.size() == 1) {
-			registeredObserver.update(true);
-		}
-		else {
-			registeredObserver.update(false);
-		}
+		
+		registeredObserver.update(currentlySelectedStudents.size());
 	}
 
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
