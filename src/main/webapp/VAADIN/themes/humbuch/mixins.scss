@@ -81,9 +81,6 @@
 }
 
 @mixin fade-in ($duration: 160ms){
-/*         TODO this will freak out the Sass compiler */
-/* -moz-animation: fade-in $duration ease-out; */
-/*         @include animation(fade-in, 160ms, ease-out); */
         -webkit-animation: fade-in 160ms ease-out;
         -moz-animation: fade-in 160ms ease-out;
         -ms-animation: fade-in 160ms ease-out;
