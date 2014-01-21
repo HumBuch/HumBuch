@@ -58,6 +58,9 @@ public class SelectStudentPopupWindow extends Window {
 		horizontalLayoutButtonBar.setSpacing(true);
 
 		center();
+		setModal(true);
+		setResizable(false);
+		setDraggable(false);
 
 		fillComboBox();
 		addListeners();
@@ -106,7 +109,7 @@ public class SelectStudentPopupWindow extends Window {
 
 	private void showManualLending() {
 		CustomStudent customStudent = (CustomStudent) comboBoxStudents.getValue();
-		
+
 		if (customStudent != null) {
 			ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(lendingView, customStudent.getStudent());
 			getUI().addWindow(mlpw);

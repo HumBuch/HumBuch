@@ -18,6 +18,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -72,6 +73,7 @@ public class ManualLendingPopupWindow extends Window {
 		currentlySelectedMaterials = new ArrayList<TeachingMaterial>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
+		textFieldSearchBar.setWidth("100%");
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
@@ -89,6 +91,9 @@ public class ManualLendingPopupWindow extends Window {
 		verticalLayoutContent.setMargin(true);
 
 		center();
+		setModal(true);
+		setResizable(false);
+		setDraggable(false);
 
 		addListeners();
 	}
@@ -97,6 +102,8 @@ public class ManualLendingPopupWindow extends Window {
 		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
 		horizontalLayoutHeaderBar.addComponent(buttonCancel);
 		horizontalLayoutHeaderBar.addComponent(buttonSave);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
 
 		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
