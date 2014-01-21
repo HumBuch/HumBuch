@@ -99,6 +99,8 @@ public class MainUI extends ScopedUI {
 
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
+		
+		navigator.setErrorView(lendingView);
 
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", lendingView);
