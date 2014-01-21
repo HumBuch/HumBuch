@@ -45,12 +45,36 @@
 	}
 	
 	.login-panel {
-		background: #fff;
+		background: #252f32 url("images/background.jpg") repeat;
+		color: #fff;
 		@include border-radius(4px);
 		@include box-shadow(0 4px 20px rgba(0,0,0,.5));
 		@include move-up-100;
 		padding: 1em 1em 2em;
-
+		border: 1px solid #000000;
+		position: relative;
+		z-index: 1;
+	}
+	
+	.login-panel:before {
+		content: "";
+		border: 1px solid #414141;
+		position: absolute;
+	   	top: 0;
+	   	left: 0;
+	   	right: 0;
+	   	bottom: 0;
+		z-index: -1;
+		@include border-radius(4px);
+	}
+	
+	.login-panel .v-textfield {
+		color: #7d7d7d;
+		width: 180px;
+		background: #141414;
+		border: 1px solid #131313;
+		border-top: #191919 1px solid;
+		border-bottom: #0b0b0b 1px solid;
 	}
 	
 	.login-panel .labels,
@@ -58,22 +82,25 @@
 		display: block;
 	}
 	
-	.login-panel .v-textfield {
-		width: 180px;
-	}
-	
 	.login-panel .h2 {
 		padding: 0;
-		font-size: 20px;
-		color: #c4cacf;
+		font-size: 16px;
+		color: inherit;
+		text-align: right;
+		font-family: "Open Sans",Arial,sans-serif;
+		font-weight: 500;
 	}
 	
 	.login-panel .h4 {
-		padding: 0;
-		font-size: 16px;
-		color: rgb(241, 76, 26);
+		font-size: 22px;
+		color: rgb(50, 157, 144);
+		font-weight: 300;
+		font-family: "Open Sans",Arial,sans-serif;
 	}
 	
+	.login-panel .v-caption {
+		color: #fff;
+	}
 	.login-panel .error {
 		font-size: 13px;
 		height: 20px;
@@ -93,7 +120,7 @@
 	
 	/********* Sidebar *********/
 	.sidebar {
-                background: #252f32;
+                background: #252e32;
                 @include move-right;
         }
         
@@ -127,7 +154,7 @@
         .sidebar .menu {
                 overflow: auto;
                 height: 100%;
-                border-bottom: 1px solid #374146;
+				border-top: 1px solid #374146;
         }
         
         .sidebar .menu .v-ddwrapper {
@@ -195,9 +222,9 @@
 				color: #d7f5f9;
                 text-shadow: 0 1px 1px rgba(0,0,0,.5);
                 
-                border-top: 1px solid #74cfda;
+                border-top: 1px solid #56bcb2;
                 
-                background: #4ec5d2;
+                background: #329d90;
 				/*
                 background: -moz-linear-gradient(top, #4cc3cf 0%, #4ec5d1 10%, #05a6b6 90%, #00a1b2 100%);
                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4cc3cf), color-stop(10%,#00a1b2), color-stop(90%,#333537), color-stop(100%,#2d2f30));
@@ -246,8 +273,7 @@
         .sidebar .user {
                 display: block;
                 
-				//border-top: 1px solid #374146;
-                background: #1f2a2e;
+                background: transparent;
                 
 				color: #839195;
                 font-weight: normal;
@@ -277,7 +303,7 @@
 				color: #d7f5f9;
                 text-shadow: 0 1px 1px rgba(0,0,0,.5);
                 outline: none;
-                background: #4ec5d2;
+                background: #329d90;
         }
         
         .sidebar .user .v-label {
