@@ -143,6 +143,7 @@ public class MainUI extends ScopedUI {
 		
 		header.setWidth("100%");
 		sidebar = new Sidebar();
+		sidebar.setWidth("150px");
 		sidebar.getLogoutButton().addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -155,8 +156,8 @@ public class MainUI extends ScopedUI {
 
 		root.setSizeFull();
 		root.setRowExpandRatio(1, 1);
-		root.setColumnExpandRatio(0, 10);
-		root.setColumnExpandRatio(1, 90);
+		root.setColumnExpandRatio(0, 0);
+		root.setColumnExpandRatio(1, 1);
 		root.addStyleName("main-view");
 
 		root.addComponent(panelContent, 1, 1);

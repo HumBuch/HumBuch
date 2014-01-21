@@ -34,6 +34,7 @@ public class Sidebar extends VerticalLayout {
 
 	private VerticalLayout menu;
 	private NativeButton btnLogout;
+	private NativeButton btnSettings;
 	
 	public Sidebar() {
 		init();
@@ -45,7 +46,7 @@ public class Sidebar extends VerticalLayout {
         	{
 				addStyleName("branding");
 		        Label logo = new Label(
-		                "<span>HumBuch</span> Schulbuchverwaltung",
+		                "<span>HumBuch</span> Buchverwaltung",
 		                ContentMode.HTML);
 		        logo.setSizeUndefined();
 		        addComponent(logo);
@@ -90,7 +91,7 @@ public class Sidebar extends VerticalLayout {
 		userButtons.setSizeUndefined();
 		userButtons.addStyleName("user");
 
-		NativeButton btnSettings = new NativeButton();
+		btnSettings = new NativeButton();
 		btnSettings.addStyleName("icon-settings");
 		btnSettings.setDescription("Einstellungen");
 		userButtons.addComponent(btnSettings);
@@ -98,6 +99,7 @@ public class Sidebar extends VerticalLayout {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				clearMenuBar();
+				btnSettings.addStyleName("selected");
 				if (!getUI().getNavigator().getState()
 						.equals(MainUI.SETTINGS_VIEW)) {
 					getUI().getNavigator().navigateTo(MainUI.SETTINGS_VIEW);
@@ -127,6 +129,7 @@ public class Sidebar extends VerticalLayout {
 				next.removeStyleName("selected");
 			}
 		}
+		btnSettings.removeStyleName("selected");
 	}
 	
 	public Button getLogoutButton() {

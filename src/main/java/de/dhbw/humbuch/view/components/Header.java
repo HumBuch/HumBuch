@@ -22,7 +22,6 @@ public class Header extends HorizontalLayout {
 		
 		buttonHelp = new NativeButton("Hilfe");
 		buttonHelp.addStyleName("icon-help");
-		buttonHelp.setDescription("Hilfe");
 		
 		root.addComponent(buttonHelp);
 		

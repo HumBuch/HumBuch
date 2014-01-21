@@ -93,7 +93,7 @@
 	
 	/********* Sidebar *********/
 	.sidebar {
-                background: #414243 url('images/sidebar-gradient.png') repeat-y top right;
+                background: #252f32;
                 @include move-right;
         }
         
@@ -127,6 +127,7 @@
         .sidebar .menu {
                 overflow: auto;
                 height: 100%;
+                border-bottom: 1px solid #374146;
         }
         
         .sidebar .menu .v-ddwrapper {
@@ -154,19 +155,15 @@
                 margin: 0;
                 position: relative;
                 
-                border-top: 1px solid #4b4c4d;
-                border-top-color: rgba(255,255,255,.05);
-                
-                border-bottom: 1px solid #353637;
-                border-bottom-color: rgba(0,0,0,.18);
+                border-top: 1px solid #374146;
                 
                 background: transparent;
                 
-                color: #888a8c;
+                color: #839195;
                 font-weight: normal;
                 text-shadow: 0 1px 0 rgba(0,0,0,.5);
                 text-align: center;
-                
+
 				webkit-transition: color ease-in-out 100ms, background-color linear 60ms;
 				moz-transition: color ease-in-out 100ms, background-color linear 60ms;
 				transition: color ease-in-out 100ms, background-color linear 60ms;
@@ -193,8 +190,21 @@
         }
         
         .sidebar .menu .v-nativebutton:hover,
-        .sidebar .menu .v-nativebutton:focus {
-                color: #e1e1e1;
+        .sidebar .menu .v-nativebutton:focus,
+        .sidebar .menu .v-nativebutton.selected {
+				color: #d7f5f9;
+                text-shadow: 0 1px 1px rgba(0,0,0,.5);
+                
+                border-top: 1px solid #74cfda;
+                
+                background: #4ec5d2;
+				/*
+                background: -moz-linear-gradient(top, #4cc3cf 0%, #4ec5d1 10%, #05a6b6 90%, #00a1b2 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4cc3cf), color-stop(10%,#00a1b2), color-stop(90%,#333537), color-stop(100%,#2d2f30));
+                background: -webkit-linear-gradient(top, #4cc3cf 0%,#4ec5d1 10%,#05a6b6 90%,#00a1b2 100%);
+                background: -o-linear-gradient(top, #4cc3cf 0%,#4ec5d1 10%,#05a6b6 90%,#00a1b2 100%);
+                background: -ms-linear-gradient(top, #4cc3cf 0%,#4ec5d1 10%,#05a6b6 90%,#00a1b2 100%);
+                */
         }
         
         .sidebar .menu .v-nativebutton:before {
@@ -203,17 +213,15 @@
                 margin: 0;
         }
         
-        .v-webkit & .menu .v-nativebutton:before {
-                /* TODO mixin */
+	    .v-webkit & .menu .v-nativebutton:before {
                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e8e8e8), color-stop(100%,#d3d3d3));
                 background: -webkit-linear-gradient(top, #fff 0%,#777 100%);
-        /*         background: linear-gradient(to bottom, #e8e8e8 0%,#d3d3d3 100%); */
+        /*      background: linear-gradient(to bottom, #e8e8e8 0%,#d3d3d3 100%); */
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 text-shadow: 0 1px 1px rgba(0,0,0,.2);
                 opacity: .5;
                 
-                /* TODO mixin */
                 -webkit-transition: opacity ease-in-out 200ms;
                 -moz-transition: opacity ease-in-out 200ms;
                 -ms-transition: opacity ease-in-out 200ms;
@@ -230,25 +238,6 @@
                 background: rgba(0,0,0,.1);
         }
         
-        .sidebar .menu .v-nativebutton.selected {
-                color: #e1e1e1;
-                text-shadow: 0 2px 2px rgba(0,0,0,.5);
-                
-                border-top-color: #262729;
-                border-bottom-color: #2b2c2e;
-                
-                background: #333537;
-
-                background: -moz-linear-gradient(top, #2d2f30 0%, #333537 10%, #333537 90%, #2d2f30 100%);
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2d2f30), color-stop(10%,#333537), color-stop(90%,#333537), color-stop(100%,#2d2f30));
-                background: -webkit-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
-                background: -o-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
-                background: -ms-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
-             /* background: linear-gradient(to bottom, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%); */
-        
-                -webkit-transition: none;
-        }
-        
         .v-webkit & .menu .v-nativebutton.selected:before {
                 text-shadow: none;
                 opacity: 1;
@@ -257,12 +246,12 @@
         .sidebar .user {
                 display: block;
                 
-                border-top: 1px solid #303132;
-                background: #3b3c3d;
-                background-color: rgba(0,0,0,.1);
+				//border-top: 1px solid #374146;
+                background: #1f2a2e;
                 
-                color: #898c8e;
-                text-shadow: 0 1px 1px rgba(0,0,0,.5);
+				color: #839195;
+                font-weight: normal;
+                text-shadow: 0 1px 0 rgba(0,0,0,.5);
                 
                 @include box-shadow(inset 0 1px 0 rgba(255,255,255,.08));
         }
@@ -283,15 +272,12 @@
                 color: inherit;
         }
         
-        .sidebar .user .v-nativebutton:hover{
-                color: #e1e1e1;
+        .sidebar .user .v-nativebutton:hover,
+        .sidebar .user .v-nativebutton.selected {
+				color: #d7f5f9;
+                text-shadow: 0 1px 1px rgba(0,0,0,.5);
                 outline: none;
-        }
-        
-        .sidebar .user .v-image {
-                width: 34px;
-                height: 34px;
-                border-right: 1px solid #313132;
+                background: #4ec5d2;
         }
         
         .sidebar .user .v-label {
@@ -338,9 +324,9 @@
         
         .main-view {
                 @include fade-in;
-                background: #dfe0e1;
+                background: #f4f4f4;
                 
-                /* TODO mixin */
+                /* 
                 background: -moz-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8d9da), color-stop(10%,#e6e7e8), color-stop(100%,#e0e1e2));
                 background: -webkit-linear-gradient(top, #d8d9da 0%,#e6e7e8 10%,#e0e1e2 100%);
@@ -368,7 +354,7 @@
         
         .header .v-nativebutton-caption {
                 display: inline;
-                margin: 0 8px;
+                margin: 0 5px;
                 line-height: 16px;
         }
         
