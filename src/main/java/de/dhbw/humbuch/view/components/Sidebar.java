@@ -25,7 +25,6 @@ public class Sidebar extends VerticalLayout {
 	 */
 	// TODO refactor when a good navigation method is found
 	private static final String[][] navigationButtons = new String[][] {
-			{ "Aufgaben", MainUI.HOME_VIEW },
 			{ "Ausleihe", MainUI.LENDING_VIEW },
 			{ "Rückgabe", MainUI.RETURN_VIEW },
 			{ "Lehrmittel", MainUI.BOOK_MANAGEMENT_VIEW },
