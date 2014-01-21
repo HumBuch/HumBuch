@@ -55,6 +55,7 @@ public class MainUI extends ScopedUI {
 	public static final String RETURN_VIEW = "return_view";
 	public static final String STUDENT_INFORMATION_VIEW = "student_information_view";
 	public static final String SETTINGS_VIEW = "settings_view";
+	public static final String ERROR_VIEW = "error_view";
 
 	@Inject
 	private LoginView loginView;
@@ -70,6 +71,8 @@ public class MainUI extends ScopedUI {
 	private StudentInformationView studentInformationView;
 	@Inject
 	private SettingsView settingsView;
+	@Inject
+	private ErrorView errorView;
 
 	private Header header = new Header();
 	private VerticalLayout viewContainer = new VerticalLayout();;
@@ -100,6 +103,8 @@ public class MainUI extends ScopedUI {
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
+		navigator.setErrorView(errorView);
+		
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", lendingView);
 		navigator.addView(LOGIN_VIEW, loginView);
