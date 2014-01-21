@@ -179,6 +179,8 @@ public class StudentMaterialSelector extends CustomComponent {
 									else {
 										currentlySelectedBorrowedMaterials.remove(material);
 									}
+									
+									notifyObserver();
 								}
 
 							});
@@ -200,6 +202,7 @@ public class StudentMaterialSelector extends CustomComponent {
 										currentlySelectedStudents.remove(student);
 									}
 									updateCurrentlySelectedMaterials();
+
 									notifyObserver();
 
 									checkBoxMaterial.setValue(studentSelected);
@@ -227,6 +230,8 @@ public class StudentMaterialSelector extends CustomComponent {
 								updateCurrentlySelectedStudents();
 								updateCurrentlySelectedMaterials();
 
+								notifyObserver();
+								
 								checkBoxStudent.setValue(gradeSelected);
 							}
 						}
@@ -252,6 +257,8 @@ public class StudentMaterialSelector extends CustomComponent {
 							updateCurrentlySelectedStudents();
 							updateCurrentlySelectedMaterials();
 
+							notifyObserver();
+							
 							checkBoxGrade.setValue(gradeLevelSelected);
 						}
 					}
@@ -277,6 +284,8 @@ public class StudentMaterialSelector extends CustomComponent {
 						updateCurrentlySelectedStudents();
 						updateCurrentlySelectedMaterials();
 
+						notifyObserver();
+						
 						checkBoxGradeLevel.setValue(rootSelected);
 					}
 				}
@@ -326,7 +335,6 @@ public class StudentMaterialSelector extends CustomComponent {
 			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
 			currentlySelectedStudents.addAll(new ArrayList<Student>(studentsWithMaterials.keySet()));
 		}
-		notifyObserver();
 	}
 
 	private void updateCurrentlySelectedMaterials() {
@@ -347,10 +355,10 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public void notifyObserver() {
 		if (registeredObserver == null) {
-			registeredObserver.update(0);
+			return;
 		}
 		
-		registeredObserver.update(currentlySelectedStudents.size());
+		registeredObserver.update();
 	}
 
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
