@@ -1,0 +1,12 @@
+@mixin humbuch-panel {
+	
+	.v-panel-caption {
+		font-size: 36px;
+		line-height: 1;
+		font-weight: 300;
+		-webkit-font-smoothing: antialiased;
+		letter-spacing: -0.05em;
+		padding: 10px 1em 0.5em 15px;
+	}
+	
+}

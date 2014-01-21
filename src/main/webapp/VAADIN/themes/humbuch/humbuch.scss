@@ -8,10 +8,14 @@
 @import "components/notification.scss";
 @import "components/label.scss";
 @import "components/combobox.scss";
+@import "components/panel.scss";
 
 @import "keyframes.scss";
 @import "common.scss";
 @import "mixins.scss";
+
+@import "icons/fontello.scss";
+@import "fonts/open-sans.scss";
 
 @mixin humbuch {
 	
@@ -26,6 +30,11 @@
 	@include humbuch-notification;
 	@include humbuch-label;
 	@include humbuch-combobox;
+	@include humbuch-panel;
+       
+    &.v-app {
+       background: #353637;
+    }
 	
 	/********* Login View *********/
 	.v-slot-login-panel {
@@ -80,4 +89,271 @@
 	.v-animate-hide {
 		@include hide;
 	}
+	
+	
+	/********* Sidebar *********/
+	.sidebar {
+                background: #414243 url('images/sidebar-gradient.png') repeat-y top right;
+                @include move-right;
+        }
+        
+        .sidebar .branding {
+                border-bottom: 1px solid #353637;
+                position: relative;
+                -webkit-font-smoothing: antialiased;
+        }
+        
+        .sidebar .branding .v-label {
+                position: relative;
+                z-index: 2;
+                
+                white-space: normal;
+                font-size: 16px;
+                line-height: 1.1;
+                color: #fff;
+                text-shadow: 0 2px 2px rgba(0,0,0,.5);
+                
+                /* WTH? Why is inline-block forced as an inline style? */
+                display: block !important;
+                padding: .8em .8em 1.2em;
+                
+        }
+        
+        .sidebar .branding .v-label span {
+                font-size: 13px;
+                color: #d0d1d3;
+                display: block;
+        }
+        
+        .sidebar .menu {
+                overflow: auto;
+                height: 100%;
+        }
+        
+        .sidebar .menu .v-ddwrapper {
+                padding: 2px;
+        }
+        
+        .sidebar .menu .v-ddwrapper .v-nativebutton {
+                margin: -2px -2px;
+        }
+        
+        .sidebar .menu .v-ddwrapper-over {
+                padding: 0;
+                border: 2px solid #2d90f3;
+                background: transparent;
+                @include border-radius(4px);
+        }
+        
+        .sidebar .menu .v-nativebutton {
+                -webkit-appearance: none;
+                
+                display: block;
+                padding: 10px 14px 10px;
+                width: 100%;
+                border: none;
+                margin: 0;
+                position: relative;
+                
+                border-top: 1px solid #4b4c4d;
+                border-top-color: rgba(255,255,255,.05);
+                
+                border-bottom: 1px solid #353637;
+                border-bottom-color: rgba(0,0,0,.18);
+                
+                background: transparent;
+                
+                color: #888a8c;
+                font-weight: normal;
+                text-shadow: 0 1px 0 rgba(0,0,0,.5);
+                text-align: center;
+                
+				webkit-transition: color ease-in-out 100ms, background-color linear 60ms;
+				moz-transition: color ease-in-out 100ms, background-color linear 60ms;
+				transition: color ease-in-out 100ms, background-color linear 60ms;
+        }
+        
+        .sidebar .menu:after {
+                content: "";
+                display: block;
+                border-top: 1px solid #4b4c4d;
+                border-top-color: rgba(255,255,255,.05);
+                height: 0;
+        }
+        
+        .sidebar .menu .v-nativebutton-caption {
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                display: block;
+                margin: .2em 0 0 0;
+        }
+        
+        .sidebar .menu .v-nativebutton:focus {
+                outline: none;
+        }
+        
+        .sidebar .menu .v-nativebutton:hover,
+        .sidebar .menu .v-nativebutton:focus {
+                color: #e1e1e1;
+        }
+        
+        .sidebar .menu .v-nativebutton:before {
+                font-size: 24px;
+                line-height: 1;
+                margin: 0;
+        }
+        
+        .v-webkit & .menu .v-nativebutton:before {
+                /* TODO mixin */
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e8e8e8), color-stop(100%,#d3d3d3));
+                background: -webkit-linear-gradient(top, #fff 0%,#777 100%);
+        /*         background: linear-gradient(to bottom, #e8e8e8 0%,#d3d3d3 100%); */
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-shadow: 0 1px 1px rgba(0,0,0,.2);
+                opacity: .5;
+                
+                /* TODO mixin */
+                -webkit-transition: opacity ease-in-out 200ms;
+                -moz-transition: opacity ease-in-out 200ms;
+                -ms-transition: opacity ease-in-out 200ms;
+                -o-transition: opacity ease-in-out 200ms;
+                transition: opacity ease-in-out 200ms;
+        }
+        
+        .v-webkit & .menu .v-nativebutton:hover:before,
+        .v-webkit & .menu .v-nativebutton:focus:before {
+                opacity: 1;
+        }
+        
+        .sidebar .menu .v-nativebutton:active {
+                background: rgba(0,0,0,.1);
+        }
+        
+        .sidebar .menu .v-nativebutton.selected {
+                color: #e1e1e1;
+                text-shadow: 0 2px 2px rgba(0,0,0,.5);
+                
+                border-top-color: #262729;
+                border-bottom-color: #2b2c2e;
+                
+                background: #333537;
+                
+                /* TODO mixin */
+                background: -moz-linear-gradient(top, #2d2f30 0%, #333537 10%, #333537 90%, #2d2f30 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2d2f30), color-stop(10%,#333537), color-stop(90%,#333537), color-stop(100%,#2d2f30));
+                background: -webkit-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
+                background: -o-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
+                background: -ms-linear-gradient(top, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%);
+        /*         background: linear-gradient(to bottom, #2d2f30 0%,#333537 10%,#333537 90%,#2d2f30 100%); */
+        
+                -webkit-transition: none;
+        }
+        
+        .v-webkit & .menu .v-nativebutton.selected:before {
+                text-shadow: none;
+                opacity: 1;
+        }
+        
+        .sidebar .user {
+                display: block;
+                
+                border-top: 1px solid #303132;
+                background: #3b3c3d;
+                background-color: rgba(0,0,0,.1);
+                
+                color: #898c8e;
+                text-shadow: 0 1px 1px rgba(0,0,0,.5);
+                
+                @include box-shadow(inset 0 1px 0 rgba(255,255,255,.08));
+        }
+
+        .sidebar .user > .v-slot {
+                display: inline-block;
+                width: 50%;
+        }
+        
+        .sidebar .user .v-nativebutton {
+                -webkit-appearance: none;
+                
+                border: none;
+                background: transparent;
+                width: 100%;
+                padding: 0;
+                
+                color: inherit;
+        }
+        
+        .sidebar .user .v-nativebutton:hover{
+                color: #e1e1e1;
+                outline: none;
+        }
+        
+              .sidebar .user .v-image {
+                width: 34px;
+                height: 34px;
+                border-right: 1px solid #313132;
+        }
+        
+        .sidebar .user .v-label {
+                white-space: normal;
+                font-size: 12px;
+                line-height: 14px;
+                font-weight: 600;
+                max-width: 50px;
+                overflow: visible;
+                padding: 2px 8px;
+                height: 34px;
+                color: inherit;
+                -webkit-font-smoothing: antialiased;
+        }
+        
+        .sidebar .user .v-nativebutton-caption {
+                display: none;
+        }
+        
+        .sidebar .user .v-nativebutton:before {
+                font-size: 16px;
+                margin: 0;
+                display: inline-block;
+                padding: .3em 0 .4em;
+        }
+        
+        .sidebar .user .icon-logout {
+                border-left: 1px solid #303132;
+        }
+        
+        .layout-panel {
+                background: #fff;
+                @include border-radius(4px);
+                /* TODO make this work in the Sass compiler */
+                /*         @include box-shadow(0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07)); */
+                -webkit-box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+                -moz-box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+                box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+        }
+        
+        .v-ie8 & .layout-panel {
+                border: 1px solid #d8d9d9;
+        }
+        
+        
+        .main-view {
+                @include fade-in;
+                background: #dfe0e1;
+                
+                /* TODO mixin */
+                background: -moz-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8d9da), color-stop(10%,#e6e7e8), color-stop(100%,#e0e1e2));
+                background: -webkit-linear-gradient(top, #d8d9da 0%,#e6e7e8 10%,#e0e1e2 100%);
+                background: -o-linear-gradient(top, #d8d9da 0%,#e6e7e8 10%,#e0e1e2 100%);
+                background: -ms-linear-gradient(top, #d8d9da 0%,#e6e7e8 10%,#e0e1e2 100%);
+        /*         background: linear-gradient(to bottom, #d8d9da 0%,#e6e7e8 10%,#e0e1e2 100%); */
+        }
+        
+        .view-content {
+                overflow: visible;
+        }
+        
 }

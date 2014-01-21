@@ -3,6 +3,7 @@
         .v-tabsheet {
                 border: 1px solid #d3d6d6;
                 @include border-radius(4px);
+                background: #fff;
         }
         
         .v-tabsheet-tabcontainer,

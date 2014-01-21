@@ -17,9 +17,6 @@
                 border-bottom-color: #989b9c;
         
                 @include box-shadow($outline);
-        /*         -webkit-box-shadow: 0 0 0 2px rgba(49,50,51,.07); */
-        /*         -moz-box-shadow: 0 0 0 2px rgba(49,50,51,.07); */
-        /*         box-shadow: 0 0 0 2px rgba(40,50,51,.07); */
                 
                 background: #f2f2f3;
                 
@@ -28,8 +25,6 @@
                 background: -webkit-linear-gradient(top, #ffffff 0%,#fafafa 5%,#eaebec 94%,#e2e3e4 100%);
                 background: -o-linear-gradient(top, #ffffff 0%,#fafafa 5%,#eaebec 94%,#e2e3e4 100%);
                 background: -ms-linear-gradient(top, #ffffff 0%,#fafafa 5%,#eaebec 94%,#e2e3e4 100%);
-                /* Sass compiler chokes on this */
-        /*         background: linear-gradient(to bottom, #ffffff 0%,#fafafa 5%,#eaebec 94%,#e2e3e4 100%); */
         }
         
         .v-webkit & .v-button {
