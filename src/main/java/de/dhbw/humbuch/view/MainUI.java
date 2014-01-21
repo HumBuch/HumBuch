@@ -49,7 +49,6 @@ public class MainUI extends ScopedUI {
 	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	public static final String LOGIN_VIEW = "login_view";
-	public static final String HOME_VIEW = "home_view";
 	public static final String BOOK_MANAGEMENT_VIEW = "book_management_view";
 	public static final String DUNNING_VIEW = "dunning_view";
 	public static final String LENDING_VIEW = "lending_view";
@@ -65,8 +64,6 @@ public class MainUI extends ScopedUI {
 	private LendingView lendingView;
 	@Inject
 	private ReturnView returnView;
-	@Inject
-	private HomeView homeView;
 	@Inject
 	private BookManagementView bookManagementView;
 	@Inject
@@ -104,9 +101,8 @@ public class MainUI extends ScopedUI {
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
 		// TODO: Hack! Check how to save String in enums
-		navigator.addView("", homeView);
+		navigator.addView("", lendingView);
 		navigator.addView(LOGIN_VIEW, loginView);
-		navigator.addView(HOME_VIEW, homeView);
 		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
 		navigator.addView(DUNNING_VIEW, dunningView);
 		navigator.addView(LENDING_VIEW, lendingView);

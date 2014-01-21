@@ -127,10 +127,9 @@ public class LoginView extends VerticalLayout implements View {
 			@Override
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
-
 					// Navigate to main view
 					if (getUI() != null && getUI().getNavigator() != null) {
-						getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
+						getUI().getNavigator().navigateTo(MainUI.LENDING_VIEW);
 					}
 				}
 
