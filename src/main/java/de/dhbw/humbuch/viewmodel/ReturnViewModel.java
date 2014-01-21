@@ -41,12 +41,15 @@ public class ReturnViewModel {
 	private DAO<Grade> daoGrade;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
+	private DAO<Student> daoStudent;
 	
 	private SchoolYear currentSchoolYear;
+
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoGrade = daoGrade;
+		this.daoStudent = daoStudent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
 	}
@@ -64,7 +67,7 @@ public class ReturnViewModel {
 		for(Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
-			for(Student student : grade.getStudents()) {
+			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
 
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
