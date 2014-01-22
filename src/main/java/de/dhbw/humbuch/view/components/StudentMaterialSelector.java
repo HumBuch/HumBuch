@@ -31,8 +31,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String SEARCH_STUDENTS = "Schüler durchsuchen";
-	private static final String ALL_GRADES = "Alle Klassen";
-	private static final String GRADE_LEVEL = "Klassenstufe ";
+	private static final String GRADE = "Klasse ";
 
 	private VerticalLayout verticalLayoutContent;
 	private TextField textFieldSearchBar;
@@ -79,8 +78,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		verticalLayoutContent.setSpacing(true);
 		textFieldSearchBar.setWidth("50%");
 
-		treeTableContent.setWidth("100%");
-		treeTableContent.setPageLength(0);
+		treeTableContent.setSizeFull();
 		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
 
 		//		indexedContainerForTreeTable.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
@@ -115,140 +113,95 @@ public class StudentMaterialSelector extends CustomComponent {
 				return;
 			}
 
-			// Build root of tree table
-			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
-			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
-			treeTableContent.setCollapsed(rootItemId, false);
+			Set<Grade> grades = gradeAndStudentsWithMaterials.keySet();
+			// Collect all grade checkboxes for selecting purposes
+			final ArrayList<CheckBox> gradeCheckBoxes = new ArrayList<CheckBox>();
+			// Add all grades below the grade level
+			for (Grade grade : grades) {
+				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
+				checkBoxGrade.setData(grade);
+				gradeCheckBoxes.add(checkBoxGrade);
+				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
+				//					treeTableContent.setParent(gradeItemId, gradeLevelItemId);
 
-			Set<Integer> gradeLevels = getAllGradeLevels();
+				List<Student> students = getAllStudentsForGrade(grade);
 
-			// Collect all grade level checkboxes for selecting purposes
-			final ArrayList<CheckBox> gradeLevelCheckBoxes = new ArrayList<CheckBox>();
-			// Add all the grade levels below the root
-			for (Integer gradeLevel : gradeLevels) {
-				final CheckBox checkBoxGradeLevel = new CheckBox(GRADE_LEVEL + gradeLevel);
-				gradeLevelCheckBoxes.add(checkBoxGradeLevel);
-				Object gradeLevelItemId = treeTableContent.addItem(new Object[] { checkBoxGradeLevel }, null);
-				treeTableContent.setParent(gradeLevelItemId, rootItemId);
-				treeTableContent.setCollapsed(gradeLevelItemId, false);
+				// Collect all student checkboxes for selecting purposes
+				final ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
+				// Add all students below the grade level 
+				for (final Student student : students) {
+					final CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
+					studentCheckBoxes.add(checkBoxStudent);
+					Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
+					treeTableContent.setParent(studentItemId, gradeItemId);
 
-				Set<Grade> grades = getAllGradesForGradeLevel(gradeLevel);
+					List<BorrowedMaterial> materials = gradeAndStudentsWithMaterials.get(grade).get(student);
 
-				// Collect all grade checkboxes for selecting purposes
-				final ArrayList<CheckBox> gradeCheckBoxes = new ArrayList<CheckBox>();
-				// Add all grades below the grade level
-				for (Grade grade : grades) {
-					final CheckBox checkBoxGrade = new CheckBox("" + grade.getGrade() + grade.getSuffix());
-					checkBoxGrade.setData(grade);
-					gradeCheckBoxes.add(checkBoxGrade);
-					Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
-					treeTableContent.setParent(gradeItemId, gradeLevelItemId);
+					// Collect all borrowed materials checkboxes for selecting purposes
+					final ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
+					for (final BorrowedMaterial material : materials) {
+						final CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
+						borrowedMaterialCheckBoxes.add(checkBoxMaterial);
+						Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
+						treeTableContent.setParent(materialItemId, studentItemId);
+						treeTableContent.setChildrenAllowed(materialItemId, false);
 
-					List<Student> students = getAllStudentsForGrade(grade);
+						// Whenever a borrowed material changes its value change the Set with all selected materials
+						checkBoxMaterial.addValueChangeListener(new ValueChangeListener() {
 
-					// Collect all student checkboxes for selecting purposes
-					final ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
-					// Add all students below the grade level 
-					for (final Student student : students) {
-						final CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
-						studentCheckBoxes.add(checkBoxStudent);
-						Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
-						treeTableContent.setParent(studentItemId, gradeItemId);
-
-						List<BorrowedMaterial> materials = gradeAndStudentsWithMaterials.get(grade).get(student);
-
-						// Collect all borrowed materials checkboxes for selecting purposes
-						final ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
-						for (final BorrowedMaterial material : materials) {
-							final CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
-							borrowedMaterialCheckBoxes.add(checkBoxMaterial);
-							Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
-							treeTableContent.setParent(materialItemId, studentItemId);
-							treeTableContent.setChildrenAllowed(materialItemId, false);
-
-							// Whenever a borrowed material changes its value change the Set with all selected materials
-							checkBoxMaterial.addValueChangeListener(new ValueChangeListener() {
-
-								private static final long serialVersionUID = -7395293342050339912L;
-
-								@Override
-								public void valueChange(ValueChangeEvent event) {
-									if (checkBoxMaterial.getValue()) {
-										currentlySelectedBorrowedMaterials.add(material);
-									}
-									else {
-										currentlySelectedBorrowedMaterials.remove(material);
-									}
-									
-									notifyObserver();
-								}
-
-							});
-						}
-
-						// Whenever the student changes its value it changes all materials
-						checkBoxStudent.addValueChangeListener(new ValueChangeListener() {
-
-							private static final long serialVersionUID = -7630914682634326352L;
+							private static final long serialVersionUID = -7395293342050339912L;
 
 							@Override
 							public void valueChange(ValueChangeEvent event) {
-								for (CheckBox checkBoxMaterial : borrowedMaterialCheckBoxes) {
-									boolean studentSelected = checkBoxStudent.getValue();
-									if (studentSelected) {
-										currentlySelectedStudents.add(student);
-									}
-									else {
-										currentlySelectedStudents.remove(student);
-									}
-									updateCurrentlySelectedMaterials();
-
-									notifyObserver();
-
-									checkBoxMaterial.setValue(studentSelected);
+								if (checkBoxMaterial.getValue()) {
+									currentlySelectedBorrowedMaterials.add(material);
 								}
+								else {
+									currentlySelectedBorrowedMaterials.remove(material);
+								}
+
+								notifyObserver();
 							}
 
 						});
 					}
 
-					// Whenever the grade changes its value it changes all students
-					checkBoxGrade.addValueChangeListener(new ValueChangeListener() {
+					// Whenever the student changes its value it changes all materials
+					checkBoxStudent.addValueChangeListener(new ValueChangeListener() {
 
-						private static final long serialVersionUID = -1660506729015821014L;
+						private static final long serialVersionUID = -7630914682634326352L;
 
 						@Override
 						public void valueChange(ValueChangeEvent event) {
-							boolean gradeSelected = checkBoxGrade.getValue();
-							for (CheckBox checkBoxStudent : studentCheckBoxes) {
-								if (gradeSelected) {
-									currentlySelectedGrades.add((Grade) checkBoxGrade.getData());
+							for (CheckBox checkBoxMaterial : borrowedMaterialCheckBoxes) {
+								boolean studentSelected = checkBoxStudent.getValue();
+								if (studentSelected) {
+									currentlySelectedStudents.add(student);
 								}
 								else {
-									currentlySelectedGrades.remove(checkBoxGrade.getData());
+									currentlySelectedStudents.remove(student);
 								}
-								updateCurrentlySelectedStudents();
 								updateCurrentlySelectedMaterials();
 
 								notifyObserver();
-								
-								checkBoxStudent.setValue(gradeSelected);
+
+								checkBoxMaterial.setValue(studentSelected);
 							}
 						}
 
 					});
 				}
 
-				// Whenever the grade level changes its value it changes all grades
-				checkBoxGradeLevel.addValueChangeListener(new ValueChangeListener() {
+				// Whenever the grade changes its value it changes all students
+				checkBoxGrade.addValueChangeListener(new ValueChangeListener() {
 
-					private static final long serialVersionUID = -7395293342050339912L;
+					private static final long serialVersionUID = -1660506729015821014L;
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
-						boolean gradeLevelSelected = checkBoxGradeLevel.getValue();
-						for (CheckBox checkBoxGrade : gradeCheckBoxes) {
-							if (gradeLevelSelected) {
+						boolean gradeSelected = checkBoxGrade.getValue();
+						for (CheckBox checkBoxStudent : studentCheckBoxes) {
+							if (gradeSelected) {
 								currentlySelectedGrades.add((Grade) checkBoxGrade.getData());
 							}
 							else {
@@ -258,69 +211,18 @@ public class StudentMaterialSelector extends CustomComponent {
 							updateCurrentlySelectedMaterials();
 
 							notifyObserver();
-							
-							checkBoxGrade.setValue(gradeLevelSelected);
+
+							checkBoxStudent.setValue(gradeSelected);
 						}
 					}
 
 				});
 			}
-
-			// Whenever the root changes its value it changes all grade levels
-			checkBoxRoot.addValueChangeListener(new ValueChangeListener() {
-
-				private static final long serialVersionUID = -7395293342050339912L;
-
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					boolean rootSelected = checkBoxRoot.getValue();
-					for (CheckBox checkBoxGradeLevel : gradeLevelCheckBoxes) {
-						if (rootSelected) {
-							currentlySelectedGrades.addAll(gradeAndStudentsWithMaterials.keySet());
-						}
-						else {
-							currentlySelectedGrades.removeAll(gradeAndStudentsWithMaterials.keySet());
-						}
-						updateCurrentlySelectedStudents();
-						updateCurrentlySelectedMaterials();
-
-						notifyObserver();
-						
-						checkBoxGradeLevel.setValue(rootSelected);
-					}
-				}
-
-			});
 		}
 		else {
 			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
 					+ "Continuing without changing the displayed data.");
 		}
-	}
-
-	private Set<Integer> getAllGradeLevels() {
-		Set<Grade> allGrades = gradeAndStudentsWithMaterials.keySet();
-		HashSet<Integer> allGradeLevels = new HashSet<Integer>();
-
-		// collect all unique grade levels
-		for (Grade grade : allGrades) {
-			allGradeLevels.add(grade.getGrade());
-		}
-
-		return allGradeLevels;
-	}
-
-	private Set<Grade> getAllGradesForGradeLevel(Integer gradeLevel) {
-		Set<Grade> allGrades = gradeAndStudentsWithMaterials.keySet();
-		HashSet<Grade> allGradesForGradeLevel = new HashSet<Grade>();
-
-		for (Grade grade : allGrades) {
-			if (grade.getGrade() == gradeLevel) {
-				allGradesForGradeLevel.add(grade);
-			}
-		}
-
-		return allGradesForGradeLevel;
 	}
 
 	private List<Student> getAllStudentsForGrade(Grade grade) {
@@ -357,7 +259,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (registeredObserver == null) {
 			return;
 		}
-		
+
 		registeredObserver.update();
 	}
 
