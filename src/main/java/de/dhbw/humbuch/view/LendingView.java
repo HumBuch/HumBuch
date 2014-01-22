@@ -292,9 +292,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	public void update() {		
 		// Get information about current selection of student material selector
-		HashSet<Student> students = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
-		HashSet<BorrowedMaterial> materials = (HashSet<BorrowedMaterial>) studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-		HashSet<Grade> grades = (HashSet<Grade>) studentMaterialSelector.getCurrentlySelectedGrades();
+		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Grade> grades = studentMaterialSelector.getCurrentlySelectedGrades();
 		
 		// Adapt manual lending button
 		if (students.size() <= 1) {
