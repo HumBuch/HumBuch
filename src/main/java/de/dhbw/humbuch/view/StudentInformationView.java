@@ -362,11 +362,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public OutputStream receiveUpload(String filename, String MIMEType) {
-			if (!MIMEType.equals("text/csv")) {
+			if (!MIMEType.equals("text/csv") && !MIMEType.equals("application/vnd.ms-excel")) {
 				upload.interruptUpload();
 				interrupted = true;
 				eventBus.post(new MessageEvent("Import nicht möglich.",
-						"Die ausgewählte Datei ist keine CSV-Datei.",
+						"Die ausgewählte Datei ist keine CSV-Datei. " + MIMEType,
 						Type.ERROR));
 			}
 			reset();
