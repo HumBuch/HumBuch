@@ -117,6 +117,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		horizontalLayoutButtonBar.setSpacing(true);
 		setSpacing(true);
 		setMargin(true);
+		
+		setSizeFull();
 
 		addListeners();
 	}
@@ -133,6 +135,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		addComponent(studentMaterialSelector);
 		addComponent(horizontalLayoutButtonBar);
+		
+		setExpandRatio(studentMaterialSelector, 1);
 	}
 
 	private void addListeners() {
