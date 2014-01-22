@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.view;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -11,6 +12,7 @@ public class HelpView extends VerticalLayout {
 	
 	public HelpView() {
 		setMargin(true);
+		labelHelpText.setContentMode(ContentMode.HTML);
 		addComponent(labelHelpText);
 	}
 	
