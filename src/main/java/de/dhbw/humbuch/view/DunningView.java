@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.navigator.View;
@@ -28,6 +29,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Dunning;
 import de.dhbw.humbuch.model.entity.Student;
@@ -64,14 +67,16 @@ public class DunningView extends VerticalLayout implements View,
 	private Dunning selectedDunning;
 	private DunningViewModel dunningViewModel;
 	private HorizontalLayout horizontalLayoutButtonBar;
-	private Button buttonSecondDunning;
-	private Button buttonNewDunning;
+	private Button buttonSecondDunning = new Button(SECOND_DUNNING);
+	private Button buttonNewDunning = new Button(NEW_DUNNING);
 	private Table tableDunnings;
+	private EventBus eventBus;
 
 	@Inject
 	public DunningView(ViewModelComposer viewModelComposer,
-			DunningViewModel dunningViewModel) {
+			DunningViewModel dunningViewModel, EventBus eventBus) {
 		this.dunningViewModel = dunningViewModel;
+		this.eventBus = eventBus;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, dunningViewModel);
@@ -123,48 +128,47 @@ public class DunningView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Set<Student> setStudent = new HashSet<Student>();
-				setStudent.add(selectedDunning.getStudent());
-				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
-				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				//ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet(); 
+				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
+				ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
-//				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
-				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname();
-				//StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-				
-				//new PrintingComponent(sr, "Mahnung");
-				selectedDunning.setStatus(Dunning.Status.SENT);
-				tableDunnings.removeAllItems();
-				dunningViewModel.doUpdateDunning(selectedDunning);			}
+				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
+				showPDF(baos, fileNameIncludingHash, selectedDunning);	
+			}
 		});
 		buttonSecondDunning.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 8123444488274722661L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Set<Student> setStudent = new HashSet<Student>();
-				setStudent.add(selectedDunning.getStudent());
-				List<BorrowedMaterial> listBorrowedMaterial = new ArrayList<BorrowedMaterial>(); 
-				listBorrowedMaterial.addAll(selectedDunning.getBorrowedMaterials());
-				//ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setStudent, listBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet(); 
+				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
+				ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
-//				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
-				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname();
-				//StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-				
-				//new PrintingComponent(sr, "Mahnung");
-				selectedDunning.setStatus(Dunning.Status.SENT);
-				tableDunnings.removeAllItems();
-				dunningViewModel.doUpdateDunning(selectedDunning);
+				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
+				showPDF(baos, fileNameIncludingHash, selectedDunning);
 			}
 		});
+	}
+	
+	private void showPDF(ByteArrayOutputStream baos, String fileName, Dunning selectedDunning) {
+		if(baos == null) {
+			eventBus.post(new MessageEvent("Fehler", "PDF konnte nicht erstellt werden", Type.ERROR));
+			return;
+		}
+		StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileName);
+		new PrintingComponent(sr, "Mahnung");
+		selectedDunning.setStatus(Dunning.Status.SENT);
+		tableDunnings.removeAllItems();
+		dunningViewModel.doUpdateDunning(selectedDunning);
+		buttonNewDunning.setEnabled(false);
+		buttonSecondDunning.setEnabled(false);
 	}
 
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
-		buttonSecondDunning = new Button(SECOND_DUNNING);
-		buttonNewDunning = new Button(NEW_DUNNING);
+		buttonSecondDunning.setEnabled(false); 
+		buttonNewDunning.setEnabled(false);
 		tableDunnings = new Table();
 
 		tableDunnings.setSelectable(true);
