@@ -15,14 +15,14 @@ public class MessageEvent {
 	}
 
 	/**
-	 * Creates an event with the specified message and {@link Type}.INFO as
+	 * Creates an event with the specified caption and {@link Type}.INFO as
 	 * standard type
 	 * 
 	 * @param message
 	 *            {@link String} containing the message
 	 */
-	public MessageEvent(String message) {
-		this("", message, Type.INFO);
+	public MessageEvent(String caption) {
+		this(caption, "", Type.INFO);
 	}
 
 	/**
