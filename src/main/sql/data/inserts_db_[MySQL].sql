@@ -71,20 +71,20 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch`;
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (1, 1, 1, '2013-12-04', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (2, 1, 3, '2013-12-29', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (3, 1, 5, '2013-12-29', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (4, 1, 6, '2013-12-29', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (5, 1, 7, '2013-12-29', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (6, 2, 1, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (7, 2, 3, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (8, 2, 5, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (9, 2, 6, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (10, 2, 7, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (11, 3, 3, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (12, 3, 8, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (13, 4, 3, '2014-01-09', NULL, 0);
-INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `returnDate`, `received`) VALUES (14, 4, 8, '2014-01-09', NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (1, 1, 1, '2013-12-04', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (2, 1, 3, '2013-12-29', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (3, 1, 5, '2013-12-29', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (4, 1, 6, '2013-12-29', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (5, 1, 7, '2013-12-29', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (6, 2, 1, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (7, 2, 3, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (8, 2, 5, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (9, 2, 6, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (10, 2, 7, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (11, 3, 3, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (12, 3, 8, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (13, 4, 3, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (14, 4, 8, '2014-01-09', NULL, NULL, 0);
 
 COMMIT;
 
