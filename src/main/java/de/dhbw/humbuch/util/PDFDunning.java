@@ -84,7 +84,7 @@ public class PDFDunning extends PDFHandler {
 					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
 					+ " Bücher nicht zurückgegeben hat. Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
 					+ "Mit freundlichen Grüßen \n"
-					+ "Schulverwaltung";
+					+ "Ihre Schulverwaltung";
 		}
 		PDFHandler.fillTableWithContent(table, false,
 				new String[] { dunningText }, false);
@@ -139,7 +139,8 @@ public class PDFDunning extends PDFHandler {
 	private void addParentInformation(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 
-		String[] contentArray = { this.student.getParent().getTitle() + " " + this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
+		String[] contentArray = { this.student.getParent().getTitle(),
+									this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
 									this.student.getParent().getStreet(),
 									this.student.getParent().getCity() + " " + this.student.getParent().getPostcode() + "\n" };
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);

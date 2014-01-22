@@ -163,11 +163,11 @@ public abstract class PDFHandler {
 		Paragraph paragraph = new Paragraph();
 		PdfPTable table = createMyStandardTable(2);
 
-		table.setTotalWidth(TABLEWIDTH + 40f);
+		table.setTotalWidth(TABLEWIDTH);
 		PdfPCell cell;
 
 		try {
-			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein.png");
+			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein_3.png");
 			img.setAlignment(Element.ALIGN_BOTTOM);
 			cell = new PdfPCell(img);
 
@@ -192,6 +192,13 @@ public abstract class PDFHandler {
 		cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
 		table.addCell(cell);
 
+		cell = new PdfPCell(new Phrase(""));
+		cell.setBorder(Rectangle.BOTTOM);
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(""));
+		cell.setBorder(Rectangle.BOTTOM);
+		table.addCell(cell);
+		
 		paragraph.add(table);
 		addEmptyLine(paragraph, 1);
 
@@ -309,8 +316,9 @@ public abstract class PDFHandler {
 
 	protected void addInformationAboutDocument(Document document, String informationText) {
 		PdfPTable table = createMyStandardTable(1);
-		fillTableWithContent(table, false, new String[] { informationText }, false, FontFactory.getFont("Helvetica", 12, Font.BOLD));
-
+		informationText = "\n" + informationText;
+		fillTableWithContent(table, false, new String[] { informationText },
+				false, FontFactory.getFont("Times New Roman", 14, Font.BOLD));
 		try {
 			document.add(table);
 		}
@@ -411,6 +419,7 @@ public abstract class PDFHandler {
 			if (withBorder == false) {
 				cell.setBorder(0);
 			}
+			cell.setPadding(0f);
 			table.addCell(cell);
 		}
 	}
@@ -467,6 +476,7 @@ public abstract class PDFHandler {
 			if (withBorder == false) {
 				cell.setBorder(0);
 			}
+			cell.setPadding(0f);
 			table.addCell(cell);
 		}
 	}

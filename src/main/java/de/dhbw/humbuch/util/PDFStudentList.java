@@ -4,10 +4,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.SubjectHandler;
@@ -186,7 +188,7 @@ public final class PDFStudentList extends PDFHandler {
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
 									"Klasse: ", "" + this.student.getGrade().toString(),
 									"Sprachen: ", SubjectHandler.getLanguageProfile(this.student.getProfile()),
-									"Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile()) };
+									"Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile())};
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
 
 		try {
