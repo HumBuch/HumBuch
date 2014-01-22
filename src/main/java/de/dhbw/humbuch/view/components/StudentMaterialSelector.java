@@ -40,7 +40,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	//	private IndexedContainer indexedContainerForTreeTable;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private LendingView registeredObserver;
-	private ArrayList<CheckBox> allCheckBoxes;
+	private HashMap<CheckBox, Object> allCheckBoxesWithId;
 
 	public StudentMaterialSelector() {
 		init();
@@ -48,7 +48,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
-		if(allCheckBoxes.size() != 0) {
+		if (allCheckBoxesWithId.keySet().size() != 0) {
 			updateTable(gradeAndStudentsWithMaterials);
 		}
 		else {
@@ -59,7 +59,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public HashSet<Grade> getCurrentlySelectedGrades() {
 		HashSet<Grade> currentlySelectedGrades = new HashSet<Grade>();
-		for (CheckBox checkBox : allCheckBoxes) {
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
 			if (checkBox.getData() instanceof Grade) {
 				if (checkBox.getValue() == true) {
 					currentlySelectedGrades.add((Grade) checkBox.getData());
@@ -72,7 +72,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public HashSet<Student> getCurrentlySelectedStudents() {
 		HashSet<Student> currentlySelectedStudents = new HashSet<Student>();
-		for (CheckBox checkBox : allCheckBoxes) {
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
 			if (checkBox.getData() instanceof Student) {
 				if (checkBox.getValue() == true) {
 					currentlySelectedStudents.add((Student) checkBox.getData());
@@ -85,7 +85,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public HashSet<BorrowedMaterial> getCurrentlySelectedBorrowedMaterials() {
 		HashSet<BorrowedMaterial> currentlySelectedBorrowedMaterials = new HashSet<BorrowedMaterial>();
-		for (CheckBox checkBox : allCheckBoxes) {
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
 			if (checkBox.getData() instanceof BorrowedMaterial) {
 				if (checkBox.getValue() == true) {
 					currentlySelectedBorrowedMaterials.add((BorrowedMaterial) checkBox.getData());
@@ -99,7 +99,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		verticalLayoutContent = new VerticalLayout();
 		textFieldSearchBar = new TextField(SEARCH_STUDENTS);
 		treeTableContent = new TreeTable();
-		allCheckBoxes = new ArrayList<CheckBox>();
+		allCheckBoxesWithId = new HashMap<CheckBox, Object>();
 
 		//		indexedContainerForTreeTable = new IndexedContainer();
 
@@ -108,6 +108,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 		treeTableContent.setSizeFull();
 		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
+		treeTableContent.setImmediate(true);
 
 		//		indexedContainerForTreeTable.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
 		//		treeTableContent.setContainerDataSource(indexedContainerForTreeTable);
@@ -146,11 +147,9 @@ public class StudentMaterialSelector extends CustomComponent {
 			for (Grade grade : grades) {
 				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 				checkBoxGrade.setData(grade);
-
-				allCheckBoxes.add(checkBoxGrade);
-
 				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
 
+				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
 				List<Student> students = getAllStudentsForGrade(grade);
 
 				// Collect all student checkboxes for selecting purposes
@@ -161,11 +160,11 @@ public class StudentMaterialSelector extends CustomComponent {
 					checkBoxStudent.setData(student);
 
 					studentCheckBoxes.add(checkBoxStudent);
-					allCheckBoxes.add(checkBoxStudent);
 
 					Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
 					treeTableContent.setParent(studentItemId, gradeItemId);
 
+					allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
 					List<BorrowedMaterial> materials = gradeAndStudentsWithMaterials.get(grade).get(student);
 
 					// Collect all borrowed materials checkboxes for selecting purposes
@@ -175,11 +174,12 @@ public class StudentMaterialSelector extends CustomComponent {
 						checkBoxMaterial.setData(material);
 
 						borrowedMaterialCheckBoxes.add(checkBoxMaterial);
-						allCheckBoxes.add(checkBoxMaterial);
 
 						Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
 						treeTableContent.setParent(materialItemId, studentItemId);
 						treeTableContent.setChildrenAllowed(materialItemId, false);
+
+						allCheckBoxesWithId.put(checkBoxMaterial, materialItemId);
 
 						// Whenever a borrowed material changes its value change the Set with all selected materials
 						checkBoxMaterial.addValueChangeListener(new ValueChangeListener() {
@@ -234,9 +234,63 @@ public class StudentMaterialSelector extends CustomComponent {
 					+ "Continuing without changing the displayed data.");
 		}
 	}
-	
+
 	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		
+		ArrayList<Grade> newGrades = new ArrayList<Grade>(newGradeAndStudentsWithMaterials.keySet());
+		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
+		ArrayList<BorrowedMaterial> newMaterials = getAllMaterialsFromStructure(newGradeAndStudentsWithMaterials);
+
+		ArrayList<Grade> oldGrades = new ArrayList<Grade>(gradeAndStudentsWithMaterials.keySet());
+		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
+		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
+
+		oldGrades.removeAll(newGrades);
+		oldStudents.removeAll(newStudents);
+		oldMaterials.removeAll(newMaterials);
+
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
+			if (checkBox.getData() instanceof Grade) {
+				Grade grade = (Grade) checkBox.getData();
+				if (oldGrades.contains(grade)) {
+					treeTableContent.removeItem(allCheckBoxesWithId.get(checkBox));
+				}
+			}
+			else if (checkBox.getData() instanceof Student) {
+				Student student = (Student) checkBox.getData();
+				if (oldStudents.contains(student)) {
+					treeTableContent.removeItem(allCheckBoxesWithId.get(checkBox));
+				}
+
+			}
+			else if (checkBox.getData() instanceof BorrowedMaterial) {
+				BorrowedMaterial material = (BorrowedMaterial) checkBox.getData();
+				if (oldMaterials.contains(material)) {
+					treeTableContent.removeItem(allCheckBoxesWithId.get(checkBox));
+				}
+			}
+		}
+	}
+
+	private ArrayList<Student> getAllStudentsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
+		ArrayList<Student> students = new ArrayList<Student>();
+		for (Grade grade : structure.keySet()) {
+			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = structure.get(grade);
+			students.addAll(studentsWithMaterials.keySet());
+		}
+
+		return students;
+	}
+
+	private ArrayList<BorrowedMaterial> getAllMaterialsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
+		ArrayList<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
+		for (Grade grade : structure.keySet()) {
+			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = structure.get(grade);
+			for (Student student : studentsWithMaterials.keySet()) {
+				materials.addAll(studentsWithMaterials.get(student));
+			}
+		}
+
+		return materials;
 	}
 
 	private List<Student> getAllStudentsForGrade(Grade grade) {
