@@ -24,7 +24,6 @@ import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -203,8 +202,10 @@ public class SettingsView extends VerticalLayout implements View,
 		changePwSave.addStyleName("default");
 		changePwButtons.addComponent(changePwCancel);
 		changePwButtons.addComponent(changePwSave);
+		changePwButtons.setSpacing(true);
 
 		changePwWindow.setContent(wContent);
+		changePwWindow.setCaption("Passwort ändern");
 		changePwWindow.center();
 		changePwWindow.setClosable(false);
 		changePwWindow.setResizable(false);
@@ -731,35 +732,17 @@ public class SettingsView extends VerticalLayout implements View,
 		 * Reacts on states from the doPasswordChange
 		 */
 		passwordChangeStatus.addStateChangeListener(new StateChangeListener() {
-
 			@Override
 			public void stateChange(Object arg0) {
 				ChangeStatus status = passwordChangeStatus.get();
-
+				// Clear the password fields
 				currentPassword.setValue("");
 				newPassword.setValue("");
 				newPasswordVerified.setValue("");
-				Notification warn = new Notification(
-						"Bitte füllen Sie alle Felder aus.");
-				switch (status) {
-				case SUCCESSFULL:
+				System.out.println("state-change");
+				// Close the window if successful
+				if (status == ChangeStatus.SUCCESSFULL) {
 					changePwWindow.close();
-					Notification.show("Passwort geändert.");
-					break;
-				case CURRENT_PASSWORD_WRONG:
-					Notification.show("Aktuelles Passwort nicht korrekt!");
-					break;
-				case EMPTY_FIELDS:
-
-					warn.show(UI.getCurrent().getPage());
-					System.out.println("Bitte alle Felder");
-					break;
-				case NEW_PASSWORD_NOT_EQUALS:
-					Notification
-							.show("Die beiden neuen Passwörter stimmen nicht überein.");
-					break;
-				default:
-					break;
 				}
 			}
 		});

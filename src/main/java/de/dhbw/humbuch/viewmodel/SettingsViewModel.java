@@ -38,9 +38,6 @@ public class SettingsViewModel {
 	public interface PasswordChangeStatus extends State<ChangeStatus> {
 	}
 
-	public interface NameChangeStatus extends State<ChangeStatus> {
-	}
-
 	public interface UserName extends State<String> {
 	}
 
@@ -57,10 +54,6 @@ public class SettingsViewModel {
 
 	@ProvidesState(PasswordChangeStatus.class)
 	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(
-			ChangeStatus.class);
-
-	@ProvidesState(NameChangeStatus.class)
-	private State<ChangeStatus> nameChangeStatus = new BasicState<>(
 			ChangeStatus.class);
 
 	@ProvidesState(UserName.class)
@@ -158,9 +151,12 @@ public class SettingsViewModel {
 			this.userName.set(userName);
 			this.userEmail.set(userEmail);
 			currentUser.notifyAllListeners();
-			nameChangeStatus.set(ChangeStatus.SUCCESSFULL);
+			eventBus.post(new MessageEvent("Daten wurden geändert"));
 		} else {
-			nameChangeStatus.set(ChangeStatus.NAME_OR_MAIL_ALREADY_EXISTS);
+			eventBus.post(new MessageEvent(
+					"Speichern fehlgeschlagen!",
+					"Es existiert bereits ein Nutzer mit dem Nutzername oder der E-Mail-Adresse.",
+					Type.WARNING));
 		}
 	}
 
@@ -170,16 +166,23 @@ public class SettingsViewModel {
 		User user = currentUser.get();
 		if (currentPassword.isEmpty() || newPassword.isEmpty()
 				|| newPasswordVerified.isEmpty()) {
-			passwordChangeStatus.set(ChangeStatus.EMPTY_FIELDS);
+			eventBus.post(new MessageEvent("Leere Felder!",
+					"Bitte alle Felder ausfüllen.", Type.WARNING));
 		} else if (!user.getPassword().equals(currentPassword)) {
-			passwordChangeStatus.set(ChangeStatus.CURRENT_PASSWORD_WRONG);
+			eventBus.post(new MessageEvent("Falsches Passwort!",
+					"Das aktuelle Passwort ist nicht korrekt.", Type.WARNING));
 		} else if (!newPassword.equals(newPasswordVerified)) {
-			passwordChangeStatus.set(ChangeStatus.NEW_PASSWORD_NOT_EQUALS);
+			eventBus.post(new MessageEvent("Passwörter stimmen nicht überein!",
+					"Die beiden neuen Passwörter stimmen nicht überein.",
+					Type.WARNING));
 		} else {
 			user.setPassword(newPassword);
 			daoUser.update(user);
 			currentUser.notifyAllListeners();
+			passwordChangeStatus.set(null);
 			passwordChangeStatus.set(ChangeStatus.SUCCESSFULL);
+			// TODO: passwordChangeStatus.notifyAllListeners(); does not work
+			eventBus.post(new MessageEvent("Passwort geändert"));
 		}
 	}
 
