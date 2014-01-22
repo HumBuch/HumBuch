@@ -116,10 +116,10 @@ public class SettingsViewModel {
 		if (schoolYear.getYear().isEmpty()) {
 			eventBus.post(new MessageEvent("Speichern nicht möglich!",
 					"Das Feld 'Schuljahr' darf nicht leer sein.", Type.WARNING));
-			updateSchoolYears();
 		} else {
 			daoSchoolYear.update(schoolYear);
 		}
+		updateSchoolYears();
 	}
 
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
@@ -131,12 +131,10 @@ public class SettingsViewModel {
 		if (category.getName().isEmpty()) {
 			eventBus.post(new MessageEvent("Speichern nicht möglich!",
 					"Das Feld 'Kategorie' darf nicht leer sein.", Type.WARNING));
-			
 		} else {
 			daoCategory.update(category);
 		}
-		
-		//updateCategories();
+		updateCategories();
 	}
 
 	public void doDeleteCategory(Category category) {

@@ -229,7 +229,6 @@ public class SettingsView extends VerticalLayout implements View,
 		catTable.setSizeFull();
 		catTable.setSelectable(true);
 		catTable.setImmediate(true);
-		catTable.setBuffered(true);
 
 		catTable.setContainerDataSource(catData);
 		catTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
@@ -307,13 +306,9 @@ public class SettingsView extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				catCommit();
-				catTable.commit();
 				Category item = (Category) catTable.getValue();
-				
-				System.out.println("Name: " + item.getName());
-				settingsViewModel.doUpdateCategory(item);
 				catConfigureEditable(false);
-				
+				settingsViewModel.doUpdateCategory(item);
 			}
 		});
 
@@ -337,9 +332,9 @@ public class SettingsView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				Category item = (Category) catTable.getValue();
 				settingsViewModel.doDeleteCategory(item);
-				catTable.select(null);
-				catData.removeItem(item);
 				catConfigureEditable(false);
+				catTable.select(null);
+				
 			}
 		});
 
@@ -347,7 +342,7 @@ public class SettingsView extends VerticalLayout implements View,
 		categories.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
-				catData.removeAllItems();
+				catTable.removeAllItems();
 				catData.addAll(categories.get());
 			}
 		});
@@ -569,7 +564,6 @@ public class SettingsView extends VerticalLayout implements View,
 				yearCommit();
 				yearConfigureEditable(false);
 				SchoolYear item = (SchoolYear) yearTable.getValue();
-				System.out.println(item.getYear());
 				settingsViewModel.doUpdateSchoolYear(item);
 			}
 		});
@@ -594,9 +588,8 @@ public class SettingsView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				SchoolYear item = (SchoolYear) yearTable.getValue();
 				settingsViewModel.doDeleteSchoolYear(item);
-				yearTable.select(null);
-				yearData.removeItem(item);
 				yearConfigureEditable(false);
+				yearTable.select(null);
 			}
 		});
 
@@ -604,7 +597,7 @@ public class SettingsView extends VerticalLayout implements View,
 		schoolYears.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
-				yearData.removeAllItems();
+				yearTable.removeAllItems();
 				yearData.addAll(schoolYears.get());
 			}
 		});
