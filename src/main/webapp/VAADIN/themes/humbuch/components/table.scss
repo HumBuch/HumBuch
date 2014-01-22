@@ -110,7 +110,7 @@
         }
         
         .v-table-body {
-                border: .1em solid #d4d5d5;
+                border: 1px solid #d4d5d5;
         }
         
         .v-table-row-odd {
@@ -120,13 +120,13 @@
         .v-table .v-selected {
                 text-shadow: 0 .1em .1em rgba(0,0,0,.3);
                 
-                background: #6ba7e4;
-                background: -moz-linear-gradient(top, #75b0e7 0%, #5f9de1 100%);
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#75b0e7), color-stop(100%,#5f9de1));
-                background: -webkit-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-                background: -o-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-                background: -ms-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-        /* background: linear-gradient(to bottom, #75b0e7 0%,#5f9de1 100%); */
+                background: #329d90; //#6ba7e4;
+                background: -moz-linear-gradient(top, #39b5a6 0%, #309589 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#39b5a6), color-stop(100%,#309589));
+                background: -webkit-linear-gradient(top, #39b5a6 0%,#309589 100%);
+                background: -o-linear-gradient(top, #39b5a6 0%,#309589 100%);
+                background: -ms-linear-gradient(top, #39b5a6 0%,#309589 100%);
+        /* background: linear-gradient(to bottom, #39b5a6 0%,#5f9de1 100%); */
         }
         
         .v-table .v-selected + .v-selected {
@@ -205,6 +205,22 @@
         
         .v-table.plain .v-table-caption-container {
                 border-left-color: transparent;
+        }
+        
+        .v-table .v-selected .v-textfield {
+        	width: 100%;
+        }
+        
+        .v-table .v-selected .v-datefield {
+        	width: 100%;
+        	color: rgb(34, 34, 34);
+        	text-shadow: none;
+        }
+        
+        .v-table .v-selected .v-datefield-textfield {
+        	width: 100%;
+        	color: rgb(34, 34, 34);
+        	text-shadow: none;
         }
 
 }
