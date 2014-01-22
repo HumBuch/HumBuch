@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.view;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
@@ -100,6 +101,8 @@ public class MainUI extends ScopedUI {
 	@Override
 	protected void init(VaadinRequest request) {
 
+		getUI().getSession().setLocale(new Locale("de", "DE"));
+		
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
@@ -257,6 +260,8 @@ public class MainUI extends ScopedUI {
 
 		Window window = new Window("Hilfe", helpView);
 		window.center();
+		window.setWidth("70%");
+		window.setHeight("80%");
 		window.setModal(true);
 		window.setResizable(false);
 		window.setCloseShortcut(KeyCode.ESCAPE, null);

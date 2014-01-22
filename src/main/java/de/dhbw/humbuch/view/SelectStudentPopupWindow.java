@@ -3,6 +3,8 @@ package de.dhbw.humbuch.view;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -50,17 +52,19 @@ public class SelectStudentPopupWindow extends Window {
 		buttonCancel = new Button(CANCEL);
 
 		buttonContinue.setIcon(new ThemeResource("images/icons/16/icon_checked_red.png"));
+		buttonContinue.setEnabled(false);
 
 		comboBoxStudents.setWidth("100%");
+		comboBoxStudents.setImmediate(true);
 
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 		horizontalLayoutButtonBar.setSpacing(true);
 
+		setImmediate(true);
 		center();
 		setModal(true);
 		setResizable(false);
-		setDraggable(false);
 
 		fillComboBox();
 		addListeners();
@@ -77,13 +81,29 @@ public class SelectStudentPopupWindow extends Window {
 	}
 
 	private void addListeners() {
+		comboBoxStudents.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 5865059270341130362L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (comboBoxStudents.getValue() == null || comboBoxStudents.getValue() == "") {
+					buttonContinue.setEnabled(false);
+				}
+				else {
+					buttonContinue.setEnabled(true);
+				}
+			}
+
+		});
+
 		buttonCancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 481430670731285908L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				close();
+				closeMe();
 			}
 		});
 
@@ -113,11 +133,16 @@ public class SelectStudentPopupWindow extends Window {
 		if (customStudent != null) {
 			ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(lendingView, customStudent.getStudent());
 			getUI().addWindow(mlpw);
-			close();
+			closeMe();
 		}
 		else {
 			// TODO: UI Notification
 		}
+	}
+
+	private void closeMe() {
+		getUI().removeWindow(this);
+		close();
 	}
 
 

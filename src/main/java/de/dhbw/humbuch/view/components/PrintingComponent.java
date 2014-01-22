@@ -23,6 +23,9 @@ public class PrintingComponent extends CustomComponent {
 	private void showWindow() {
 		window = new Window(windowTitle);
 		window.setSizeFull();
+		window.setResizable(false);
+		window.setDraggable(false);
+		window.setModal(true);
 
 		BrowserFrame embedded = new BrowserFrame();
 		embedded.setSizeFull();
