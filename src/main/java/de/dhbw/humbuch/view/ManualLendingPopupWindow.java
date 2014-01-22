@@ -2,9 +2,8 @@ package de.dhbw.humbuch.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -23,8 +22,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -42,16 +43,17 @@ public class ManualLendingPopupWindow extends Window {
 	private static final String SAVE = "Ausgewählte Materialien ausleihen";
 	private static final String CANCEL = "Manuelle Ausleihe abbrechen";
 	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
+	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
 
 	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutHeaderBar;
+	private HorizontalLayout horizontalLayoutButtonBar;
 	private TextField textFieldSearchBar;
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
 	private Button buttonCancel;
 	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
-	private ArrayList<TeachingMaterial> currentlySelectedMaterials;
+	private HashMap<Object, HashMap<TeachingMaterial, PopupDateField>> idForMaterialsWithDates;
 	private LendingView lendingView;
 	private Student selectedStudent;
 
@@ -65,48 +67,52 @@ public class ManualLendingPopupWindow extends Window {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		horizontalLayoutHeaderBar = new HorizontalLayout();
+		horizontalLayoutButtonBar = new HorizontalLayout();
 		textFieldSearchBar = new TextField(SEARCH_MATERIALS);
 		tableTeachingMaterials = new Table();
 		buttonSave = new Button(SAVE);
 		buttonCancel = new Button(CANCEL);
-		currentlySelectedMaterials = new ArrayList<TeachingMaterial>();
+		idForMaterialsWithDates = new HashMap<Object, HashMap<TeachingMaterial, PopupDateField>>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
-		textFieldSearchBar.setWidth("100%");
+		textFieldSearchBar.setWidth("50%");
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
+		buttonSave.setEnabled(false);
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
+		containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
 
 		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
-		tableTeachingMaterials.setWidth("100%");
+		// dirty but 100% is not working
+//		tableTeachingMaterials.setWidth("99%");
+//		tableTeachingMaterials.setHeight("100%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
 		tableTeachingMaterials.setImmediate(true);
 		setTableListener();
 		updateTableContent();
 
-		horizontalLayoutHeaderBar.setSpacing(true);
+		horizontalLayoutButtonBar.setSpacing(true);
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 
+		setImmediate(true);
 		center();
 		setModal(true);
 		setResizable(false);
-		setDraggable(false);
 
 		addListeners();
 	}
 
 	private void buildLayout() {
-		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
-		horizontalLayoutHeaderBar.addComponent(buttonCancel);
-		horizontalLayoutHeaderBar.addComponent(buttonSave);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
+		horizontalLayoutButtonBar.addComponent(buttonCancel);
+		horizontalLayoutButtonBar.addComponent(buttonSave);
+		horizontalLayoutButtonBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
+		horizontalLayoutButtonBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
 
-		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
+		verticalLayoutContent.addComponent(textFieldSearchBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
+		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
 
 		setContent(verticalLayoutContent);
 	}
@@ -118,10 +124,16 @@ public class ManualLendingPopupWindow extends Window {
 			return;
 		}
 
-		int i = 1;
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
-			tableTeachingMaterials.addItem(new Object[] { teachingMaterial.getName() }, i);
-			i++;
+			PopupDateField dateField = new PopupDateField();
+			dateField.setDateFormat("dd.MM.yyyy");
+			dateField.setValue(new Date());
+
+			HashMap<TeachingMaterial, PopupDateField> materialWithDate = new HashMap<TeachingMaterial, PopupDateField>();
+			materialWithDate.put(teachingMaterial, dateField);
+			Object itemId = tableTeachingMaterials.addItem(new Object[] { teachingMaterial.getName(), dateField }, null);
+
+			idForMaterialsWithDates.put(itemId, materialWithDate);
 		}
 	}
 
@@ -130,16 +142,17 @@ public class ManualLendingPopupWindow extends Window {
 
 			private static final long serialVersionUID = -8774191239600142741L;
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				currentlySelectedMaterials.clear();
 				Object selectedIds = tableTeachingMaterials.getValue();
 				if (selectedIds instanceof Set<?>) {
-					Set<Integer> ids = (Set<Integer>) selectedIds;
-					for (Integer id : ids) {
-						currentlySelectedMaterials.add(teachingMaterials.get(id - 1));
+					Set<?> ids = (Set<?>) selectedIds;
+					if (ids.size() == 0) {
+						buttonSave.setEnabled(false);
+						return;
 					}
+
+					buttonSave.setEnabled(true);
 				}
 				else {
 					LOG.warn("Table selection is not an instance of Set<?>");
@@ -155,7 +168,7 @@ public class ManualLendingPopupWindow extends Window {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				close();
+				closeMe();
 			}
 		});
 
@@ -187,10 +200,40 @@ public class ManualLendingPopupWindow extends Window {
 		updateTableContent();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void saveTeachingMaterialsForStudent() {
-		Map<Student, List<TeachingMaterial>> studentsWithMaterials = new HashMap<Student, List<TeachingMaterial>>();
-		studentsWithMaterials.put(selectedStudent, currentlySelectedMaterials);
+		HashMap<TeachingMaterial, Date> teachingMaterialsWithDates = new HashMap<TeachingMaterial, Date>();
 
-		lendingView.saveTeachingMaterialsForStudents(studentsWithMaterials);
+		Object selectedIds = tableTeachingMaterials.getValue();
+		if (selectedIds instanceof Set<?>) {
+			Set<Object> ids = (Set<Object>) selectedIds;
+			if (ids.size() == 0) {
+				return;
+			}
+
+			for (Object selectedId : ids) {
+				HashMap<TeachingMaterial, PopupDateField> tableRow = idForMaterialsWithDates.get(selectedId);
+				// this loop runs only once
+				for (TeachingMaterial material : tableRow.keySet()) {
+					PopupDateField dateField = tableRow.get(material);
+					teachingMaterialsWithDates.put(material, dateField.getValue());
+				}
+			}
+		}
+		else {
+			LOG.warn("Table selection is not an instance of Set<?>");
+		}
+
+		HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure = new HashMap<Student, HashMap<TeachingMaterial, Date>>();
+		saveStructure.put(selectedStudent, teachingMaterialsWithDates);
+
+		lendingView.saveTeachingMaterialsForStudents(saveStructure);
+
+		closeMe();
+	}
+
+	private void closeMe() {
+		UI.getCurrent().removeWindow(this);
+		close();
 	}
 }
