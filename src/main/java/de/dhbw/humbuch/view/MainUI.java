@@ -257,6 +257,8 @@ public class MainUI extends ScopedUI {
 
 		Window window = new Window("Hilfe", helpView);
 		window.center();
+		window.setWidth("70%");
+		window.setHeight("80%");
 		window.setModal(true);
 		window.setResizable(false);
 		window.setCloseShortcut(KeyCode.ESCAPE, null);
