@@ -107,7 +107,7 @@ public class DunningView extends VerticalLayout implements View,
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if(tableDunnings.size()==0) return;
+				if(tableDunnings.size()==0 || tableDunnings.getValue() == null) return;
 				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
 				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(true);
