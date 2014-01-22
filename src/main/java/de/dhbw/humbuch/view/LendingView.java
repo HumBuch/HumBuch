@@ -202,19 +202,19 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-					HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
-					if (selectedStudents.size() == 0) {
-						SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(LendingView.this, students.get());
-						getUI().addWindow(sspw);
+				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+				if (selectedStudents.size() == 0) {
+					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(LendingView.this, students.get());
+					getUI().addWindow(sspw);
+				}
+				else if (selectedStudents.size() == 1) {
+					// This loop runs only once
+					for (Student student : selectedStudents) {
+						ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(LendingView.this, student);
+						getUI().addWindow(mlpw);
 					}
-					else if (selectedStudents.size() == 1) {
-						// This loop runs only once
-						for (Student student : selectedStudents) {
-							ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(LendingView.this, student);
-							getUI().addWindow(mlpw);
-						}
-					}
-				
+				}
+
 			}
 		});
 	}
@@ -290,12 +290,12 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	//		LendingView.this.
 	//	}
 
-	public void update() {		
+	public void update() {
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
 		HashSet<Grade> grades = studentMaterialSelector.getCurrentlySelectedGrades();
-		
+
 		// Adapt manual lending button
 		if (students.size() <= 1) {
 			buttonManualLending.setEnabled(true);
@@ -303,25 +303,25 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		else {
 			buttonManualLending.setEnabled(false);
 		}
-		
+
 		// Adapt student list button
-		if(students.size() >= 1) {
+		if (students.size() >= 1) {
 			buttonStudentList.setEnabled(true);
 		}
 		else {
 			buttonStudentList.setEnabled(false);
 		}
-		
+
 		// Adapt class list button
-		if(grades.size() >= 1) {
+		if (grades.size() >= 1) {
 			buttonClassList.setEnabled(true);
 		}
 		else {
 			buttonClassList.setEnabled(false);
 		}
-		
+
 		// Adapt save button
-		if(materials.size() >= 1) {
+		if (materials.size() >= 1) {
 			buttonSaveSelectedData.setEnabled(true);
 		}
 		else {
@@ -333,8 +333,14 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
 	}
 
-	public void saveTeachingMaterialsForStudents(Map<Student, List<TeachingMaterial>> studentsWithMaterials) {
-//		lendingViewModel.doManualLending(studentsWithMaterials);
+	public void saveTeachingMaterialsForStudents(HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
+		// the outer loop runs only once
+		for (Student student : saveStructure.keySet()) {
+			HashMap<TeachingMaterial, Date> materialsWithDates = saveStructure.get(student);
+			for (TeachingMaterial material : materialsWithDates.keySet()) {
+				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
+			}
+		}
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
