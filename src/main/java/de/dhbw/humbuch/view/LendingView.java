@@ -26,13 +26,11 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
-import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
@@ -47,6 +45,8 @@ import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.TeachingMaterials;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 
 public class LendingView extends VerticalLayout implements View, ViewInformation {
@@ -73,8 +73,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private Button buttonManualLending;
 	private ThemeResource themeResourceIconPrint;
 	private LendingViewModel lendingViewModel;
-	private ManualLendingPopupView manualLendingPopupView;
-	private Window windowManualLending;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
@@ -85,19 +83,22 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@BindState(TeachingMaterials.class)
 	private State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
 
+	@BindState(Students.class)
+	public State<Collection<Student>> students = new BasicState<>(Collection.class);
+
 	@Inject
-	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel) {
+	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, StudentInformationViewModel studentInformationViewModel) {
 		this.lendingViewModel = lendingViewModel;
-		bindViewModel(viewModelComposer, lendingViewModel);
+		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
 		init();
 		buildLayout();
 	}
 
-	@AfterVMBinding
-	private void afterVMBinding() {
-		updateStudentsWithUnreceivedBorrowedMaterials();
-	}
-	
+	//	@AfterVMBinding
+	//	private void afterVMBinding() {
+	//		updateStudentsWithUnreceivedBorrowedMaterials();
+	//	}
+
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
@@ -106,8 +107,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buttonStudentList = new Button(STUDENT_LIST);
 		buttonManualLending = new Button(MANUAL_LENDING);
 		themeResourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
-		manualLendingPopupView = new ManualLendingPopupView(this);
-		windowManualLending = new Window();
 
 		buttonClassList.setIcon(themeResourceIconPrint);
 		buttonStudentList.setIcon(themeResourceIconPrint);
@@ -119,20 +118,19 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setSpacing(true);
 		setMargin(true);
 
-		windowManualLending.setCaption(manualLendingPopupView.getTitle());
-		windowManualLending.center();
-		windowManualLending.setContent(manualLendingPopupView);
-
 		addListeners();
+		updateStudentsWithUnreceivedBorrowedMaterials();
 	}
 
 	private void buildLayout() {
 		horizontalLayoutButtonBar.addComponent(buttonSaveSelectedData);
 		horizontalLayoutButtonBar.addComponent(buttonClassList);
 		horizontalLayoutButtonBar.addComponent(buttonStudentList);
+		horizontalLayoutButtonBar.addComponent(buttonManualLending);
 		horizontalLayoutButtonBar.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
 		horizontalLayoutButtonBar.setComponentAlignment(buttonClassList, Alignment.MIDDLE_CENTER);
 		horizontalLayoutButtonBar.setComponentAlignment(buttonStudentList, Alignment.MIDDLE_CENTER);
+		horizontalLayoutButtonBar.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
 
 		addComponent(studentMaterialSelector);
 		addComponent(horizontalLayoutButtonBar);
@@ -174,7 +172,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				System.out.println("button click");
 				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		});
@@ -206,9 +203,19 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (buttonManualLending.isVisible()) {
-					showManualLendingPopup();
-				}
+					HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+					if (selectedStudents.size() == 0) {
+						SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(LendingView.this, students.get());
+						getUI().addWindow(sspw);
+					}
+					else if (selectedStudents.size() == 1) {
+						// This loop runs only once
+						for (Student student : selectedStudents) {
+							ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(LendingView.this, student);
+							getUI().addWindow(mlpw);
+						}
+					}
+				
 			}
 		});
 	}
@@ -272,42 +279,68 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return informationForPdf;
 	}
 
-	private void showManualLendingPopup() {
-		manualLendingPopupView.updateTeachingMaterials(teachingMaterials.get());
-		getUI().addWindow(windowManualLending);
-	}
+	//	private void doManualLending() {
+	//		Map<Student, List<TeachingMaterial>> toLend = new HashMap<Student, List<TeachingMaterial>>();
+	//		HashSet<Student> selectedStudent = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+	//
+	//		// This loop should only run once
+	//		for (Student student : selectedStudent) {
+	//			toLend.put(student, manualLendingPopupWindow.getCurrentlySelectedTeachingMaterials());
+	//		}
+	//
+	//		LendingView.this.
+	//	}
 
-	private void doManualLending() {
-		Map<Student, List<TeachingMaterial>> toLend = new HashMap<Student, List<TeachingMaterial>>();
-		HashSet<Student> selectedStudent = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
-
-		// This loop should only run once
-		for (Student student : selectedStudent) {
-			toLend.put(student, manualLendingPopupView.getCurrentlySelectedTeachingMaterials());
-		}
-
-//		LendingView.this.lendingViewModel.doManualLending(toLend);
-	}
-
-	protected void closePopup(boolean saveData) {
-		if (saveData) {
-			doManualLending();
-		}
-
-		windowManualLending.close();
-	}
-
-	public void update(boolean singleStudentSelected) {
-		if (singleStudentSelected) {
-			horizontalLayoutButtonBar.addComponent(buttonManualLending);
+	public void update() {		
+		// Get information about current selection of student material selector
+		HashSet<Student> students = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> materials = (HashSet<BorrowedMaterial>) studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Grade> grades = (HashSet<Grade>) studentMaterialSelector.getCurrentlySelectedGrades();
+		
+		// Adapt manual lending button
+		if (students.size() <= 1) {
+			buttonManualLending.setEnabled(true);
 		}
 		else {
-			horizontalLayoutButtonBar.removeComponent(buttonManualLending);
+			buttonManualLending.setEnabled(false);
 		}
+		
+		// Adapt student list button
+		if(students.size() >= 1) {
+			buttonStudentList.setEnabled(true);
+		}
+		else {
+			buttonStudentList.setEnabled(false);
+		}
+		
+		// Adapt class list button
+		if(grades.size() >= 1) {
+			buttonClassList.setEnabled(true);
+		}
+		else {
+			buttonClassList.setEnabled(false);
+		}
+		
+		// Adapt save button
+		if(materials.size() >= 1) {
+			buttonSaveSelectedData.setEnabled(true);
+		}
+		else {
+			buttonSaveSelectedData.setEnabled(false);
+		}
+	}
+
+	public ArrayList<TeachingMaterial> getTeachingMaterials() {
+		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
+	}
+
+	public void saveTeachingMaterialsForStudents(Map<Student, List<TeachingMaterial>> studentsWithMaterials) {
+//		lendingViewModel.doManualLending(studentsWithMaterials);
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
+		update();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

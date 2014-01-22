@@ -119,7 +119,7 @@ public class StudentMaterialSelector extends CustomComponent {
 			final CheckBox checkBoxRoot = new CheckBox(ALL_GRADES);
 			Object rootItemId = treeTableContent.addItem(new Object[] { checkBoxRoot }, null);
 			treeTableContent.setCollapsed(rootItemId, false);
-			
+
 			Set<Integer> gradeLevels = getAllGradeLevels();
 
 			// Collect all grade level checkboxes for selecting purposes
@@ -179,6 +179,8 @@ public class StudentMaterialSelector extends CustomComponent {
 									else {
 										currentlySelectedBorrowedMaterials.remove(material);
 									}
+									
+									notifyObserver();
 								}
 
 							});
@@ -200,6 +202,7 @@ public class StudentMaterialSelector extends CustomComponent {
 										currentlySelectedStudents.remove(student);
 									}
 									updateCurrentlySelectedMaterials();
+
 									notifyObserver();
 
 									checkBoxMaterial.setValue(studentSelected);
@@ -227,6 +230,8 @@ public class StudentMaterialSelector extends CustomComponent {
 								updateCurrentlySelectedStudents();
 								updateCurrentlySelectedMaterials();
 
+								notifyObserver();
+								
 								checkBoxStudent.setValue(gradeSelected);
 							}
 						}
@@ -252,6 +257,8 @@ public class StudentMaterialSelector extends CustomComponent {
 							updateCurrentlySelectedStudents();
 							updateCurrentlySelectedMaterials();
 
+							notifyObserver();
+							
 							checkBoxGrade.setValue(gradeLevelSelected);
 						}
 					}
@@ -277,6 +284,8 @@ public class StudentMaterialSelector extends CustomComponent {
 						updateCurrentlySelectedStudents();
 						updateCurrentlySelectedMaterials();
 
+						notifyObserver();
+						
 						checkBoxGradeLevel.setValue(rootSelected);
 					}
 				}
@@ -326,7 +335,6 @@ public class StudentMaterialSelector extends CustomComponent {
 			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
 			currentlySelectedStudents.addAll(new ArrayList<Student>(studentsWithMaterials.keySet()));
 		}
-		notifyObserver();
 	}
 
 	private void updateCurrentlySelectedMaterials() {
@@ -349,13 +357,8 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (registeredObserver == null) {
 			return;
 		}
-
-		if (currentlySelectedStudents.size() == 1) {
-			registeredObserver.update(true);
-		}
-		else {
-			registeredObserver.update(false);
-		}
+		
+		registeredObserver.update();
 	}
 
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes

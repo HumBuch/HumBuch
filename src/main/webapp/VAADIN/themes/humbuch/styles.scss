@@ -1,0 +1,15 @@
+@import "addons.scss";
+@import "humbuch.scss";
+
+@include dashboard-keyframes;
+@include icons-fontello;
+@include font-open-sans;
+
+/* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
+/* The actual styles should be defined in humbuch.scss */
+.humbuch {
+  @include addons;
+
+  /* Include the humbuch theme*/
+  @include humbuch;
+}

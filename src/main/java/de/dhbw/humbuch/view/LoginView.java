@@ -83,8 +83,9 @@ public class LoginView extends VerticalLayout implements View {
 		labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
 		// HumBuch
-		Label title = new Label("HumBuch Schulbuchverwaltung");
-
+		Label title = new Label("HumBuch<br />Schulbuchverwaltung",
+				ContentMode.HTML);
+		title.setSizeUndefined();
 		title.addStyleName("h2");
 		labels.addComponent(title);
 		labels.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
@@ -96,14 +97,10 @@ public class LoginView extends VerticalLayout implements View {
 		fields.addStyleName("fields");
 
 		// Username
-		username.setRequired(true);
 		username.setNullRepresentation("");
-		username.setInvalidAllowed(false);
 		fields.addComponent(username);
 
 		// Password
-		password.setRequired(true);
-		password.setValue("");
 		password.setNullRepresentation("");
 		fields.addComponent(password);
 
@@ -130,10 +127,9 @@ public class LoginView extends VerticalLayout implements View {
 			@Override
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
-
 					// Navigate to main view
 					if (getUI() != null && getUI().getNavigator() != null) {
-						getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
+						getUI().getNavigator().navigateTo(MainUI.LENDING_VIEW);
 					}
 				}
 
@@ -182,7 +178,6 @@ public class LoginView extends VerticalLayout implements View {
 		username.addShortcutListener(enter);
 		password.addShortcutListener(enter);
 	}
-	
 
 	private void buildLayout() {
 		setSizeFull();

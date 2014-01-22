@@ -63,7 +63,7 @@ public class StudentInformationViewModel {
 	}
 	
 	private void updateStudents() {
-		students.set(daoStudent.findAll());
+		students.set(daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false)));
 	}
 
 	@HandlesAction(PersistStudents.class)
