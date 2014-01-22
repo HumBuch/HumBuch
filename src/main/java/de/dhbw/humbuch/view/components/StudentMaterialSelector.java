@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.view.components;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +48,13 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
-		this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
-		buildTable();
+		if(allCheckBoxes.size() != 0) {
+			updateTable(gradeAndStudentsWithMaterials);
+		}
+		else {
+			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
+			buildTable();
+		}
 	}
 
 	public HashSet<Grade> getCurrentlySelectedGrades() {
@@ -227,6 +233,10 @@ public class StudentMaterialSelector extends CustomComponent {
 			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
 					+ "Continuing without changing the displayed data.");
 		}
+	}
+	
+	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
+		
 	}
 
 	private List<Student> getAllStudentsForGrade(Grade grade) {

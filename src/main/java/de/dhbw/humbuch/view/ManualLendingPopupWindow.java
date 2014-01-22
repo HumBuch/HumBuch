@@ -126,7 +126,6 @@ public class ManualLendingPopupWindow extends Window {
 
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
 			PopupDateField dateField = new PopupDateField();
-			dateField.setDateFormat("dd.MM.yyyy");
 			dateField.setValue(new Date());
 
 			HashMap<TeachingMaterial, PopupDateField> materialWithDate = new HashMap<TeachingMaterial, PopupDateField>();

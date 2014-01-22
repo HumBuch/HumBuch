@@ -278,18 +278,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return informationForPdf;
 	}
 
-	//	private void doManualLending() {
-	//		Map<Student, List<TeachingMaterial>> toLend = new HashMap<Student, List<TeachingMaterial>>();
-	//		HashSet<Student> selectedStudent = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
-	//
-	//		// This loop should only run once
-	//		for (Student student : selectedStudent) {
-	//			toLend.put(student, manualLendingPopupWindow.getCurrentlySelectedTeachingMaterials());
-	//		}
-	//
-	//		LendingView.this.
-	//	}
-
 	public void update() {
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
