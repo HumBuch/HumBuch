@@ -60,9 +60,9 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
 		this.returnViewModel = returnViewModel;
-		bindViewModel(viewModelComposer, returnViewModel);
 		init();
 		buildLayout();
+		bindViewModel(viewModelComposer, returnViewModel);
 	}
 
 	private void init() {
@@ -80,7 +80,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 		setMargin(true);
 
 		addListeners();
-		updateReturnList();
 	}
 
 	private void buildLayout() {
