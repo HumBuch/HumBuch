@@ -25,9 +25,15 @@ public final class PDFStudentList extends PDFHandler {
 	private Set<Builder> builders;
 
 	/**
-	 * The content of the PDFs is printed in the order of the students-set.
+	 * For each student in the builder objects a PDF is created. This PDF can
+	 * contain three different kinds of lists.
 	 * 
 	 * @param builder
+	 *            can contain three kinds of lists. One list of materials the
+	 *            student already received, one list of materials the student
+	 *            will receive and one list of materials the student has to
+	 *            return
+	 * 
 	 */
 	public PDFStudentList(Builder... builder) {
 		super();
@@ -37,6 +43,17 @@ public final class PDFStudentList extends PDFHandler {
 		}
 	}
 
+	/**
+	 * For each student in the builder objects a PDF is created. This PDF can
+	 * contain three different kinds of lists.
+	 * 
+	 * @param builder
+	 *            can contain three kinds of lists. One list of materials the
+	 *            student already received, one list of materials the student
+	 *            will receive and one list of materials the student has to
+	 *            return
+	 * 
+	 */
 	public PDFStudentList(Set<Builder> builder) {
 		super();
 		this.builders = builder;
@@ -67,7 +84,7 @@ public final class PDFStudentList extends PDFHandler {
 		if (this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			PDFHandler.fillTableWithContentWithoutAlignment(table, false,
-					new String[] { "\nDie folgenden Bücher befinden sich im Besitz des Schülers/der Schülerin:" }, 
+					new String[] { "\nDie folgenden Bücher befinden sich im Besitz des Schülers/der Schülerin:" },
 					FontFactory.getFont("Helvetica", 10, Font.BOLD));
 			try {
 				document.add(table);
@@ -95,7 +112,7 @@ public final class PDFStudentList extends PDFHandler {
 		if (this.returnList != null && !this.returnList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			PDFHandler.fillTableWithContentWithoutAlignment(table, false,
-					new String[] { "\n Die folgenden Bücher müssen zurückgegeben werden:" }, 
+					new String[] { "\n Die folgenden Bücher müssen zurückgegeben werden:" },
 					FontFactory.getFont("Helvetica", 10, Font.BOLD));
 			try {
 				document.add(table);
@@ -128,7 +145,7 @@ public final class PDFStudentList extends PDFHandler {
 		if (this.lendingList != null && !this.lendingList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			PDFHandler.fillTableWithContentWithoutAlignment(table, false,
-					new String[] { "\n Die folgenden Bücher sollen ausgeliehen werden:" }, 
+					new String[] { "\n Die folgenden Bücher sollen ausgeliehen werden:" },
 					FontFactory.getFont("Helvetica", 10, Font.BOLD));
 			try {
 				document.add(table);
@@ -169,7 +186,7 @@ public final class PDFStudentList extends PDFHandler {
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
 									"Klasse: ", "" + this.student.getGrade().toString(),
 									"Sprachen: ", SubjectHandler.getLanguageProfile(this.student.getProfile()),
-									"Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile())};
+									"Religion: ", SubjectHandler.getReligionProfile(this.student.getProfile()) };
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
 
 		try {
@@ -207,9 +224,21 @@ public final class PDFStudentList extends PDFHandler {
 		private List<BorrowedMaterial> lendingList;
 		private List<BorrowedMaterial> returnList;
 
+		/**
+		 * A builder object can contain three different kinds of lists. Each
+		 * list is optional. The builder can be passed to the constructor of
+		 * PDFStudentList and the lists the builder contains will be printed
+		 */
 		public Builder() {
 		}
 
+		/**
+		 * 
+		 * @param borrowedMaterialList
+		 *            list of materials the student already received
+		 * @return the builder object that has to be passed to the
+		 *         PDFStudentList constructor
+		 */
 		public Builder borrowedMaterialList(List<BorrowedMaterial> borrowedMaterialList) {
 			this.borrowedMaterialList = borrowedMaterialList;
 			if (borrowedMaterialList != null) {
@@ -218,6 +247,13 @@ public final class PDFStudentList extends PDFHandler {
 			return this;
 		}
 
+		/**
+		 * 
+		 * @param borrowedMaterialList
+		 *            list of materials the student will receive
+		 * @return the builder object that has to be passed to the
+		 *         PDFStudentList constructor
+		 */
 		public Builder lendingList(List<BorrowedMaterial> borrowedMaterialList) {
 			this.lendingList = borrowedMaterialList;
 			if (borrowedMaterialList != null) {
@@ -226,6 +262,12 @@ public final class PDFStudentList extends PDFHandler {
 			return this;
 		}
 
+		/**
+		 * 
+		 * @param borrowedMaterialList
+		 *            list of materials the student has to return
+		 * @return
+		 */
 		public Builder returnList(List<BorrowedMaterial> borrowedMaterialList) {
 			this.returnList = borrowedMaterialList;
 			if (borrowedMaterialList != null) {

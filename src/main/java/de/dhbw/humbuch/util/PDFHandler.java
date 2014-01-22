@@ -102,12 +102,12 @@ public abstract class PDFHandler {
 	}
 
 	/**
-	 * Creates a ByteArrayOutputStream which holds the PDF as a byte array.
+	 * Creates a ByteArrayOutputStream which contains the PDF as a byte array.
 	 * 
-	 * @return the byteArrayOutputStream the PDF is stored in.
-	 * @return null if an error occurred.
+	 * @return the byteArrayOutputStream the PDF is stored in, null if an error
+	 *         occurred.
 	 */
-	public ByteArrayOutputStream createByteArrayOutputStreamForPDF(){
+	public ByteArrayOutputStream createByteArrayOutputStreamForPDF() {
 		ByteArrayOutputStream byteArrayOutputStream;
 		try {
 			byteArrayOutputStream = new ByteArrayOutputStream();
@@ -121,19 +121,19 @@ public abstract class PDFHandler {
 			int initialDocumentSize = writer.getCurrentDocumentSize();
 			this.insertDocumentParts(document);
 
-			if(byteArrayOutputStream.size() > 0 || writer.getCurrentDocumentSize() > initialDocumentSize){
+			if (byteArrayOutputStream.size() > 0 || writer.getCurrentDocumentSize() > initialDocumentSize) {
 				this.document.close();
 			}
-			else{
+			else {
 				return null;
 			}
-			
+
 			return byteArrayOutputStream;
 		}
 		catch (DocumentException e) {
 			System.err.println("Could not create ByteArrayOutputStream of PDF data. " + e.getMessage());
 		}
-		
+
 		return null;
 	}
 
@@ -153,8 +153,8 @@ public abstract class PDFHandler {
 	}
 
 	/**
-	 * Set the logo of Humboldt on the left corner and the label 'Ausgabe-Liste
-	 * 2013' on the right corner on top of the document
+	 * Set the logo of Humboldt on the left corner and the current date on the
+	 * right corner
 	 * 
 	 * @param document
 	 *            reference of the pdfDocument object
@@ -306,11 +306,11 @@ public abstract class PDFHandler {
 				new String[] { "Bezeichnung Lehrmittel", "Anzahl" }, font);
 		return table;
 	}
-	
-	protected void addInformationAboutDocument(Document document, String informationText){
+
+	protected void addInformationAboutDocument(Document document, String informationText) {
 		PdfPTable table = createMyStandardTable(1);
-		fillTableWithContent(table, false, new String[]{informationText}, false, FontFactory.getFont("Helvetica", 12, Font.BOLD));
-		
+		fillTableWithContent(table, false, new String[] { informationText }, false, FontFactory.getFont("Helvetica", 12, Font.BOLD));
+
 		try {
 			document.add(table);
 		}
@@ -440,7 +440,6 @@ public abstract class PDFHandler {
 			table.addCell(cell);
 		}
 	}
-	
 
 	/**
 	 * Convenience method to add content to a table in a standard way
@@ -471,7 +470,7 @@ public abstract class PDFHandler {
 			table.addCell(cell);
 		}
 	}
-	
+
 	/**
 	 * Convenience method to add content to a table in a standard way
 	 * 
