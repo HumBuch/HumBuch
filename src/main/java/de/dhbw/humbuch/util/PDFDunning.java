@@ -23,6 +23,15 @@ public class PDFDunning extends PDFHandler {
 	private PDFDunning() {
 	};
 
+	/**
+	 * 
+	 * For each BorrowedMaterial list a Dunning PDF is created. It addresses the
+	 * student the list belongs to.
+	 * 
+	 * @param borrowedMaterials
+	 *            Set of borrowedMaterial lists
+	 * @return an instance of PDFDunning
+	 */
 	public static PDFDunning createFirstDunning(Set<List<BorrowedMaterial>> borrowedMaterials) {
 		PDFDunning pdfDunning = new PDFDunning();
 		pdfDunning.borrowedMaterialsSet = borrowedMaterials;
@@ -30,6 +39,15 @@ public class PDFDunning extends PDFHandler {
 		return pdfDunning;
 	}
 
+	/**
+	 * 
+	 * For each BorrowedMaterial list a Dunning PDF is created. It addresses the
+	 * parent of the student the list belongs to.
+	 * 
+	 * @param borrowedMaterials
+	 *            Set of borrowedMaterial lists
+	 * @return an instance of PDFDunning
+	 */
 	public static PDFDunning createSecondDunning(Set<List<BorrowedMaterial>> borrowedMaterials) {
 		PDFDunning pdfDunning = new PDFDunning();
 		pdfDunning.borrowedMaterialsSet = borrowedMaterials;
@@ -40,10 +58,10 @@ public class PDFDunning extends PDFHandler {
 	protected void insertDocumentParts(Document document) {
 		for (List<BorrowedMaterial> borrowedMaterials : this.borrowedMaterialsSet) {
 			this.addHeading(document);
-			if(borrowedMaterials.size() != 0){
+			if (borrowedMaterials.size() != 0) {
 				this.borrowedMaterials = borrowedMaterials;
 				this.student = borrowedMaterials.get(0).getStudent();
-				if(this.secondDunning){
+				if (this.secondDunning) {
 					this.addParentInformation(document);
 				}
 				this.addStudentInformation(document);
@@ -51,7 +69,7 @@ public class PDFDunning extends PDFHandler {
 				this.addContent(document);
 				document.newPage();
 				this.resetPageNumber();
-			}	
+			}
 		}
 	}
 
@@ -117,13 +135,13 @@ public class PDFDunning extends PDFHandler {
 			e.printStackTrace();
 		}
 	}
-	
-	private void addParentInformation(Document document){
+
+	private void addParentInformation(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 
 		String[] contentArray = { this.student.getParent().getTitle() + " " + this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
-		                          this.student.getParent().getStreet(),
-		                          this.student.getParent().getCity() + " " + this.student.getParent().getPostcode() + "\n" };
+									this.student.getParent().getStreet(),
+									this.student.getParent().getCity() + " " + this.student.getParent().getPostcode() + "\n" };
 		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
 
 		try {
