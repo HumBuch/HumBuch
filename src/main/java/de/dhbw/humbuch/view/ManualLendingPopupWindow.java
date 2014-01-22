@@ -25,6 +25,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -44,7 +45,7 @@ public class ManualLendingPopupWindow extends Window {
 	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
 
 	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutHeaderBar;
+	private HorizontalLayout horizontalLayoutButtonBar;
 	private TextField textFieldSearchBar;
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
@@ -65,7 +66,7 @@ public class ManualLendingPopupWindow extends Window {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		horizontalLayoutHeaderBar = new HorizontalLayout();
+		horizontalLayoutButtonBar = new HorizontalLayout();
 		textFieldSearchBar = new TextField(SEARCH_MATERIALS);
 		tableTeachingMaterials = new Table();
 		buttonSave = new Button(SAVE);
@@ -73,41 +74,44 @@ public class ManualLendingPopupWindow extends Window {
 		currentlySelectedMaterials = new ArrayList<TeachingMaterial>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
-		textFieldSearchBar.setWidth("100%");
+		textFieldSearchBar.setWidth("50%");
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
+		buttonSave.setEnabled(false);
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
 
 		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
-		tableTeachingMaterials.setWidth("100%");
+		// dirty but 100% is not working
+		tableTeachingMaterials.setWidth("99%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
 		tableTeachingMaterials.setImmediate(true);
+		tableTeachingMaterials.setPageLength(0);
 		setTableListener();
 		updateTableContent();
 
-		horizontalLayoutHeaderBar.setSpacing(true);
+		horizontalLayoutButtonBar.setSpacing(true);
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 
+		setImmediate(true);
 		center();
 		setModal(true);
 		setResizable(false);
-		setDraggable(false);
 
 		addListeners();
 	}
 
 	private void buildLayout() {
-		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
-		horizontalLayoutHeaderBar.addComponent(buttonCancel);
-		horizontalLayoutHeaderBar.addComponent(buttonSave);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
+		horizontalLayoutButtonBar.addComponent(buttonCancel);
+		horizontalLayoutButtonBar.addComponent(buttonSave);
+		horizontalLayoutButtonBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
+		horizontalLayoutButtonBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
 
-		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
-		verticalLayoutContent.addComponent(tableTeachingMaterials);
-
+		verticalLayoutContent.addComponent(textFieldSearchBar);
+		verticalLayoutContent.addComponent(tableTeachingMaterials);		
+		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
+		
 		setContent(verticalLayoutContent);
 	}
 
@@ -137,6 +141,12 @@ public class ManualLendingPopupWindow extends Window {
 				Object selectedIds = tableTeachingMaterials.getValue();
 				if (selectedIds instanceof Set<?>) {
 					Set<Integer> ids = (Set<Integer>) selectedIds;
+					if(ids.size() == 0) {
+						buttonSave.setEnabled(false);
+						return;
+					}
+					
+					buttonSave.setEnabled(true);
 					for (Integer id : ids) {
 						currentlySelectedMaterials.add(teachingMaterials.get(id - 1));
 					}
@@ -155,7 +165,7 @@ public class ManualLendingPopupWindow extends Window {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				close();
+				closeMe();
 			}
 		});
 
@@ -192,5 +202,12 @@ public class ManualLendingPopupWindow extends Window {
 		studentsWithMaterials.put(selectedStudent, currentlySelectedMaterials);
 
 		lendingView.saveTeachingMaterialsForStudents(studentsWithMaterials);
+		
+		closeMe();
+	}
+	
+	private void closeMe() {
+		UI.getCurrent().removeWindow(this);
+		close();
 	}
 }
