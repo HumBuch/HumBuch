@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -15,6 +16,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
@@ -44,6 +47,7 @@ public class BookManagementViewModel {
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
+	private EventBus eventBus;
 	
 	/**
 	 * Constructor
@@ -53,10 +57,11 @@ public class BookManagementViewModel {
 	 */
 	@Inject
 	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory, 
-			DAO<BorrowedMaterial> daoBorrowedMaterial) {
+			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoCategory = daoCategory;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
+		this.eventBus = eventBus;
 	}
 
 	@AfterVMBinding
@@ -119,9 +124,12 @@ public class BookManagementViewModel {
 		if(borrowedMaterial.isEmpty()) {
 			daoTeachingMaterial.delete(teachingMaterial);
 			updateTeachingMaterial();
+			eventBus.post(new MessageEvent("Löschen erfolgreich", "Das Lehrmittel wurde gelöscht.", Type.INFO));
 		} else {
 			teachingMaterial.setValidUntil(new Date());
 			daoTeachingMaterial.update(teachingMaterial);
+			updateTeachingMaterial();
+			eventBus.post(new MessageEvent("Löschen nicht möglich", "Das Lehrmittel ist noch ausgeliehen.", Type.INFO));
 		}
 	}
 	
