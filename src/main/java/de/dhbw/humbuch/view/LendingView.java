@@ -89,9 +89,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@Inject
 	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, StudentInformationViewModel studentInformationViewModel) {
 		this.lendingViewModel = lendingViewModel;
-		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
 		init();
 		buildLayout();
+		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
 	}
 
 	//	@AfterVMBinding
@@ -119,7 +119,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setMargin(true);
 
 		addListeners();
-		updateStudentsWithUnreceivedBorrowedMaterials();
 	}
 
 	private void buildLayout() {
