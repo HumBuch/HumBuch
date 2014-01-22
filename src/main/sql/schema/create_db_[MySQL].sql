@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`borrowedMaterial` (
   `studentId` INT(11) NOT NULL,
   `teachingMaterialId` INT(11) NOT NULL,
   `borrowFrom` DATE NOT NULL,
+  `borrowUntil` DATE NULL,
   `returnDate` DATE NULL,
   `received` TINYINT(1) NULL,
   PRIMARY KEY (`id`, `studentId`),

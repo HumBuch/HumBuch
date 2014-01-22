@@ -41,12 +41,15 @@ public class ReturnViewModel {
 	private DAO<Grade> daoGrade;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
+	private DAO<Student> daoStudent;
 	
 	private SchoolYear currentSchoolYear;
+
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoGrade = daoGrade;
+		this.daoStudent = daoStudent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
 	}
@@ -64,13 +67,13 @@ public class ReturnViewModel {
 		for(Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
-			for(Student student : grade.getStudents()) {
+			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
 
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
-					if(borrowedMaterial.isReceived() //book is received 
-							&& borrowedMaterial.getReturnDate() == null //book hasn't returned yet
-							&& !isNeededNextTerm(borrowedMaterial)) { //book isn't needed next term
+					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
+					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
+					if(notNeededNextTerm || borrowUntilExceeded){
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					}
 				}
@@ -85,7 +88,7 @@ public class ReturnViewModel {
 				toReturn.put(grade, studentWithUnreturnedBorrowedMaterials);
 			}
 		}
-		
+
 		returnListStudent.set(toReturn);
 	}
 	
@@ -102,11 +105,14 @@ public class ReturnViewModel {
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
 		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 
-		int toGrade = teachingMaterial.getToGrade();
+		Integer toGrade = teachingMaterial.getToGrade();
 		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
 		Term toTerm = teachingMaterial.getToTerm();
 		Term currentTerm = currentSchoolYear.getCurrentTerm();
-		
+
+		if(toGrade == null)
+			return false;
+					
 		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm.compareTo(currentTerm) > 0)));
 	}
 

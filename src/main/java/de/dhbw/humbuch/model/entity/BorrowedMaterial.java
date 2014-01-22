@@ -31,6 +31,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private TeachingMaterial teachingMaterial;
 	
 	private Date borrowFrom;
+	private Date borrowUntil;
 	private Date returnDate;
 	private boolean received;
 	
@@ -75,6 +76,14 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.borrowFrom = borrowFrom;
 	}
 
+	public Date getBorrowUntil() {
+		return borrowUntil;
+	}
+
+	public void setBorrowUntil(Date borrowUntil) {
+		this.borrowUntil = borrowUntil;
+	}
+
 	public Date getReturnDate() {
 		return returnDate;
 	}
@@ -96,6 +105,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private final TeachingMaterial teachingMaterial;
 		private final Date borrowFrom;
 		
+		private Date borrowUntil;
 		private Date returnDate;
 		private boolean received;
 		
@@ -103,6 +113,11 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			this.student = student;
 			this.teachingMaterial = teachingMaterial;
 			this.borrowFrom = borrowFrom;
+		}
+		
+		public Builder borrowUntil(Date borrowUntil) {
+			this.borrowUntil = borrowUntil;
+			return this;
 		}
 		
 		public Builder returnDate(Date returnDate) {
@@ -125,6 +140,7 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.teachingMaterial = builder.teachingMaterial;
 		this.borrowFrom = builder.borrowFrom;
 		
+		this.borrowUntil = builder.borrowUntil;
 		this.returnDate = builder.returnDate;
 		this.received = builder.received;
 	}

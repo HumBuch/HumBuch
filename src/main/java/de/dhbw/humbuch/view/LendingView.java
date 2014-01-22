@@ -335,7 +335,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	public void saveTeachingMaterialsForStudents(Map<Student, List<TeachingMaterial>> studentsWithMaterials) {
-		lendingViewModel.doManualLending(studentsWithMaterials);
+//		lendingViewModel.doManualLending(studentsWithMaterials);
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
