@@ -86,10 +86,11 @@ public class PDFDunning extends PDFHandler {
 					+ "Mit freundlichen Grüßen \n"
 					+ "Ihre Schulverwaltung";
 		}
-		PDFHandler.fillTableWithContent(table, false,
-				new String[] { dunningText }, false);
+		new PDFHandler.TableBuilder(table, new String[] { dunningText }).leading(1.25f).fillTable();
+
 		try {
 			document.add(table);
+			addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -104,7 +105,9 @@ public class PDFDunning extends PDFHandler {
 			String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 										"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
 										"" };
-			PDFHandler.fillTableWithContentWithoutSpace(table, true, contentArray, true, 5f);
+
+			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).
+					isCenterAligned(true).padding(5f).fillTable();
 		}
 
 		try {
@@ -126,8 +129,9 @@ public class PDFDunning extends PDFHandler {
 
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
 									"Klasse: ", "" + this.student.getGrade().toString() + "\n" };
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
-
+		
+		new PDFHandler.TableBuilder(table, contentArray).fillTable();
+		
 		try {
 			document.add(table);
 		}
@@ -143,7 +147,7 @@ public class PDFDunning extends PDFHandler {
 									this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
 									this.student.getParent().getStreet(),
 									this.student.getParent().getCity() + " " + this.student.getParent().getPostcode() + "\n" };
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
+		new PDFHandler.TableBuilder(table, contentArray).fillTable();
 
 		try {
 			document.add(table);
