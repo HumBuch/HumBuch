@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
@@ -30,7 +28,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.BasicState;
@@ -47,7 +44,6 @@ import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
-import de.dhbw.humbuch.view.components.StudentMaterialSelector.SimpleCheckBoxFilter;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
@@ -77,7 +73,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private HorizontalLayout horizontalLayoutFilter;
 	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
-	private TextField textFieldSearchStudent;
+	private ComboBox comboBoxStudents;
 	private ComboBox comboBoxGrades;
 	private Button buttonSaveSelectedData;
 	private Button buttonManualLending;
@@ -114,7 +110,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		horizontalLayoutFilter = new HorizontalLayout();
 		horizontalLayoutActions = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
-		textFieldSearchStudent = new TextField(FILTER_STUDENT);
+		comboBoxStudents = new ComboBox(FILTER_STUDENT);
 		comboBoxGrades = new ComboBox(FILTER_GRADE);
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_LENDING);
 		buttonManualLending = new Button(MANUAL_LENDING);
@@ -140,10 +136,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setSizeFull();
 
 		horizontalLayoutFilter.addComponent(comboBoxGrades);
-		horizontalLayoutFilter.addComponent(textFieldSearchStudent);
+		horizontalLayoutFilter.addComponent(comboBoxStudents);
 		horizontalLayoutFilter.setComponentAlignment(comboBoxGrades, Alignment.MIDDLE_CENTER);
-		horizontalLayoutFilter.setComponentAlignment(textFieldSearchStudent, Alignment.MIDDLE_CENTER);
-		
+		horizontalLayoutFilter.setComponentAlignment(comboBoxStudents, Alignment.MIDDLE_CENTER);
+
 		horizontalLayoutActions.addComponent(menuBarPrinting);
 		horizontalLayoutActions.addComponent(buttonManualLending);
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
@@ -163,16 +159,16 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void addListeners() {
-		textFieldSearchStudent.addTextChangeListener(new TextChangeListener() {
-
-			private static final long serialVersionUID = -3525429936235702238L;
-
-			@Override
-			public void textChange(TextChangeEvent event) {
-				SimpleCheckBoxFilter filter = new SimpleCheckBoxFilter(StudentMaterialSelector.TREE_TABLE_HEADER, event.getText(), true, false);
-				studentMaterialSelector.setFilter(filter);
-			}
-		});
+		//		textFieldSearchStudent.addTextChangeListener(new TextChangeListener() {
+		//
+		//			private static final long serialVersionUID = -3525429936235702238L;
+		//
+		//			@Override
+		//			public void textChange(TextChangeEvent event) {
+		//				SimpleCheckBoxFilter filter = new SimpleCheckBoxFilter(StudentMaterialSelector.TREE_TABLE_HEADER, event.getText(), true, false);
+		//				studentMaterialSelector.setFilter(filter);
+		//			}
+		//		});
 
 		addStateChangeListenersToStates();
 		addButtonListeners();
@@ -208,7 +204,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				if (value == null) {
 					return;
 				}
-				updateStudentsWithUnreceivedBorrowedMaterials();
+				update();
 			}
 		});
 
@@ -318,6 +314,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	public void update() {
+		updateStudentsWithUnreceivedBorrowedMaterials();
+		updateGradeFilter();
+		updateStudentFilter();
+
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
@@ -356,6 +356,33 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		}
 	}
 
+	private void updateStudentsWithUnreceivedBorrowedMaterials() {
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
+	}
+
+	private void updateGradeFilter() {
+		Set<Grade> allGrades = gradeAndStudentsWithMaterials.get().keySet();
+		comboBoxGrades.removeAllItems();
+
+		for (Grade grade : allGrades) {
+			CustomGrade customGrade = new CustomGrade(grade);
+			comboBoxGrades.addItem(customGrade);
+		}
+	}
+
+	private void updateStudentFilter() {
+		ArrayList<Student> allStudents = new ArrayList<Student>();
+		for (Grade g : gradeAndStudentsWithMaterials.get().keySet()) {
+			allStudents.addAll(gradeAndStudentsWithMaterials.get().get(g).keySet());
+		}
+		comboBoxStudents.removeAllItems();
+
+		for (Student student : allStudents) {
+			CustomStudent customStudent = new CustomStudent(student);
+			comboBoxStudents.addItem(customStudent);
+		}
+	}
+
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
 	}
@@ -368,11 +395,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
 			}
 		}
-	}
-
-	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
-		update();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
@@ -394,5 +416,43 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@Override
 	public String getTitle() {
 		return TITLE;
+	}
+
+
+	// TODO: Where to put this class??
+	public static class CustomStudent {
+
+		private Student student;
+
+		public CustomStudent(Student student) {
+			this.student = student;
+		}
+
+		public String toString() {
+			return "" + student.getFirstname() + " " + student.getLastname();
+		}
+
+		public Student getStudent() {
+			return student;
+		}
+	}
+
+
+	// TODO: Where to put this class??
+	public static class CustomGrade {
+
+		private Grade grade;
+
+		public CustomGrade(Grade grade) {
+			this.grade = grade;
+		}
+
+		public String toString() {
+			return "" + grade.getGrade() + grade.getSuffix();
+		}
+
+		public Grade getGrade() {
+			return grade;
+		}
 	}
 }
