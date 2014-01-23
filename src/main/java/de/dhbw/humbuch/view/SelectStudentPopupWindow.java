@@ -146,7 +146,7 @@ public class SelectStudentPopupWindow extends Window {
 	}
 
 
-	private class CustomStudent {
+	public class CustomStudent {
 
 		private Student student;
 
