@@ -28,8 +28,13 @@
                 width: 20px;
                 height: 20px;
                 @include border-radius(2px);
-                top: 10px;
-                right: 10px;
+                top: 6px;
+                right: 6px;
+        }
+        
+        .v-window-pdf-printing .v-window-closebox {
+        	top: 2px;
+        	right: 2px;
         }
         
         .v-window-closebox:hover {
@@ -57,10 +62,16 @@
         }
         
         .v-window-outerheader {
-                padding: 0.5em 20px;
-                height: 2.4em;
+                padding: 0 20px;
                 font-weight: 300;
                 font-size: 20px;
+                background: $main-color;
+                color: #fff;
+        }
+        
+        .v-window-pdf-printing .v-window-outerheader {
+        	font-size: 15px;
+        	padding: 0 20px;
         }
         
         .v-window-header {

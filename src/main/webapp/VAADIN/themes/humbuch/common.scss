@@ -1,5 +1,6 @@
 $text-color: #5a6066;
 $font-size: 14px;
+$main-color: #56bcb2;
 
 @mixin humbuch-common {
         
@@ -134,13 +135,7 @@ $font-size: 14px;
         .v-filterselect-suggestpopup .gwt-MenuItem-selected {
                 text-shadow: 0 .1em .1em rgba(0,0,0,.3);
                 
-                background: #6ba7e4;
-                background: -moz-linear-gradient(top, #75b0e7 0%, #5f9de1 100%);
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#75b0e7), color-stop(100%,#5f9de1));
-                background: -webkit-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-                background: -o-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-                background: -ms-linear-gradient(top, #75b0e7 0%,#5f9de1 100%);
-        /* background: linear-gradient(to bottom, #75b0e7 0%,#5f9de1 100%); */
+                background: $main-color;
         }
         
         .v-contextmenu .gwt-MenuItem-selected div {
