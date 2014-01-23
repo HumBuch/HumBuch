@@ -120,17 +120,17 @@
         .v-table .v-selected {
                 text-shadow: 0 .1em .1em rgba(0,0,0,.3);
                 
-                background: #329d90; //#6ba7e4;
+                background: $main-color;
                 background: -moz-linear-gradient(top, #39b5a6 0%, #309589 100%);
                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#39b5a6), color-stop(100%,#309589));
                 background: -webkit-linear-gradient(top, #39b5a6 0%,#309589 100%);
                 background: -o-linear-gradient(top, #39b5a6 0%,#309589 100%);
                 background: -ms-linear-gradient(top, #39b5a6 0%,#309589 100%);
-        /* background: linear-gradient(to bottom, #39b5a6 0%,#5f9de1 100%); */
+             /* background: linear-gradient(to bottom, #39b5a6 0%,#5f9de1 100%); */
         }
         
         .v-table .v-selected + .v-selected {
-                background: #5f9de1;
+                background: $main-color;
         }
         
         .v-table .v-selected .v-table-cell-content {
@@ -165,7 +165,10 @@
                 content: '\25be';
         }
         
-        
+        .v-table-focus .v-table-cell-content {
+				border-top: 1px dotted $main-color;
+				border-bottom: 1px dotted $main-color;
+}
         
         .v-table.borderless .v-table-header-wrap,
         .v-table.borderless .v-table-body {
@@ -174,6 +177,7 @@
         
         .v-table.borderless .v-table-header-wrap {
                 border-bottom: 1px solid #d4d5d5;
+				border-top: 1px solid #d4d5d5;
         }
         
         .v-table.borderless .v-table-footer-wrap {
@@ -207,18 +211,18 @@
                 border-left-color: transparent;
         }
         
-        .v-table .v-selected .v-textfield {
-        	width: 100%;
+        .v-table .v-textfield {
+        		width: 100%;
         }
         
-        .v-table .v-selected .v-datefield {
-        	width: 100%;
-        	color: rgb(34, 34, 34);
-        	text-shadow: none;
+        .v-table .v-datefield {
+	        	width: 100%;
+	        	color: rgb(34, 34, 34);
+	        	text-shadow: none;
         }
         
-        .v-table .v-datefield-textfield {
-        	width: 100%;
-        	text-align: right;
+        .v-table .v-datefield-popupcalendar .v-datefield-textfield {
+        		width: 100%;
+        		text-align: right;
         }
 }

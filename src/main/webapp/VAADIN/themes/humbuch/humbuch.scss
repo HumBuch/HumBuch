@@ -18,6 +18,8 @@
 @import "icons/fontello.scss";
 @import "fonts/open-sans.scss";
 
+$main-color: #329d90;
+
 @mixin humbuch {
 	
 	@include base;
@@ -33,9 +35,15 @@
 	@include humbuch-combobox;
 	@include humbuch-panel;
 	@include reindeer-datefield;
+	
+
        
     &.v-app {
        background: #353637;
+    }
+    
+    a {
+    	outline: 0;
     }
 	
 	/********* Login View *********/
@@ -217,7 +225,7 @@
                 text-shadow: 0 1px 1px rgba(0,0,0,.5);
                 border-top: 1px solid #56bcb2;
                 border-bottom: 1px solid #56bcb2;
-                background: #329d90;
+                background: $main-color;
         }
         
         .sidebar .menu .v-nativebutton:before {
@@ -229,10 +237,6 @@
         .v-webkit & .menu .v-nativebutton:hover:before,
         .v-webkit & .menu .v-nativebutton:focus:before {
                 opacity: 1;
-        }
-        
-        .sidebar .menu .v-nativebutton:active {
-                background: rgba(0,0,0,.1);
         }
         
         .v-webkit & .menu .v-nativebutton.selected:before {
@@ -273,7 +277,7 @@
 				color: #e4fafd;
                 text-shadow: 0 1px 1px rgba(0,0,0,.5);
                 outline: none;
-                background: #329d90;
+                background: $main-color;
         }
         
         .sidebar .user .v-label {

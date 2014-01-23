@@ -32,6 +32,11 @@
                 right: 10px;
         }
         
+        .v-window-pdf-printing .v-window-closebox {
+        	top: 2px;
+        	right: 2px;
+        }
+        
         .v-window-closebox:hover {
                 color: #fff;
         }
@@ -57,10 +62,17 @@
         }
         
         .v-window-outerheader {
-                padding: 0.5em 20px;
-                height: 2.4em;
+                padding: 5px 20px;
                 font-weight: 300;
                 font-size: 20px;
+                background: $main-color;
+                color: #fff;
+                height: auto;
+        }
+        
+        .v-window-pdf-printing .v-window-outerheader {
+        	font-size: 15px;
+        	padding: 0 20px;
         }
         
         .v-window-header {
@@ -82,6 +94,13 @@
         .v-window .footer {
                 background: #eee;
                 border-top: 1px solid #e0e0e0;
+        }
+        
+        .v-window .v-textfield,
+        .v-window .v-filterselect-input,
+        .v-window .v-textarea,
+        .v-window .v-filterselect {
+        		width: 100%;
         }
 
 }

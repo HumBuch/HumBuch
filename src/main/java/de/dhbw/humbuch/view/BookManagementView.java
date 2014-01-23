@@ -7,11 +7,13 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
@@ -22,6 +24,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -37,6 +40,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
@@ -90,7 +94,6 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TEXTFIELD_TOGRADE = "bis Klassenstufe";
 	private static final String TEXTFIELD_COMMENT = "Kommentar";
 	private static final String TEXTFIELD_SEARCH_PLACEHOLDER = "Lehrmittel oder Hersteller";
-	private static final String TERM = "Halbjahr";
 	private static final String CATEGORY = "Kategorie";
 
 	/**
@@ -123,20 +126,22 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * material is the same. Only the caption will be set differently
 	 */
 	private Window windowEditTeachingMaterial;
-	private VerticalLayout verticalLayoutWindowContent;
+	private FormLayout formLayoutWindowContent;
 	private HorizontalLayout horizontalLayoutWindowBar;
 	private TextField textFieldTeachingMaterialName = new TextField(TEXTFIELD_NAME);
 	private TextField textFieldTeachingMaterialIdentifyer = new TextField(TEXTFIELD_IDENTIFYER);
 	private TextField textFieldProducer = new TextField(TEXTFIELD_PRODUCER);
-	private TextField textFieldFromGrade = new TextField(TEXTFIELD_FROMGRADE);
-	private TextField textFieldToGrade = new TextField(TEXTFIELD_TOGRADE);
+	private TextField textFieldFromGrade = new TextField();
+	private TextField textFieldToGrade = new TextField();
 	private ComboBox comboBoxProfiles = new ComboBox(TABLE_PROFILE);
-	private ComboBox comboBoxFromTerm = new ComboBox(TERM);
-	private ComboBox comboBoxToTerm = new ComboBox(TERM);
+	private ComboBox comboBoxFromTerm = new ComboBox();
+	private ComboBox comboBoxToTerm = new ComboBox();
 	private ComboBox comboBoxCategory = new ComboBox(CATEGORY);
 	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
 	private Button buttonWindowSave = new Button(BUTTON_SAVE);
 	private Button buttonWindowCancel = new Button(BUTTON_CANCEL);
+
+	private EventBus eventBus;
 
 	/**
 	 * 
@@ -147,43 +152,11 @@ public class BookManagementView extends VerticalLayout implements View,
 	 */
 	@Inject
 	public BookManagementView(ViewModelComposer viewModelComposer,
-			BookManagementViewModel bookManagementViewModel) {
+			BookManagementViewModel bookManagementViewModel, EventBus eventBus) {
 		this.bookManagementViewModel = bookManagementViewModel;
+		this.eventBus = eventBus;
 		init();
 		buildLayout();
-
-		teachingMaterials.addStateChangeListener(new StateChangeListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void stateChange(Object value) {
-				containerTable.removeAllItems();
-				
-				for (TeachingMaterial teachingMaterial : (Collection<TeachingMaterial>) value) {
-				// Gets the string representatives of each teaching material profile 
-					for (Entry<String, Set<Subject>> entry : Profile.getProfileMap().entrySet()) {
-						if (teachingMaterial.getProfile().equals(entry.getValue())) {
-							teachingMaterialProfile = entry.getKey().toString();
-							break;
-						}
-					}
-					
-					tableTeachingMaterials.addItem(
-							new Object[] {
-									teachingMaterial.getName(),
-									teachingMaterial.getProducer(),
-									teachingMaterial.getIdentifyingNumber(),
-									teachingMaterialProfile,
-									teachingMaterial.getFromGrade(),
-									teachingMaterial.getFromTerm(),
-									teachingMaterial.getToGrade(),
-									teachingMaterial.getToTerm(),
-									teachingMaterial.getCategory(),
-									teachingMaterial.getComment()},
-							teachingMaterial.getId());
-				}
-			}
-		});
-		
 		bindViewModel(viewModelComposer, bookManagementViewModel);
 	}
 	
@@ -216,6 +189,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setImmediate(true);
 		tableTeachingMaterials.setWidth("100%");
+		tableTeachingMaterials.setColumnCollapsingAllowed(true);
 
 		containerTable = new IndexedContainer();
 		containerTable.addContainerProperty(TABLE_TITLE, String.class, null);
@@ -230,48 +204,88 @@ public class BookManagementView extends VerticalLayout implements View,
 		containerTable.addContainerProperty(TABLE_COMMENT, String.class, null);
 		tableTeachingMaterials.setContainerDataSource(containerTable);
 
+		this.createEditWindow();
+		this.addListener();
+	}
+	
+	/**
+	 * Creates the window for editing and creating teaching materials
+	 * @return
+	 * 		The created Window
+	 */
+	@SuppressWarnings("serial")
+	public void createEditWindow() {
+		// Create Window and set parameters
 		windowEditTeachingMaterial = new Window();
 		windowEditTeachingMaterial.center();
 		windowEditTeachingMaterial.setModal(true);
 		windowEditTeachingMaterial.setResizable(false);
-		windowEditTeachingMaterial.setDraggable(false);
-		verticalLayoutWindowContent = new VerticalLayout();
-		verticalLayoutWindowContent.setMargin(true);
+		formLayoutWindowContent = new FormLayout();
+		formLayoutWindowContent.setMargin(true);
 		horizontalLayoutWindowBar = new HorizontalLayout();
-
-		this.addListener();
-		this.setInputPrompts();
-		this.setFormOptions();
-	}
-
-	private void setFormOptions() {
+		horizontalLayoutWindowBar.setSpacing(true);
+		buttonWindowSave.addStyleName("default");
+		
+		// Set Form options
 		comboBoxCategory.setNullSelectionAllowed(false);
 		comboBoxProfiles.setNullSelectionAllowed(false);
 		comboBoxFromTerm.setNullSelectionAllowed(false);
 		comboBoxToTerm.setNullSelectionAllowed(false);
 		textFieldTeachingMaterialIdentifyer.setRequired(true);
 		textFieldTeachingMaterialName.setRequired(true);
-		textFieldFromGrade.setRequired(true);
-		textFieldToGrade.setRequired(true);
 		textFieldProducer.setRequired(true);
 		comboBoxCategory.setRequired(true);
-		comboBoxFromTerm.setRequired(true);
-		comboBoxToTerm.setRequired(true);
 		comboBoxProfiles.setRequired(true);
-	}
-
-	/**
-	 * Adds input prompts to textfields and textareas.
-	 * 
-	 */
-	private void setInputPrompts() {
-		textFieldSearchBar.setInputPrompt(TEXTFIELD_SEARCH_PLACEHOLDER);
+		
+		// Input prompts
 		textFieldTeachingMaterialIdentifyer.setInputPrompt("ISBN");
 		textFieldTeachingMaterialName.setInputPrompt("Titel oder Name");
 		textFieldProducer.setInputPrompt("z.B. Klett");
 		textFieldFromGrade.setInputPrompt("z.B. 5");
 		textFieldToGrade.setInputPrompt("z.B. 7");
 		textAreaComment.setInputPrompt("Zusätzliche Informationen");
+		
+		// NullRepresentation
+		textFieldTeachingMaterialIdentifyer.setNullRepresentation("");
+		textFieldTeachingMaterialName.setNullRepresentation("");
+		textFieldProducer.setNullRepresentation("");
+		textFieldFromGrade.setNullRepresentation("");
+		textFieldToGrade.setNullRepresentation("");
+		textAreaComment.setNullRepresentation("");
+		
+		// Add all components
+		formLayoutWindowContent.addComponent(textFieldTeachingMaterialName);
+		formLayoutWindowContent.addComponent(textFieldTeachingMaterialIdentifyer);
+		formLayoutWindowContent.addComponent(comboBoxCategory);
+		formLayoutWindowContent.addComponent(textFieldProducer);
+		formLayoutWindowContent.addComponent(comboBoxProfiles);
+		formLayoutWindowContent.addComponent(new HorizontalLayout() {
+			{ 
+				setSpacing(true);
+				setCaption(TEXTFIELD_FROMGRADE);
+				textFieldFromGrade.setWidth("50px");
+				comboBoxFromTerm.setWidth(null);
+				addComponent(textFieldFromGrade);
+				addComponent(comboBoxFromTerm);
+			}
+		});
+		formLayoutWindowContent.addComponent(new HorizontalLayout() {
+			{ 
+				setSpacing(true);
+				setCaption(TEXTFIELD_TOGRADE);
+				textFieldToGrade.setWidth("50px");
+				addComponent(textFieldToGrade);
+				addComponent(comboBoxToTerm);
+			}
+		});
+		formLayoutWindowContent.addComponent(textAreaComment);
+
+		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
+		horizontalLayoutWindowBar.addComponent(buttonWindowSave);
+		formLayoutWindowContent.addComponent(horizontalLayoutWindowBar);
+		windowEditTeachingMaterial.setContent(formLayoutWindowContent);
+		
+		windowEditTeachingMaterial.setCloseShortcut(KeyCode.ESCAPE, null);
 	}
 
 	/**
@@ -279,6 +293,42 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * 
 	 */
 	private void addListener() {
+		
+		/**
+		 * Listens for changes in the Collection teachingMaterials and adds them to the container
+		 */
+		teachingMaterials.addStateChangeListener(new StateChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void stateChange(Object value) {
+				containerTable.removeAllItems();
+				
+				for (TeachingMaterial teachingMaterial : (Collection<TeachingMaterial>) value) {
+				// Gets the string representatives of each teaching material profile 
+					for (Entry<String, Set<Subject>> entry : Profile.getProfileMap().entrySet()) {
+						if (teachingMaterial.getProfile().equals(entry.getValue())) {
+							teachingMaterialProfile = entry.getKey().toString();
+							break;
+						}
+					}
+					
+					tableTeachingMaterials.addItem(
+							new Object[] {
+									teachingMaterial.getName(),
+									teachingMaterial.getProducer(),
+									teachingMaterial.getIdentifyingNumber(),
+									teachingMaterialProfile,
+									teachingMaterial.getFromGrade(),
+									teachingMaterial.getFromTerm(),
+									teachingMaterial.getToGrade(),
+									teachingMaterial.getToTerm(),
+									teachingMaterial.getCategory(),
+									teachingMaterial.getComment()},
+							teachingMaterial.getId());
+				}
+			}
+		});
+		
 		/**
 		 * Show a confirm popup and deletes the teaching material on confirmation
 		 */
@@ -290,8 +340,18 @@ public class BookManagementView extends VerticalLayout implements View,
 					Notification.show("Bitte ein Lehrmittel auswählen");
 					return;
 				}
-				bookManagementViewModel.doFetchTeachingMaterial(Integer	.parseInt(tableTeachingMaterials.getValue().toString()));
-				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
+				Runnable runnable = new Runnable() {
+					
+					@Override
+					public void run() {
+						bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+						bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
+					}
+				};
+				eventBus.post(new ConfirmEvent.Builder("Wollen Sie das Lehrmittel wirklich löschen?").caption("Löschen")
+						.confirmRunnable(runnable).build());
+//				bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+//				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
 			}
 		});
 		
@@ -384,6 +444,7 @@ public class BookManagementView extends VerticalLayout implements View,
 				clearWindowFields();
 				windowEditTeachingMaterial.setCaption(WINDOW_NEW_TEACHING_MATERIAL);
 				UI.getCurrent().addWindow(windowEditTeachingMaterial);
+				textFieldTeachingMaterialName.focus();
 				for (Map.Entry<Integer, Category> category : categories.get().entrySet()) {
 					comboBoxCategory.addItem(category.getValue().getId());
 					comboBoxCategory.setItemCaption(category.getValue().getId(), category.getValue().getName());
@@ -405,7 +466,8 @@ public class BookManagementView extends VerticalLayout implements View,
 				} else {
 					editTeachingMaterial = true;
 					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
-					UI.getCurrent().addWindow(windowEditTeachingMaterial);				
+					UI.getCurrent().addWindow(windowEditTeachingMaterial);
+					textFieldTeachingMaterialName.focus();
 					bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
 					TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
 					textFieldTeachingMaterialName.setValue(teachingMaterial.getName());
@@ -474,25 +536,11 @@ public class BookManagementView extends VerticalLayout implements View,
 		horizontalLayoutButtonBar.addComponent(buttonEditTeachingMaterial);
 		horizontalLayoutButtonBar.setComponentAlignment(buttonEditTeachingMaterial, Alignment.MIDDLE_RIGHT);
 
+		textFieldSearchBar.setInputPrompt(TEXTFIELD_SEARCH_PLACEHOLDER);
+		
 		addComponent(textFieldSearchBar);
 		addComponent(tableTeachingMaterials);
 		addComponent(horizontalLayoutButtonBar);
-
-		verticalLayoutWindowContent.addComponent(textFieldTeachingMaterialName);
-		verticalLayoutWindowContent.addComponent(textFieldTeachingMaterialIdentifyer);
-		verticalLayoutWindowContent.addComponent(comboBoxCategory);
-		verticalLayoutWindowContent.addComponent(textFieldProducer);
-		verticalLayoutWindowContent.addComponent(comboBoxProfiles);
-		verticalLayoutWindowContent.addComponent(textFieldFromGrade);
-		verticalLayoutWindowContent.addComponent(comboBoxFromTerm);
-		verticalLayoutWindowContent.addComponent(textFieldToGrade);
-		verticalLayoutWindowContent.addComponent(comboBoxToTerm);
-		verticalLayoutWindowContent.addComponent(textAreaComment);
-
-		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
-		horizontalLayoutWindowBar.addComponent(buttonWindowSave);
-		verticalLayoutWindowContent.addComponent(horizontalLayoutWindowBar);
-		windowEditTeachingMaterial.setContent(verticalLayoutWindowContent);
 	}
 
 	/**

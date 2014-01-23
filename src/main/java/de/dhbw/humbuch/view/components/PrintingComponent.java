@@ -26,7 +26,8 @@ public class PrintingComponent extends CustomComponent {
 		window.setResizable(false);
 		window.setDraggable(false);
 		window.setModal(true);
-
+		window.addStyleName("pdf-printing");
+		
 		BrowserFrame embedded = new BrowserFrame();
 		embedded.setSizeFull();
 		// Set the right mime type
