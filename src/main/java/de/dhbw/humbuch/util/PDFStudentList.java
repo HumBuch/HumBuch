@@ -110,6 +110,38 @@ public final class PDFStudentList extends PDFHandler {
 			catch (DocumentException e) {
 				e.printStackTrace();
 			}
+		}		
+		if (this.lendingList != null && !this.lendingList.isEmpty()) {
+			PdfPTable table = PDFHandler.createMyStandardTable(1);
+
+			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher sollen ausgeliehen werden:" })
+					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
+
+			try {
+				document.add(table);
+				addEmptyLineToDocument(document, 1);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+			table = this.createTableWithRentalInformationHeader();
+
+			for (BorrowedMaterial borrowedMaterial : this.lendingList) {
+				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
+											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
+											"" };
+
+				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(5f).fillTable();
+			}
+
+			try {
+				document.add(table);
+				addEmptyLineToDocument(document, 1);
+			}
+			catch (DocumentException e) {
+				e.printStackTrace();
+			}
 		}
 		if (this.returnList != null && !this.returnList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
@@ -145,37 +177,6 @@ public final class PDFStudentList extends PDFHandler {
 				e.printStackTrace();
 			}
 		}
-		if (this.lendingList != null && !this.lendingList.isEmpty()) {
-			PdfPTable table = PDFHandler.createMyStandardTable(1);
-
-			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher sollen ausgeliehen werden:" })
-					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
-
-			try {
-				document.add(table);
-				addEmptyLineToDocument(document, 1);
-			}
-			catch (DocumentException e) {
-				e.printStackTrace();
-			}
-
-			table = this.createTableWithRentalInformationHeader();
-
-			for (BorrowedMaterial borrowedMaterial : this.lendingList) {
-				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
-											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
-											"" };
-
-				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(5f).fillTable();
-			}
-
-			try {
-				document.add(table);
-			}
-			catch (DocumentException e) {
-				e.printStackTrace();
-			}
-		}
 
 	}
 
@@ -197,6 +198,8 @@ public final class PDFStudentList extends PDFHandler {
 
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
+
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -214,7 +217,7 @@ public final class PDFStudentList extends PDFHandler {
 		new PDFHandler.TableBuilder(table, 
 				new String[] { "\nDie oben angeführten Schulbücher hat der Schüler zurückgegeben.\n" +
 						"Die ausgeliehenen Bücher wurden auf Vollständigkeit und Beschädigung überprüft. " +
-						"Beschädigte oder verlorengegangene Bücher wurden ersetzt.\n" }).leading(1.25f).fillTable();
+						"Beschädigte oder verlorengegangene Bücher wurden ersetzt." }).leading(1.25f).fillTable();
 
 		try {
 			document.add(table);

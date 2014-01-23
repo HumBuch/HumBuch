@@ -128,12 +128,14 @@ public class PDFDunning extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
 
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
-									"Klasse: ", "" + this.student.getGrade().toString() + "\n" };
+									"Klasse: ", "" + this.student.getGrade().toString() };
 		
 		new PDFHandler.TableBuilder(table, contentArray).fillTable();
 		
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
+
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();

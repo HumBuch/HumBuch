@@ -74,6 +74,7 @@ public final class PDFClassList extends PDFHandler {
 		
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
