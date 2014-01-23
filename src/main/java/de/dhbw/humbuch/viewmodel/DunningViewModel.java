@@ -68,104 +68,84 @@ public class DunningViewModel {
 		updateStates();
 	}
 
+	/**
+	 * Creates the first dunning for a student with borrowed materials which are overdue.
+	 */
 	private void createFirstDunnings() {
 		List<BorrowedMaterial> listBorrowedMaterial = daoBorrowedMaterial
 				.findAll();
 		Map<Integer, List<BorrowedMaterial>> map = new HashMap<Integer, List<BorrowedMaterial>>();
-		System.out.println("Anzahl borrowed:" + listBorrowedMaterial.size());
 		for (BorrowedMaterial borrowedMaterial : listBorrowedMaterial) {
-			// check, if a student forgot to return borrowed materials
-			// is the borrowedMaterial needed for the next term?
-			if (isNeededNextTerm(borrowedMaterial)) {
-				System.out.println("not needed");
-				// material is not received
-				if (!borrowedMaterial.isReceived()) {
-					System.out.println("not received");
-					// not manually borrowed
-					System.out.println(borrowedMaterial.getBorrowUntil());
-					if (borrowedMaterial.getBorrowUntil() == null) {
-						System.out.println("not manually borrowed");
-						// check if today is later than end of term
-						Calendar termEndDate = new GregorianCalendar();
-						termEndDate.setTime(currentSchoolYear
-								.getEndDateOfTerm(currentSchoolYear
-										.getCurrentTerm()));
-						termEndDate.add(Calendar.DATE, 15);
-						// collect all borrowed materials for a student
-						if (new GregorianCalendar().after(termEndDate)) {
-							System.out.println("overdue!");
-							if (!map.containsKey(borrowedMaterial.getStudent()
-									.getId())) {
-								map.put(borrowedMaterial.getStudent().getId(),
-										new ArrayList<BorrowedMaterial>());
-							}
-							List<BorrowedMaterial> temp = map
-									.get(borrowedMaterial.getStudent().getId());
-							temp.add(borrowedMaterial);
-							map.put(borrowedMaterial.getStudent().getId(), temp);
-							System.out.println("student1"
-									+ borrowedMaterial.getStudent().getId());
+			// not manually borrowed
+			if (borrowedMaterial.getBorrowUntil() == null ) {
+				// is the borrowedMaterial not needed for the next term and not received yet?
+				if (!isNeededNextTerm(borrowedMaterial) && !borrowedMaterial.isReceived()) {
+					// check if today is later than end of term
+					Calendar termEndDate = new GregorianCalendar();
+					termEndDate.setTime(currentSchoolYear
+							.getEndDateOfTerm(currentSchoolYear
+									.getCurrentTerm()));
+					termEndDate.add(Calendar.DATE, 15);
+					// collect all borrowed materials for a student
+					if (new GregorianCalendar().after(termEndDate)) {
+						if (!map.containsKey(borrowedMaterial.getStudent()
+								.getId())) {
+							map.put(borrowedMaterial.getStudent().getId(),
+									new ArrayList<BorrowedMaterial>());
 						}
-					}
-					// manually borrowed
-					else {
-						System.out.println("manually borrowed");
-						// check if the manually borrowed teaching material
-						// should already has been returned
-						Calendar borrowUntil = new GregorianCalendar();
-						borrowUntil.setTime(borrowedMaterial.getBorrowUntil());
-						if (new GregorianCalendar().after(borrowUntil)) {
-							if (!map.containsKey(borrowedMaterial.getStudent()
-									.getId())) {
-								map.put(borrowedMaterial.getStudent().getId(),
-										new ArrayList<BorrowedMaterial>());
-							}
-							List<BorrowedMaterial> temp = map
-									.get(borrowedMaterial.getStudent().getId());
-							temp.add(borrowedMaterial);
-							map.put(borrowedMaterial.getStudent().getId(), temp);
-							System.out.println("student2"
-									+ borrowedMaterial.getStudent().getId());
-						}
+						map.get(borrowedMaterial.getStudent().getId()).add(borrowedMaterial);
 					}
 				}
 			}
-		}
-		System.out.println("create dunnings for every student" + map.size());
-		// create one dunning for every student
-		for (Integer inoifehoiet : map.keySet()) {
-			List<BorrowedMaterial> entry = map.get(inoifehoiet);
-			System.out.println(entry.size());
-			System.out.println(entry.get(0));
-			Dunning newDunning = new Dunning.Builder(entry.get(0).getStudent())
-					.type(Dunning.Type.TYPE1).status(Dunning.Status.OPENED).borrowedMaterials(new HashSet<BorrowedMaterial>())
-					.build();
-			for (BorrowedMaterial value : entry) {
-				System.out.println("add");
-				System.out.println(value);
-				newDunning.addBorrowedMaterials(value);
+			// manually borrowed
+			else {
+				// check if the manually borrowed teaching material
+				// should already have been returned
+				Calendar borrowUntil = new GregorianCalendar();
+				borrowUntil.setTime(borrowedMaterial.getBorrowUntil());
+				if (new GregorianCalendar().after(borrowUntil)) {
+					// collect all borrowed materials for a student
+					if (!map.containsKey(borrowedMaterial.getStudent()
+							.getId())) {
+						map.put(borrowedMaterial.getStudent().getId(),
+								new ArrayList<BorrowedMaterial>());
+					}
+					map.get(borrowedMaterial.getStudent().getId()).add(borrowedMaterial);
+				}
 			}
-			
+		}
+		
+		for (Integer key : map.keySet()) {
+			List<BorrowedMaterial> entry = map.get(key);
 			if (daoDunning.findAllWithCriteria(
-					Restrictions.eq("status", Dunning.Status.OPENED),
+					Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT)),
 					Restrictions.eq("type", Dunning.Type.TYPE1),
-					Restrictions.eq("studentId", newDunning.getStudent()
-							.getId())).size() == 0) {
-				System.out.println("insert");
+					Restrictions.eq("student", entry.get(0).getStudent())).size() == 0) {
+				Dunning newDunning = new Dunning.Builder(entry.get(0).getStudent())
+						.type(Dunning.Type.TYPE1).status(Dunning.Status.OPENED).borrowedMaterials(new HashSet<BorrowedMaterial>())
+						.build();
+				for (BorrowedMaterial value : entry) {
+					newDunning.addBorrowedMaterials(value);
+				}
 				daoDunning.insert(newDunning);
 			}
 		}
 	}
 
+	/**
+	 * Creates the second dunning for overdue first dunnings.
+	 * Retrieves all first dunnings which have been sent to the student. 
+	 * If the sent date is more than 15 days ago create the second dunning which is sent to the parents. 
+	 * First make sure that there is no second dunning created yet. 
+	 */
 	private void createSecondDunnings() {
-		List<Dunning> listDunning = daoDunning.findAllWithCriteria(
+		List<Dunning> closedFirstDunnings = daoDunning.findAllWithCriteria(
 				Restrictions.eq("status", Dunning.Status.SENT),
 				Restrictions.eq("type", Dunning.Type.TYPE1));
-		for (Dunning dunning : listDunning) {
+		for (Dunning dunning : closedFirstDunnings) {
 			Calendar statusDate = new GregorianCalendar();
 			statusDate.setTime(dunning.getStatusDate(Dunning.Status.SENT));
 			statusDate.add(Calendar.DATE, 15);
-			// Create a second dunning
 			if (new GregorianCalendar().after(statusDate)) {
 				Dunning newDunning = new Dunning.Builder(dunning.getStudent())
 						.type(Dunning.Type.TYPE2).status(Dunning.Status.OPENED)
@@ -173,9 +153,7 @@ public class DunningViewModel {
 				if (daoDunning.findAllWithCriteria(
 						Restrictions.eq("status", Dunning.Status.OPENED),
 						Restrictions.eq("type", Dunning.Type.TYPE2),
-						Restrictions.eq("studentId", dunning.getStudent()
-								.getId())).size() == 0) {
-					System.out.println("insert 2");
+						Restrictions.eq("student", dunning.getStudent())).size() == 0) {
 					daoDunning.insert(newDunning);
 				}
 			}
