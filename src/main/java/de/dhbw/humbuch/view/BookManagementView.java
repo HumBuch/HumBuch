@@ -23,7 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -94,7 +93,6 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TEXTFIELD_TOGRADE = "bis Klassenstufe";
 	private static final String TEXTFIELD_COMMENT = "Kommentar";
 	private static final String TEXTFIELD_SEARCH_PLACEHOLDER = "Lehrmittel oder Hersteller";
-	private static final String TERM = "Halbjahr";
 	private static final String CATEGORY = "Kategorie";
 
 	/**
@@ -132,11 +130,11 @@ public class BookManagementView extends VerticalLayout implements View,
 	private TextField textFieldTeachingMaterialName = new TextField(TEXTFIELD_NAME);
 	private TextField textFieldTeachingMaterialIdentifyer = new TextField(TEXTFIELD_IDENTIFYER);
 	private TextField textFieldProducer = new TextField(TEXTFIELD_PRODUCER);
-	private TextField textFieldFromGrade = new TextField(TEXTFIELD_FROMGRADE);
-	private TextField textFieldToGrade = new TextField(TEXTFIELD_TOGRADE);
+	private TextField textFieldFromGrade = new TextField();
+	private TextField textFieldToGrade = new TextField();
 	private ComboBox comboBoxProfiles = new ComboBox(TABLE_PROFILE);
-	private ComboBox comboBoxFromTerm = new ComboBox(TERM);
-	private ComboBox comboBoxToTerm = new ComboBox(TERM);
+	private ComboBox comboBoxFromTerm = new ComboBox();
+	private ComboBox comboBoxToTerm = new ComboBox();
 	private ComboBox comboBoxCategory = new ComboBox(CATEGORY);
 	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
 	private Button buttonWindowSave = new Button(BUTTON_SAVE);
@@ -214,6 +212,7 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * @return
 	 * 		The created Window
 	 */
+	@SuppressWarnings("serial")
 	public Window createEditWindow() {
 		// Create Window and set parameters
 		windowEditTeachingMaterial = new Window();
@@ -233,12 +232,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		comboBoxToTerm.setNullSelectionAllowed(false);
 		textFieldTeachingMaterialIdentifyer.setRequired(true);
 		textFieldTeachingMaterialName.setRequired(true);
-		textFieldFromGrade.setRequired(true);
-		textFieldToGrade.setRequired(true);
 		textFieldProducer.setRequired(true);
 		comboBoxCategory.setRequired(true);
-		comboBoxFromTerm.setRequired(true);
-		comboBoxToTerm.setRequired(true);
 		comboBoxProfiles.setRequired(true);
 		
 		// Input prompts
@@ -263,10 +258,25 @@ public class BookManagementView extends VerticalLayout implements View,
 		formLayoutWindowContent.addComponent(comboBoxCategory);
 		formLayoutWindowContent.addComponent(textFieldProducer);
 		formLayoutWindowContent.addComponent(comboBoxProfiles);
-		formLayoutWindowContent.addComponent(textFieldFromGrade);
-		formLayoutWindowContent.addComponent(comboBoxFromTerm);
-		formLayoutWindowContent.addComponent(textFieldToGrade);
-		formLayoutWindowContent.addComponent(comboBoxToTerm);
+		formLayoutWindowContent.addComponent(new HorizontalLayout() {
+			{ 
+				setSpacing(true);
+				setCaption(TEXTFIELD_FROMGRADE);
+				textFieldFromGrade.setWidth("50px");
+				comboBoxFromTerm.setWidth(null);
+				addComponent(textFieldFromGrade);
+				addComponent(comboBoxFromTerm);
+			}
+		});
+		formLayoutWindowContent.addComponent(new HorizontalLayout() {
+			{ 
+				setSpacing(true);
+				setCaption(TEXTFIELD_TOGRADE);
+				textFieldToGrade.setWidth("50px");
+				addComponent(textFieldToGrade);
+				addComponent(comboBoxToTerm);
+			}
+		});
 		formLayoutWindowContent.addComponent(textAreaComment);
 
 		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
