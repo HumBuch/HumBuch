@@ -16,15 +16,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.BasicState;
@@ -58,20 +63,26 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private static final String TITLE = "Ausleihe";
 	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher erhalten";
 	private static final String MANUAL_LENDING = "Manuell Material ausleihen";
-	private static final String CLASS_LIST = "Klassenliste für Auswahl drucken";
-	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
+	private static final String PRINT = "Listen drucken";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
 	private static final String CLASS_LIST_WINDOW_TITLE = "Klassen Liste";
 	private static final String STUDENT_LIST_PDF = "SchuelerAusleihListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Ausleih Liste";
+	private static final String FILTER_STUDENT = "Schüler filtern";
 
-	private HorizontalLayout horizontalLayoutButtonBar;
+	private HorizontalLayout horizontalLayoutHeaderBar;
+	private HorizontalLayout horizontalLayoutFilter;
+	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
+	private TextField textFieldStudentFilter;
 	private Button buttonSaveSelectedData;
-	private Button buttonStudentList;
-	private Button buttonClassList;
 	private Button buttonManualLending;
-	private ThemeResource themeResourceIconPrint;
+	private MenuBar menuBarPrinting;
+	private MenuItem menuItemPrinting;
+	private MenuItem subMenuItemClassList;
+	private MenuItem subMenuItemStudentList;
+	private Command menuCommandClassList;
+	private Command menuCommandStudentList;
 	private LendingViewModel lendingViewModel;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
@@ -94,54 +105,82 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
 	}
 
-	//	@AfterVMBinding
-	//	private void afterVMBinding() {
-	//		updateStudentsWithUnreceivedBorrowedMaterials();
-	//	}
-
 	private void init() {
-		horizontalLayoutButtonBar = new HorizontalLayout();
+		horizontalLayoutHeaderBar = new HorizontalLayout();
+		horizontalLayoutFilter = new HorizontalLayout();
+		horizontalLayoutActions = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
+		textFieldStudentFilter = new TextField(FILTER_STUDENT);
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_LENDING);
-		buttonClassList = new Button(CLASS_LIST);
-		buttonStudentList = new Button(STUDENT_LIST);
 		buttonManualLending = new Button(MANUAL_LENDING);
-		themeResourceIconPrint = new ThemeResource("images/icons/16/icon_print_red.png");
+		menuBarPrinting = new MenuBar();
 
-		buttonClassList.setIcon(themeResourceIconPrint);
-		buttonStudentList.setIcon(themeResourceIconPrint);
-		buttonSaveSelectedData.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
+		defineMenuCommands();
+
+		menuItemPrinting = menuBarPrinting.addItem(PRINT, null);
+		subMenuItemClassList = menuItemPrinting.addItem("Klassenliste", menuCommandClassList);
+		subMenuItemStudentList = menuItemPrinting.addItem("Schülerliste", menuCommandStudentList);
 
 		studentMaterialSelector.registerAsObserver(this);
-
-		horizontalLayoutButtonBar.setSpacing(true);
-		setSpacing(true);
-		setMargin(true);
-		
-		setSizeFull();
 
 		addListeners();
 	}
 
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonSaveSelectedData);
-		horizontalLayoutButtonBar.addComponent(buttonClassList);
-		horizontalLayoutButtonBar.addComponent(buttonStudentList);
-		horizontalLayoutButtonBar.addComponent(buttonManualLending);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonClassList, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonStudentList, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
+		horizontalLayoutHeaderBar.setWidth("100%");
+		horizontalLayoutFilter.setSpacing(true);
+		horizontalLayoutActions.setSpacing(true);
+		setSpacing(true);
+		setMargin(true);
+		setSizeFull();
 
+		horizontalLayoutFilter.addComponent(textFieldStudentFilter);
+		horizontalLayoutFilter.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_CENTER);
+
+		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
+		horizontalLayoutActions.addComponent(buttonManualLending);
+		horizontalLayoutActions.addComponent(menuBarPrinting);
+		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
+		horizontalLayoutActions.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
+		horizontalLayoutActions.setComponentAlignment(menuBarPrinting, Alignment.MIDDLE_CENTER);
+
+		horizontalLayoutHeaderBar.addComponent(horizontalLayoutFilter);
+		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
+		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutFilter, Alignment.BOTTOM_LEFT);
+		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.BOTTOM_RIGHT);
+
+		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
-		addComponent(horizontalLayoutButtonBar);
-		
+
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 
 	private void addListeners() {
 		addStateChangeListenersToStates();
+		addFilterListeners();
 		addButtonListeners();
+	}
+
+	private void defineMenuCommands() {
+		menuCommandClassList = new Command() {
+
+			private static final long serialVersionUID = 7304218414715312144L;
+
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
+			}
+		};
+
+		menuCommandStudentList = new Command() {
+
+			private static final long serialVersionUID = -5544295528932232629L;
+
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+				doStudentListPrinting();
+			}
+		};
 	}
 
 	private void addStateChangeListenersToStates() {
@@ -152,7 +191,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				if (value == null) {
 					return;
 				}
-				updateStudentsWithUnreceivedBorrowedMaterials();
+				update();
 			}
 		});
 
@@ -169,27 +208,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void addButtonListeners() {
-		buttonClassList.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = -5697082042876285467L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
-			}
-		});
-
-		buttonStudentList.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = 374606757101883863L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				doStudentListPrinting();
-			}
-
-		});
-
 		buttonSaveSelectedData.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = -7803362393771729291L;
@@ -219,6 +237,18 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 					}
 				}
 
+			}
+		});
+	}
+
+	private void addFilterListeners() {
+		textFieldStudentFilter.addTextChangeListener(new TextChangeListener() {
+
+			private static final long serialVersionUID = -2524687738109998947L;
+
+			@Override
+			public void textChange(TextChangeEvent event) {
+				studentMaterialSelector.setFilterString(event.getText());
 			}
 		});
 	}
@@ -283,6 +313,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	public void update() {
+		updateStudentsWithUnreceivedBorrowedMaterials();
+
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
@@ -298,18 +330,18 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		// Adapt student list button
 		if (students.size() >= 1) {
-			buttonStudentList.setEnabled(true);
+			subMenuItemStudentList.setEnabled(true);
 		}
 		else {
-			buttonStudentList.setEnabled(false);
+			subMenuItemStudentList.setEnabled(false);
 		}
 
 		// Adapt class list button
 		if (grades.size() >= 1) {
-			buttonClassList.setEnabled(true);
+			subMenuItemClassList.setEnabled(true);
 		}
 		else {
-			buttonClassList.setEnabled(false);
+			subMenuItemClassList.setEnabled(false);
 		}
 
 		// Adapt save button
@@ -319,6 +351,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		else {
 			buttonSaveSelectedData.setEnabled(false);
 		}
+	}
+
+	private void updateStudentsWithUnreceivedBorrowedMaterials() {
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
 
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
@@ -333,11 +369,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
 			}
 		}
-	}
-
-	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
-		update();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
