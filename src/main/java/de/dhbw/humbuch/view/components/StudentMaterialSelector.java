@@ -3,6 +3,7 @@ package de.dhbw.humbuch.view.components;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 
@@ -30,17 +30,16 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private final static Logger LOG = LoggerFactory.getLogger(StudentMaterialSelector.class);
 
-	private static final String TREE_TABLE_HEADER = "Daten auswählen";
-	private static final String SEARCH_STUDENTS = "Schüler durchsuchen";
+	public static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
 
 	private VerticalLayout verticalLayoutContent;
-	private TextField textFieldSearchBar;
 	private TreeTable treeTableContent;
-	//	private IndexedContainer indexedContainerForTreeTable;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
+	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered;
 	private LendingView registeredObserver;
 	private HashMap<CheckBox, Object> allCheckBoxesWithId;
+	private String filterString;
 
 	public StudentMaterialSelector() {
 		init();
@@ -50,9 +49,12 @@ public class StudentMaterialSelector extends CustomComponent {
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
 		if (allCheckBoxesWithId.keySet().size() != 0) {
 			updateTable(gradeAndStudentsWithMaterials);
+			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
+			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
 		}
 		else {
 			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
+			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
 			buildTable();
 		}
 	}
@@ -97,53 +99,30 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		textFieldSearchBar = new TextField(SEARCH_STUDENTS);
 		treeTableContent = new TreeTable();
 		allCheckBoxesWithId = new HashMap<CheckBox, Object>();
 
-		//		indexedContainerForTreeTable = new IndexedContainer();
-
 		verticalLayoutContent.setSpacing(true);
-		textFieldSearchBar.setWidth("50%");
 
 		treeTableContent.setSizeFull();
-		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
 		treeTableContent.setImmediate(true);
-
-		//		indexedContainerForTreeTable.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
-		//		treeTableContent.setContainerDataSource(indexedContainerForTreeTable);
-		//		addFilterToContainer();
+		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
 	}
 
 	private void buildLayout() {
-		verticalLayoutContent.addComponent(textFieldSearchBar);
 		verticalLayoutContent.addComponent(treeTableContent);
 
 		setCompositionRoot(verticalLayoutContent);
 	}
 
-	//	private void addFilterToContainer() {
-	//		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
-	//
-	//			private static final long serialVersionUID = 1909461513444694234L;
-	//
-	//			@Override
-	//			public void textChange(TextChangeEvent event) {
-	//				SimpleCheckBoxFilter filter = new SimpleCheckBoxFilter(TREE_TABLE_HEADER, event.getText(), true, false);
-	//				indexedContainerForTreeTable.removeAllContainerFilters();
-	//				indexedContainerForTreeTable.addContainerFilter(filter);
-	//			}
-	//		});
-	//	}
-
 	private void buildTable() {
 		if (treeTableContent.removeAllItems()) {
-			if (gradeAndStudentsWithMaterials.isEmpty()) {
+			if (gradeAndStudentsWithMaterialsFiltered.isEmpty()) {
 				return;
 			}
-
-			Set<Grade> grades = gradeAndStudentsWithMaterials.keySet();
-			// Add all grades below the grade level
+			allCheckBoxesWithId.clear();
+			Set<Grade> grades = gradeAndStudentsWithMaterialsFiltered.keySet();
+			// Add all grades as roots
 			for (Grade grade : grades) {
 				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 				checkBoxGrade.setData(grade);
@@ -165,7 +144,11 @@ public class StudentMaterialSelector extends CustomComponent {
 					treeTableContent.setParent(studentItemId, gradeItemId);
 
 					allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
-					List<BorrowedMaterial> materials = gradeAndStudentsWithMaterials.get(grade).get(student);
+					List<BorrowedMaterial> materials = gradeAndStudentsWithMaterialsFiltered.get(grade).get(student);
+					if (materials == null) {
+						LOG.warn("Borrowed Materials for Student " + student.getFirstname() + " " + student.getLastname() + " are null");
+						continue;
+					}
 
 					// Collect all borrowed materials checkboxes for selecting purposes
 					final ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
@@ -271,6 +254,38 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 	}
 
+	public void setFilterString(String filterString) {
+		this.filterString = filterString;
+		filterTableContent();
+	}
+
+	private void filterTableContent() {
+		gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
+			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
+			for (Student student : entry.keySet()) {
+				boolean matchesFilter = false;
+
+				// match firstname and lastname ignoring case
+				String fullName = student.getFirstname() + " " + student.getLastname();
+				fullName = fullName.toLowerCase();
+				if (fullName.contains(filterString.toLowerCase())) {
+					matchesFilter = true;
+				}
+
+				if (matchesFilter) {
+					filteredEntries.put(student, entry.get(student));
+				}
+			}
+
+			if (filteredEntries.size() != 0) {
+				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
+			}
+		}
+		buildTable();
+	}
+
 	private ArrayList<Student> getAllStudentsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
 		ArrayList<Student> students = new ArrayList<Student>();
 		for (Grade grade : structure.keySet()) {
@@ -294,7 +309,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	private List<Student> getAllStudentsForGrade(Grade grade) {
-		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterials.get(grade);
+		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterialsFiltered.get(grade);
 		List<Student> studentList = new ArrayList<Student>(studentsWithMaterials.keySet());
 		return studentList;
 	}
@@ -312,7 +327,9 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
-	//	private class SimpleCheckBoxFilter implements Filter {
+	//	public static class SimpleCheckBoxFilter implements Filter {
+	//
+	//		private static final long serialVersionUID = -562636677610443920L;
 	//
 	//		private final Object propertyId;
 	//		private final String filterString;

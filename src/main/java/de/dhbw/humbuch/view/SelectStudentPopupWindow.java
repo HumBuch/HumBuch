@@ -15,7 +15,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.view.LendingView.CustomStudent;
 
 
 public class SelectStudentPopupWindow extends Window {
@@ -144,5 +143,23 @@ public class SelectStudentPopupWindow extends Window {
 	private void closeMe() {
 		getUI().removeWindow(this);
 		close();
+	}
+
+
+	public class CustomStudent {
+
+		private Student student;
+
+		public CustomStudent(Student student) {
+			this.student = student;
+		}
+
+		public String toString() {
+			return "" + student.getFirstname() + " " + student.getLastname();
+		}
+
+		public Student getStudent() {
+			return student;
+		}
 	}
 }

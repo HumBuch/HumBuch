@@ -137,13 +137,13 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		horizontalLayoutFilter.addComponent(textFieldStudentFilter);
 		horizontalLayoutFilter.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_CENTER);
 
-		horizontalLayoutActions.addComponent(menuBarPrinting);
-		horizontalLayoutActions.addComponent(buttonManualLending);
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
-		horizontalLayoutActions.setComponentAlignment(menuBarPrinting, Alignment.MIDDLE_CENTER);
-		horizontalLayoutActions.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
+		horizontalLayoutActions.addComponent(buttonManualLending);
+		horizontalLayoutActions.addComponent(menuBarPrinting);
 		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
-
+		horizontalLayoutActions.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
+		horizontalLayoutActions.setComponentAlignment(menuBarPrinting, Alignment.MIDDLE_CENTER);
+		
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
 		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutFilter, Alignment.BOTTOM_LEFT);
@@ -248,7 +248,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void textChange(TextChangeEvent event) {
-				System.out.println("text event: " + event.getText());
+				studentMaterialSelector.setFilterString(event.getText());
 			}
 		});
 	}
