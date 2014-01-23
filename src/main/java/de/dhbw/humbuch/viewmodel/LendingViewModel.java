@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -57,12 +58,14 @@ public class LendingViewModel {
 	
 	@Inject
 	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, 
-			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoGrade = daoGrade;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
+		
+		eventBus.register(this);
 	}
 	
 	@AfterVMBinding

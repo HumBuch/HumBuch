@@ -33,9 +33,11 @@ import de.davherrmann.mvvm.BasicState;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
+import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.Header;
 import de.dhbw.humbuch.view.components.Sidebar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
@@ -60,18 +62,25 @@ public class MainUI extends ScopedUI {
 
 	@Inject
 	private LoginView loginView;
+	
 	@Inject
 	private DunningView dunningView;
+	
 	@Inject
 	private LendingView lendingView;
+	
 	@Inject
 	private ReturnView returnView;
+	
 	@Inject
 	private BookManagementView bookManagementView;
+	
 	@Inject
 	private StudentInformationView studentInformationView;
+	
 	@Inject
 	private SettingsView settingsView;
+	
 	@Inject
 	private ErrorView errorView;
 
@@ -93,9 +102,9 @@ public class MainUI extends ScopedUI {
 	@Inject
 	public MainUI(ViewModelComposer viewModelComposer,
 			LoginViewModel loginViewModel, EventBus eventBus) {
-		bindViewModel(viewModelComposer, loginViewModel);
-		eventBus.register(this);
 		this.loginViewModel = loginViewModel;
+		eventBus.register(this);
+		bindViewModel(viewModelComposer, loginViewModel);
 	}
 
 	@Override
@@ -304,9 +313,26 @@ public class MainUI extends ScopedUI {
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
 		}
+		
 		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
 	}
-
+	
+	@Subscribe
+	public void handleConfirmEvent(final ConfirmEvent confirmEvent) {
+		ConfirmDialog.show(confirmEvent.caption, confirmEvent.message, confirmEvent.confirmCaption, confirmEvent.cancelCaption, 
+				new ConfirmDialog.Listener() {
+			
+			@Override
+			public void onClose(ConfirmDialog dialog) {
+				if(dialog.isConfirmed()) {
+					confirmEvent.confirm();
+				} else {
+					confirmEvent.cancel();
+				}
+			}
+		});
+	}
+	
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {

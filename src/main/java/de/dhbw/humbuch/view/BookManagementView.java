@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.IndexedContainer;
@@ -37,6 +38,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
@@ -138,6 +140,8 @@ public class BookManagementView extends VerticalLayout implements View,
 	private Button buttonWindowSave = new Button(BUTTON_SAVE);
 	private Button buttonWindowCancel = new Button(BUTTON_CANCEL);
 
+	private EventBus eventBus;
+
 	/**
 	 * 
 	 * @param viewModelComposer
@@ -147,8 +151,9 @@ public class BookManagementView extends VerticalLayout implements View,
 	 */
 	@Inject
 	public BookManagementView(ViewModelComposer viewModelComposer,
-			BookManagementViewModel bookManagementViewModel) {
+			BookManagementViewModel bookManagementViewModel, EventBus eventBus) {
 		this.bookManagementViewModel = bookManagementViewModel;
+		this.eventBus = eventBus;
 		init();
 		buildLayout();
 
@@ -290,8 +295,18 @@ public class BookManagementView extends VerticalLayout implements View,
 					Notification.show("Bitte ein Lehrmittel auswählen");
 					return;
 				}
-				bookManagementViewModel.doFetchTeachingMaterial(Integer	.parseInt(tableTeachingMaterials.getValue().toString()));
-				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
+				Runnable runnable = new Runnable() {
+					
+					@Override
+					public void run() {
+						bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+						bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
+					}
+				};
+				eventBus.post(new ConfirmEvent.Builder("Wollen Sie das Lehrmittel wirklich löschen?").caption("Löschen")
+						.confirmRunnable(runnable).build());
+//				bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
+//				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
 			}
 		});
 		

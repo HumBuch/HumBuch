@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
@@ -47,11 +48,14 @@ public class ReturnViewModel {
 
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, 
+			DAO<SchoolYear> daoSchoolYear, EventBus eventBus) {
 		this.daoGrade = daoGrade;
 		this.daoStudent = daoStudent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
+		
+		eventBus.register(this);
 	}
 	
 	@AfterVMBinding
