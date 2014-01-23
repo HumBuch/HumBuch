@@ -13,9 +13,9 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
@@ -26,8 +26,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -41,6 +39,7 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
+import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
@@ -337,7 +336,7 @@ public class BookManagementView extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(tableTeachingMaterials.getValue() == null) {
-					Notification.show("Bitte ein Lehrmittel auswählen");
+					eventBus.post(new MessageEvent("Bitte ein Lehrmittel auswählen"));
 					return;
 				}
 				Runnable runnable = new Runnable() {
@@ -462,7 +461,7 @@ public class BookManagementView extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if(tableTeachingMaterials.getValue() == null) {
-					Notification.show("Bitte ein Lehrmittel auswählen!", Type.HUMANIZED_MESSAGE);
+					eventBus.post(new MessageEvent("Bitte ein Lehrmittel auswählen"));
 				} else {
 					editTeachingMaterial = true;
 					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
@@ -500,25 +499,25 @@ public class BookManagementView extends VerticalLayout implements View,
 				|| textFieldToGrade.getValue() == null
 				|| comboBoxCategory.getValue() == null
 				|| comboBoxProfiles.getValue() == null) {
-			Notification.show("Bitte alle Pflichtfelder ausfüllen");
+			eventBus.post(new MessageEvent("Bitte alle Pflichtfelder ausfüllen"));
 			return false;
 		}
 		//No field is empty, validate now for right values and lengths
 		else {
 			if(textFieldTeachingMaterialName.getValue().length() < 2){
-				Notification.show("Der Titel muss mindestens 2 Zeichen enthalten");
+				eventBus.post(new MessageEvent("Der Titel muss mindestens 2 Zeichen enthalten"));
 				return false;
 			}
 			if(textFieldFromGrade.getValue().length() > 2 
 					|| textFieldToGrade.getValue().length() > 2 ){
-				Notification.show("Die Klassenstufen dürfen höchstens 2 Zeichen enthalten");
+				eventBus.post(new MessageEvent("Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
 				return false;
 			}
 			try{
 				Integer.parseInt(textFieldToGrade.getValue());
 				Integer.parseInt(textFieldFromGrade.getValue());
 			} catch(NumberFormatException e) {
-				Notification.show("Die Klassenstufen dürfen nur Zahlen enthalten");
+				eventBus.post(new MessageEvent("Die Klassenstufen dürfen nur Zahlen enthalten"));
 				return false;
 			}
 			return true;
