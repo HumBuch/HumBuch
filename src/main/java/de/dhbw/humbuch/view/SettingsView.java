@@ -225,19 +225,6 @@ public class SettingsView extends VerticalLayout implements View,
 		tabCategories.setMargin(true);
 		tabCategories.setSpacing(true);
 		tabCategories.setSizeFull();
-
-		// Table
-		catTable.setSizeFull();
-		catTable.setSelectable(true);
-		catTable.setImmediate(true);
-
-		catTable.setContainerDataSource(catData);
-		catTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
-		catTable.setColumnHeader(CAT_NAME, "Kategorie");
-		catTable.setColumnHeader(CAT_DESCRIPTION, "Beschreibung");
-
-		tabCategories.addComponent(catTable);
-		tabCategories.setExpandRatio(catTable, 1);
 		
 		final HorizontalLayout catEditButtons = new HorizontalLayout();
 		catEditButtons.setSpacing(true);
@@ -266,6 +253,19 @@ public class SettingsView extends VerticalLayout implements View,
 				setComponentAlignment(catEditButtons, Alignment.MIDDLE_RIGHT);
 			}
 		});
+
+		// Table
+		catTable.setSizeFull();
+		catTable.setSelectable(true);
+		catTable.setImmediate(true);
+
+		catTable.setContainerDataSource(catData);
+		catTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
+		catTable.setColumnHeader(CAT_NAME, "Kategorie");
+		catTable.setColumnHeader(CAT_DESCRIPTION, "Beschreibung");
+
+		tabCategories.addComponent(catTable);
+		tabCategories.setExpandRatio(catTable, 1);
 		
 		tabs.addTab(tabCategories, "Lehrmittelkategorien");
 
@@ -452,6 +452,34 @@ public class SettingsView extends VerticalLayout implements View,
 		tabDates.setMargin(true);
 		tabDates.setSpacing(true);
 
+		final HorizontalLayout yearEditButtons = new HorizontalLayout();
+		yearEditButtons.setSpacing(true);
+		
+		yearDelete.setEnabled(false);
+		yearEdit.setEnabled(false);
+		yearSave.setVisible(false);
+		yearSave.addStyleName("default");
+		yearCancel.setVisible(false);
+
+		yearEditButtons.addComponent(yearEdit);
+		yearEditButtons.addComponent(yearCancel);
+		yearEditButtons.addComponent(yearSave);
+
+		final HorizontalLayout yearAddButtons = new HorizontalLayout();
+		yearAddButtons.setSpacing(true);
+		yearAddButtons.addComponent(yearAdd);
+		yearAddButtons.addComponent(yearDelete);
+
+		tabDates.addComponent(new HorizontalLayout() {
+			{
+				setWidth("100%");
+				setHeight(null);
+				addComponent(yearAddButtons);
+				addComponent(yearEditButtons);
+				setComponentAlignment(yearEditButtons, Alignment.MIDDLE_RIGHT);
+			}
+		});
+		
 		yearTable = new Table() {
 			private static final long serialVersionUID = 1L;
 
@@ -493,34 +521,6 @@ public class SettingsView extends VerticalLayout implements View,
 
 		tabDates.addComponent(yearTable);
 		tabDates.setExpandRatio(yearTable, 1);
-		
-		final HorizontalLayout yearEditButtons = new HorizontalLayout();
-		yearEditButtons.setSpacing(true);
-		
-		yearDelete.setEnabled(false);
-		yearEdit.setEnabled(false);
-		yearSave.setVisible(false);
-		yearSave.addStyleName("default");
-		yearCancel.setVisible(false);
-
-		yearEditButtons.addComponent(yearEdit);
-		yearEditButtons.addComponent(yearCancel);
-		yearEditButtons.addComponent(yearSave);
-
-		final HorizontalLayout yearAddButtons = new HorizontalLayout();
-		yearAddButtons.setSpacing(true);
-		yearAddButtons.addComponent(yearAdd);
-		yearAddButtons.addComponent(yearDelete);
-
-		tabDates.addComponent(new HorizontalLayout() {
-			{
-				setWidth("100%");
-				setHeight(null);
-				addComponent(yearAddButtons);
-				addComponent(yearEditButtons);
-				setComponentAlignment(yearEditButtons, Alignment.MIDDLE_RIGHT);
-			}
-		});
 		
 		tabs.addTab(tabDates, "Schuljahresdaten");
 
