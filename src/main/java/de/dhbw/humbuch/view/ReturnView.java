@@ -138,7 +138,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
 			for (Student student : informationForPdf.keySet()) {
 
-				PDFStudentList.Builder builder = new PDFStudentList.Builder().lendingList(informationForPdf.get(student));
+				PDFStudentList.Builder builder = new PDFStudentList.Builder().returnList(informationForPdf.get(student));
 				builders.add(builder);
 			}
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
