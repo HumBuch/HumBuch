@@ -2,8 +2,6 @@ package de.dhbw.humbuch.viewmodel;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
 
@@ -25,30 +23,38 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class BookManagementViewModel {
 
-	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}
-	public interface TeachingMaterialInfo extends State<TeachingMaterial>{}
-	public interface Categories extends State<Collection<Category>> {}
+	public interface TeachingMaterials extends
+			State<Collection<TeachingMaterial>> {
+	}
 
-	public interface DoUpdateTeachingMaterial extends ActionHandler {}
-	public interface DoFetchTeachingMaterial extends ActionHandler{}
-	public interface DoDeleteTeachingMaterial extends ActionHandler{}
-	public interface DoUpdateCategory extends ActionHandler{}
+	public interface Categories extends State<Collection<Category>> {
+	}
 
+	public interface DoUpdateTeachingMaterial extends ActionHandler {
+	}
+
+	public interface DoFetchTeachingMaterial extends ActionHandler {
+	}
+
+	public interface DoDeleteTeachingMaterial extends ActionHandler {
+	}
+
+	public interface DoUpdateCategory extends ActionHandler {
+	}
 
 	@ProvidesState(TeachingMaterials.class)
-	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
-	
-	@ProvidesState(TeachingMaterialInfo.class)
-	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(TeachingMaterial.class);
-	
+	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
+			Collection.class);
+
 	@ProvidesState(Categories.class)
-	public final State<Map<Integer,Category>> categories = new BasicState<>(Map.class);
+	public final State<Collection<Category>> categories = new BasicState<>(
+			Collection.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private EventBus eventBus;
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -56,7 +62,8 @@ public class BookManagementViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial, DAO<Category> daoCategory, 
+	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial,
+			DAO<Category> daoCategory,
 			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoCategory = daoCategory;
@@ -66,21 +73,16 @@ public class BookManagementViewModel {
 
 	@AfterVMBinding
 	private void afterVMBinding() {
-		updateTeachingMaterial();
-		updateCategory();
+		updateTeachingMaterials();
+		updateCategories();
 	}
-	
-	private void updateTeachingMaterial() {
+
+	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
-	
-	private void updateCategory() {
-		Collection<Category> categories = daoCategory.findAll();
-		Map<Integer,Category> tempMap = new HashMap<Integer,Category>();
-		for(Category category : categories) {
-			tempMap.put(category.getId(), category);
-		}
-		this.categories.set(tempMap);
+
+	private void updateCategories() {
+		categories.set(daoCategory.findAll());
 	}
 
 	/**
@@ -94,61 +96,35 @@ public class BookManagementViewModel {
 		if (teachingMaterial == null) {
 			return;
 		}
-		if (daoTeachingMaterial.find(teachingMaterial.getId()) != null) {
-			daoTeachingMaterial.update(teachingMaterial);
-		} else {
-			daoTeachingMaterial.insert(teachingMaterial);
-		}
-		updateTeachingMaterial();
-	}
-	/**
-	 * Fetches a teaching material and sets the teachingMaterialInfoState
-	 * @param id
-	 * 		the id of the teaching material to be fetched
-	 */
-	@HandlesAction(DoFetchTeachingMaterial.class)
-	public void doFetchTeachingMaterial(int id) {
-		teachingMaterialInfo.set(daoTeachingMaterial.find(id));
+		daoTeachingMaterial.update(teachingMaterial);
+		updateTeachingMaterials();
 	}
 
+
 	/**
-	 * Deletes the teaching material or sets the validUntil date to the current Date. 
-	 * This decision depends on whether the teaching material is borrowed by a student.
+	 * Deletes the teaching material or sets the validUntil date to the current
+	 * Date. This decision depends on whether the teaching material is borrowed
+	 * by a student.
+	 * 
 	 * @param teachingMaterial
-	 * 			the teacing material to be updated or deleted
+	 *            the teacing material to be updated or deleted
 	 */
 	@HandlesAction(DoDeleteTeachingMaterial.class)
 	public void doDeleteTeachingMaterial(TeachingMaterial teachingMaterial) {
-		Collection<BorrowedMaterial> borrowedMaterial = daoBorrowedMaterial.findAllWithCriteria(
-						Restrictions.eq("teachingMaterial", teachingMaterial));
-		if(borrowedMaterial.isEmpty()) {
+		Collection<BorrowedMaterial> borrowedMaterial = daoBorrowedMaterial
+				.findAllWithCriteria(Restrictions.eq("teachingMaterial",
+						teachingMaterial));
+		if (borrowedMaterial.isEmpty()) {
 			daoTeachingMaterial.delete(teachingMaterial);
-			updateTeachingMaterial();
-			eventBus.post(new MessageEvent("Löschen erfolgreich", "Das Lehrmittel wurde gelöscht.", Type.INFO));
+			updateTeachingMaterials();
+			eventBus.post(new MessageEvent("Löschen erfolgreich",
+					"Das Lehrmittel wurde gelöscht.", Type.INFO));
 		} else {
 			teachingMaterial.setValidUntil(new Date());
 			daoTeachingMaterial.update(teachingMaterial);
-			updateTeachingMaterial();
-			eventBus.post(new MessageEvent("Löschen nicht möglich", "Das Lehrmittel ist noch ausgeliehen.", Type.INFO));
+			updateTeachingMaterials();
+			eventBus.post(new MessageEvent("Löschen nicht möglich",
+					"Das Lehrmittel ist noch ausgeliehen.", Type.INFO));
 		}
-	}
-	
-	/**
-	 * Either persist a newly created category or update an existing one
-	 * 
-	 * @param category
-	 * 			a category to be persisted or updated
-	 */
-	@HandlesAction(DoUpdateCategory.class)
-	public void doUpdateCategory(Category category) {
-		if (category == null) {
-			return;
-		}
-		if (daoCategory.find(category.getId()) != null) {
-			daoCategory.update(category);
-		} else {
-			daoCategory.insert(category);
-		}
-		updateCategory();
 	}
 }
