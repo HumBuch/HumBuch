@@ -294,9 +294,8 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeader() {
 		PdfPTable table = createMyStandardTable(3, new float[] { 3f, 1f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		fillTableWithContent(table, true,
-				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-				new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }, font);
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }).withBorder(true).font(font).fillTable();
+
 		return table;
 	}
 
@@ -309,8 +308,8 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		fillTableWithContent(table, true,
-				new String[] { "Bezeichnung Lehrmittel", "Anzahl" }, font);
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).fillTable();
+
 		return table;
 	}
 
