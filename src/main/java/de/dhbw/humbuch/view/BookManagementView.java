@@ -13,6 +13,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
@@ -213,7 +214,7 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * 		The created Window
 	 */
 	@SuppressWarnings("serial")
-	public Window createEditWindow() {
+	public void createEditWindow() {
 		// Create Window and set parameters
 		windowEditTeachingMaterial = new Window();
 		windowEditTeachingMaterial.center();
@@ -284,7 +285,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		formLayoutWindowContent.addComponent(horizontalLayoutWindowBar);
 		windowEditTeachingMaterial.setContent(formLayoutWindowContent);
 		
-		return windowEditTeachingMaterial;
+		windowEditTeachingMaterial.setCloseShortcut(KeyCode.ESCAPE, null);
 	}
 
 	/**
@@ -443,6 +444,7 @@ public class BookManagementView extends VerticalLayout implements View,
 				clearWindowFields();
 				windowEditTeachingMaterial.setCaption(WINDOW_NEW_TEACHING_MATERIAL);
 				UI.getCurrent().addWindow(windowEditTeachingMaterial);
+				textFieldTeachingMaterialName.focus();
 				for (Map.Entry<Integer, Category> category : categories.get().entrySet()) {
 					comboBoxCategory.addItem(category.getValue().getId());
 					comboBoxCategory.setItemCaption(category.getValue().getId(), category.getValue().getName());
@@ -464,7 +466,8 @@ public class BookManagementView extends VerticalLayout implements View,
 				} else {
 					editTeachingMaterial = true;
 					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
-					UI.getCurrent().addWindow(windowEditTeachingMaterial);				
+					UI.getCurrent().addWindow(windowEditTeachingMaterial);
+					textFieldTeachingMaterialName.focus();
 					bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
 					TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
 					textFieldTeachingMaterialName.setValue(teachingMaterial.getName());
