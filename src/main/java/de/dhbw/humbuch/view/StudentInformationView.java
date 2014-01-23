@@ -122,7 +122,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 		// Filter
 		filter = new TextField();
 		filter.setImmediate(true);
-		filter.setInputPrompt("Filter");
+		filter.setInputPrompt("Name, Vorname oder Klasse...");
+		filter.setWidth("50%");
 		filter.setTextChangeEventMode(TextChangeEventMode.EAGER);
 
 		head.addComponent(filter);
@@ -131,16 +132,18 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 		HorizontalLayout buttons = new HorizontalLayout();
 
-		showMaterials = new Button("Entliehene Materialien anzeigen...");
+		showMaterials = new Button("Materialien anzeigen");
 		showMaterials.setEnabled(false);
+		showMaterials.addStyleName("default");
 		buttons.addComponent(showMaterials);
+		buttons.setSpacing(true);
 
 		// Import button
 		upload = new Upload();
 		upload.setReceiver(receiver);
 		upload.setImmediate(true);
 		upload.addSucceededListener(receiver);
-		upload.setButtonCaption("Importieren");
+		upload.setButtonCaption("Import");
 		buttons.addComponent(upload);
 
 		head.addComponent(buttons);
@@ -155,7 +158,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 					Property<?> property) {
 				if (colId.equals(TABLE_BIRTHDAY)) {
 					SimpleDateFormat df = new SimpleDateFormat();
-					df.applyPattern("MM.dd.yyyy");
+					df.applyPattern("dd.MM.yyyy");
 					if (property.getValue() == null) {
 						return null;
 					} else {
@@ -166,12 +169,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 				return super.formatPropertyValue(rowId, colId, property);
 			}
 		};
-		studentsTable.addStyleName("borderless");
 		studentsTable.setSelectable(true);
 		studentsTable.setImmediate(true);
 		studentsTable.setSizeFull();
+		studentsTable.addStyleName("borderless");
 		studentsTable.setColumnCollapsingAllowed(true);
-		studentsTable.setColumnReorderingAllowed(true);
 
 		tableData = new BeanItemContainer<Student>(Student.class);
 		studentsTable.setContainerDataSource(tableData);
@@ -183,11 +185,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 		studentsTable.setColumnHeader(TABLE_GRADE, "Klasse");
 		studentsTable.setColumnHeader(TABLE_BIRTHDAY, "Geburtstag");
 		studentsTable.setColumnHeader(TABLE_GENDER, "Geschlecht");
-
-		/**
-		 * TODO: Sorting of the table seems not to work studentsTable.sort(new
-		 * Object[] { TABLE_NAME }, new boolean[] { true });
-		 */
 
 		this.addListener();
 	}
@@ -238,7 +235,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 						TABLE_LASTNAME, event.getText(), true, false);
 				SimpleStringFilter cond2 = new SimpleStringFilter(
 						TABLE_FIRSTNAME, event.getText(), true, false);
-				Filter filter = new Or(cond1, cond2);
+				SimpleStringFilter cond3 = new SimpleStringFilter(
+						TABLE_GRADE, event.getText(), true, false);
+				Filter filter = new Or(cond1, cond2, cond3);
 				tableData.removeAllContainerFilters();
 				tableData.addContainerFilter(filter);
 			}
@@ -276,6 +275,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 * Builds the layout by adding the components to the view
 	 */
 	private void buildLayout() {
+		setSizeFull();
 		addComponent(head);
 		addComponent(studentsTable);
 		setExpandRatio(studentsTable, 1);
@@ -286,27 +286,25 @@ public class StudentInformationView extends VerticalLayout implements View,
 		Student item = (Student) studentsTable.getValue();
 
 		if (item != null) {
+
 			List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();
-			// Only borrowed Materials that are received and not yet returned
+			;
+
 			for (BorrowedMaterial bm : item.getBorrowedList()) {
 				if (bm.isReceived() && bm.getReturnDate() == null) {
 					borrowedMaterials.add(bm);
 				}
 			}
+
 			if (!borrowedMaterials.isEmpty()) {
-				// Build PDF
 				PDFStudentList.Builder builder = new PDFStudentList.Builder()
 						.borrowedMaterialList(borrowedMaterials);
 				ByteArrayOutputStream boas = new PDFStudentList(builder)
 						.createByteArrayOutputStreamForPDF();
-				String fileNameIncludingHash = "Infoliste_"
-						+ item.getLastname() + "_" + item.getFirstname()
-						+ new Date().hashCode() + ".pdf";
 				StreamResource sr = new StreamResource(
-						new PDFHandler.PDFStreamSource(boas),
-						fileNameIncludingHash);
-				sr.setCacheTime(0);
-
+						new PDFHandler.PDFStreamSource(boas), "Infoliste_"
+								+ item.getLastname() + "_"
+								+ item.getFirstname() + ".pdf");
 				new PrintingComponent(sr, "Ausgeliehene Materialien von "
 						+ item.getLastname() + ", " + item.getFirstname());
 			} else {
@@ -362,11 +360,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public OutputStream receiveUpload(String filename, String MIMEType) {
-			if (!MIMEType.equals("text/csv") && !MIMEType.equals("application/vnd.ms-excel")) {
+			if (!MIMEType.equals("text/csv")) {
 				upload.interruptUpload();
 				interrupted = true;
 				eventBus.post(new MessageEvent("Import nicht möglich.",
-						"Die ausgewählte Datei ist keine CSV-Datei. " + MIMEType,
+						"Die ausgewählte Datei ist keine CSV-Datei.",
 						Type.ERROR));
 			}
 			reset();
