@@ -1,7 +1,8 @@
 @mixin humbuch-textfield {
         
         .v-textfield,
-        .v-filterselect {
+        .v-filterselect,
+        .v-textarea {
                 @include border-radius(3px);
                 border: 1px solid #c9c8c7;
                 border-top-color: #d8d7d6;
@@ -26,9 +27,12 @@
         }
         
         .v-textfield:focus,
-        .v-filterselect-focus {
+        .v-filterselect-focus,
+        .v-textarea:focus {
                 outline: none;
                 border-color: #56bcb2;
+                xborder-color: $main-color;
+                @include box-shadow(0 0 2px $main-color);
         }
         
         input.v-textfield-prompt,
