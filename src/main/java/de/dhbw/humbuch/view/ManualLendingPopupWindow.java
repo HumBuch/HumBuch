@@ -16,6 +16,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -31,6 +32,7 @@ import com.vaadin.ui.Window;
 
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import elemental.events.KeyboardEvent.KeyCode;
 
 
 public class ManualLendingPopupWindow extends Window {
@@ -41,16 +43,14 @@ public class ManualLendingPopupWindow extends Window {
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
 	private static final String SAVE = "Ausgewählte Materialien ausleihen";
-	private static final String CANCEL = "Manuelle Ausleihe abbrechen";
 	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
 
 	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutButtonBar;
+	private HorizontalLayout horizontalLayoutHeaderBar;
 	private TextField textFieldSearchBar;
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
-	private Button buttonCancel;
 	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
 	private HashMap<Object, HashMap<TeachingMaterial, PopupDateField>> idForMaterialsWithDates;
@@ -67,15 +67,14 @@ public class ManualLendingPopupWindow extends Window {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		horizontalLayoutButtonBar = new HorizontalLayout();
+		horizontalLayoutHeaderBar = new HorizontalLayout();
 		textFieldSearchBar = new TextField(SEARCH_MATERIALS);
 		tableTeachingMaterials = new Table();
 		buttonSave = new Button(SAVE);
-		buttonCancel = new Button(CANCEL);
 		idForMaterialsWithDates = new HashMap<Object, HashMap<TeachingMaterial, PopupDateField>>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
-		textFieldSearchBar.setWidth("50%");
+		textFieldSearchBar.focus();
 		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 		buttonSave.setEnabled(false);
 
@@ -83,21 +82,20 @@ public class ManualLendingPopupWindow extends Window {
 		containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
 
 		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
-		// dirty but 100% is not working
-//		tableTeachingMaterials.setWidth("99%");
-//		tableTeachingMaterials.setHeight("100%");
+		tableTeachingMaterials.setWidth("100%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
 		tableTeachingMaterials.setImmediate(true);
 		setTableListener();
 		updateTableContent();
 
-		horizontalLayoutButtonBar.setSpacing(true);
+		horizontalLayoutHeaderBar.setSpacing(true);
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 
-		setImmediate(true);
 		center();
+		setCloseShortcut(KeyCode.ESC, null);
+		setImmediate(true);
 		setModal(true);
 		setResizable(false);
 
@@ -105,14 +103,12 @@ public class ManualLendingPopupWindow extends Window {
 	}
 
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonCancel);
-		horizontalLayoutButtonBar.addComponent(buttonSave);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
+		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
+		horizontalLayoutHeaderBar.addComponent(buttonSave);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
 
-		verticalLayoutContent.addComponent(textFieldSearchBar);
+		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
 
 		setContent(verticalLayoutContent);
 	}
@@ -161,16 +157,6 @@ public class ManualLendingPopupWindow extends Window {
 	}
 
 	private void addListeners() {
-		buttonCancel.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = 3353625484974813579L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				closeMe();
-			}
-		});
-
 		buttonSave.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 4375804067002022079L;
@@ -192,6 +178,19 @@ public class ManualLendingPopupWindow extends Window {
 				containerTableTeachingMaterials.addContainerFilter(filter);
 			}
 		});
+
+		ShortcutListener enterListener = new ShortcutListener(SAVE, KeyCode.ENTER, null) {
+
+			private static final long serialVersionUID = 2771142217739715688L;
+
+			@Override
+			public void handleAction(Object sender, Object target) {
+				saveTeachingMaterialsForStudent();
+			}
+		};
+
+		textFieldSearchBar.addShortcutListener(enterListener);
+		tableTeachingMaterials.addShortcutListener(enterListener);
 	}
 
 	public void setTeachingMaterials(Collection<TeachingMaterial> teachingMaterials) {
