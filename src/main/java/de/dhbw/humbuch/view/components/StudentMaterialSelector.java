@@ -21,7 +21,6 @@ import com.vaadin.ui.VerticalLayout;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.view.LendingView;
 
 
 public class StudentMaterialSelector extends CustomComponent {
@@ -37,7 +36,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private TreeTable treeTableContent;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered;
-	private LendingView registeredObserver;
+	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
 	private HashMap<CheckBox, Object> allCheckBoxesWithId;
 	private String filterString;
 
@@ -314,109 +313,23 @@ public class StudentMaterialSelector extends CustomComponent {
 		return studentList;
 	}
 
-	public void registerAsObserver(LendingView lendingView) {
-		registeredObserver = lendingView;
+	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
+		if (registeredObservers == null) {
+			registeredObservers = new ArrayList<StudentMaterialSelectorObserver>();
+		}
+		else if (registeredObservers.contains(observer)) {
+			return;
+		}
+		registeredObservers.add(observer);
 	}
 
 	public void notifyObserver() {
-		if (registeredObserver == null) {
+		if (registeredObservers == null) {
 			return;
 		}
 
-		registeredObserver.update();
+		for (StudentMaterialSelectorObserver observer : registeredObservers) {
+			observer.update();
+		}
 	}
-
-	//	// Compare to the code of SimpleStringFilter. Just adapted one method to work with checkboxes
-	//	public static class SimpleCheckBoxFilter implements Filter {
-	//
-	//		private static final long serialVersionUID = -562636677610443920L;
-	//
-	//		private final Object propertyId;
-	//		private final String filterString;
-	//		private final boolean ignoreCase;
-	//		private final boolean onlyMatchPrefix;
-	//
-	//		public SimpleCheckBoxFilter(Object propertyId, String filterString, boolean ignoreCase, boolean onlyMatchPrefix) {
-	//			this.propertyId = propertyId;
-	//			this.filterString = filterString;
-	//			this.ignoreCase = ignoreCase;
-	//			this.onlyMatchPrefix = onlyMatchPrefix;
-	//		}
-	//
-	//		@Override
-	//		public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-	//			final Property<?> p = item.getItemProperty(propertyId);
-	//			if (p == null) {
-	//				return false;
-	//			}
-	//			Object propertyValue = p.getValue();
-	//			if (propertyValue == null || !(propertyValue instanceof CheckBox)) {
-	//				return false;
-	//			}
-	//			CheckBox checkBoxProperty = (CheckBox) propertyValue;
-	//			final String value = ignoreCase ? checkBoxProperty.getCaption()
-	//					.toLowerCase() : checkBoxProperty.getCaption();
-	//			if (onlyMatchPrefix) {
-	//				if (!value.startsWith(filterString)) {
-	//					return false;
-	//				}
-	//			}
-	//			else {
-	//				if (!value.contains(filterString)) {
-	//					return false;
-	//				}
-	//			}
-	//			return true;
-	//		}
-	//
-	//		@Override
-	//		public boolean appliesToProperty(Object propertyId) {
-	//			return this.propertyId.equals(propertyId);
-	//		}
-	//
-	//		@Override
-	//		public boolean equals(Object obj) {
-	//
-	//			// Only ones of the objects of the same class can be equal
-	//			if (!(obj instanceof SimpleStringFilter)) {
-	//				return false;
-	//			}
-	//			final SimpleStringFilter o = (SimpleStringFilter) obj;
-	//
-	//			// Checks the properties one by one
-	//			if (propertyId != o.getPropertyId() && o.getPropertyId() != null
-	//					&& !o.getPropertyId().equals(propertyId)) {
-	//				return false;
-	//			}
-	//			if (filterString != o.getFilterString() && o.getFilterString() != null
-	//					&& !o.getFilterString().equals(filterString)) {
-	//				return false;
-	//			}
-	//			if (ignoreCase != o.isIgnoreCase()) {
-	//				return false;
-	//			}
-	//			if (onlyMatchPrefix != o.isOnlyMatchPrefix()) {
-	//				return false;
-	//			}
-	//
-	//			return true;
-	//		}
-	//
-	//		public Object getPropertyId() {
-	//			return propertyId;
-	//		}
-	//
-	//		public String getFilterString() {
-	//			return filterString;
-	//		}
-	//
-	//		public boolean isIgnoreCase() {
-	//			return ignoreCase;
-	//		}
-	//
-	//		public boolean isOnlyMatchPrefix() {
-	//			return onlyMatchPrefix;
-	//		}
-	//
-	//	}
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,17 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import de.davherrmann.mvvm.BasicState;
@@ -34,22 +37,26 @@ import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
+import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
 
 
-public class ReturnView extends VerticalLayout implements View, ViewInformation {
+public class ReturnView extends VerticalLayout implements View, ViewInformation, StudentMaterialSelectorObserver {
 
 	private static final long serialVersionUID = -525078997965992622L;
 
 	private static final String TITLE = "Rückgabe";
-	private static final String SAVE_SELECTED_RETURNING = "Ausgewählte Bücher zurückgegeben";
-	private static final String STUDENT_LIST = "Schülerliste für Auswahl drucken";
+	private static final String SAVE_SELECTED_RETURNING = "Bücher zurückgegeben";
+	private static final String STUDENT_LIST = "Schülerliste drucken";
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
+	private static final String FILTER_STUDENT = "Schüler filtern";
 
-	private HorizontalLayout horizontalLayoutButtonBar;
+	private HorizontalLayout horizontalLayoutHeaderBar;
+	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
+	private TextField textFieldStudentFilter;
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private ReturnViewModel returnViewModel;
@@ -66,30 +73,42 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	}
 
 	private void init() {
-		horizontalLayoutButtonBar = new HorizontalLayout();
+		horizontalLayoutHeaderBar = new HorizontalLayout();
+		horizontalLayoutActions = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_RETURNING);
 		buttonStudentList = new Button(STUDENT_LIST);
+		textFieldStudentFilter = new TextField(FILTER_STUDENT);
 
-		buttonSaveSelectedData.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
-		buttonStudentList.setIcon(new ThemeResource("images/icons/16/icon_print_red.png"));
+		buttonSaveSelectedData.setEnabled(false);
+		buttonStudentList.setEnabled(false);
 
-		horizontalLayoutButtonBar.setSpacing(true);
-
-		setSpacing(true);
-		setMargin(true);
-
+		studentMaterialSelector.registerAsObserver(this);
+		
 		addListeners();
 	}
 
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonSaveSelectedData);
-		horizontalLayoutButtonBar.addComponent(buttonStudentList);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonStudentList, Alignment.MIDDLE_CENTER);
+		horizontalLayoutHeaderBar.setWidth("100%");
+		horizontalLayoutHeaderBar.setSpacing(true);
+		horizontalLayoutActions.setSpacing(true);
 
+		setSpacing(true);
+		setMargin(true);
+		
+		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
+		horizontalLayoutActions.addComponent(buttonStudentList);
+		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.BOTTOM_CENTER);
+		horizontalLayoutActions.setComponentAlignment(buttonStudentList, Alignment.BOTTOM_CENTER);
+
+		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
+		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
+		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.BOTTOM_RIGHT);
+		
+		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
-		addComponent(horizontalLayoutButtonBar);
+		
+		setExpandRatio(studentMaterialSelector, 1);
 	}
 
 	private void addListeners() {
@@ -129,6 +148,16 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 			}
 
 		});
+
+		textFieldStudentFilter.addTextChangeListener(new TextChangeListener() {
+
+			private static final long serialVersionUID = -8656489769177447342L;
+
+			@Override
+			public void textChange(TextChangeEvent event) {
+				studentMaterialSelector.setFilterString(event.getText());
+			}
+		});
 	}
 
 	private void doStudentListPrinting() {
@@ -142,10 +171,10 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 				builders.add(builder);
 			}
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
-			if(baos != null){
+			if (baos != null) {
 				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
 				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
-	
+
 				new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
 			}
 		}
@@ -196,5 +225,25 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation 
 	@Override
 	public String getTitle() {
 		return TITLE;
+	}
+
+	@Override
+	public void update() {
+		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+
+		if (materials.size() >= 1) {
+			buttonSaveSelectedData.setEnabled(true);
+		}
+		else {
+			buttonSaveSelectedData.setEnabled(false);
+		}
+
+		if (students.size() >= 1) {
+			buttonStudentList.setEnabled(true);
+		}
+		else {
+			buttonStudentList.setEnabled(false);
+		}
 	}
 }

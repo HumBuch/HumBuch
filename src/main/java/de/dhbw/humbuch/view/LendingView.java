@@ -46,6 +46,7 @@ import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
+import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
@@ -54,7 +55,7 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 
-public class LendingView extends VerticalLayout implements View, ViewInformation {
+public class LendingView extends VerticalLayout implements View, ViewInformation, StudentMaterialSelectorObserver {
 
 	private static final long serialVersionUID = -6400075534193735694L;
 
@@ -312,6 +313,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return informationForPdf;
 	}
 
+	@Override
 	public void update() {
 		updateStudentsWithUnreceivedBorrowedMaterials();
 
