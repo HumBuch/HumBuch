@@ -183,8 +183,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private String producer;
 		private double price;
 		private String comment;
-		private int fromGrade;
-		private int toGrade;
+		private Integer fromGrade;
+		private Integer toGrade;
 		private Term fromTerm;
 		private Term toTerm;
 		private Date validUntil;
@@ -218,12 +218,12 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder fromGrade(int fromGrade) {
+		public Builder fromGrade(Integer fromGrade) {
 			this.fromGrade = fromGrade;
 			return this;
 		}
 		
-		public Builder toGrade(int toGrade) {
+		public Builder toGrade(Integer toGrade) {
 			this.toGrade = toGrade;
 			return this;
 		}
