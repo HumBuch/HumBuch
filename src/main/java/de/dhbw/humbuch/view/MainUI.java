@@ -101,7 +101,7 @@ public class MainUI extends ScopedUI {
 
 	@Inject
 	public MainUI(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel, EventBus eventBus) {
+			LoginViewModel loginViewModel, EventBus eventBus, MVVMConfig mvvmConfig) {
 		this.loginViewModel = loginViewModel;
 		eventBus.register(this);
 		bindViewModel(viewModelComposer, loginViewModel);
