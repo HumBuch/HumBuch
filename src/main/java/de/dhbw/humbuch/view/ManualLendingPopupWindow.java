@@ -18,7 +18,6 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -45,7 +44,7 @@ public class ManualLendingPopupWindow extends Window {
 	private static final Logger LOG = LoggerFactory.getLogger(ManualLendingPopupWindow.class);
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
-	private static final String SAVE = "Ausgewählte Materialien ausleihen";
+	private static final String SAVE = "Materialien ausleihen";
 	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
 	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "";
@@ -82,7 +81,6 @@ public class ManualLendingPopupWindow extends Window {
 		containerTableTeachingMaterials = new IndexedContainer();
 
 		textFieldSearchBar.focus();
-		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
 		buttonSave.setEnabled(false);
 		buttonSave.addStyleName("default");
 
@@ -130,7 +128,7 @@ public class ManualLendingPopupWindow extends Window {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, 1);
-		
+
 		final Date comingMonth = calendar.getTime();
 
 		ValueChangeListener dateValidator = new ValueChangeListener() {
@@ -243,7 +241,6 @@ public class ManualLendingPopupWindow extends Window {
 				// this loop runs only once
 				for (TeachingMaterial material : tableRow.keySet()) {
 					PopupDateField dateField = tableRow.get(material);
-					System.out.println("added date: " + dateField.getValue());
 					teachingMaterialsWithDates.put(material, dateField.getValue());
 				}
 			}
