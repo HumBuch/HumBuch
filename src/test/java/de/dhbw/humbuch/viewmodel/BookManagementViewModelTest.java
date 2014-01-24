@@ -40,6 +40,7 @@ public class BookManagementViewModelTest {
 
 	@Test
 	public void testUpdateExistingTeachingMaterial() {
+		daoTeachingMaterial.insert(new TeachingMaterial());
 		TeachingMaterial teachingMaterial = daoTeachingMaterial.find(1);
 		assertNotNull(teachingMaterial);
 		String dateString = new Date().toString();
