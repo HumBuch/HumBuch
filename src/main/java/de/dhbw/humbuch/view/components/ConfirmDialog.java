@@ -65,7 +65,6 @@ public class ConfirmDialog extends Window {
 		
 		// Create content
         VerticalLayout content = new VerticalLayout();
-        content.setSizeFull();
         content.setSpacing(true);
         content.setMargin(true);
         
@@ -93,6 +92,7 @@ public class ConfirmDialog extends Window {
         
         // Confirm button
         final Button confirmBtn = new Button(confirmCaption);
+        confirmBtn.addStyleName("default");
         buttons.addComponent(confirmBtn);
         
 
@@ -118,8 +118,6 @@ public class ConfirmDialog extends Window {
 		cancelBtn.addClickListener(cl);
 		
 		setContent(content);
-		setWidth("25em");
-		setHeight("15em");
 		setResizable(false);
 		setModal(true);
 	}
