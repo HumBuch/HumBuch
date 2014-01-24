@@ -48,9 +48,8 @@ public final class PDFClassList extends PDFHandler {
 		Map<TeachingMaterial, Integer> map = this.gradesMap.get(this.grade);
 
 		for (TeachingMaterial teachingMaterial : map.keySet()) {
-			String[] contentArray = { teachingMaterial.getName(),
-										"" + map.get(teachingMaterial) };
-			PDFHandler.fillTableWithContentWithoutSpace(table, true, contentArray, true, 5f);
+			String[] contentArray = { teachingMaterial.getName(), "" + map.get(teachingMaterial) };
+			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
 		}
 
 		try {
@@ -71,11 +70,11 @@ public final class PDFClassList extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
 
 		String[] contentArray = { "Klasse: ", "" + this.grade.toString() };
-
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
-
+		new PDFHandler.TableBuilder(table, contentArray).withBorder(false).isCenterAligned(false).fillTable();
+		
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
