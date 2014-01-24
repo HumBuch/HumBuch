@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
@@ -29,6 +30,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -76,6 +78,8 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TABLE_PRODUCER = "producer";
 	private static final String TABLE_IDENTNR = "identifyingNumber";
 	private static final String TABLE_COMMENT = "comment";
+	private static final String TABLE_VALIDFROM = "validFrom";
+	private static final String TABLE_VALIDUNTIL = "validUntil";
 
 	private EventBus eventBus;
 	private BookManagementViewModel bookManagementViewModel;
@@ -118,6 +122,8 @@ public class BookManagementView extends VerticalLayout implements View,
 	private ComboBox cbFromTerm = new ComboBox();
 	private ComboBox cbToTerm = new ComboBox();
 	private ComboBox cbCategory = new ComboBox("Kategorie");
+	private DateField dfValidFrom = new DateField("Gültig von");
+	private DateField dfValidUntil = new DateField("Gültig bis");
 	private TextArea textAreaComment = new TextArea("Kommentar");
 	private Button btnWindowSave = new Button("Speichern");
 	private Button btnWindowCancel = new Button("Abbrechen");
@@ -171,6 +177,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		btnEdit = new Button("Bearbeiten");
 		btnEdit.setEnabled(false);
 		btnEdit.addStyleName("default");
+		btnEdit.setClickShortcut(KeyCode.ENTER);
 		buttons.addComponent(btnEdit);
 
 		head.addComponent(buttons);
@@ -189,7 +196,7 @@ public class BookManagementView extends VerticalLayout implements View,
 
 		materialsTable.setVisibleColumns(new Object[] { TABLE_NAME,
 				TABLE_PROFILE, TABLE_FROMGRADE, TABLE_TOGRADE, TABLE_PRODUCER,
-				TABLE_IDENTNR, TABLE_CATEGORY, TABLE_COMMENT });
+				TABLE_IDENTNR, TABLE_CATEGORY });
 		materialsTable.setColumnHeader(TABLE_CATEGORY, "Kategorie");
 		materialsTable.setColumnHeader(TABLE_NAME, "Titel");
 		materialsTable.setColumnHeader(TABLE_PROFILE, "Profil");
@@ -198,6 +205,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		materialsTable.setColumnHeader(TABLE_PRODUCER, "Hersteller/Verlag");
 		materialsTable.setColumnHeader(TABLE_IDENTNR, "Nummer/ISBN");
 		materialsTable.setColumnHeader(TABLE_COMMENT, "Kommentar");
+		materialsTable.setColumnHeader(TABLE_VALIDFROM, "Gültig von");
+		materialsTable.setColumnHeader(TABLE_VALIDUNTIL, "Gültig bis");
 		materialsTable.addGeneratedColumn(TABLE_PROFILE, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId,
@@ -263,6 +272,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		txtTmName.setRequired(true);
 		cbCategory.setRequired(true);
 		cbProfiles.setRequired(true);
+		dfValidFrom.setRequired(true);
+		dfValidUntil.setDescription("Leer für unbestimmtes Gültigkeitsdatum");
 
 		// Input prompts
 		txtIdentNr.setInputPrompt("ISBN");
@@ -290,6 +301,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		binder.bind(cbFromTerm, TABLE_FROMTERM);
 		binder.bind(txtToGrade, TABLE_TOGRADE);
 		binder.bind(cbToTerm, TABLE_TOTERM);
+		binder.bind(dfValidFrom, TABLE_VALIDFROM);
+		binder.bind(dfValidUntil, TABLE_VALIDUNTIL);
 		binder.bind(textAreaComment, TABLE_COMMENT);
 
 		// Add all components
@@ -300,6 +313,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		windowContent.addComponent(cbProfiles);
 		windowContent.addComponent(new HorizontalLayout() {
 			{
+				addStyleName("required");
 				setSpacing(true);
 				setCaption("Von Klassenstufe");
 				txtFromGrade.setWidth("50px");
@@ -310,6 +324,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		});
 		windowContent.addComponent(new HorizontalLayout() {
 			{
+				addStyleName("required");
 				setSpacing(true);
 				setCaption("Bis Klassenstufe");
 				txtToGrade.setWidth("50px");
@@ -317,6 +332,8 @@ public class BookManagementView extends VerticalLayout implements View,
 				addComponent(cbToTerm);
 			}
 		});
+		windowContent.addComponent(dfValidFrom);
+		windowContent.addComponent(dfValidUntil);
 		windowContent.addComponent(textAreaComment);
 
 		windowButtons.addComponent(btnWindowCancel);
@@ -417,9 +434,10 @@ public class BookManagementView extends VerticalLayout implements View,
 						bookManagementViewModel.doUpdateTeachingMaterial(binder
 								.getItemDataSource().getBean());
 						windowEditTeachingMaterial.close();
-						eventBus.post(new MessageEvent("Lehrmittel gespeichert."));
+						eventBus.post(new MessageEvent(
+								"Lehrmittel gespeichert."));
 					} catch (CommitException e) {
-						eventBus.post(new MessageEvent(e.getMessage()));
+						eventBus.post(new MessageEvent(e.getLocalizedMessage()));
 					}
 
 				}
@@ -470,18 +488,18 @@ public class BookManagementView extends VerticalLayout implements View,
 				tableData.addContainerFilter(filter);
 			}
 		});
-		
+
 		/**
 		 * Allows to dismiss the filter by hitting ESCAPE
 		 */
-        filter.addShortcutListener(new ShortcutListener("Clear",
-                KeyCode.ESCAPE, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                filter.setValue("");
-                tableData.removeAllContainerFilters();
-            }
-        });
+		filter.addShortcutListener(new ShortcutListener("Clear",
+				KeyCode.ESCAPE, null) {
+			@Override
+			public void handleAction(Object sender, Object target) {
+				filter.setValue("");
+				tableData.removeAllContainerFilters();
+			}
+		});
 
 		/**
 		 * Fills the category combobox
@@ -507,29 +525,47 @@ public class BookManagementView extends VerticalLayout implements View,
 		// Validate if a field is empty
 		if (txtTmName.getValue() == null || txtIdentNr.getValue() == null
 				|| cbCategory.getValue() == null
+				|| dfValidFrom.getValue() == null
+				|| txtFromGrade.getValue() == null
+				|| txtToGrade.getValue() == null
 				|| cbProfiles.getValue() == null) {
-			eventBus.post(new MessageEvent("Bitte füllen Sie alle Pflicht-Felder aus."));
+
+			eventBus.post(new MessageEvent(
+					"Bitte füllen Sie alle Pflicht-Felder aus."));
 			return false;
-		}
-		// No field is empty, validate now for right values and lengths
-		else {
+
+		} else {
+
+			// No field is empty, validate now for right values and lengths
 			if (txtTmName.getValue().length() < 2) {
-				eventBus.post(new MessageEvent("Der Titel muss mindestens 2 Zeichen enthalten."));
+				eventBus.post(new MessageEvent(
+						"Der Titel muss mindestens 2 Zeichen enthalten."));
 				return false;
 			}
 			if (txtFromGrade.getValue().length() > 2
 					|| txtToGrade.getValue().length() > 2) {
-				eventBus.post(new MessageEvent("Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
+				eventBus.post(new MessageEvent(
+						"Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
 				return false;
 			}
 			try {
 				Integer.parseInt(txtToGrade.getValue());
 				Integer.parseInt(txtFromGrade.getValue());
 			} catch (NumberFormatException e) {
-				eventBus.post(new MessageEvent("Die Klassenstufen dürfen nur Zahlen enthalten"));
+				eventBus.post(new MessageEvent(
+						"Die Klassenstufen dürfen nur Zahlen enthalten"));
+				return false;
+			}
+			try {
+				dfValidFrom.validate();
+				dfValidUntil.validate();
+			} catch (InvalidValueException e) {
+				eventBus.post(new MessageEvent(
+						"Mindestens ein Datumsfeld ist nicht korrekt."));
 				return false;
 			}
 			return true;
+
 		}
 	}
 
