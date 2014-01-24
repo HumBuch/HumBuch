@@ -191,7 +191,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				if (value == null) {
 					return;
 				}
-				update();
+				updateStudentsWithUnreceivedBorrowedMaterials();
 			}
 		});
 
@@ -313,7 +313,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	public void update() {
-		updateStudentsWithUnreceivedBorrowedMaterials();
+//		updateStudentsWithUnreceivedBorrowedMaterials();
 
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
@@ -364,8 +364,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	public void saveTeachingMaterialsForStudents(HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
 		// the outer loop runs only once
 		for (Student student : saveStructure.keySet()) {
+			System.out.println("manual lending for: " + student.getFirstname() + " " + student.getLastname());
 			HashMap<TeachingMaterial, Date> materialsWithDates = saveStructure.get(student);
 			for (TeachingMaterial material : materialsWithDates.keySet()) {
+				System.out.println("mat: " + material.getName());
 				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
 			}
 		}
