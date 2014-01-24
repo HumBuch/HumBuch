@@ -55,6 +55,7 @@ public class SelectStudentPopupWindow extends Window {
 
 		buttonContinue.setIcon(new ThemeResource("images/icons/16/icon_checked_red.png"));
 		buttonContinue.setEnabled(false);
+		buttonContinue.addStyleName("default");
 
 		comboBoxStudents.setWidth("100%");
 		comboBoxStudents.setImmediate(true);
