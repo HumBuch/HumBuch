@@ -17,7 +17,6 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -83,6 +82,7 @@ public class ManualLendingPopupWindow extends Window {
 		textFieldSearchBar.focus();
 		buttonSave.setEnabled(false);
 		buttonSave.addStyleName("default");
+		buttonSave.setClickShortcut(KeyCode.ENTER, null);
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
 		containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
@@ -205,19 +205,6 @@ public class ManualLendingPopupWindow extends Window {
 				containerTableTeachingMaterials.addContainerFilter(filter);
 			}
 		});
-
-		ShortcutListener enterListener = new ShortcutListener(SAVE, KeyCode.ENTER, null) {
-
-			private static final long serialVersionUID = 2771142217739715688L;
-
-			@Override
-			public void handleAction(Object sender, Object target) {
-				saveTeachingMaterialsForStudent();
-			}
-		};
-
-		textFieldSearchBar.addShortcutListener(enterListener);
-		tableTeachingMaterials.addShortcutListener(enterListener);
 	}
 
 	public void setTeachingMaterials(Collection<TeachingMaterial> teachingMaterials) {

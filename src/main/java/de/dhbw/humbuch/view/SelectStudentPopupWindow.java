@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -54,6 +53,7 @@ public class SelectStudentPopupWindow extends Window {
 
 		buttonContinue.setEnabled(false);
 		buttonContinue.addStyleName("default");
+		buttonContinue.setClickShortcut(KeyCode.ENTER, null);
 
 		comboBoxStudents.setWidth("100%");
 		comboBoxStudents.setImmediate(true);
@@ -98,16 +98,6 @@ public class SelectStudentPopupWindow extends Window {
 				}
 			}
 
-		});
-
-		comboBoxStudents.addShortcutListener(new ShortcutListener(CONTINUE, KeyCode.ENTER, null) {
-
-			private static final long serialVersionUID = -5485187837729994316L;
-
-			@Override
-			public void handleAction(Object sender, Object target) {
-				showManualLending();
-			}
 		});
 
 		buttonCancel.addClickListener(new ClickListener() {
