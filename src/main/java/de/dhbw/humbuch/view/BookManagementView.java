@@ -10,12 +10,18 @@ import java.util.Set;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
@@ -24,9 +30,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -47,7 +55,6 @@ import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel.Categories;
-import de.dhbw.humbuch.viewmodel.BookManagementViewModel.TeachingMaterialInfo;
 import de.dhbw.humbuch.viewmodel.BookManagementViewModel.TeachingMaterials;
 
 /**
@@ -59,65 +66,44 @@ public class BookManagementView extends VerticalLayout implements View,
 		ViewInformation {
 	private static final long serialVersionUID = -5063268947544706757L;
 
-	private BookManagementViewModel bookManagementViewModel;
-	private boolean editTeachingMaterial = false;
-	private String teachingMaterialProfile = "";
-	
-	/**
-	 * Constants
-	 * 
-	 */
 	private static final String TITLE = "Lehrmittelverwaltung";
-	private static final String NEW_TEACHING_MATERIAL = "Neues Lehrmittel";
-	private static final String EDIT_TEACHING_MATERIAL = "Lehrmittel bearbeiten";
-	private static final String DELETE_TEACHING_MATERIAL = "Lehrmittel löschen";
-	private static final String SEARCH_TEACHING_MATERIAL = "Lehrmittel suchen";
-	private static final String TABLE_TITLE = "Titel";
-	private static final String TABLE_PRODUCER = "Hersteller";
-	private static final String TABLE_IDENTIFYER = "Eindeutige Nummer";
-	private static final String TABLE_CATEGORY = "Kategorie";
-	private static final String TABLE_CLASS_FROM = "von Klasse";
-	private static final String TABLE_CLASS_TO = "bis Klasse";
-	private static final String TABLE_TERM_FROM = "von Halbjahr";
-	private static final Object TABLE_TERM_TO = "bis Halbjahr";
-	private static final String TABLE_COMMENT = "Kommentar";
-	private static final String TABLE_PROFILE = "Profil";
-	private static final String WINDOW_NEW_TEACHING_MATERIAL = "Neues Lehrmittel eintragen";
-	private static final String WINDOW_EDIT_TEACHING_MATERIAL = "Lehrmittel editieren";
-	private static final String BUTTON_SAVE = "Speichern";
-	private static final String BUTTON_CANCEL = "Abbrechen";
-	private static final String TEXTFIELD_NAME = "Titel";
-	private static final String TEXTFIELD_IDENTIFYER = "Eindeutige Nummer";
-	private static final String TEXTFIELD_PRODUCER = "Hersteller/Verlag";
-	private static final String TEXTFIELD_FROMGRADE = "von Klassenstufe";
-	private static final String TEXTFIELD_TOGRADE = "bis Klassenstufe";
-	private static final String TEXTFIELD_COMMENT = "Kommentar";
-	private static final String TEXTFIELD_SEARCH_PLACEHOLDER = "Lehrmittel oder Hersteller";
-	private static final String CATEGORY = "Kategorie";
+
+	private static final String TABLE_CATEGORY = "category";
+	private static final String TABLE_NAME = "name";
+	private static final String TABLE_PROFILE = "profile";
+	private static final String TABLE_FROMGRADE = "fromGrade";
+	private static final String TABLE_FROMTERM = "fromTerm";
+	private static final String TABLE_TOGRADE = "toGrade";
+	private static final String TABLE_TOTERM = "toTerm";
+	private static final String TABLE_PRODUCER = "producer";
+	private static final String TABLE_IDENTNR = "identifyingNumber";
+	private static final String TABLE_COMMENT = "comment";
+	private static final String TABLE_VALIDFROM = "validFrom";
+	private static final String TABLE_VALIDUNTIL = "validUntil";
+
+	private EventBus eventBus;
+	private BookManagementViewModel bookManagementViewModel;
 
 	/**
 	 * Layout components
-	 * 
 	 */
-	private HorizontalLayout horizontalLayoutButtonBar;
+	private HorizontalLayout head;
+	private TextField filter;
 
-	private TextField textFieldSearchBar = new TextField(SEARCH_TEACHING_MATERIAL);
-	private Table tableTeachingMaterials;
+	private Button btnEdit;
+	private Button btnNew;
+	private Button btnDelete;
 
-	private Button buttonEditTeachingMaterial = new Button(EDIT_TEACHING_MATERIAL);
-	private Button buttonNewTeachingMaterial = new Button(NEW_TEACHING_MATERIAL);
-	private Button buttonDeleteTeachingMaterial = new Button(DELETE_TEACHING_MATERIAL);
-
+	private Table materialsTable;
+	private BeanItemContainer<TeachingMaterial> tableData;
+	private BeanFieldGroup<TeachingMaterial> binder = new BeanFieldGroup<TeachingMaterial>(
+			TeachingMaterial.class);
 	@BindState(TeachingMaterials.class)
-	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
-	
-	@BindState(TeachingMaterialInfo.class)
-	public final State<TeachingMaterial> teachingMaterialInfo = new BasicState<>(TeachingMaterial.class);
-	
+	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
+			Collection.class);
 	@BindState(Categories.class)
-	public final State<Map<Integer, Category>> categories = new BasicState<>(Map.class);
-
-	private IndexedContainer containerTable;
+	public final State<Collection<Category>> categories = new BasicState<>(
+			Collection.class);
 
 	/**
 	 * All popup-window components and the corresponding binded states. The
@@ -125,30 +111,23 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * material is the same. Only the caption will be set differently
 	 */
 	private Window windowEditTeachingMaterial;
-	private FormLayout formLayoutWindowContent;
-	private HorizontalLayout horizontalLayoutWindowBar;
-	private TextField textFieldTeachingMaterialName = new TextField(TEXTFIELD_NAME);
-	private TextField textFieldTeachingMaterialIdentifyer = new TextField(TEXTFIELD_IDENTIFYER);
-	private TextField textFieldProducer = new TextField(TEXTFIELD_PRODUCER);
-	private TextField textFieldFromGrade = new TextField();
-	private TextField textFieldToGrade = new TextField();
-	private ComboBox comboBoxProfiles = new ComboBox(TABLE_PROFILE);
-	private ComboBox comboBoxFromTerm = new ComboBox();
-	private ComboBox comboBoxToTerm = new ComboBox();
-	private ComboBox comboBoxCategory = new ComboBox(CATEGORY);
-	private TextArea textAreaComment = new TextArea(TEXTFIELD_COMMENT);
-	private Button buttonWindowSave = new Button(BUTTON_SAVE);
-	private Button buttonWindowCancel = new Button(BUTTON_CANCEL);
+	private FormLayout windowContent;
+	private HorizontalLayout windowButtons;
+	private TextField txtTmName = new TextField("Titel");
+	private TextField txtIdentNr = new TextField("Nummer/ISBN");
+	private TextField txtProducer = new TextField("Hersteller/Verlag");
+	private TextField txtFromGrade = new TextField();
+	private TextField txtToGrade = new TextField();
+	private ComboBox cbProfiles = new ComboBox("Profil");
+	private ComboBox cbFromTerm = new ComboBox();
+	private ComboBox cbToTerm = new ComboBox();
+	private ComboBox cbCategory = new ComboBox("Kategorie");
+	private DateField dfValidFrom = new DateField("Gültig von");
+	private DateField dfValidUntil = new DateField("Gültig bis");
+	private TextArea textAreaComment = new TextArea("Kommentar");
+	private Button btnWindowSave = new Button("Speichern");
+	private Button btnWindowCancel = new Button("Abbrechen");
 
-	private EventBus eventBus;
-
-	/**
-	 * 
-	 * @param viewModelComposer
-	 *            Is injected automatically by Guice
-	 * @param bookManagementViewModel
-	 *            Is injected automatically by Guice
-	 */
 	@Inject
 	public BookManagementView(ViewModelComposer viewModelComposer,
 			BookManagementViewModel bookManagementViewModel, EventBus eventBus) {
@@ -158,59 +137,103 @@ public class BookManagementView extends VerticalLayout implements View,
 		buildLayout();
 		bindViewModel(viewModelComposer, bookManagementViewModel);
 	}
-	
+
 	/**
 	 * Initializes the components and sets attributes.
 	 * 
 	 */
+	@SuppressWarnings("serial")
 	private void init() {
-		horizontalLayoutButtonBar = new HorizontalLayout();
 
-		setMargin(true);
-		setSpacing(true);
+		head = new HorizontalLayout();
+		head.setWidth("100%");
+		head.setSpacing(true);
 
-		textFieldSearchBar.setImmediate(true);
-		textFieldSearchBar.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		
-		comboBoxFromTerm.addItem(Term.FIRST);
-		comboBoxFromTerm.addItem(Term.SECOND);
-		
-		comboBoxToTerm.addItem(Term.FIRST);
-		comboBoxToTerm.addItem(Term.SECOND);
-		
-		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
-		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
-			comboBoxProfiles.addItem(profile.getValue());
-			comboBoxProfiles.setItemCaption(profile.getValue(),	profile.getKey());
-		}
+		// Filter
+		filter = new TextField();
+		filter.setImmediate(true);
+		filter.setInputPrompt("Lehrmittel suchen...");
+		filter.setWidth("50%");
+		filter.setTextChangeEventMode(TextChangeEventMode.EAGER);
 
-		tableTeachingMaterials = new Table();
-		tableTeachingMaterials.setSelectable(true);
-		tableTeachingMaterials.setImmediate(true);
-		tableTeachingMaterials.setWidth("100%");
-		tableTeachingMaterials.setColumnCollapsingAllowed(true);
+		head.addComponent(filter);
+		head.setExpandRatio(filter, 1);
+		head.setComponentAlignment(filter, Alignment.MIDDLE_LEFT);
 
-		containerTable = new IndexedContainer();
-		containerTable.addContainerProperty(TABLE_TITLE, String.class, null);
-		containerTable.addContainerProperty(TABLE_PRODUCER, String.class, null);
-		containerTable.addContainerProperty(TABLE_IDENTIFYER, String.class,	null);
-		containerTable.addContainerProperty(TABLE_PROFILE, String.class, null);
-		containerTable.addContainerProperty(TABLE_CLASS_FROM, Integer.class, null);
-		containerTable.addContainerProperty(TABLE_TERM_FROM, Term.class, null);
-		containerTable.addContainerProperty(TABLE_CLASS_TO, Integer.class, null);
-		containerTable.addContainerProperty(TABLE_TERM_TO, Term.class, Term.SECOND);
-		containerTable.addContainerProperty(TABLE_CATEGORY, Category.class, null);
-		containerTable.addContainerProperty(TABLE_COMMENT, String.class, null);
-		tableTeachingMaterials.setContainerDataSource(containerTable);
+		// Buttons
+		HorizontalLayout buttons = new HorizontalLayout();
+		buttons.setSpacing(true);
+
+		// Add
+		btnNew = new Button("Hinzufügen");
+		buttons.addComponent(btnNew);
+
+		// Delte
+		btnDelete = new Button("Löschen");
+		btnDelete.setEnabled(false);
+		buttons.addComponent(btnDelete);
+
+		// Edit
+		btnEdit = new Button("Bearbeiten");
+		btnEdit.setEnabled(false);
+		btnEdit.addStyleName("default");
+		btnEdit.setClickShortcut(KeyCode.ENTER);
+		buttons.addComponent(btnEdit);
+
+		head.addComponent(buttons);
+		head.setComponentAlignment(buttons, Alignment.MIDDLE_RIGHT);
+
+		// Instantiate table
+		materialsTable = new Table();
+		materialsTable.setSelectable(true);
+		materialsTable.setImmediate(true);
+		materialsTable.setSizeFull();
+		materialsTable.setColumnCollapsingAllowed(true);
+
+		tableData = new BeanItemContainer<TeachingMaterial>(
+				TeachingMaterial.class);
+		materialsTable.setContainerDataSource(tableData);
+
+		materialsTable.setVisibleColumns(new Object[] { TABLE_NAME,
+				TABLE_PROFILE, TABLE_FROMGRADE, TABLE_TOGRADE, TABLE_PRODUCER,
+				TABLE_IDENTNR, TABLE_CATEGORY });
+		materialsTable.setColumnHeader(TABLE_CATEGORY, "Kategorie");
+		materialsTable.setColumnHeader(TABLE_NAME, "Titel");
+		materialsTable.setColumnHeader(TABLE_PROFILE, "Profil");
+		materialsTable.setColumnHeader(TABLE_FROMGRADE, "Von Klasse");
+		materialsTable.setColumnHeader(TABLE_TOGRADE, "Bis Klasse");
+		materialsTable.setColumnHeader(TABLE_PRODUCER, "Hersteller/Verlag");
+		materialsTable.setColumnHeader(TABLE_IDENTNR, "Nummer/ISBN");
+		materialsTable.setColumnHeader(TABLE_COMMENT, "Kommentar");
+		materialsTable.setColumnHeader(TABLE_VALIDFROM, "Gültig von");
+		materialsTable.setColumnHeader(TABLE_VALIDUNTIL, "Gültig bis");
+		materialsTable.addGeneratedColumn(TABLE_PROFILE, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId,
+					Object columnId) {
+				TeachingMaterial item = (TeachingMaterial) itemId;
+				String profile = "";
+				for (Entry<String, Set<Subject>> entry : Profile
+						.getProfileMap().entrySet()) {
+					if (item.getProfile().equals(entry.getValue())) {
+						profile = entry.getKey().toString();
+						break;
+					}
+				}
+				return profile;
+			}
+		});
+
+		binder.setBuffered(true);
 
 		this.createEditWindow();
 		this.addListener();
 	}
-	
+
 	/**
 	 * Creates the window for editing and creating teaching materials
-	 * @return
-	 * 		The created Window
+	 * 
+	 * @return The created Window
 	 */
 	@SuppressWarnings("serial")
 	public void createEditWindow() {
@@ -219,71 +242,106 @@ public class BookManagementView extends VerticalLayout implements View,
 		windowEditTeachingMaterial.center();
 		windowEditTeachingMaterial.setModal(true);
 		windowEditTeachingMaterial.setResizable(false);
-		formLayoutWindowContent = new FormLayout();
-		formLayoutWindowContent.setMargin(true);
-		horizontalLayoutWindowBar = new HorizontalLayout();
-		horizontalLayoutWindowBar.setSpacing(true);
-		buttonWindowSave.addStyleName("default");
-		
-		// Set Form options
-		comboBoxCategory.setNullSelectionAllowed(false);
-		comboBoxProfiles.setNullSelectionAllowed(false);
-		comboBoxFromTerm.setNullSelectionAllowed(false);
-		comboBoxToTerm.setNullSelectionAllowed(false);
-		textFieldTeachingMaterialIdentifyer.setRequired(true);
-		textFieldTeachingMaterialName.setRequired(true);
-		textFieldProducer.setRequired(true);
-		comboBoxCategory.setRequired(true);
-		comboBoxProfiles.setRequired(true);
-		
-		// Input prompts
-		textFieldTeachingMaterialIdentifyer.setInputPrompt("ISBN");
-		textFieldTeachingMaterialName.setInputPrompt("Titel oder Name");
-		textFieldProducer.setInputPrompt("z.B. Klett");
-		textFieldFromGrade.setInputPrompt("z.B. 5");
-		textFieldToGrade.setInputPrompt("z.B. 7");
-		textAreaComment.setInputPrompt("Zusätzliche Informationen");
-		
-		// NullRepresentation
-		textFieldTeachingMaterialIdentifyer.setNullRepresentation("");
-		textFieldTeachingMaterialName.setNullRepresentation("");
-		textFieldProducer.setNullRepresentation("");
-		textFieldFromGrade.setNullRepresentation("");
-		textFieldToGrade.setNullRepresentation("");
-		textAreaComment.setNullRepresentation("");
-		
-		// Add all components
-		formLayoutWindowContent.addComponent(textFieldTeachingMaterialName);
-		formLayoutWindowContent.addComponent(textFieldTeachingMaterialIdentifyer);
-		formLayoutWindowContent.addComponent(comboBoxCategory);
-		formLayoutWindowContent.addComponent(textFieldProducer);
-		formLayoutWindowContent.addComponent(comboBoxProfiles);
-		formLayoutWindowContent.addComponent(new HorizontalLayout() {
-			{ 
-				setSpacing(true);
-				setCaption(TEXTFIELD_FROMGRADE);
-				textFieldFromGrade.setWidth("50px");
-				comboBoxFromTerm.setWidth(null);
-				addComponent(textFieldFromGrade);
-				addComponent(comboBoxFromTerm);
-			}
-		});
-		formLayoutWindowContent.addComponent(new HorizontalLayout() {
-			{ 
-				setSpacing(true);
-				setCaption(TEXTFIELD_TOGRADE);
-				textFieldToGrade.setWidth("50px");
-				addComponent(textFieldToGrade);
-				addComponent(comboBoxToTerm);
-			}
-		});
-		formLayoutWindowContent.addComponent(textAreaComment);
 
-		horizontalLayoutWindowBar.addComponent(buttonWindowCancel);
-		horizontalLayoutWindowBar.addComponent(buttonWindowSave);
-		formLayoutWindowContent.addComponent(horizontalLayoutWindowBar);
-		windowEditTeachingMaterial.setContent(formLayoutWindowContent);
-		
+		windowContent = new FormLayout();
+		windowContent.setMargin(true);
+		windowButtons = new HorizontalLayout();
+		windowButtons.setSpacing(true);
+
+		btnWindowSave.addStyleName("default");
+
+		// Fill Comboboxes
+		cbFromTerm.addItem(Term.FIRST);
+		cbFromTerm.addItem(Term.SECOND);
+
+		cbToTerm.addItem(Term.FIRST);
+		cbToTerm.addItem(Term.SECOND);
+
+		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
+		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
+			cbProfiles.addItem(profile.getValue());
+			cbProfiles.setItemCaption(profile.getValue(), profile.getKey());
+		}
+
+		// Set Form options
+		cbCategory.setNullSelectionAllowed(false);
+		cbProfiles.setNullSelectionAllowed(false);
+		cbFromTerm.setNullSelectionAllowed(false);
+		cbToTerm.setNullSelectionAllowed(false);
+		txtIdentNr.setRequired(true);
+		txtTmName.setRequired(true);
+		cbCategory.setRequired(true);
+		cbProfiles.setRequired(true);
+		dfValidFrom.setRequired(true);
+		dfValidUntil.setDescription("Leer für unbestimmtes Gültigkeitsdatum");
+
+		// Input prompts
+		txtIdentNr.setInputPrompt("ISBN");
+		txtTmName.setInputPrompt("Titel oder Name");
+		txtProducer.setInputPrompt("z.B. Klett");
+		txtFromGrade.setInputPrompt("z.B. 5");
+		txtToGrade.setInputPrompt("z.B. 7");
+		textAreaComment.setInputPrompt("Zusätzliche Informationen");
+
+		// NullRepresentation
+		txtIdentNr.setNullRepresentation("");
+		txtTmName.setNullRepresentation("");
+		txtProducer.setNullRepresentation("");
+		txtFromGrade.setNullRepresentation("");
+		txtToGrade.setNullRepresentation("");
+		textAreaComment.setNullRepresentation("");
+
+		// Bind to FieldGroup
+		binder.bind(txtTmName, TABLE_NAME);
+		binder.bind(txtIdentNr, TABLE_IDENTNR);
+		binder.bind(cbCategory, TABLE_CATEGORY);
+		binder.bind(txtProducer, TABLE_PRODUCER);
+		binder.bind(cbProfiles, TABLE_PROFILE);
+		binder.bind(txtFromGrade, TABLE_FROMGRADE);
+		binder.bind(cbFromTerm, TABLE_FROMTERM);
+		binder.bind(txtToGrade, TABLE_TOGRADE);
+		binder.bind(cbToTerm, TABLE_TOTERM);
+		binder.bind(dfValidFrom, TABLE_VALIDFROM);
+		binder.bind(dfValidUntil, TABLE_VALIDUNTIL);
+		binder.bind(textAreaComment, TABLE_COMMENT);
+
+		// Add all components
+		windowContent.addComponent(txtTmName);
+		windowContent.addComponent(txtIdentNr);
+		windowContent.addComponent(cbCategory);
+		windowContent.addComponent(txtProducer);
+		windowContent.addComponent(cbProfiles);
+		windowContent.addComponent(new HorizontalLayout() {
+			{
+				addStyleName("required");
+				setSpacing(true);
+				setCaption("Von Klassenstufe");
+				txtFromGrade.setWidth("50px");
+				cbFromTerm.setWidth(null);
+				addComponent(txtFromGrade);
+				addComponent(cbFromTerm);
+			}
+		});
+		windowContent.addComponent(new HorizontalLayout() {
+			{
+				addStyleName("required");
+				setSpacing(true);
+				setCaption("Bis Klassenstufe");
+				txtToGrade.setWidth("50px");
+				addComponent(txtToGrade);
+				addComponent(cbToTerm);
+			}
+		});
+		windowContent.addComponent(dfValidFrom);
+		windowContent.addComponent(dfValidUntil);
+		windowContent.addComponent(textAreaComment);
+
+		windowButtons.addComponent(btnWindowCancel);
+		windowButtons.addComponent(btnWindowSave);
+		windowContent.addComponent(windowButtons);
+		windowEditTeachingMaterial.setContent(windowContent);
+
+		windowEditTeachingMaterial.setCaption("Lehrmittel bearbeiten");
 		windowEditTeachingMaterial.setCloseShortcut(KeyCode.ESCAPE, null);
 	}
 
@@ -291,123 +349,125 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * Adds all listener to their corresponding components.
 	 * 
 	 */
+	@SuppressWarnings("serial")
 	private void addListener() {
-		
+
 		/**
-		 * Listens for changes in the Collection teachingMaterials and adds them to the container
+		 * Listens for changes in the Collection teachingMaterials and adds them
+		 * to the container
 		 */
 		teachingMaterials.addStateChangeListener(new StateChangeListener() {
-			@SuppressWarnings("unchecked")
 			@Override
 			public void stateChange(Object value) {
-				containerTable.removeAllItems();
-				
-				for (TeachingMaterial teachingMaterial : (Collection<TeachingMaterial>) value) {
-				// Gets the string representatives of each teaching material profile 
-					for (Entry<String, Set<Subject>> entry : Profile.getProfileMap().entrySet()) {
-						if (teachingMaterial.getProfile().equals(entry.getValue())) {
-							teachingMaterialProfile = entry.getKey().toString();
-							break;
-						}
-					}
-					
-					tableTeachingMaterials.addItem(
-							new Object[] {
-									teachingMaterial.getName(),
-									teachingMaterial.getProducer(),
-									teachingMaterial.getIdentifyingNumber(),
-									teachingMaterialProfile,
-									teachingMaterial.getFromGrade(),
-									teachingMaterial.getFromTerm(),
-									teachingMaterial.getToGrade(),
-									teachingMaterial.getToTerm(),
-									teachingMaterial.getCategory(),
-									teachingMaterial.getComment()},
-							teachingMaterial.getId());
+				tableData.removeAllItems();
+				for (TeachingMaterial material : teachingMaterials.get()) {
+					tableData.addItem(material);
 				}
 			}
 		});
-		
+
 		/**
-		 * Show a confirm popup and deletes the teaching material on confirmation
+		 * Enables/disables the edit and delete buttons
 		 */
-		buttonDeleteTeachingMaterial.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 563232762007381515L;
+		materialsTable.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				TeachingMaterial item = (TeachingMaterial) materialsTable
+						.getValue();
+				btnEdit.setEnabled(item != null);
+				btnDelete.setEnabled(item != null);
+			}
+		});
+
+		/**
+		 * Opens the popup-window for editing a book and inserts the data from
+		 * the teachingMaterialInfo-State.
+		 */
+		btnEdit.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(tableTeachingMaterials.getValue() == null) {
-					eventBus.post(new MessageEvent("Bitte ein Lehrmittel auswählen"));
-					return;
-				}
-				Runnable runnable = new Runnable() {
-					
-					@Override
-					public void run() {
-						bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
-						bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
-					}
-				};
-				eventBus.post(new ConfirmEvent.Builder("Wollen Sie das Lehrmittel wirklich löschen?").caption("Löschen")
-						.confirmRunnable(runnable).build());
-//				bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
-//				bookManagementViewModel.doDeleteTeachingMaterial(teachingMaterialInfo.get());
+				TeachingMaterial item = (TeachingMaterial) materialsTable
+						.getValue();
+				binder.setItemDataSource(item);
+				UI.getCurrent().addWindow(windowEditTeachingMaterial);
+				txtTmName.focus();
 			}
 		});
-		
+
+		/**
+		 * Opens a new popup-window with an empty new teaching material
+		 */
+		btnNew.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				TeachingMaterial item = new TeachingMaterial.Builder(null,
+						null, null, new Date()).build();
+				binder.setItemDataSource(item);
+				UI.getCurrent().addWindow(windowEditTeachingMaterial);
+				txtTmName.focus();
+			}
+		});
+
 		/**
 		 * Closes the popup window
 		 * 
 		 */
-		buttonWindowCancel.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 4111242410277636186L;
-
+		btnWindowCancel.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				windowEditTeachingMaterial.close();
+				clearWindowFields();
 			}
 		});
-		
+
 		/**
 		 * Saves the teachingMaterial and closes the popup-window
 		 * 
 		 */
-		buttonWindowSave.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 907615005539877724L;
-
-			@SuppressWarnings("unchecked")
+		btnWindowSave.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if(FormFieldsValid()) {
-					TeachingMaterial teachingMaterial;
-					if (!editTeachingMaterial) {
-						teachingMaterial = new TeachingMaterial.Builder(categories.get().get((int) comboBoxCategory.getValue()),
-								textFieldTeachingMaterialName.getValue(),
-								textFieldTeachingMaterialIdentifyer.getValue(), new Date())	.build();
-						teachingMaterial.setProducer(textFieldProducer.getValue());
-						teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
-						teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
-						teachingMaterial.setFromTerm((Term) comboBoxFromTerm.getValue());
-						teachingMaterial.setToTerm((Term) comboBoxToTerm.getValue());
-						teachingMaterial.setComment(textAreaComment.getValue());
-						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles.getValue());
-					} else {
-						teachingMaterial = teachingMaterialInfo.get();
-						teachingMaterial.setName(textFieldTeachingMaterialName.getValue());
-						teachingMaterial.setIdentifyingNumber(textFieldTeachingMaterialIdentifyer.getValue());
-						teachingMaterial.setProducer(textFieldProducer.getValue());
-						teachingMaterial.setFromGrade(Integer.parseInt(textFieldFromGrade.getValue()));
-						teachingMaterial.setToGrade(Integer.parseInt(textFieldToGrade.getValue()));
-						teachingMaterial.setFromTerm((Term) comboBoxFromTerm.getValue());
-						teachingMaterial.setToTerm((Term) comboBoxToTerm.getValue());
-						teachingMaterial.setComment(textAreaComment.getValue());
-						teachingMaterial.setCategory(categories.get().get((int) comboBoxCategory.getValue()));
-						teachingMaterial.setProfile((Set<Subject>) comboBoxProfiles.getValue());
+
+				if (FormFieldsValid()) {
+					try {
+						binder.commit();
+						bookManagementViewModel.doUpdateTeachingMaterial(binder
+								.getItemDataSource().getBean());
+						windowEditTeachingMaterial.close();
+						eventBus.post(new MessageEvent(
+								"Lehrmittel gespeichert."));
+					} catch (CommitException e) {
+						eventBus.post(new MessageEvent(e.getLocalizedMessage()));
 					}
 
-					bookManagementViewModel
-							.doUpdateTeachingMaterial(teachingMaterial);
-					windowEditTeachingMaterial.close();
-				}				
+				}
+
+			}
+		});
+
+		/**
+		 * Show a confirm popup and delete the teaching material on confirmation
+		 */
+		btnDelete.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				final TeachingMaterial item = (TeachingMaterial) materialsTable
+						.getValue();
+				if (item != null) {
+					Runnable runnable = new Runnable() {
+						@Override
+						public void run() {
+							bookManagementViewModel
+									.doDeleteTeachingMaterial(item);
+							materialsTable.select(null);
+						}
+					};
+					eventBus.post(new ConfirmEvent.Builder(
+							"Wollen Sie das Lehrmittel wirklich löschen?")
+							.caption("Löschen").confirmRunnable(runnable)
+							.build());
+				}
+
 			}
 		});
 
@@ -416,111 +476,96 @@ public class BookManagementView extends VerticalLayout implements View,
 		 * filter after every keypress in the search field. Currently the
 		 * publisher and title search are supported.
 		 */
-		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
+		filter.addTextChangeListener(new TextChangeListener() {
 			private static final long serialVersionUID = -1684545652234105334L;
 
 			@Override
 			public void textChange(TextChangeEvent event) {
-				Filter filter = new Or(new SimpleStringFilter(TABLE_TITLE,
-						event.getText(), true, false), new SimpleStringFilter(
+				Filter filter = new Or(new SimpleStringFilter(TABLE_NAME, event
+						.getText(), true, false), new SimpleStringFilter(
 						TABLE_PRODUCER, event.getText(), true, false));
-				containerTable.removeAllContainerFilters();
-				containerTable.addContainerFilter(filter);
+				tableData.removeAllContainerFilters();
+				tableData.addContainerFilter(filter);
 			}
 		});
-		
+
 		/**
-		 * Opens the popup-window for adding a new book, empties all fields and
-		 * add the categories to the comboBox.
+		 * Allows to dismiss the filter by hitting ESCAPE
 		 */
-		buttonNewTeachingMaterial.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = -7433701329516481457L;
-			
+		filter.addShortcutListener(new ShortcutListener("Clear",
+				KeyCode.ESCAPE, null) {
 			@Override
-			public void buttonClick(ClickEvent event) {
-				editTeachingMaterial = false;
-				// teachingMaterialInfo.set(new TeachingMaterial());
-				clearWindowFields();
-				windowEditTeachingMaterial.setCaption(WINDOW_NEW_TEACHING_MATERIAL);
-				UI.getCurrent().addWindow(windowEditTeachingMaterial);
-				textFieldTeachingMaterialName.focus();
-				for (Map.Entry<Integer, Category> category : categories.get().entrySet()) {
-					comboBoxCategory.addItem(category.getValue().getId());
-					comboBoxCategory.setItemCaption(category.getValue().getId(), category.getValue().getName());
+			public void handleAction(Object sender, Object target) {
+				filter.setValue("");
+				tableData.removeAllContainerFilters();
+			}
+		});
+
+		/**
+		 * Fills the category combobox
+		 */
+		categories.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				for (Category cat : categories.get()) {
+					cbCategory.addItem(cat);
+					cbCategory.setItemCaption(cat, cat.getName());
 				}
 			}
 		});
-		
-		/**
-		 * Opens the popup-window for editing a book and inserts the data from
-		 * the teachingMaterialInfo-State.
-		 */
-		buttonEditTeachingMaterial.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 563232762007381515L;
-			
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if(tableTeachingMaterials.getValue() == null) {
-					eventBus.post(new MessageEvent("Bitte ein Lehrmittel auswählen"));
-				} else {
-					editTeachingMaterial = true;
-					windowEditTeachingMaterial.setCaption(WINDOW_EDIT_TEACHING_MATERIAL);
-					UI.getCurrent().addWindow(windowEditTeachingMaterial);
-					textFieldTeachingMaterialName.focus();
-					bookManagementViewModel.doFetchTeachingMaterial(Integer.parseInt(tableTeachingMaterials.getValue().toString()));
-					TeachingMaterial teachingMaterial = teachingMaterialInfo.get();
-					textFieldTeachingMaterialName.setValue(teachingMaterial.getName());
-					textFieldTeachingMaterialIdentifyer.setValue(teachingMaterial.getIdentifyingNumber());
-					textFieldProducer.setValue(teachingMaterial.getProducer());
-					textFieldFromGrade.setValue(Integer.toString(teachingMaterial.getFromGrade()));
-					textFieldToGrade.setValue(Integer.toString(teachingMaterial.getToGrade()));
-					textAreaComment.setValue((teachingMaterial.getComment() == null) ? "" : teachingMaterial.getComment() );
-					comboBoxFromTerm.setValue(teachingMaterial.getFromTerm());
-					comboBoxToTerm.setValue(teachingMaterial.getToTerm());
-					
-					for (Map.Entry<Integer, Category> category : categories.get().entrySet()) {
-						comboBoxCategory.addItem(category.getValue().getId());
-						comboBoxCategory.setItemCaption(category.getValue().getId(), category.getValue().getName());
-					}
-					
-					comboBoxCategory.setValue(teachingMaterial.getCategory().getId());
-					comboBoxProfiles.setValue(teachingMaterial.getProfile());
-				}
-			}
-		});
+
 	}
 
+	/**
+	 * Validates the fields in the edit teaching materials window.
+	 * 
+	 * @return Whether or not the fields in the editor are valid
+	 */
 	private boolean FormFieldsValid() {
-		//Validate if a field is empty
-		if(textFieldTeachingMaterialName.getValue() == null
-				|| textFieldTeachingMaterialIdentifyer.getValue() == null
-				|| textFieldFromGrade.getValue() == null
-				|| textFieldProducer.getValue() == null
-				|| textFieldToGrade.getValue() == null
-				|| comboBoxCategory.getValue() == null
-				|| comboBoxProfiles.getValue() == null) {
-			eventBus.post(new MessageEvent("Bitte alle Pflichtfelder ausfüllen"));
+		// Validate if a field is empty
+		if (txtTmName.getValue() == null || txtIdentNr.getValue() == null
+				|| cbCategory.getValue() == null
+				|| dfValidFrom.getValue() == null
+				|| txtFromGrade.getValue() == null
+				|| txtToGrade.getValue() == null
+				|| cbProfiles.getValue() == null) {
+
+			eventBus.post(new MessageEvent(
+					"Bitte füllen Sie alle Pflicht-Felder aus."));
 			return false;
-		}
-		//No field is empty, validate now for right values and lengths
-		else {
-			if(textFieldTeachingMaterialName.getValue().length() < 2){
-				eventBus.post(new MessageEvent("Der Titel muss mindestens 2 Zeichen enthalten"));
+
+		} else {
+
+			// No field is empty, validate now for right values and lengths
+			if (txtTmName.getValue().length() < 2) {
+				eventBus.post(new MessageEvent(
+						"Der Titel muss mindestens 2 Zeichen enthalten."));
 				return false;
 			}
-			if(textFieldFromGrade.getValue().length() > 2 
-					|| textFieldToGrade.getValue().length() > 2 ){
-				eventBus.post(new MessageEvent("Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
+			if (txtFromGrade.getValue().length() > 2
+					|| txtToGrade.getValue().length() > 2) {
+				eventBus.post(new MessageEvent(
+						"Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
 				return false;
 			}
-			try{
-				Integer.parseInt(textFieldToGrade.getValue());
-				Integer.parseInt(textFieldFromGrade.getValue());
-			} catch(NumberFormatException e) {
-				eventBus.post(new MessageEvent("Die Klassenstufen dürfen nur Zahlen enthalten"));
+			try {
+				Integer.parseInt(txtToGrade.getValue());
+				Integer.parseInt(txtFromGrade.getValue());
+			} catch (NumberFormatException e) {
+				eventBus.post(new MessageEvent(
+						"Die Klassenstufen dürfen nur Zahlen enthalten"));
+				return false;
+			}
+			try {
+				dfValidFrom.validate();
+				dfValidUntil.validate();
+			} catch (InvalidValueException e) {
+				eventBus.post(new MessageEvent(
+						"Mindestens ein Datumsfeld ist nicht korrekt."));
 				return false;
 			}
 			return true;
+
 		}
 	}
 
@@ -528,18 +573,13 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * Builds the layout by adding all components in their specific order.
 	 */
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonDeleteTeachingMaterial);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonDeleteTeachingMaterial, Alignment.MIDDLE_LEFT);
-		horizontalLayoutButtonBar.addComponent(buttonNewTeachingMaterial);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonNewTeachingMaterial, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.addComponent(buttonEditTeachingMaterial);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonEditTeachingMaterial, Alignment.MIDDLE_RIGHT);
+		setMargin(true);
+		setSpacing(true);
+		setSizeFull();
 
-		textFieldSearchBar.setInputPrompt(TEXTFIELD_SEARCH_PLACEHOLDER);
-		
-		addComponent(textFieldSearchBar);
-		addComponent(tableTeachingMaterials);
-		addComponent(horizontalLayoutButtonBar);
+		addComponent(head);
+		addComponent(materialsTable);
+		setExpandRatio(materialsTable, 1);
 	}
 
 	/**
@@ -547,15 +587,15 @@ public class BookManagementView extends VerticalLayout implements View,
 	 * have content form previous edits.
 	 */
 	private void clearWindowFields() {
-		textFieldTeachingMaterialName.setValue("");
-		textFieldTeachingMaterialIdentifyer.setValue("");
-		textFieldProducer.setValue("");
-		textFieldFromGrade.setValue("");
-		textFieldToGrade.setValue("");
+		txtTmName.setValue("");
+		txtIdentNr.setValue("");
+		txtProducer.setValue("");
+		txtFromGrade.setValue("");
+		txtToGrade.setValue("");
 		textAreaComment.setValue("");
-		textFieldProducer.setValue("");
-		comboBoxFromTerm.setValue(Term.FIRST);
-		comboBoxToTerm.setValue(Term.SECOND);
+		txtProducer.setValue("");
+		cbFromTerm.setValue(Term.FIRST);
+		cbToTerm.setValue(Term.SECOND);
 	}
 
 	@Override
