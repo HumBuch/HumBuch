@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManager;
+
 import org.hibernate.criterion.Restrictions;
 
 import com.google.common.eventbus.EventBus;
@@ -24,6 +26,7 @@ import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Entity;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
@@ -82,6 +85,7 @@ public class LendingViewModel {
 		for (Grade grade : selectedGrades) {
 			Map<TeachingMaterial, Integer> gradeMap = new TreeMap<TeachingMaterial, Integer>();
 			
+			refresh(grade.getStudents());
 			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
 				for(BorrowedMaterial borrowedMaterial : student.getUnreceivedBorrowedList()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
@@ -140,6 +144,7 @@ public class LendingViewModel {
 		for (Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
+			refresh(grade.getStudents());
 			for (Student student : grade.getStudents()) {
 				if(student.hasUnreceivedBorrowedMaterials()) {
 					List<BorrowedMaterial> unreceivedBorrowedList = student.getUnreceivedBorrowedList();
@@ -155,7 +160,7 @@ public class LendingViewModel {
 
 		studentsWithUnreceivedBorrowedMaterials.set(unreceivedMap);
 	}
-
+	
 	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
 		Collection<TeachingMaterial> teachingMerterials = daoTeachingMaterial.findAllWithCriteria(
 				Restrictions.and(
@@ -202,6 +207,13 @@ public class LendingViewModel {
 		return owning;
 	}
 	
+	private void refresh(Collection<? extends Entity> entities) {
+		EntityManager entityManager = daoStudent.getEntityManager();
+		for (Entity entity : entities) {
+			entityManager.refresh(entity);
+		}
+	}
+
 	@Subscribe
 	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
 		updateAllStudentsBorrowedMaterials();
