@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.ServletModule;
+import com.google.inject.servlet.SessionScoped;
 import com.vaadin.ui.UI;
 
 import de.davherrmann.guice.vaadin.UIScoped;
@@ -48,10 +49,10 @@ public class BasicModule extends ServletModule {
 
 		bind(ViewModelComposer.class).in(UIScoped.class);
 		bind(MVVMConfig.class).in(UIScoped.class);
-
-		bind(LoginViewModel.class).in(UIScoped.class);
-		bind(Properties.class).in(UIScoped.class);
 		bind(EventBus.class).in(UIScoped.class);
+
+		bind(LoginViewModel.class).in(SessionScoped.class);
+		bind(Properties.class).in(SessionScoped.class);
 
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
 		mapbinder.addBinding(MainUI.class.getName()).to(MainUI.class);
