@@ -100,7 +100,6 @@ public class BookManagementViewModel {
 		updateTeachingMaterials();
 	}
 
-
 	/**
 	 * Deletes the teaching material or sets the validUntil date to the current
 	 * Date. This decision depends on whether the teaching material is borrowed
@@ -112,8 +111,9 @@ public class BookManagementViewModel {
 	@HandlesAction(DoDeleteTeachingMaterial.class)
 	public void doDeleteTeachingMaterial(TeachingMaterial teachingMaterial) {
 		Collection<BorrowedMaterial> borrowedMaterial = daoBorrowedMaterial
-				.findAllWithCriteria(Restrictions.eq("teachingMaterial",
-						teachingMaterial));
+				.findAllWithCriteria(
+						Restrictions.eq("teachingMaterial", teachingMaterial),
+						Restrictions.eq("received", true));
 		if (borrowedMaterial.isEmpty()) {
 			daoTeachingMaterial.delete(teachingMaterial);
 			updateTeachingMaterials();
@@ -123,8 +123,10 @@ public class BookManagementViewModel {
 			teachingMaterial.setValidUntil(new Date());
 			daoTeachingMaterial.update(teachingMaterial);
 			updateTeachingMaterials();
-			eventBus.post(new MessageEvent("Löschen nicht möglich",
-					"Das Lehrmittel ist noch ausgeliehen.", Type.INFO));
+			eventBus.post(new MessageEvent(
+					"Löschen nicht möglich",
+					"Das Lehrmittel ist noch ausgeliehen. Das Gültigkeitsdatum wurde jedoch auf das heutige Datum gesetzt.",
+					Type.INFO));
 		}
 	}
 }
