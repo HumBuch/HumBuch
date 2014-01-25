@@ -354,8 +354,27 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> mega = gradeAndStudentsWithMaterials.get();
+		test(mega);
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(mega);
 	}
+	
+	private void test(Map<Grade, Map<Student, List<BorrowedMaterial>>> mega) {
+        if (mega != null) {
+                System.out.println("=== new table content:");
+                for (Grade g : mega.keySet()) {
+                        System.out.println("== grade: " + g.getGrade() + g.getSuffix());
+                        Map<Student, List<BorrowedMaterial>> me = mega.get(g);
+                        for (Student s : me.keySet()) {
+                                System.out.println("= student: " + s.getFirstname() + " " + s.getLastname());
+                                List<BorrowedMaterial> lbm = me.get(s);
+                                for (BorrowedMaterial m : lbm) {
+                                        System.out.println("mat: " + m.getTeachingMaterial().getName());
+                                }
+                        }
+                }
+        }
+}
 
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());

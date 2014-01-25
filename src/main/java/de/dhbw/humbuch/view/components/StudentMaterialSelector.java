@@ -47,7 +47,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		System.out.println("new data received.");
-//		test(newGradeAndStudentsWithMaterials);
+		test(newGradeAndStudentsWithMaterials);
 		if (allCheckBoxesWithId.keySet().size() != 0) {
 			System.out.println("update mode");
 			updateTable(newGradeAndStudentsWithMaterials);
