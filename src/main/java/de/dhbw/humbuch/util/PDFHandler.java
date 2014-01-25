@@ -163,11 +163,11 @@ public abstract class PDFHandler {
 		Paragraph paragraph = new Paragraph();
 		PdfPTable table = createMyStandardTable(2);
 
-		table.setTotalWidth(TABLEWIDTH + 40f);
+		table.setTotalWidth(TABLEWIDTH);
 		PdfPCell cell;
 
 		try {
-			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein.png");
+			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein_3.png");
 			img.setAlignment(Element.ALIGN_BOTTOM);
 			cell = new PdfPCell(img);
 
@@ -190,6 +190,13 @@ public abstract class PDFHandler {
 		cell.setBorder(0);
 		cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+		table.addCell(cell);
+
+		cell = new PdfPCell(new Phrase(""));
+		cell.setBorder(Rectangle.BOTTOM);
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(""));
+		cell.setBorder(Rectangle.BOTTOM);
 		table.addCell(cell);
 
 		paragraph.add(table);
@@ -287,9 +294,9 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeader() {
 		PdfPTable table = createMyStandardTable(3, new float[] { 3f, 1f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		fillTableWithContent(table, true,
-				//new String[]{"Fach", "Klasse", "Bezeichnung Lehrmittel", "Unterschrift"});
-				new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }, font);
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }).withBorder(true)
+				.isCenterAligned(true).font(font).fillTable();
+
 		return table;
 	}
 
@@ -302,17 +309,18 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		fillTableWithContent(table, true,
-				new String[] { "Bezeichnung Lehrmittel", "Anzahl" }, font);
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).fillTable();
+
 		return table;
 	}
 
 	protected void addInformationAboutDocument(Document document, String informationText) {
 		PdfPTable table = createMyStandardTable(1);
-		fillTableWithContent(table, false, new String[] { informationText }, false, FontFactory.getFont("Helvetica", 12, Font.BOLD));
-
+		new PDFHandler.TableBuilder(table, new String[] { informationText })
+				.font(FontFactory.getFont("Times New Roman", 14, Font.BOLD)).fillTable();
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -396,6 +404,7 @@ public abstract class PDFHandler {
 	 * @param isAlignedCenter
 	 *            if true the content is horizontally and vertically aligned
 	 */
+	@Deprecated
 	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter) {
 		PdfPCell cell = null;
 
@@ -411,6 +420,7 @@ public abstract class PDFHandler {
 			if (withBorder == false) {
 				cell.setBorder(0);
 			}
+			cell.setPadding(0f);
 			table.addCell(cell);
 		}
 	}
@@ -426,6 +436,7 @@ public abstract class PDFHandler {
 	 * @param font
 	 *            set a font for the cell content
 	 */
+	@Deprecated
 	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, Font font) {
 		PdfPCell cell = null;
 
@@ -452,6 +463,7 @@ public abstract class PDFHandler {
 	 * @param isAlignedCenter
 	 *            if true the content is horizontally and vertically aligned
 	 */
+	@Deprecated
 	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter, Font font) {
 		PdfPCell cell = null;
 
@@ -467,6 +479,7 @@ public abstract class PDFHandler {
 			if (withBorder == false) {
 				cell.setBorder(0);
 			}
+			cell.setPadding(0f);
 			table.addCell(cell);
 		}
 	}
@@ -482,6 +495,7 @@ public abstract class PDFHandler {
 	 * @param font
 	 *            set a font for the cell content
 	 */
+	@Deprecated
 	protected static void fillTableWithContentWithoutAlignment(PdfPTable table, boolean withBorder, String[] contentArray, Font font) {
 		PdfPCell cell = null;
 
@@ -504,6 +518,7 @@ public abstract class PDFHandler {
 	 * @param contentArray
 	 *            an array with all cell contents
 	 */
+	@Deprecated
 	protected static void fillTableWithContentWithoutSpace(PdfPTable table, boolean withBorder,
 			String[] contentArray, boolean isAlignedCenter, float padding) {
 		PdfPCell cell = null;
@@ -523,6 +538,33 @@ public abstract class PDFHandler {
 		}
 	}
 
+	private static void fillTableWithContent(TableBuilder tableBuilder) {
+		PdfPCell cell = null;
+		for (int i = 0; i < tableBuilder.contentArray.length; i++) {
+
+			if (tableBuilder.font != null) {
+				cell = new PdfPCell(new Phrase(tableBuilder.contentArray[i], tableBuilder.font));
+			}
+			else {
+				cell = new PdfPCell(new Phrase(tableBuilder.contentArray[i]));
+			}
+			if (tableBuilder.isAlignedCentrally) {
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			}
+			if (!tableBuilder.withBorder) {
+				cell.setBorder(0);
+			}
+			if (tableBuilder.padding != 0f) {
+				cell.setPadding(tableBuilder.padding);
+			}
+			if (tableBuilder.leading != 0f) {
+				cell.setLeading(tableBuilder.leading, tableBuilder.leading);
+			}
+			tableBuilder.table.addCell(cell);
+		}
+	}
+
 	/**
 	 * In this method all parts of the document shall be 'put' together.
 	 * 
@@ -539,6 +581,52 @@ public abstract class PDFHandler {
 	 *            represents the PDF before it is saved
 	 */
 	protected abstract void addContent(Document document);
+
+
+	class TableBuilder {
+
+		private PdfPTable table;
+		private String[] contentArray;
+		private boolean withBorder;
+		private boolean isAlignedCentrally;
+		private float padding;
+		private Font font;
+		private float leading;
+
+		public TableBuilder(PdfPTable table, String[] contentArray) {
+			this.table = table;
+			this.contentArray = contentArray;
+		}
+
+		public TableBuilder withBorder(boolean withBorder) {
+			this.withBorder = withBorder;
+			return this;
+		}
+
+		public TableBuilder isCenterAligned(boolean isCenterAligned) {
+			this.isAlignedCentrally = isCenterAligned;
+			return this;
+		}
+
+		public TableBuilder padding(float padding) {
+			this.padding = padding;
+			return this;
+		}
+
+		public TableBuilder font(Font font) {
+			this.font = font;
+			return this;
+		}
+
+		public TableBuilder leading(float leading) {
+			this.leading = leading;
+			return this;
+		}
+
+		public void fillTable() {
+			PDFHandler.fillTableWithContent(this);
+		}
+	}
 
 
 	/** Inner class to add a header and a footer. */

@@ -45,7 +45,7 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="status")
-	private Status status = Status.OPENED;
+	private Status status;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
@@ -144,6 +144,7 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	private Dunning(Builder builder) {
 		student = builder.student;
 		type = builder.type;
+		setStatus(Status.OPENED);
 		status = builder.status;
 		borrowedMaterials = builder.borrowedMaterials;
 	}

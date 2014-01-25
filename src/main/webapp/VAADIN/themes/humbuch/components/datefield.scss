@@ -51,6 +51,7 @@ span.#{$primaryStyleName}-calendarpanel-month {
 .#{$primaryStyleName}-popupcalendar {
         min-width: 0;
         padding-right: 24px;
+        width: 100%;
 }
 .#{$primaryStyleName}-year .#{$primaryStyleName}-calendarpanel {
         width: 100px;
@@ -255,6 +256,7 @@ td.#{$primaryStyleName}-calendarpanel-nextyear {
         -webkit-border-top-right-radius: 0;
         -webkit-border-bottom-right-radius: 0;
         height: 23px;
+        width: 100%;
 }
 .#{$primaryStyleName}.v-readonly input.#{$primaryStyleName}-textfield {
         border-right-width: 1px;

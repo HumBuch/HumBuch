@@ -6,20 +6,20 @@
 	version="2.0">
 
 	<persistence-unit name="persistModule">
-	
+
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+			<property name="hibernate.connection.provider_class"
+				value="org.hibernate.connection.C3P0ConnectionProvider" />
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/humbuch" />
 			<property name="hibernate.connection.username" value="humbuch" />
 			<property name="hibernate.connection.password" value="humbuch" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-			<!-- <property name="hibernate.hbm2ddl.auto" value="update" />  --> <!-- man kann auch "create" nehmen -->
-			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<property name="hibernate.c3p0.min_size" value="5" />
 			<property name="hibernate.c3p0.max_size" value="20" />
@@ -27,32 +27,24 @@
 			<property name="hibernate.c3p0.max_statements" value="50" />
 			<property name="hibernate.c3p0.idle_test_period" value="3000" />
 
-			<property name="hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 		</properties>
 	</persistence-unit>
-	
-		<persistence-unit name="testPersistModule">
-	
+
+	<persistence-unit name="testPersistModule"
+		transaction-type="RESOURCE_LOCAL">
+
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
-			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/humbuch_test" />
-			<property name="hibernate.connection.username" value="travis" />
-			<property name="hibernate.connection.password" value="" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+			<property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:h2:mem:humbuch;DB_CLOSE_DELAY=-1;" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
-			<property name="hibernate.c3p0.min_size" value="5" />
-			<property name="hibernate.c3p0.max_size" value="20" />
-			<property name="hibernate.c3p0.timeout" value="300" />
-			<property name="hibernate.c3p0.max_statements" value="50" />
-			<property name="hibernate.c3p0.idle_test_period" value="3000" />
-
-			<property name="hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 		</properties>
 	</persistence-unit>
 </persistence>

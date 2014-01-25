@@ -84,12 +84,13 @@ public class PDFDunning extends PDFHandler {
 					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
 					+ " Bücher nicht zurückgegeben hat. Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
 					+ "Mit freundlichen Grüßen \n"
-					+ "Schulverwaltung";
+					+ "Ihre Schulverwaltung";
 		}
-		PDFHandler.fillTableWithContent(table, false,
-				new String[] { dunningText }, false);
+		new PDFHandler.TableBuilder(table, new String[] { dunningText }).leading(1.25f).fillTable();
+
 		try {
 			document.add(table);
+			addEmptyLineToDocument(document, 1);
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -104,7 +105,9 @@ public class PDFDunning extends PDFHandler {
 			String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 										"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
 										"" };
-			PDFHandler.fillTableWithContentWithoutSpace(table, true, contentArray, true, 5f);
+
+			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).
+					isCenterAligned(true).padding(5f).fillTable();
 		}
 
 		try {
@@ -125,11 +128,14 @@ public class PDFDunning extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
 
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
-									"Klasse: ", "" + this.student.getGrade().toString() + "\n" };
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
-
+									"Klasse: ", "" + this.student.getGrade().toString() };
+		
+		new PDFHandler.TableBuilder(table, contentArray).fillTable();
+		
 		try {
 			document.add(table);
+			PDFHandler.addEmptyLineToDocument(document, 1);
+
 		}
 		catch (DocumentException e) {
 			e.printStackTrace();
@@ -139,10 +145,11 @@ public class PDFDunning extends PDFHandler {
 	private void addParentInformation(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 
-		String[] contentArray = { this.student.getParent().getTitle() + " " + this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
+		String[] contentArray = { this.student.getParent().getTitle(),
+									this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
 									this.student.getParent().getStreet(),
 									this.student.getParent().getCity() + " " + this.student.getParent().getPostcode() + "\n" };
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray, false, 0f);
+		new PDFHandler.TableBuilder(table, contentArray).fillTable();
 
 		try {
 			document.add(table);

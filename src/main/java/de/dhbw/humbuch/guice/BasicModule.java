@@ -22,13 +22,10 @@ import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.User;
-import de.dhbw.humbuch.view.LoginView;
 import de.dhbw.humbuch.view.MVVMConfig;
 import de.dhbw.humbuch.view.MainUI;
-import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.Properties;
-import de.dhbw.humbuch.viewmodel.SettingsViewModel;
 
 
 public class BasicModule extends ServletModule {
@@ -50,16 +47,12 @@ public class BasicModule extends ServletModule {
 		bind(new TypeLiteral<DAO<SchoolYear>>() {}).to(new TypeLiteral<DAOImpl<SchoolYear>>() {});
 		bind(new TypeLiteral<DAO<Dunning>>() {}).to(new TypeLiteral<DAOImpl<Dunning>>() {});
 
-		bind(ViewModelComposer.class).asEagerSingleton();
-		bind(MVVMConfig.class).asEagerSingleton();
+		bind(ViewModelComposer.class).in(UIScoped.class);
+		bind(MVVMConfig.class).in(UIScoped.class);
+		bind(EventBus.class).in(UIScoped.class);
 
 		bind(LoginViewModel.class).in(SessionScoped.class);
-		bind(LendingViewModel.class).in(UIScoped.class);
 		bind(Properties.class).in(SessionScoped.class);
-		bind(EventBus.class).in(SessionScoped.class);
-		bind(SettingsViewModel.class).in(UIScoped.class);
-
-		bind(LoginView.class);
 
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
 		mapbinder.addBinding(MainUI.class.getName()).to(MainUI.class);
