@@ -51,5 +51,14 @@
         .v-webkit & .v-filterselect.small {
                 padding-bottom: .2em;
         }
+        
+        .v-caption-required:after {
+        	content: "*";
+        	float: none;
+        	display: inline-block;
+        	padding-left: 2px;
+        	color: red;
+        	font-size: 13px;
+        }
 
 }

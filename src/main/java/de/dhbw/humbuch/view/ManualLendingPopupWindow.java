@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.view;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,12 +17,13 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -31,6 +33,7 @@ import com.vaadin.ui.Window;
 
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import elemental.events.KeyboardEvent.KeyCode;
 
 
 public class ManualLendingPopupWindow extends Window {
@@ -40,17 +43,19 @@ public class ManualLendingPopupWindow extends Window {
 	private static final Logger LOG = LoggerFactory.getLogger(ManualLendingPopupWindow.class);
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
-	private static final String SAVE = "Ausgewählte Materialien ausleihen";
-	private static final String CANCEL = "Manuelle Ausleihe abbrechen";
+	private static final String SAVE = "Materialien ausleihen";
 	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
+	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "";
+	private static final String NOTIFICATION_DESCR_INVALID_DATE = "Bitte geben Sie ein gültiges Datum ein.";
+	private static final String NOTIFICATION_CAPTION_DATE_IN_PAST = "Datum liegt in der Vergangenheit.";
+	private static final String NOTIFICATION_DESCR_DATE_IN_PAST = "Bitte geben Sie ein gültiges Datum in der Zukunft ein.";
 
 	private VerticalLayout verticalLayoutContent;
-	private HorizontalLayout horizontalLayoutButtonBar;
+	private HorizontalLayout horizontalLayoutHeaderBar;
 	private TextField textFieldSearchBar;
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
-	private Button buttonCancel;
 	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
 	private HashMap<Object, HashMap<TeachingMaterial, PopupDateField>> idForMaterialsWithDates;
@@ -67,37 +72,36 @@ public class ManualLendingPopupWindow extends Window {
 
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
-		horizontalLayoutButtonBar = new HorizontalLayout();
+		horizontalLayoutHeaderBar = new HorizontalLayout();
 		textFieldSearchBar = new TextField(SEARCH_MATERIALS);
 		tableTeachingMaterials = new Table();
 		buttonSave = new Button(SAVE);
-		buttonCancel = new Button(CANCEL);
 		idForMaterialsWithDates = new HashMap<Object, HashMap<TeachingMaterial, PopupDateField>>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
-		textFieldSearchBar.setWidth("50%");
-		buttonSave.setIcon(new ThemeResource("images/icons/16/icon_save_red.png"));
+		textFieldSearchBar.focus();
 		buttonSave.setEnabled(false);
+		buttonSave.addStyleName("default");
+		buttonSave.setClickShortcut(KeyCode.ENTER, null);
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
 		containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
 
 		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
-		// dirty but 100% is not working
-//		tableTeachingMaterials.setWidth("99%");
-//		tableTeachingMaterials.setHeight("100%");
+		tableTeachingMaterials.setWidth("100%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
 		tableTeachingMaterials.setImmediate(true);
 		setTableListener();
 		updateTableContent();
 
-		horizontalLayoutButtonBar.setSpacing(true);
+		horizontalLayoutHeaderBar.setSpacing(true);
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 
-		setImmediate(true);
 		center();
+		setCloseShortcut(KeyCode.ESC, null);
+		setImmediate(true);
 		setModal(true);
 		setResizable(false);
 
@@ -105,14 +109,12 @@ public class ManualLendingPopupWindow extends Window {
 	}
 
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonCancel);
-		horizontalLayoutButtonBar.addComponent(buttonSave);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonCancel, Alignment.MIDDLE_CENTER);
-		horizontalLayoutButtonBar.setComponentAlignment(buttonSave, Alignment.MIDDLE_CENTER);
+		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
+		horizontalLayoutHeaderBar.addComponent(buttonSave);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
 
-		verticalLayoutContent.addComponent(textFieldSearchBar);
+		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
-		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
 
 		setContent(verticalLayoutContent);
 	}
@@ -124,9 +126,30 @@ public class ManualLendingPopupWindow extends Window {
 			return;
 		}
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, 1);
+
+		final Date comingMonth = calendar.getTime();
+
+		ValueChangeListener dateValidator = new ValueChangeListener() {
+
+			private static final long serialVersionUID = 5165858023604029960L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				boolean isValid = validateDate((Date) event.getProperty().getValue());
+				if (!isValid) {
+					event.getProperty().setValue(comingMonth);
+				}
+			}
+		};
+
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
 			PopupDateField dateField = new PopupDateField();
-			dateField.setValue(new Date());
+			dateField.setValue(comingMonth);
+			dateField.addValueChangeListener(dateValidator);
+			dateField.setImmediate(true);
 
 			HashMap<TeachingMaterial, PopupDateField> materialWithDate = new HashMap<TeachingMaterial, PopupDateField>();
 			materialWithDate.put(teachingMaterial, dateField);
@@ -161,16 +184,6 @@ public class ManualLendingPopupWindow extends Window {
 	}
 
 	private void addListeners() {
-		buttonCancel.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = 3353625484974813579L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				closeMe();
-			}
-		});
-
 		buttonSave.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 4375804067002022079L;
@@ -234,5 +247,19 @@ public class ManualLendingPopupWindow extends Window {
 	private void closeMe() {
 		UI.getCurrent().removeWindow(this);
 		close();
+	}
+
+	private boolean validateDate(Date date) {
+		if (date == null) {
+			Notification.show(NOTIFICATION_CAPTION_INVALID_DATE, NOTIFICATION_DESCR_INVALID_DATE, Type.WARNING_MESSAGE);
+			return false;
+		}
+		else if (date.before(new Date())) {
+			Notification.show(NOTIFICATION_CAPTION_DATE_IN_PAST, NOTIFICATION_DESCR_DATE_IN_PAST, Type.WARNING_MESSAGE);
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 }

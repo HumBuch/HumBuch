@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -15,6 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.dhbw.humbuch.model.entity.Student;
+import elemental.events.KeyboardEvent.KeyCode;
 
 
 public class SelectStudentPopupWindow extends Window {
@@ -51,19 +51,22 @@ public class SelectStudentPopupWindow extends Window {
 		buttonContinue = new Button(CONTINUE);
 		buttonCancel = new Button(CANCEL);
 
-		buttonContinue.setIcon(new ThemeResource("images/icons/16/icon_checked_red.png"));
 		buttonContinue.setEnabled(false);
+		buttonContinue.addStyleName("default");
+		buttonContinue.setClickShortcut(KeyCode.ENTER, null);
 
 		comboBoxStudents.setWidth("100%");
 		comboBoxStudents.setImmediate(true);
+		comboBoxStudents.focus();
 
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 		horizontalLayoutButtonBar.setSpacing(true);
 
-		setImmediate(true);
 		center();
+		setImmediate(true);
 		setModal(true);
+		setCloseShortcut(KeyCode.ESC, null);
 		setResizable(false);
 
 		fillComboBox();
