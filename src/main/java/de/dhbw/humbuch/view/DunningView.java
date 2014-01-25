@@ -33,7 +33,6 @@ import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Dunning;
-import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFDunning;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.view.components.PrintingComponent;
