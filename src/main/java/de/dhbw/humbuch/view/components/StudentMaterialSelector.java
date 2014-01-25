@@ -47,6 +47,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
 		if (allCheckBoxesWithId.keySet().size() != 0) {
+			System.out.println("sms: updatetable");
 			updateTable(gradeAndStudentsWithMaterials);
 			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
 			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
@@ -54,6 +55,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		else {
 			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
 			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
+			System.out.println("sms: buildtable");
 			buildTable();
 		}
 	}
@@ -116,7 +118,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void buildTable() {
 		if (treeTableContent.removeAllItems()) {
-			if (gradeAndStudentsWithMaterialsFiltered.isEmpty()) {
+			if (gradeAndStudentsWithMaterialsFiltered == null || gradeAndStudentsWithMaterialsFiltered.isEmpty()) {
 				return;
 			}
 			allCheckBoxesWithId.clear();
@@ -210,6 +212,8 @@ public class StudentMaterialSelector extends CustomComponent {
 
 				});
 			}
+			
+			notifyObserver();
 		}
 		else {
 			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
@@ -251,6 +255,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+		
+		notifyObserver();
 	}
 
 	public void setFilterString(String filterString) {
