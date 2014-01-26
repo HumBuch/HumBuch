@@ -49,6 +49,9 @@ public class StudentMaterialSelector extends CustomComponent {
 		buildLayout();
 	}
 
+	/*
+	 * initialize and configure member variables
+	 * */
 	private void init() {
 		treeTableContent = new TreeTable();
 		allCheckBoxesWithId = new HashMap<CheckBox, Object>();
@@ -68,7 +71,15 @@ public class StudentMaterialSelector extends CustomComponent {
 		setCompositionRoot(treeTableContent);
 	}
 
+	/*
+	 * Implement the code for the different listeners on the CheckBox components displayed in the TreeTable
+	 * Whenever a CheckBox changes its value (gets selected / deselected) all registered observers get notified.
+	 * */
 	private void implementListeners() {
+		/*
+		 * The grade listener is added to all top level elements (grades) in the tree.
+		 * Whenever a grade is selected / deselected all Students belonging to that grade are selected / deselected, too.
+		 * */
 		gradeListener = new ValueChangeListener() {
 
 			private static final long serialVersionUID = -7395293342050339912L;
@@ -89,6 +100,10 @@ public class StudentMaterialSelector extends CustomComponent {
 			}
 		};
 
+		/*
+		 * The student listener is added to all student elements in the tree. When a student is selected / deselected 
+		 * all of its materials are selected / deselected, too.
+		 * */
 		studentListener = new ValueChangeListener() {
 
 			private static final long serialVersionUID = 5610970965368269295L;
@@ -109,6 +124,10 @@ public class StudentMaterialSelector extends CustomComponent {
 			}
 		};
 
+		/*
+		 * The material listener is added to all leafes (materials) in the tree. 
+		 * It only notifies all registered observers about the value change.
+		 * */
 		materialListener = new ValueChangeListener() {
 
 			private static final long serialVersionUID = 614006288313075687L;
@@ -119,7 +138,16 @@ public class StudentMaterialSelector extends CustomComponent {
 			}
 		};
 	}
-	
+
+	/**
+	 * Call this method when the data which you want to display with the
+	 * StudentMaterialSelector changes. This methods not only saves the new data
+	 * in a member variable but also updates the TreeTable which is responsible
+	 * for showing the data.
+	 * 
+	 * @param newGradeAndStudentsWithMaterials
+	 *            the new data to be displayed by the StudentMaterialSelector
+	 * */
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		if (allCheckBoxesWithId.keySet().size() != 0) {
 			updateTable(newGradeAndStudentsWithMaterials);
@@ -131,6 +159,10 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 	}
 
+	/**
+	 * @return the currently selected grades of the StudentMaterialSelector or
+	 *         an empty HashSet if none are selected
+	 * */
 	public HashSet<Grade> getCurrentlySelectedGrades() {
 		HashSet<Grade> currentlySelectedGrades = new HashSet<Grade>();
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
@@ -144,6 +176,10 @@ public class StudentMaterialSelector extends CustomComponent {
 		return currentlySelectedGrades;
 	}
 
+	/**
+	 * @return the currently selected students of the StudentMaterialSelector or
+	 *         an empty HashSet if none are selected
+	 * */
 	public HashSet<Student> getCurrentlySelectedStudents() {
 		HashSet<Student> currentlySelectedStudents = new HashSet<Student>();
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
@@ -157,6 +193,10 @@ public class StudentMaterialSelector extends CustomComponent {
 		return currentlySelectedStudents;
 	}
 
+	/**
+	 * @return the currently selected materials of the StudentMaterialSelector
+	 *         or an empty HashSet if none are selected
+	 * */
 	public HashSet<BorrowedMaterial> getCurrentlySelectedBorrowedMaterials() {
 		HashSet<BorrowedMaterial> currentlySelectedBorrowedMaterials = new HashSet<BorrowedMaterial>();
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
@@ -166,9 +206,18 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+
 		return currentlySelectedBorrowedMaterials;
 	}
-	
+
+	/**
+	 * Register any class implementing the StudentMaterialSelectorObserver
+	 * interface to get notified when any selection changes.
+	 * 
+	 * @param observer
+	 *            the class implementing the interface which should be notified
+	 *            of all changes
+	 * */
 	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
 		if (registeredObservers == null) {
 			registeredObservers = new ArrayList<StudentMaterialSelectorObserver>();
@@ -178,7 +227,17 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 		registeredObservers.add(observer);
 	}
-	
+
+	/**
+	 * Call this method to filter for specific students. The filtering is
+	 * case-insensitve and filters for the firstname and lastname of any student
+	 * in the StudentMaterialSelector. It does not only saves the filter string
+	 * in a member variable but updates the TreeTable to only show students
+	 * matching the filter.
+	 * 
+	 * @param filterString
+	 *            the string on which filtering should be based upon
+	 * */
 	public void setFilterString(String filterString) {
 		this.filterString = filterString;
 		filterTableContent();
@@ -401,7 +460,14 @@ public class StudentMaterialSelector extends CustomComponent {
 
 		notifyObserver();
 	}
-	
+
+	/*
+	 * Helper method which extracts all student objects from a data structure
+	 * @param structure
+	 * 		the structure which all students object should be extracted from
+	 * @return
+	 * 		all students from the structure in an arraylist
+	 * */
 	private ArrayList<Student> getAllStudentsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
 		ArrayList<Student> students = new ArrayList<Student>();
 		for (Grade grade : structure.keySet()) {
@@ -412,6 +478,13 @@ public class StudentMaterialSelector extends CustomComponent {
 		return students;
 	}
 
+	/*
+	 * Helper method which extracts all borrowedmaterial objects from a data structure
+	 * @param structure
+	 * 		the structure which all borrowedmaterial objects should be extracted from
+	 * @return
+	 * 		all borrowedmaterials from the structure in an arraylist
+	 * */
 	private ArrayList<BorrowedMaterial> getAllMaterialsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
 		ArrayList<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
 		for (Grade grade : structure.keySet()) {
@@ -424,12 +497,24 @@ public class StudentMaterialSelector extends CustomComponent {
 		return materials;
 	}
 
-	private List<Student> getAllStudentsForGrade(Grade grade, Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
-		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = currentGradeAndStudentsWithMaterials.get(grade);
+	/*
+	 * Helper method which extracts all students for a specific grade from a data structure
+	 * @param grade
+	 * 		the grade in which all students are supposed to be in
+	 * @param structure
+	 * 		the structure which all students in the passed grade should be extracted from
+	 * @return
+	 * 		a list containing all students in the passed grade
+	 * */
+	private List<Student> getAllStudentsForGrade(Grade grade, Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
+		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = structure.get(grade);
 		List<Student> studentList = new ArrayList<Student>(studentsWithMaterials.keySet());
 		return studentList;
 	}
 
+	/*
+	 * Notifies all registered observers that the selection changed by calling their update method.
+	 * */
 	private void notifyObserver() {
 		if (registeredObservers == null) {
 			return;
