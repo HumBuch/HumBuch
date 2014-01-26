@@ -46,6 +46,7 @@ import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
+import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
 import de.dhbw.humbuch.viewmodel.LendingViewModel;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.MaterialListGrades;
 import de.dhbw.humbuch.viewmodel.LendingViewModel.StudentsWithUnreceivedBorrowedMaterials;
@@ -54,7 +55,7 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 
-public class LendingView extends VerticalLayout implements View, ViewInformation {
+public class LendingView extends VerticalLayout implements View, ViewInformation, StudentMaterialSelectorObserver {
 
 	private static final long serialVersionUID = -6400075534193735694L;
 
@@ -312,9 +313,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return informationForPdf;
 	}
 
+	@Override
 	public void update() {
-//		updateStudentsWithUnreceivedBorrowedMaterials();
-
 		// Get information about current selection of student material selector
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
@@ -354,27 +354,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> mega = gradeAndStudentsWithMaterials.get();
-		test(mega);
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(mega);
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
-	
-	private void test(Map<Grade, Map<Student, List<BorrowedMaterial>>> mega) {
-        if (mega != null) {
-                System.out.println("=== new table content:");
-                for (Grade g : mega.keySet()) {
-                        System.out.println("== grade: " + g.getGrade() + g.getSuffix());
-                        Map<Student, List<BorrowedMaterial>> me = mega.get(g);
-                        for (Student s : me.keySet()) {
-                                System.out.println("= student: " + s.getFirstname() + " " + s.getLastname());
-                                List<BorrowedMaterial> lbm = me.get(s);
-                                for (BorrowedMaterial m : lbm) {
-                                        System.out.println("mat: " + m.getTeachingMaterial().getName());
-                                }
-                        }
-                }
-        }
-}
 
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
@@ -383,10 +364,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	public void saveTeachingMaterialsForStudents(HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
 		// the outer loop runs only once
 		for (Student student : saveStructure.keySet()) {
-			System.out.println("manual lending for: " + student.getFirstname() + " " + student.getLastname());
 			HashMap<TeachingMaterial, Date> materialsWithDates = saveStructure.get(student);
 			for (TeachingMaterial material : materialsWithDates.keySet()) {
-				System.out.println("mat: " + material.getName());
 				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
 			}
 		}

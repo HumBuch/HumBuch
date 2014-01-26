@@ -21,7 +21,6 @@ import com.vaadin.ui.VerticalLayout;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.view.LendingView;
 
 
 public class StudentMaterialSelector extends CustomComponent {
@@ -30,13 +29,14 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private final static Logger LOG = LoggerFactory.getLogger(StudentMaterialSelector.class);
 
+	private static final int MAX_GRADES_BEFORE_COLLAPSE = 3;
 	public static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
 
 	private VerticalLayout verticalLayoutContent;
 	private TreeTable treeTableContent;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
-	private LendingView registeredObserver;
+	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
 	private HashMap<CheckBox, Object> allCheckBoxesWithId;
 	private String filterString;
 
@@ -46,10 +46,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		System.out.println("new data received.");
-		test(newGradeAndStudentsWithMaterials);
 		if (allCheckBoxesWithId.keySet().size() != 0) {
-			System.out.println("update mode");
 			updateTable(newGradeAndStudentsWithMaterials);
 			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
 		}
@@ -59,21 +56,6 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 	}
 
-	private void test(Map<Grade, Map<Student, List<BorrowedMaterial>>> mega) {
-		System.out.println("=== new table content:");
-		for(Grade g : mega.keySet()) {
-			System.out.println("== grade: " + g.getGrade() + g.getSuffix());
-			Map<Student, List<BorrowedMaterial>> me = mega.get(g);
-			for(Student s : me.keySet()) {
-				System.out.println("= student: " + s.getFirstname() + " " + s.getLastname());
-				List<BorrowedMaterial> lbm = me.get(s);
-				for(BorrowedMaterial m : lbm) {
-					System.out.println("mat: " + m.getTeachingMaterial().getName());
-				}
-			}
-		}
-	}
-	
 	public HashSet<Grade> getCurrentlySelectedGrades() {
 		HashSet<Grade> currentlySelectedGrades = new HashSet<Grade>();
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
@@ -132,17 +114,25 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void buildTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
 		if (treeTableContent.removeAllItems()) {
-			if (currentGradeAndStudentsWithMaterials.isEmpty()) {
+			if (currentGradeAndStudentsWithMaterials == null ||
+					currentGradeAndStudentsWithMaterials.isEmpty()) {
 				return;
 			}
 			allCheckBoxesWithId.clear();
 			Set<Grade> grades = currentGradeAndStudentsWithMaterials.keySet();
+			
+			boolean collapsed = true;
+			if(grades.size() <= MAX_GRADES_BEFORE_COLLAPSE) {
+				collapsed = false;
+			}
 			// Add all grades as roots
 			for (Grade grade : grades) {
+				
 				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 				checkBoxGrade.setData(grade);
 				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
-
+				treeTableContent.setCollapsed(gradeItemId, collapsed);
+				
 				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
 				List<Student> students = getAllStudentsForGrade(grade, currentGradeAndStudentsWithMaterials);
 
@@ -241,21 +231,18 @@ public class StudentMaterialSelector extends CustomComponent {
 		ArrayList<Grade> oldGrades = new ArrayList<Grade>(gradeAndStudentsWithMaterials.keySet());
 		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
-		
-		System.out.println("sizes old: grades:" + oldGrades.size() + " / stud: " + oldStudents.size() + " / mats: " + oldMaterials.size());
-		System.out.println("sizes new: grades:" + newGrades.size() + " / stud: " + newStudents.size() + " / mats: " + newMaterials.size());
-		
-		if (newGrades.size() > oldGrades.size() ||
-				newStudents.size() > oldStudents.size() ||
-				newMaterials.size() > oldMaterials.size()) {
-			// adding of new items necessary. rebuild table
-			System.out.println("add cb. rebuild.");
-			buildTable(newGradeAndStudentsWithMaterials);
-		}
 
 		oldGrades.removeAll(newGrades);
 		oldStudents.removeAll(newStudents);
 		oldMaterials.removeAll(newMaterials);
+
+		if (newGrades.size() > oldGrades.size() ||
+				newStudents.size() > oldStudents.size() ||
+				newMaterials.size() > oldMaterials.size()) {
+			// adding of new items necessary. rebuild table
+			buildTable(newGradeAndStudentsWithMaterials);
+			return;
+		}
 
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
 			if (checkBox.getData() instanceof Grade) {
@@ -278,6 +265,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+
+		notifyObserver();
 	}
 
 	public void setFilterString(String filterString) {
@@ -340,15 +329,23 @@ public class StudentMaterialSelector extends CustomComponent {
 		return studentList;
 	}
 
-	public void registerAsObserver(LendingView lendingView) {
-		registeredObserver = lendingView;
+	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
+		if (registeredObservers == null) {
+			registeredObservers = new ArrayList<StudentMaterialSelectorObserver>();
+		}
+		else if (registeredObservers.contains(observer)) {
+			return;
+		}
+		registeredObservers.add(observer);
 	}
 
 	public void notifyObserver() {
-		if (registeredObserver == null) {
+		if (registeredObservers == null) {
 			return;
 		}
 
-		registeredObserver.update();
+		for (StudentMaterialSelectorObserver observer : registeredObservers) {
+			observer.update();
+		}
 	}
 }
