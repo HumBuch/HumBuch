@@ -91,6 +91,15 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		}
 	}
 	
+	public boolean isCurrentYear() {
+		Date today = new Date();
+		if(getFromDate().before(today) && getToDate().after(today)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public enum Term {
 		FIRST("1. Halbjahr"),
 		SECOND("2. Halbjahr");
