@@ -2,6 +2,7 @@ package de.dhbw.humbuch.viewmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.mozilla.universalchardet.UniversalDetector;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -134,6 +136,38 @@ public class StudentInformationViewModel {
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String checkEncoding(String fileName){
+	    byte[] buf = new byte[4096];
+	    java.io.FileInputStream fis;
+		try {
+			fis = new java.io.FileInputStream(fileName);
+
+		    // (1)
+		    UniversalDetector detector = new UniversalDetector(null);
+
+		    // (2)
+		    int nread;
+		    while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+		      detector.handleData(buf, 0, nread);
+		    }
+		    // (3)
+		    detector.dataEnd();
+
+		    // (4)
+		    String encoding = detector.getDetectedCharset();
+
+		    // (5)
+		    detector.reset();
+		    fis.close();
+			return encoding;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
