@@ -49,55 +49,6 @@ public class StudentMaterialSelector extends CustomComponent {
 		buildLayout();
 	}
 
-	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		if (allCheckBoxesWithId.keySet().size() != 0) {
-			updateTable(newGradeAndStudentsWithMaterials);
-			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
-		}
-		else {
-			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
-			buildTable(newGradeAndStudentsWithMaterials);
-		}
-	}
-
-	public HashSet<Grade> getCurrentlySelectedGrades() {
-		HashSet<Grade> currentlySelectedGrades = new HashSet<Grade>();
-		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
-			if (checkBox.getData() instanceof Grade) {
-				if (checkBox.getValue() == true) {
-					currentlySelectedGrades.add((Grade) checkBox.getData());
-				}
-			}
-		}
-
-		return currentlySelectedGrades;
-	}
-
-	public HashSet<Student> getCurrentlySelectedStudents() {
-		HashSet<Student> currentlySelectedStudents = new HashSet<Student>();
-		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
-			if (checkBox.getData() instanceof Student) {
-				if (checkBox.getValue() == true) {
-					currentlySelectedStudents.add((Student) checkBox.getData());
-				}
-			}
-		}
-
-		return currentlySelectedStudents;
-	}
-
-	public HashSet<BorrowedMaterial> getCurrentlySelectedBorrowedMaterials() {
-		HashSet<BorrowedMaterial> currentlySelectedBorrowedMaterials = new HashSet<BorrowedMaterial>();
-		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
-			if (checkBox.getData() instanceof BorrowedMaterial) {
-				if (checkBox.getValue() == true) {
-					currentlySelectedBorrowedMaterials.add((BorrowedMaterial) checkBox.getData());
-				}
-			}
-		}
-		return currentlySelectedBorrowedMaterials;
-	}
-
 	private void init() {
 		treeTableContent = new TreeTable();
 		allCheckBoxesWithId = new HashMap<CheckBox, Object>();
@@ -167,6 +118,97 @@ public class StudentMaterialSelector extends CustomComponent {
 				notifyObserver();
 			}
 		};
+	}
+	
+	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
+		if (allCheckBoxesWithId.keySet().size() != 0) {
+			updateTable(newGradeAndStudentsWithMaterials);
+			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
+		}
+		else {
+			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
+			buildTable(newGradeAndStudentsWithMaterials);
+		}
+	}
+
+	public HashSet<Grade> getCurrentlySelectedGrades() {
+		HashSet<Grade> currentlySelectedGrades = new HashSet<Grade>();
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
+			if (checkBox.getData() instanceof Grade) {
+				if (checkBox.getValue() == true) {
+					currentlySelectedGrades.add((Grade) checkBox.getData());
+				}
+			}
+		}
+
+		return currentlySelectedGrades;
+	}
+
+	public HashSet<Student> getCurrentlySelectedStudents() {
+		HashSet<Student> currentlySelectedStudents = new HashSet<Student>();
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
+			if (checkBox.getData() instanceof Student) {
+				if (checkBox.getValue() == true) {
+					currentlySelectedStudents.add((Student) checkBox.getData());
+				}
+			}
+		}
+
+		return currentlySelectedStudents;
+	}
+
+	public HashSet<BorrowedMaterial> getCurrentlySelectedBorrowedMaterials() {
+		HashSet<BorrowedMaterial> currentlySelectedBorrowedMaterials = new HashSet<BorrowedMaterial>();
+		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
+			if (checkBox.getData() instanceof BorrowedMaterial) {
+				if (checkBox.getValue() == true) {
+					currentlySelectedBorrowedMaterials.add((BorrowedMaterial) checkBox.getData());
+				}
+			}
+		}
+		return currentlySelectedBorrowedMaterials;
+	}
+	
+	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
+		if (registeredObservers == null) {
+			registeredObservers = new ArrayList<StudentMaterialSelectorObserver>();
+		}
+		else if (registeredObservers.contains(observer)) {
+			return;
+		}
+		registeredObservers.add(observer);
+	}
+	
+	public void setFilterString(String filterString) {
+		this.filterString = filterString;
+		filterTableContent();
+	}
+
+	private void filterTableContent() {
+		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
+			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
+			for (Student student : entry.keySet()) {
+				boolean matchesFilter = false;
+
+				// match firstname and lastname ignoring case
+				String fullName = student.getFirstname() + " " + student.getLastname();
+				fullName = fullName.toLowerCase();
+				if (fullName.contains(filterString.toLowerCase())) {
+					matchesFilter = true;
+				}
+
+				if (matchesFilter) {
+					filteredEntries.put(student, entry.get(student));
+				}
+			}
+
+			if (filteredEntries.size() != 0) {
+				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
+			}
+		}
+		buildTable(gradeAndStudentsWithMaterialsFiltered);
 	}
 
 	private void buildTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
@@ -359,39 +401,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 		notifyObserver();
 	}
-
-	public void setFilterString(String filterString) {
-		this.filterString = filterString;
-		filterTableContent();
-	}
-
-	private void filterTableContent() {
-		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
-			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
-			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
-			for (Student student : entry.keySet()) {
-				boolean matchesFilter = false;
-
-				// match firstname and lastname ignoring case
-				String fullName = student.getFirstname() + " " + student.getLastname();
-				fullName = fullName.toLowerCase();
-				if (fullName.contains(filterString.toLowerCase())) {
-					matchesFilter = true;
-				}
-
-				if (matchesFilter) {
-					filteredEntries.put(student, entry.get(student));
-				}
-			}
-
-			if (filteredEntries.size() != 0) {
-				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
-			}
-		}
-		buildTable(gradeAndStudentsWithMaterialsFiltered);
-	}
-
+	
 	private ArrayList<Student> getAllStudentsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
 		ArrayList<Student> students = new ArrayList<Student>();
 		for (Grade grade : structure.keySet()) {
@@ -420,17 +430,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		return studentList;
 	}
 
-	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
-		if (registeredObservers == null) {
-			registeredObservers = new ArrayList<StudentMaterialSelectorObserver>();
-		}
-		else if (registeredObservers.contains(observer)) {
-			return;
-		}
-		registeredObservers.add(observer);
-	}
-
-	public void notifyObserver() {
+	private void notifyObserver() {
 		if (registeredObservers == null) {
 			return;
 		}
