@@ -117,7 +117,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 		head = new HorizontalLayout();
 		head.setWidth("100%");
 		head.setSpacing(true);
-		head.setMargin(true);
 
 		// Filter
 		filter = new TextField();
@@ -172,7 +171,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 		studentsTable.setSelectable(true);
 		studentsTable.setImmediate(true);
 		studentsTable.setSizeFull();
-		studentsTable.addStyleName("borderless");
 		studentsTable.setColumnCollapsingAllowed(true);
 
 		tableData = new BeanItemContainer<Student>(Student.class);
@@ -276,6 +274,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 */
 	private void buildLayout() {
 		setSizeFull();
+		setSpacing(true);
+		setMargin(true);
 		addComponent(head);
 		addComponent(studentsTable);
 		setExpandRatio(studentsTable, 1);
