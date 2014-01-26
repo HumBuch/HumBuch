@@ -33,7 +33,6 @@ import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Dunning;
-import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFDunning;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.view.components.PrintingComponent;
@@ -49,6 +48,7 @@ public class DunningView extends VerticalLayout implements View,
 	private static final String TITLE = "Mahnungs Übersicht";
 	private static final String SECOND_DUNNING = "2. Mahnung erzeugen";
 	private static final String NEW_DUNNING = "1. Mahnung erzeugen";
+	private static final String SHOW_DUNNING = "Mahnung anzeigen";
 
 	// TODO: Dynamically / directly from database
 	private static final String TABLE_LAST_NAME = "Nachname";
@@ -69,6 +69,7 @@ public class DunningView extends VerticalLayout implements View,
 	private HorizontalLayout horizontalLayoutButtonBar;
 	private Button buttonSecondDunning = new Button(SECOND_DUNNING);
 	private Button buttonNewDunning = new Button(NEW_DUNNING);
+	private Button buttonShowDunning = new Button(SHOW_DUNNING);
 	private Table tableDunnings;
 	private EventBus eventBus;
 
@@ -110,20 +111,29 @@ public class DunningView extends VerticalLayout implements View,
 				if(tableDunnings.size()==0 || tableDunnings.getValue() == null) {
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(false);
+					buttonShowDunning.setEnabled(false);
 					return;
 				}
 				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
 				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(true);
 					buttonSecondDunning.setEnabled(false);
+					buttonShowDunning.setEnabled(false);
 				}
 				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(true);
+					buttonShowDunning.setEnabled(false);
+				}
+				else if(selectedDunning.getStatus() == Dunning.Status.SENT) {
+					buttonShowDunning.setEnabled(true);
+					buttonNewDunning.setEnabled(false);
+					buttonSecondDunning.setEnabled(false);
 				}
 				else {
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(false);
+					buttonShowDunning.setEnabled(false);
 				}
 			}
 		});
@@ -132,7 +142,7 @@ public class DunningView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet(); 
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
 				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
 				ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
@@ -145,12 +155,35 @@ public class DunningView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet(); 
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
 				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
 				ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
 				
 				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
 				showPDF(baos, fileNameIncludingHash, selectedDunning);
+			}
+		});
+		buttonShowDunning.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = -1285703858095198175L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
+				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
+				ByteArrayOutputStream baos;
+				if(selectedDunning.getType() == Dunning.Type.TYPE1) {
+					baos = PDFDunning.createFirstDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				}
+				else {
+					baos = PDFDunning.createSecondDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				}
+				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
+				if(baos == null) {
+					eventBus.post(new MessageEvent("Fehler", "PDF konnte nicht erstellt werden", Type.ERROR));
+					return;
+				}
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				new PrintingComponent(sr, "Mahnung");
 			}
 		});
 	}
@@ -167,12 +200,14 @@ public class DunningView extends VerticalLayout implements View,
 		dunningViewModel.doUpdateDunning(selectedDunning);
 		buttonNewDunning.setEnabled(false);
 		buttonSecondDunning.setEnabled(false);
+		buttonShowDunning.setEnabled(false);
 	}
 
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
 		buttonSecondDunning.setEnabled(false); 
 		buttonNewDunning.setEnabled(false);
+		buttonShowDunning.setEnabled(false);
 		tableDunnings = new Table();
 
 		tableDunnings.setSelectable(true);
@@ -192,6 +227,7 @@ public class DunningView extends VerticalLayout implements View,
 	private void buildLayout() {
 		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
 		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
+		horizontalLayoutButtonBar.addComponent(buttonShowDunning);
 		addComponent(tableDunnings);
 		addComponent(horizontalLayoutButtonBar);
 	}

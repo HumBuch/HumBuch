@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManager;
+
 import org.hibernate.criterion.Restrictions;
 
 import com.google.common.eventbus.EventBus;
@@ -23,6 +25,7 @@ import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Entity;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
@@ -65,18 +68,21 @@ public class ReturnViewModel {
 	
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
+		System.out.println("GENERATE STUDENT RETURN LIST");
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student,List<BorrowedMaterial>>>();
 		
 		for(Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
-			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
-
+			refresh(grade.getStudents());
+			for(Student student : grade.getStudents()) {
+				System.out.println(student.getFirstname() + " " + student.getLastname());
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
 					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
-					if(notNeededNextTerm || borrowUntilExceeded){
+					if(notNeededNextTerm || borrowUntilExceeded) {
+						System.out.println("   " + borrowedMaterial.getTeachingMaterial().getName());
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					}
 				}
@@ -127,6 +133,13 @@ public class ReturnViewModel {
 		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Restrictions.le("fromDate", new Date()), 
 				Restrictions.ge("toDate", new Date()));
+	}
+	
+	private void refresh(Collection<? extends Entity> entities) {
+		EntityManager entityManager = daoStudent.getEntityManager();
+		for (Entity entity : entities) {
+			entityManager.refresh(entity);
+		}
 	}
 	
 	@Subscribe

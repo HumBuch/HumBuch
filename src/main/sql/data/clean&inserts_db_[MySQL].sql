@@ -1,22 +1,22 @@
 SET SQL_SAFE_UPDATES=0;
 
-delete from borrowedmaterial;
-delete from category;
-delete from dunning;
-delete from dunning_has_borrowedmaterial;
-delete from dunningdate;
-delete from grade;
-delete from parent;
-delete from permission;
-delete from role;
-delete from role_has_permission;
 delete from schoolyear;
 delete from student;
 delete from studentsubject;
 delete from teachingmaterial;
 delete from teachingmaterialsubject;
+delete from borrowedmaterial;
+delete from category;
+delete from dunningdate;
+delete from dunning_has_borrowedmaterial;
+delete from dunning;
+delete from parent;
+delete from role_has_permission;
 delete from user_has_role;
+delete from permission;
+delete from role;
 delete from user;
+delete from grade;
 
 -- -----------------------------------------------------
 -- Data for table `humbuch`.`grade`
