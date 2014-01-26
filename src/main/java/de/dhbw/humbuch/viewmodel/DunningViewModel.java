@@ -151,7 +151,7 @@ public class DunningViewModel {
 						.type(Dunning.Type.TYPE2).status(Dunning.Status.OPENED)
 						.build();
 				if (daoDunning.findAllWithCriteria(
-						Restrictions.eq("status", Dunning.Status.OPENED),
+						Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT)),
 						Restrictions.eq("type", Dunning.Type.TYPE2),
 						Restrictions.eq("student", dunning.getStudent())).size() == 0) {
 					daoDunning.insert(newDunning);

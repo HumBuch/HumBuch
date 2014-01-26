@@ -35,7 +35,6 @@ public class StudentMaterialSelector extends CustomComponent {
 	private VerticalLayout verticalLayoutContent;
 	private TreeTable treeTableContent;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
-	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered;
 	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
 	private HashMap<CheckBox, Object> allCheckBoxesWithId;
 	private String filterString;
@@ -45,18 +44,14 @@ public class StudentMaterialSelector extends CustomComponent {
 		buildLayout();
 	}
 
-	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials) {
+	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		if (allCheckBoxesWithId.keySet().size() != 0) {
-			System.out.println("sms: updatetable");
-			updateTable(gradeAndStudentsWithMaterials);
-			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
-			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
+			updateTable(newGradeAndStudentsWithMaterials);
+			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
 		}
 		else {
-			this.gradeAndStudentsWithMaterials = gradeAndStudentsWithMaterials;
-			gradeAndStudentsWithMaterialsFiltered = gradeAndStudentsWithMaterials;
-			System.out.println("sms: buildtable");
-			buildTable();
+			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
+			buildTable(newGradeAndStudentsWithMaterials);
 		}
 	}
 
@@ -116,13 +111,13 @@ public class StudentMaterialSelector extends CustomComponent {
 		setCompositionRoot(verticalLayoutContent);
 	}
 
-	private void buildTable() {
+	private void buildTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
 		if (treeTableContent.removeAllItems()) {
-			if (gradeAndStudentsWithMaterialsFiltered == null || gradeAndStudentsWithMaterialsFiltered.isEmpty()) {
+			if (currentGradeAndStudentsWithMaterials.isEmpty()) {
 				return;
 			}
 			allCheckBoxesWithId.clear();
-			Set<Grade> grades = gradeAndStudentsWithMaterialsFiltered.keySet();
+			Set<Grade> grades = currentGradeAndStudentsWithMaterials.keySet();
 			// Add all grades as roots
 			for (Grade grade : grades) {
 				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
@@ -130,7 +125,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
 
 				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
-				List<Student> students = getAllStudentsForGrade(grade);
+				List<Student> students = getAllStudentsForGrade(grade, currentGradeAndStudentsWithMaterials);
 
 				// Collect all student checkboxes for selecting purposes
 				final ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
@@ -145,7 +140,7 @@ public class StudentMaterialSelector extends CustomComponent {
 					treeTableContent.setParent(studentItemId, gradeItemId);
 
 					allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
-					List<BorrowedMaterial> materials = gradeAndStudentsWithMaterialsFiltered.get(grade).get(student);
+					List<BorrowedMaterial> materials = currentGradeAndStudentsWithMaterials.get(grade).get(student);
 					if (materials == null) {
 						LOG.warn("Borrowed Materials for Student " + student.getFirstname() + " " + student.getLastname() + " are null");
 						continue;
@@ -212,8 +207,6 @@ public class StudentMaterialSelector extends CustomComponent {
 
 				});
 			}
-			
-			notifyObserver();
 		}
 		else {
 			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
@@ -233,6 +226,14 @@ public class StudentMaterialSelector extends CustomComponent {
 		oldGrades.removeAll(newGrades);
 		oldStudents.removeAll(newStudents);
 		oldMaterials.removeAll(newMaterials);
+
+		if (newGrades.size() > oldGrades.size() ||
+				newStudents.size() > oldStudents.size() ||
+				newMaterials.size() > oldMaterials.size()) {
+			// adding of new items necessary. rebuild table
+			buildTable(newGradeAndStudentsWithMaterials);
+			return;
+		}
 
 		for (CheckBox checkBox : allCheckBoxesWithId.keySet()) {
 			if (checkBox.getData() instanceof Grade) {
@@ -255,7 +256,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
-		
+
 		notifyObserver();
 	}
 
@@ -265,7 +266,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	private void filterTableContent() {
-		gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
 			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
@@ -288,7 +289,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
 			}
 		}
-		buildTable();
+		buildTable(gradeAndStudentsWithMaterialsFiltered);
 	}
 
 	private ArrayList<Student> getAllStudentsFromStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
@@ -313,8 +314,8 @@ public class StudentMaterialSelector extends CustomComponent {
 		return materials;
 	}
 
-	private List<Student> getAllStudentsForGrade(Grade grade) {
-		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = gradeAndStudentsWithMaterialsFiltered.get(grade);
+	private List<Student> getAllStudentsForGrade(Grade grade, Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
+		Map<Student, List<BorrowedMaterial>> studentsWithMaterials = currentGradeAndStudentsWithMaterials.get(grade);
 		List<Student> studentList = new ArrayList<Student>(studentsWithMaterials.keySet());
 		return studentList;
 	}
