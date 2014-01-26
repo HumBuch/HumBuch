@@ -85,7 +85,6 @@ public class LendingViewModel {
 		for (Grade grade : selectedGrades) {
 			Map<TeachingMaterial, Integer> gradeMap = new TreeMap<TeachingMaterial, Integer>();
 			
-			refresh(grade.getStudents());
 			for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false), Restrictions.eq("grade", grade))) {
 				for(BorrowedMaterial borrowedMaterial : student.getUnreceivedBorrowedList()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
