@@ -120,9 +120,12 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		menuItemPrinting = menuBarPrinting.addItem(PRINT, null);
 		subMenuItemClassList = menuItemPrinting.addItem("Klassenliste", menuCommandClassList);
+		subMenuItemClassList.setEnabled(false);
 		subMenuItemStudentList = menuItemPrinting.addItem("Schülerliste", menuCommandStudentList);
-
+		subMenuItemStudentList.setEnabled(false);
+		
 		studentMaterialSelector.registerAsObserver(this);
+		studentMaterialSelector.setSizeFull();
 
 		addListeners();
 	}
@@ -152,7 +155,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
-
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 
@@ -169,6 +171,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
+				for(Grade g : studentMaterialSelector.getCurrentlySelectedGrades()) {
+					System.out.println("grade: " + g.getGrade() + g.getSuffix());
+				}
 				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		};
