@@ -29,7 +29,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private final static Logger LOG = LoggerFactory.getLogger(StudentMaterialSelector.class);
 
-	private static final int MAX_GRADES_BEFORE_COLLAPSE = 3;
+	private static final int MAX_STUDENTS_BEFORE_COLLAPSE = 12;
 	public static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
 
@@ -122,9 +122,11 @@ public class StudentMaterialSelector extends CustomComponent {
 			Set<Grade> grades = currentGradeAndStudentsWithMaterials.keySet();
 			
 			boolean collapsed = true;
-			if(grades.size() <= MAX_GRADES_BEFORE_COLLAPSE) {
+			ArrayList<Student> allStudents = getAllStudentsFromStructure(currentGradeAndStudentsWithMaterials);
+			if(allStudents.size() <= MAX_STUDENTS_BEFORE_COLLAPSE) {
 				collapsed = false;
 			}
+			
 			// Add all grades as roots
 			for (Grade grade : grades) {
 				
