@@ -23,38 +23,23 @@ import de.dhbw.humbuch.model.entity.User;
 
 public class SettingsViewModel {
 
-	public interface DoUpdateUser extends ActionHandler {
-	}
+	public interface DoUpdateUser extends ActionHandler {}
+	public interface DoPasswordChange extends ActionHandler {}
 
-	public interface DoPasswordChange extends ActionHandler {
-	}
-
-	public interface SchoolYears extends State<Collection<SchoolYear>> {
-	}
-
-	public interface Categories extends State<Collection<Category>> {
-	}
-
-	public interface PasswordChangeStatus extends State<ChangeStatus> {
-	}
-
-	public interface UserName extends State<String> {
-	}
-
-	public interface UserEmail extends State<String> {
-	}
+	public interface SchoolYears extends State<Collection<SchoolYear>> {}
+	public interface Categories extends State<Collection<Category>> {}
+	public interface PasswordChangeStatus extends State<ChangeStatus> {}
+	public interface UserName extends State<String> {}
+	public interface UserEmail extends State<String> {}
 
 	@ProvidesState(SchoolYears.class)
-	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(
-			Collection.class);
+	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(Collection.class);
 
 	@ProvidesState(Categories.class)
-	private State<Collection<Category>> categories = new BasicState<>(
-			Collection.class);
+	private State<Collection<Category>> categories = new BasicState<>(Collection.class);
 
 	@ProvidesState(PasswordChangeStatus.class)
-	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(
-			ChangeStatus.class);
+	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
 
 	@ProvidesState(UserName.class)
 	private State<String> userName = new BasicState<>(String.class);
@@ -69,8 +54,8 @@ public class SettingsViewModel {
 	private DAO<Category> daoCategory;
 
 	@Inject
-	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser,
-			DAO<Category> daoCategory, Properties properties, EventBus eventBus) {
+	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser, DAO<Category> daoCategory, 
+			Properties properties, EventBus eventBus) {
 		this.eventBus = eventBus;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoUser = daoUser;
@@ -112,11 +97,18 @@ public class SettingsViewModel {
 		} else {
 			daoSchoolYear.update(schoolYear);
 		}
+		
 		updateSchoolYears();
 	}
 
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
-		daoSchoolYear.delete(schoolYear);
+		if(!schoolYear.isCurrentYear()) {
+			daoSchoolYear.delete(schoolYear);
+		} else {
+			eventBus.post(new MessageEvent("Löschen nicht möglich!",
+					"Das aktuelle Schuljahr kann nicht gelöscht werden.", Type.WARNING));
+		}
+		
 		updateSchoolYears();
 	}
 
@@ -127,11 +119,18 @@ public class SettingsViewModel {
 		} else {
 			daoCategory.update(category);
 		}
+		
 		updateCategories();
 	}
 
 	public void doDeleteCategory(Category category) {
-		daoCategory.delete(category);
+		if(category.getTeachingMaterials().isEmpty()) {
+			daoCategory.delete(category);
+		} else {
+			eventBus.post(new MessageEvent("Löschen nicht möglich!",
+					"Kategorie wird noch verwendet.", Type.WARNING));
+		}
+		
 		updateCategories();
 	}
 
@@ -139,10 +138,12 @@ public class SettingsViewModel {
 	public void doUpdateUser(String userName, String userEmail) {
 		if (userEmail.isEmpty())
 			userEmail = null;
+		
 		Collection<User> userWithSameNameOrPassword = daoUser
 				.findAllWithCriteria(Restrictions.or(
 						Restrictions.eq("username", userName),
 						Restrictions.eq("email", userEmail)));
+		
 		if (!userWithSameNameOrPassword.isEmpty()) {
 			User user = currentUser.get();
 			user.setUsername(userName);
@@ -161,8 +162,7 @@ public class SettingsViewModel {
 	}
 
 	@HandlesAction(DoPasswordChange.class)
-	public void doPasswordChange(String currentPassword, String newPassword,
-			String newPasswordVerified) {
+	public void doPasswordChange(String currentPassword, String newPassword, String newPasswordVerified) {
 		User user = currentUser.get();
 		if (currentPassword.isEmpty() || newPassword.isEmpty()
 				|| newPasswordVerified.isEmpty()) {
@@ -187,6 +187,11 @@ public class SettingsViewModel {
 	}
 
 	public enum ChangeStatus {
-		EMPTY_FIELDS, CURRENT_PASSWORD_WRONG, NEW_PASSWORD_NOT_EQUALS, NAME_OR_MAIL_ALREADY_EXISTS, FAILED, SUCCESSFULL;
+		EMPTY_FIELDS, 
+		CURRENT_PASSWORD_WRONG, 
+		NEW_PASSWORD_NOT_EQUALS, 
+		NAME_OR_MAIL_ALREADY_EXISTS, 
+		FAILED, 
+		SUCCESSFULL;
 	}
 }

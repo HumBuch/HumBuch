@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -38,6 +39,7 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel;
@@ -130,10 +132,12 @@ public class SettingsView extends VerticalLayout implements View,
 	@SuppressWarnings("rawtypes")
 	private List<Field> catFields = new ArrayList<Field>();
 
+	private EventBus eventBus;
+
 	@Inject
-	public SettingsView(ViewModelComposer viewModelComposer,
-			SettingsViewModel settingsViewModel) {
+	public SettingsView(ViewModelComposer viewModelComposer, SettingsViewModel settingsViewModel, EventBus eventBus) {
 		this.settingsViewModel = settingsViewModel;
+		this.eventBus = eventBus;
 		init();
 		bindViewModel(viewModelComposer, settingsViewModel);
 	}
@@ -331,11 +335,17 @@ public class SettingsView extends VerticalLayout implements View,
 		catDelete.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Category item = (Category) catTable.getValue();
-				settingsViewModel.doDeleteCategory(item);
-				catConfigureEditable(false);
-				catTable.select(null);
-				
+				Runnable confirmRunnable = new Runnable() {
+					@Override
+					public void run() {
+						Category item = (Category) catTable.getValue();
+						settingsViewModel.doDeleteCategory(item);
+						catConfigureEditable(false);
+						catTable.select(null);
+					}
+				};
+				eventBus.post(new ConfirmEvent.Builder("Wollen Sie diese Kategorie wirklich löschen?")
+					.caption("Löschen").confirmRunnable(confirmRunnable).build());
 			}
 		});
 
@@ -587,10 +597,17 @@ public class SettingsView extends VerticalLayout implements View,
 		yearDelete.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				SchoolYear item = (SchoolYear) yearTable.getValue();
-				settingsViewModel.doDeleteSchoolYear(item);
-				yearConfigureEditable(false);
-				yearTable.select(null);
+				Runnable confirmRunnable = new Runnable() {
+					@Override
+					public void run() {
+						SchoolYear item = (SchoolYear) yearTable.getValue();
+						settingsViewModel.doDeleteSchoolYear(item);
+						yearConfigureEditable(false);
+						yearTable.select(null);
+					}
+				};
+				eventBus.post(new ConfirmEvent.Builder("Wollen Sie dieses Schuljahr wirklich löschen?")
+					.caption("Löschen").confirmRunnable(confirmRunnable).build());
 			}
 		});
 
