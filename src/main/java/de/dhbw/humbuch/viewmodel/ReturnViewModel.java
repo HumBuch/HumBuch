@@ -68,7 +68,6 @@ public class ReturnViewModel {
 	
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
-		System.out.println("GENERATE STUDENT RETURN LIST");
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student,List<BorrowedMaterial>>>();
 		
 		for(Grade grade : daoGrade.findAll()) {
@@ -76,13 +75,11 @@ public class ReturnViewModel {
 			
 			refresh(grade.getStudents());
 			for(Student student : grade.getStudents()) {
-				System.out.println(student.getFirstname() + " " + student.getLastname());
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
 					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
 					if(notNeededNextTerm || borrowUntilExceeded) {
-						System.out.println("   " + borrowedMaterial.getTeachingMaterial().getName());
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					}
 				}
