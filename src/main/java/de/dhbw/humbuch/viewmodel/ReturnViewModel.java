@@ -48,7 +48,6 @@ public class ReturnViewModel {
 	private DAO<Student> daoStudent;
 	
 	private SchoolYear currentSchoolYear;
-
 	
 	@Inject
 	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, 
@@ -147,4 +146,5 @@ public class ReturnViewModel {
 	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
 		generateStudentReturnList();
 	}
+	
 }
