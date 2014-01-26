@@ -117,7 +117,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 			@Override
 			public void stateChange(Object value) {
-				System.out.println("return: statechange");
 				if (value == null) {
 					return;
 				}
@@ -136,12 +135,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-				//				for(BorrowedMaterial bm : materials) {
-				//					System.out.println("m: " + bm.getTeachingMaterial().getName());
-				//				}
-				System.out.println("return: save");
 				ReturnView.this.returnViewModel.setBorrowedMaterialsReturned(materials);
-				ReturnView.this.returnViewModel.generateStudentReturnList();
 			}
 		});
 
@@ -210,27 +204,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	}
 
 	private void updateReturnList() {
-		System.out.println("return: update sms");
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> mega = gradeAndStudentsWithMaterials.get();
-		test(mega);
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(mega);
-	}
-
-	private void test(Map<Grade, Map<Student, List<BorrowedMaterial>>> mega) {
-		if (mega != null) {
-			System.out.println("=== new table content:");
-			for (Grade g : mega.keySet()) {
-				System.out.println("== grade: " + g.getGrade() + g.getSuffix());
-				Map<Student, List<BorrowedMaterial>> me = mega.get(g);
-				for (Student s : me.keySet()) {
-					System.out.println("= student: " + s.getFirstname() + " " + s.getLastname());
-					List<BorrowedMaterial> lbm = me.get(s);
-					for (BorrowedMaterial m : lbm) {
-						System.out.println("mat: " + m.getTeachingMaterial().getName());
-					}
-				}
-			}
-		}
+		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
@@ -256,11 +230,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	@Override
 	public void update() {
-		System.out.println("return: called update");
-
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-		HashSet<Grade> grades = studentMaterialSelector.getCurrentlySelectedGrades();
 
 		if (materials.size() >= 1) {
 			buttonSaveSelectedData.setEnabled(true);

@@ -29,6 +29,7 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private final static Logger LOG = LoggerFactory.getLogger(StudentMaterialSelector.class);
 
+	private static final int MAX_GRADES_BEFORE_COLLAPSE = 3;
 	public static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
 
@@ -113,17 +114,25 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private void buildTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
 		if (treeTableContent.removeAllItems()) {
-			if (currentGradeAndStudentsWithMaterials.isEmpty()) {
+			if (currentGradeAndStudentsWithMaterials == null ||
+					currentGradeAndStudentsWithMaterials.isEmpty()) {
 				return;
 			}
 			allCheckBoxesWithId.clear();
 			Set<Grade> grades = currentGradeAndStudentsWithMaterials.keySet();
+			
+			boolean collapsed = true;
+			if(grades.size() <= MAX_GRADES_BEFORE_COLLAPSE) {
+				collapsed = false;
+			}
 			// Add all grades as roots
 			for (Grade grade : grades) {
+				
 				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 				checkBoxGrade.setData(grade);
 				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
-
+				treeTableContent.setCollapsed(gradeItemId, collapsed);
+				
 				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
 				List<Student> students = getAllStudentsForGrade(grade, currentGradeAndStudentsWithMaterials);
 
