@@ -313,7 +313,6 @@ public class BookManagementView extends VerticalLayout implements View,
 		windowContent.addComponent(cbProfiles);
 		windowContent.addComponent(new HorizontalLayout() {
 			{
-				addStyleName("required");
 				setSpacing(true);
 				setCaption("Von Klassenstufe");
 				txtFromGrade.setWidth("50px");
@@ -324,7 +323,6 @@ public class BookManagementView extends VerticalLayout implements View,
 		});
 		windowContent.addComponent(new HorizontalLayout() {
 			{
-				addStyleName("required");
 				setSpacing(true);
 				setCaption("Bis Klassenstufe");
 				txtToGrade.setWidth("50px");
@@ -526,8 +524,6 @@ public class BookManagementView extends VerticalLayout implements View,
 		if (txtTmName.getValue() == null || txtIdentNr.getValue() == null
 				|| cbCategory.getValue() == null
 				|| dfValidFrom.getValue() == null
-				|| txtFromGrade.getValue() == null
-				|| txtToGrade.getValue() == null
 				|| cbProfiles.getValue() == null) {
 
 			eventBus.post(new MessageEvent(
@@ -542,15 +538,11 @@ public class BookManagementView extends VerticalLayout implements View,
 						"Der Titel muss mindestens 2 Zeichen enthalten."));
 				return false;
 			}
-			if (txtFromGrade.getValue().length() > 2
-					|| txtToGrade.getValue().length() > 2) {
-				eventBus.post(new MessageEvent(
-						"Die Klassenstufen dürfen höchstens 2 Zeichen enthalten"));
-				return false;
-			}
 			try {
-				Integer.parseInt(txtToGrade.getValue());
-				Integer.parseInt(txtFromGrade.getValue());
+				if (txtToGrade.getValue() != null)
+					Integer.parseInt(txtToGrade.getValue());
+				if (txtFromGrade.getValue() != null)
+					Integer.parseInt(txtFromGrade.getValue());
 			} catch (NumberFormatException e) {
 				eventBus.post(new MessageEvent(
 						"Die Klassenstufen dürfen nur Zahlen enthalten"));
