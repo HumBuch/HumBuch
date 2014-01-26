@@ -125,6 +125,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		subMenuItemStudentList.setEnabled(false);
 		
 		studentMaterialSelector.registerAsObserver(this);
+		studentMaterialSelector.setSizeFull();
 
 		addListeners();
 	}
@@ -154,7 +155,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
-
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 

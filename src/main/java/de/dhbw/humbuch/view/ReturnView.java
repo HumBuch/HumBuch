@@ -84,6 +84,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		buttonStudentList.setEnabled(false);
 
 		studentMaterialSelector.registerAsObserver(this);
+		studentMaterialSelector.setSizeFull();
+		
 		updateReturnList();
 
 		addListeners();
@@ -94,6 +96,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		horizontalLayoutHeaderBar.setSpacing(true);
 		horizontalLayoutActions.setSpacing(true);
 
+		setSizeFull();
 		setSpacing(true);
 		setMargin(true);
 
@@ -108,7 +111,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
-
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 
