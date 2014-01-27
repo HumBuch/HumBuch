@@ -46,10 +46,10 @@ public final class CSVHandler {
 			Properties csvHeaderProperties = readCSVConfigurationFile();
 			Map<String, String> csvHeaderPropertyStrings = new LinkedHashMap<>();
 
-			for(Object property : csvHeaderProperties.keySet()){
+			for (Object property : csvHeaderProperties.keySet()) {
 				csvHeaderPropertyStrings.put(((String) property).replaceAll("\\p{C}", ""), csvHeaderProperties.getProperty((String) property));
 			}
-			
+
 			List<String[]> allRecords = csvReader.readAll();
 			Iterator<String[]> allRecordsIterator = allRecords.iterator();
 			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
@@ -87,7 +87,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
-			
+
 			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
 		}
 		catch (FileNotFoundException e) {
@@ -128,7 +128,7 @@ public final class CSVHandler {
 		catch (ArrayIndexOutOfBoundsException a) {
 			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden.");
 		}
-		catch(NumberFormatException e){
+		catch (NumberFormatException e) {
 			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
 		}
 
@@ -148,10 +148,10 @@ public final class CSVHandler {
 			System.err.println("Could not create parent object to student");
 			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler");
 		}
-		catch(ArrayIndexOutOfBoundsException e){
+		catch (ArrayIndexOutOfBoundsException e) {
 			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
 		}
-		catch(NumberFormatException e){
+		catch (NumberFormatException e) {
 			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
 		}
 
@@ -170,9 +170,8 @@ public final class CSVHandler {
 		checkValidityMap.put(parentLastName, false);
 		checkValidityMap.put(parentFirstName, false);
 		checkValidityMap.put(parentStreet, false);
-		checkValidityMap.put(""+parentPostalcode, false);
+		checkValidityMap.put("" + parentPostalcode, false);
 		checkValidityMap.put(parentPlace, false);
-
 
 		if (!checkForValidityOfAttributes(checkValidityMap)) {
 			return null;
@@ -215,13 +214,23 @@ public final class CSVHandler {
 		return -1;
 	}
 
+	/**
+	 * If one string of the map is -1 an error occurred previously and the
+	 * method will return false. If one string is empty that is not to allowed to
+	 * be empty (indicated by 'false' in the map) the method will return false.
+	 * If this method returns false, an exception will be thrown that the CSV lacks important data.
+	 * If this method returns true, the data set of the CSV is correct.
+	 * 
+	 * @param attributes
+	 * @return boolean that indicates whether the data set of the CSV is correct or not.
+	 */
 	private static boolean checkForValidityOfAttributes(Map<String, Boolean> attributes) {
 		for (String str : attributes.keySet()) {
 			if (str.equals("-1")) {
 				return false;
 			}
-			if(!attributes.get(str)){
-				if(str.equals("")){
+			if (!attributes.get(str)) {
+				if (str.equals("")) {
 					return false;
 				}
 			}
