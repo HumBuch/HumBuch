@@ -118,7 +118,7 @@ public class DunningViewModel {
 		for (Integer key : map.keySet()) {
 			List<BorrowedMaterial> entry = map.get(key);
 			if (daoDunning.findAllWithCriteria(
-					Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT)),
+					Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT),Restrictions.eq("status", Dunning.Status.CLOSED) ),
 					Restrictions.eq("type", Dunning.Type.TYPE1),
 					Restrictions.eq("student", entry.get(0).getStudent())).size() == 0) {
 				Dunning newDunning = new Dunning.Builder(entry.get(0).getStudent())
@@ -151,10 +151,12 @@ public class DunningViewModel {
 						.type(Dunning.Type.TYPE2).status(Dunning.Status.OPENED)
 						.build();
 				if (daoDunning.findAllWithCriteria(
-						Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT)),
+						Restrictions.or(Restrictions.eq("status", Dunning.Status.OPENED),Restrictions.eq("status", Dunning.Status.SENT),Restrictions.eq("status", Dunning.Status.CLOSED)),
 						Restrictions.eq("type", Dunning.Type.TYPE2),
 						Restrictions.eq("student", dunning.getStudent())).size() == 0) {
 					daoDunning.insert(newDunning);
+					dunning.setStatus(Dunning.Status.CLOSED);
+					daoDunning.update(dunning);
 				}
 			}
 		}
@@ -184,8 +186,9 @@ public class DunningViewModel {
 
 	private void updateStates() {
 		Collection<Dunning> alreadyDunned = daoDunning
-				.findAllWithCriteria(Restrictions.eq("status",
-						Dunning.Status.SENT));
+				.findAllWithCriteria(Restrictions.or(Restrictions.eq("status",
+						Dunning.Status.SENT),Restrictions.eq("status",
+								Dunning.Status.CLOSED)));
 		Collection<Dunning> toBeDunned = daoDunning
 				.findAllWithCriteria(Restrictions.eq("status",
 						Dunning.Status.OPENED));
