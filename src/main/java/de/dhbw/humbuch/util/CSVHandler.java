@@ -153,19 +153,19 @@ public final class CSVHandler {
 			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
 		}
 
-		ArrayList<String> checkValidityList = new ArrayList<String>();
-		checkValidityList.add(foreignLanguage1);
-		checkValidityList.add(foreignLanguage2);
-		checkValidityList.add(foreignLanguage3);
-		checkValidityList.add(gradeString);
-		checkValidityList.add(firstName);
-		checkValidityList.add(lastName);
-		checkValidityList.add(gender);
-		checkValidityList.add(birthDay);
-		checkValidityList.add("" + id);
-		checkValidityList.add(religion);
+		Map<String, Boolean> checkValidityMap = new LinkedHashMap<>();
+		checkValidityMap.put(foreignLanguage1, true);
+		checkValidityMap.put(foreignLanguage2, true);
+		checkValidityMap.put(foreignLanguage3, true);
+		checkValidityMap.put(gradeString, false);
+		checkValidityMap.put(firstName, false);
+		checkValidityMap.put(lastName, false);
+		checkValidityMap.put(gender, false);
+		checkValidityMap.put(birthDay, false);
+		checkValidityMap.put("" + id, false);
+		checkValidityMap.put(religion, false);
 
-		if (!checkForValidityOfAttributes(checkValidityList)) {
+		if (!checkForValidityOfAttributes(checkValidityMap)) {
 			return null;
 		}
 
@@ -185,7 +185,6 @@ public final class CSVHandler {
 		foreignLanguage[1] = foreignLanguage2;
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
-		System.out.println(firstName + " " + lastName);
 		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).parent(parent).leavingSchool(false).build();
 	}
 
@@ -207,10 +206,15 @@ public final class CSVHandler {
 		return -1;
 	}
 
-	private static boolean checkForValidityOfAttributes(ArrayList<String> attributeList) {
-		for (String str : attributeList) {
+	private static boolean checkForValidityOfAttributes(Map<String, Boolean> attributes) {
+		for (String str : attributes.keySet()) {
 			if (str.equals("-1")) {
 				return false;
+			}
+			if(!attributes.get(str)){
+				if(str.equals("")){
+					return false;
+				}
 			}
 		}
 		return true;
