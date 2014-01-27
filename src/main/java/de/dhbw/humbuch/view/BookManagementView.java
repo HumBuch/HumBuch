@@ -195,8 +195,8 @@ public class BookManagementView extends VerticalLayout implements View,
 		materialsTable.setContainerDataSource(tableData);
 
 		materialsTable.setVisibleColumns(new Object[] { TABLE_NAME,
-				TABLE_PROFILE, TABLE_FROMGRADE, TABLE_TOGRADE, TABLE_PRODUCER,
-				TABLE_IDENTNR, TABLE_CATEGORY });
+				TABLE_PRODUCER, TABLE_PROFILE, TABLE_FROMGRADE, TABLE_TOGRADE,
+				TABLE_CATEGORY, TABLE_IDENTNR });
 		materialsTable.setColumnHeader(TABLE_CATEGORY, "Kategorie");
 		materialsTable.setColumnHeader(TABLE_NAME, "Titel");
 		materialsTable.setColumnHeader(TABLE_PROFILE, "Profil");
