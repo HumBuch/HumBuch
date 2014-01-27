@@ -30,6 +30,7 @@ public class CSVTest {
 
 			if (encoding != null) {
 				csvReader = new CSVReader(new InputStreamReader(new FileInputStream("./src/test/java/de/dhbw/humbuch/util/schueler_stamm.csv"), encoding), ';', '\'', 0);			
+				System.out.println(encoding);
 			}
 			else{
 				csvReader = new CSVReader(new FileReader("./src/test/java/de/dhbw/humbuch/util/schueler_stamm.csv"), ';', '\'', 0);
