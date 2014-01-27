@@ -50,7 +50,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	/*
-	 * initialize and configure member variables
+	 * Initialize and configure member variables
 	 * */
 	private void init() {
 		treeTableContent = new TreeTable();
@@ -215,8 +215,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * interface to get notified when any selection changes.
 	 * 
 	 * @param observer
-	 *            the class implementing the interface which should be notified
-	 *            of all changes
+	 * 		the class implementing the interface which should be notified of all changes
 	 * */
 	public void registerAsObserver(StudentMaterialSelectorObserver observer) {
 		if (registeredObservers == null) {
@@ -350,6 +349,14 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 	}
 
+	/*
+	 * Updates the table using the provided new data structure and adds or removes all differences between
+	 * the (passed) new structure and currently displayed structure.
+	 * It does not set new structure as member variable of the StudentMaterialSelector!
+	 * 
+	 * @param newGradeAndStudentsWithMaterials
+	 * 		the new structure which should be the basis for the displayed content in the StudentMaterialSelector
+	 * */
 	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		ArrayList<Grade> newGrades = new ArrayList<Grade>(newGradeAndStudentsWithMaterials.keySet());
 		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
@@ -358,7 +365,28 @@ public class StudentMaterialSelector extends CustomComponent {
 		ArrayList<Grade> oldGrades = new ArrayList<Grade>(gradeAndStudentsWithMaterials.keySet());
 		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
-
+		
+		updateGradeNodes(oldGrades, newGrades);
+		updateStudentNodes(oldStudents, newStudents);
+		updateMaterialNodes(oldMaterials, newMaterials);
+		
+		notifyObserver();
+	}
+	
+	/*
+	 * Helper method used by update table. Updates all grades to be displayed by the StudentMaterialSelector.
+	 * When newGrades contains more grade objects than oldGrades grades are added to the TreeTable. When
+	 * oldGrades contains more grade objects than newGrades grades are removed from the TreeTable. When
+	 * newGrades is equals to oldGrades nothing happens.
+	 * This method takes care of setting the corresponding listeners on the added elements and manages
+	 * all internally relevant member variables.
+	 * 
+	 * @param oldGrades
+	 * 		an arraylist containing all currently showing grades
+	 * @param newGrades
+	 * 		an arraylist containing all grades to be displayed after calling this method
+	 * */
+	private void updateGradeNodes(ArrayList<Grade> oldGrades, ArrayList<Grade> newGrades) {
 		if (newGrades.size() > oldGrades.size()) {
 			newGrades.removeAll(oldGrades);
 			for (Grade grade : newGrades) {
@@ -384,7 +412,19 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
-
+	}
+	
+	/*
+	 * Helper method used by update table. @see StudentMaterialSelector.updateGradeNodes
+	 * The newly added student elements are correctly inserted under the corresponding grade element
+	 * in order to maintain a correct hierarchy.
+	 * 
+	 * @param oldStudents
+	 * 		an arraylist containing all currently showing students
+	 * @param newStudents
+	 * 		an arraylist containing all students to be displayed after calling this method
+	 * */
+	private void updateStudentNodes(ArrayList<Student> oldStudents, ArrayList<Student> newStudents) {
 		if (newStudents.size() > oldStudents.size()) {
 			newStudents.removeAll(oldStudents);
 			for (Student student : newStudents) {
@@ -420,7 +460,19 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+	}
 
+	/*
+	 * Helper method used by update table. @see StudentMaterialSelector.updateGradeNodes
+	 * The newly added material elements are correctly inserted under the corresponding student element
+	 * in order to maintain a correct hierarchy.
+	 * 
+	 * @param oldMaterials
+	 * 		an arraylist containing all currently showing materials
+	 * @param newMaterials
+	 * 		an arraylist containing all materials to be displayed after calling this method
+	 * */
+	private void updateMaterialNodes(ArrayList<BorrowedMaterial> oldMaterials, ArrayList<BorrowedMaterial> newMaterials) {
 		if (newMaterials.size() > oldMaterials.size()) {
 			newMaterials.removeAll(oldMaterials);
 			for (BorrowedMaterial material : newMaterials) {
@@ -457,10 +509,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
-
-		notifyObserver();
 	}
-
+	
 	/*
 	 * Helper method which extracts all student objects from a data structure
 	 * @param structure
