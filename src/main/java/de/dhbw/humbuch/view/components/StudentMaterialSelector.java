@@ -21,7 +21,11 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 
-
+/**
+ * TODO: re implemented students as treshold for collapsing / expanding the nodes
+ * TODO: what happens when you want to add a student but the grade hasnt been added
+ * TODO: what happens when you want to add a material but the student hasnt been added
+ * */
 public class StudentMaterialSelector extends CustomComponent {
 
 	private static final long serialVersionUID = -618911643102742679L;
@@ -54,6 +58,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void init() {
 		treeTableContent = new TreeTable();
+		gradeAndStudentsWithMaterials = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		allCheckBoxesWithId = new HashMap<CheckBox, Object>();
 		allGradeCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allStudentCheckBoxes = new LinkedHashMap<CheckBox, Object>();
@@ -140,7 +145,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	/**
-	 * Call this method when the data which you want to display with the
+	 * Call this method when the data which you want to display within the
 	 * StudentMaterialSelector changes. This methods not only saves the new data
 	 * in a member variable but also updates the TreeTable which is responsible
 	 * for showing the data.
@@ -154,8 +159,9 @@ public class StudentMaterialSelector extends CustomComponent {
 			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
 		}
 		else {
+			updateTable(newGradeAndStudentsWithMaterials);
 			this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
-			buildTable(newGradeAndStudentsWithMaterials);
+//			buildTable(newGradeAndStudentsWithMaterials);
 		}
 	}
 
@@ -232,12 +238,15 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * case-insensitve and filters for the firstname and lastname of any student
 	 * in the StudentMaterialSelector. It does not only saves the filter string
 	 * in a member variable but updates the TreeTable to only show students
-	 * matching the filter.
+	 * matching the filter. When passing null it is treated as an empty string.
 	 * 
 	 * @param filterString
 	 *            the string on which filtering should be based upon
 	 * */
 	public void setFilterString(String filterString) {
+		if(filterString == null) {
+			filterString = "";
+		}
 		this.filterString = filterString;
 		filterTableContent();
 	}
@@ -248,16 +257,10 @@ public class StudentMaterialSelector extends CustomComponent {
 			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 			for (Student student : entry.keySet()) {
-				boolean matchesFilter = false;
-
 				// match firstname and lastname ignoring case
 				String fullName = student.getFirstname() + " " + student.getLastname();
 				fullName = fullName.toLowerCase();
 				if (fullName.contains(filterString.toLowerCase())) {
-					matchesFilter = true;
-				}
-
-				if (matchesFilter) {
 					filteredEntries.put(student, entry.get(student));
 				}
 			}
@@ -266,86 +269,33 @@ public class StudentMaterialSelector extends CustomComponent {
 				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
 			}
 		}
-		buildTable(gradeAndStudentsWithMaterialsFiltered);
+		rebuildTable(gradeAndStudentsWithMaterialsFiltered);
 	}
-
-	private void buildTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> currentGradeAndStudentsWithMaterials) {
-		if (treeTableContent.removeAllItems()) {
-			if (currentGradeAndStudentsWithMaterials == null ||
-					currentGradeAndStudentsWithMaterials.isEmpty()) {
-				return;
-			}
-			allCheckBoxesWithId.clear();
-			Set<Grade> grades = currentGradeAndStudentsWithMaterials.keySet();
-
-			boolean collapsed = true;
-			ArrayList<Student> allStudents = getAllStudentsFromStructure(currentGradeAndStudentsWithMaterials);
-			if (allStudents.size() <= MAX_STUDENTS_BEFORE_COLLAPSE) {
-				collapsed = false;
-			}
-
-			// Add all grades as roots
-			for (Grade grade : grades) {
-
-				final CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
-				checkBoxGrade.setData(grade);
-				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
-				treeTableContent.setCollapsed(gradeItemId, collapsed);
-
-				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
-				allGradeCheckBoxes.put(checkBoxGrade, gradeItemId);
-				List<Student> students = getAllStudentsForGrade(grade, currentGradeAndStudentsWithMaterials);
-
-				// Collect all student checkboxes for selecting purposes
-				final ArrayList<CheckBox> studentCheckBoxes = new ArrayList<CheckBox>();
-				// Add all students below the grade level 
-				for (final Student student : students) {
-					final CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
-					checkBoxStudent.setData(student);
-
-					studentCheckBoxes.add(checkBoxStudent);
-
-					Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
-					treeTableContent.setParent(studentItemId, gradeItemId);
-
-					allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
-					allStudentCheckBoxes.put(checkBoxStudent, studentItemId);
-					List<BorrowedMaterial> materials = currentGradeAndStudentsWithMaterials.get(grade).get(student);
-					if (materials == null) {
-						LOG.warn("Borrowed Materials for Student " + student.getFirstname() + " " + student.getLastname() + " are null");
-						continue;
-					}
-
-					// Collect all borrowed materials checkboxes for selecting purposes
-					final ArrayList<CheckBox> borrowedMaterialCheckBoxes = new ArrayList<CheckBox>();
-					for (final BorrowedMaterial material : materials) {
-						final CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
-						checkBoxMaterial.setData(material);
-
-						borrowedMaterialCheckBoxes.add(checkBoxMaterial);
-
-						Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
-						treeTableContent.setParent(materialItemId, studentItemId);
-						treeTableContent.setChildrenAllowed(materialItemId, false);
-
-						allCheckBoxesWithId.put(checkBoxMaterial, materialItemId);
-						allMaterialCheckBoxes.put(checkBoxMaterial, materialItemId);
-
-						// Whenever a borrowed material changes its value change the Set with all selected materials
-						checkBoxMaterial.addValueChangeListener(materialListener);
-					}
-
-					// Whenever the student changes its value it changes all materials
-					checkBoxStudent.addValueChangeListener(studentListener);
+	
+	/*
+	 * Helper method used for rebuilding the TreeTable. It removes all items currently showing and resets the member variables
+	 * holding information about the current state. It adds all grades, students and materials within the provided structure to the
+	 * newly build TreeTable.
+	 *
+	 * @param newGradeAndStudentsWithMaterials
+	 * 		the new data structure which should be visualized by the StudentMaterialSelector
+	 * */
+	private void rebuildTable(LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentWithMaterials) {
+		treeTableContent.removeAllItems();
+		allCheckBoxesWithId.clear();
+		allGradeCheckBoxes.clear();
+		allStudentCheckBoxes.clear();
+		allMaterialCheckBoxes.clear();
+		
+		for(Grade grade : newGradeAndStudentWithMaterials.keySet()) {
+			addGradeToTree(grade);
+			Map<Student, List<BorrowedMaterial>> entry = newGradeAndStudentWithMaterials.get(grade);
+			for(Student student : entry.keySet()) {
+				addStudentToTree(student);
+				for(BorrowedMaterial material : entry.get(student)) {
+					addMaterialToTree(material);
 				}
-
-				// Whenever the grade changes its value it changes all students
-				checkBoxGrade.addValueChangeListener(gradeListener);
 			}
-		}
-		else {
-			LOG.warn("Could not remove all items from TreeTable in StudentMaterialSelector. "
-					+ "Continuing without changing the displayed data.");
 		}
 	}
 
@@ -358,6 +308,10 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * 		the new structure which should be the basis for the displayed content in the StudentMaterialSelector
 	 * */
 	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
+		if(newGradeAndStudentsWithMaterials == null ||
+				gradeAndStudentsWithMaterials == null) {
+			return;
+		}
 		ArrayList<Grade> newGrades = new ArrayList<Grade>(newGradeAndStudentsWithMaterials.keySet());
 		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> newMaterials = getAllMaterialsFromStructure(newGradeAndStudentsWithMaterials);
@@ -366,6 +320,9 @@ public class StudentMaterialSelector extends CustomComponent {
 		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
 		
+		System.out.println("== update table");
+		System.out.println("old_grades: " + oldGrades.size() + " / old_students: " + oldStudents.size() + " / old_mats: " + oldMaterials.size());
+		System.out.println("new_grades: " + newGrades.size() + " / new_students: " + newStudents.size() + " / new_mats: " + newMaterials.size());
 		updateGradeNodes(oldGrades, newGrades);
 		updateStudentNodes(oldStudents, newStudents);
 		updateMaterialNodes(oldMaterials, newMaterials);
@@ -374,7 +331,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 	
 	/*
-	 * Helper method used by update table. Updates all grades to be displayed by the StudentMaterialSelector.
+	 * Helper method used for updating the TreeTable. Updates all grades to be displayed by the StudentMaterialSelector.
 	 * When newGrades contains more grade objects than oldGrades grades are added to the TreeTable. When
 	 * oldGrades contains more grade objects than newGrades grades are removed from the TreeTable. When
 	 * newGrades is equals to oldGrades nothing happens.
@@ -390,13 +347,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (newGrades.size() > oldGrades.size()) {
 			newGrades.removeAll(oldGrades);
 			for (Grade grade : newGrades) {
-				CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
-				checkBoxGrade.setData(grade);
-				checkBoxGrade.addValueChangeListener(gradeListener);
-				Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
-
-				allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
-				allGradeCheckBoxes.put(checkBoxGrade, gradeItemId);
+				addGradeToTree(grade);
 			}
 		}
 		else if (newGrades.size() < oldGrades.size()) {
@@ -405,6 +356,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				for (CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
 					if (checkBoxGrade.getData().equals(grade)) {
 						treeTableContent.removeItem(allGradeCheckBoxes.get(checkBoxGrade));
+						
 						allGradeCheckBoxes.remove(checkBoxGrade);
 						allCheckBoxesWithId.remove(checkBoxGrade);
 						break;
@@ -414,10 +366,27 @@ public class StudentMaterialSelector extends CustomComponent {
 		}
 	}
 	
+	
+	/*
+	 * Helper method used to update or rebuild or the TreeTable.
+	 * This method takes care of adding the grade to the tree and storing 
+	 * all information in the corresponding member variables.
+	 * */
+	private void addGradeToTree(Grade grade) {
+		if(grade == null) {
+			return;
+		}
+		CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
+		checkBoxGrade.setData(grade);
+		checkBoxGrade.addValueChangeListener(gradeListener);
+		Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
+
+		allCheckBoxesWithId.put(checkBoxGrade, gradeItemId);
+		allGradeCheckBoxes.put(checkBoxGrade, gradeItemId);
+	}
+	
 	/*
 	 * Helper method used by update table. @see StudentMaterialSelector.updateGradeNodes
-	 * The newly added student elements are correctly inserted under the corresponding grade element
-	 * in order to maintain a correct hierarchy.
 	 * 
 	 * @param oldStudents
 	 * 		an arraylist containing all currently showing students
@@ -428,23 +397,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (newStudents.size() > oldStudents.size()) {
 			newStudents.removeAll(oldStudents);
 			for (Student student : newStudents) {
-				CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
-				checkBoxStudent.setData(student);
-				checkBoxStudent.addValueChangeListener(studentListener);
-				Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
-
-				Object parentGradeItemId = null;
-				for (CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
-					Grade grade = (Grade) checkBoxGrade.getData();
-					if (grade.equals(student.getGrade())) {
-						parentGradeItemId = allGradeCheckBoxes.get(checkBoxGrade);
-						break;
-					}
-				}
-				treeTableContent.setParent(studentItemId, parentGradeItemId);
-
-				allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
-				allStudentCheckBoxes.put(checkBoxStudent, studentItemId);
+				addStudentToTree(student);
 			}
 		}
 		else if (newStudents.size() < oldStudents.size()) {
@@ -461,11 +414,36 @@ public class StudentMaterialSelector extends CustomComponent {
 			}
 		}
 	}
+	
+	/*
+	 * @see StudentMaterialSelector.addGradeToTree(Grade grade)
+	 * This method takes care of putting the student under right grade to maintain a valid hierarchy.
+	 * */
+	private void addStudentToTree(Student student) {
+		if(student == null) {
+			return;
+		}
+		CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
+		checkBoxStudent.setData(student);
+		checkBoxStudent.addValueChangeListener(studentListener);
+		Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
+
+		Object parentGradeItemId = null;
+		for (CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
+			Grade grade = (Grade) checkBoxGrade.getData();
+			if (grade.equals(student.getGrade())) {
+				parentGradeItemId = allGradeCheckBoxes.get(checkBoxGrade);
+				break;
+			}
+		}
+		treeTableContent.setParent(studentItemId, parentGradeItemId);
+
+		allCheckBoxesWithId.put(checkBoxStudent, studentItemId);
+		allStudentCheckBoxes.put(checkBoxStudent, studentItemId);
+	}
 
 	/*
 	 * Helper method used by update table. @see StudentMaterialSelector.updateGradeNodes
-	 * The newly added material elements are correctly inserted under the corresponding student element
-	 * in order to maintain a correct hierarchy.
 	 * 
 	 * @param oldMaterials
 	 * 		an arraylist containing all currently showing materials
@@ -476,24 +454,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (newMaterials.size() > oldMaterials.size()) {
 			newMaterials.removeAll(oldMaterials);
 			for (BorrowedMaterial material : newMaterials) {
-				CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
-				checkBoxMaterial.setData(material);
-				checkBoxMaterial.addValueChangeListener(materialListener);
-				Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
-				treeTableContent.setChildrenAllowed(materialItemId, false);
-
-				Object parentStudentItemId = null;
-				for (CheckBox checkBoxStudent : allStudentCheckBoxes.keySet()) {
-					Student student = (Student) checkBoxStudent.getData();
-					if (student.equals(material.getStudent())) {
-						parentStudentItemId = allStudentCheckBoxes.get(checkBoxStudent);
-						break;
-					}
-				}
-				treeTableContent.setParent(materialItemId, parentStudentItemId);
-
-				allCheckBoxesWithId.put(checkBoxMaterial, materialItemId);
-				allMaterialCheckBoxes.put(checkBoxMaterial, materialItemId);
+				addMaterialToTree(material);
 			}
 		}
 		else if (newMaterials.size() < oldMaterials.size()) {
@@ -509,6 +470,31 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+	}
+	
+	/*
+	 * @see StudentMaterialSelector.addGradeToTree(Grade grade)
+	 * This method takes care of putting the material under right student to maintain a valid hierarchy.
+	 * */
+	private void addMaterialToTree(BorrowedMaterial material) {
+		CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
+		checkBoxMaterial.setData(material);
+		checkBoxMaterial.addValueChangeListener(materialListener);
+		Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
+		treeTableContent.setChildrenAllowed(materialItemId, false);
+
+		Object parentStudentItemId = null;
+		for (CheckBox checkBoxStudent : allStudentCheckBoxes.keySet()) {
+			Student student = (Student) checkBoxStudent.getData();
+			if (student.equals(material.getStudent())) {
+				parentStudentItemId = allStudentCheckBoxes.get(checkBoxStudent);
+				break;
+			}
+		}
+		treeTableContent.setParent(materialItemId, parentStudentItemId);
+
+		allCheckBoxesWithId.put(checkBoxMaterial, materialItemId);
+		allMaterialCheckBoxes.put(checkBoxMaterial, materialItemId);
 	}
 	
 	/*
