@@ -112,28 +112,43 @@ public class DunningView extends VerticalLayout implements View,
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(false);
 					buttonShowDunning.setEnabled(false);
+					buttonShowDunning.removeStyleName("default");
+					buttonSecondDunning.removeStyleName("default");
+					buttonNewDunning.removeStyleName("default");
 					return;
 				}
 				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
 				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(true);
+					buttonNewDunning.addStyleName("default");
 					buttonSecondDunning.setEnabled(false);
+					buttonSecondDunning.removeStyleName("default");
 					buttonShowDunning.setEnabled(false);
+					buttonShowDunning.removeStyleName("default");
 				}
 				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
 					buttonNewDunning.setEnabled(false);
+					buttonNewDunning.removeStyleName("default");
 					buttonSecondDunning.setEnabled(true);
+					buttonSecondDunning.addStyleName("default");
 					buttonShowDunning.setEnabled(false);
+					buttonShowDunning.removeStyleName("default");
 				}
 				else if(selectedDunning.getStatus() == Dunning.Status.SENT) {
 					buttonShowDunning.setEnabled(true);
+					buttonShowDunning.addStyleName("default");
 					buttonNewDunning.setEnabled(false);
+					buttonNewDunning.removeStyleName("default");
 					buttonSecondDunning.setEnabled(false);
+					buttonSecondDunning.removeStyleName("default");
 				}
 				else {
 					buttonNewDunning.setEnabled(false);
 					buttonSecondDunning.setEnabled(false);
 					buttonShowDunning.setEnabled(false);
+					buttonShowDunning.removeStyleName("default");
+					buttonSecondDunning.removeStyleName("default");
+					buttonNewDunning.removeStyleName("default");
 				}
 			}
 		});
@@ -201,6 +216,9 @@ public class DunningView extends VerticalLayout implements View,
 		buttonNewDunning.setEnabled(false);
 		buttonSecondDunning.setEnabled(false);
 		buttonShowDunning.setEnabled(false);
+		buttonShowDunning.removeStyleName("default");
+		buttonSecondDunning.removeStyleName("default");
+		buttonNewDunning.removeStyleName("default");
 	}
 
 	private void init() {
@@ -228,8 +246,8 @@ public class DunningView extends VerticalLayout implements View,
 		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
 		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
 		horizontalLayoutButtonBar.addComponent(buttonShowDunning);
-		addComponent(tableDunnings);
 		addComponent(horizontalLayoutButtonBar);
+		addComponent(tableDunnings);
 	}
 
 

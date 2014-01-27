@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -42,7 +44,12 @@ public final class CSVHandler {
 			CSVReader csvReader = csvReaderParam;
 
 			Properties csvHeaderProperties = readCSVConfigurationFile();
+			Map<String, String> csvHeaderPropertyStrings = new LinkedHashMap<>();
 
+			for(Object property : csvHeaderProperties.keySet()){
+				csvHeaderPropertyStrings.put(((String) property).replaceAll("\\p{C}", ""), csvHeaderProperties.getProperty((String) property));
+			}
+			
 			List<String[]> allRecords = csvReader.readAll();
 			Iterator<String[]> allRecordsIterator = allRecords.iterator();
 			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
@@ -51,14 +58,15 @@ public final class CSVHandler {
 				String[] headerRecord = allRecordsIterator.next();
 
 				for (int i = 0; i < headerRecord.length; i++) {
-					headerIndexMap.put(headerRecord[i], i);
+					// removes all non-printable characters 
+					headerIndexMap.put(headerRecord[i].replaceAll("\\p{C}", ""), i);
 				}
 			}
 
 			while (allRecordsIterator.hasNext()) {
 				String[] record = allRecordsIterator.next();
 
-				Student student = createStudentObject(record, csvHeaderProperties, headerIndexMap);
+				Student student = createStudentObject(record, csvHeaderPropertyStrings, headerIndexMap);
 				if (student != null) {
 					studentArrayList.add(student);
 				}
@@ -79,6 +87,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
+			
 			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
 		}
 		catch (FileNotFoundException e) {
@@ -98,7 +107,7 @@ public final class CSVHandler {
 	 *            is one line of the loaded csv-file
 	 * @return Student
 	 */
-	private static Student createStudentObject(String[] record, Properties properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
+	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
 		String foreignLanguage1, foreignLanguage2, foreignLanguage3, gradeString, firstName, lastName, gender, birthDay, religion;
 		int id;
 
@@ -176,12 +185,13 @@ public final class CSVHandler {
 		foreignLanguage[1] = foreignLanguage2;
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
-
+		System.out.println(firstName + " " + lastName);
 		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).parent(parent).leavingSchool(false).build();
 	}
 
-	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
-		String headerValue = (String) properties.getProperty(attributeName);
+	private static int getAttributeNameToHeaderIndex(Map<String, String> properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
+		String headerValue = (String) properties.get(attributeName);
+
 		if (headerValue != null) {
 			int indexHeader = -1;
 			if (indexMap.get(headerValue) != null) {

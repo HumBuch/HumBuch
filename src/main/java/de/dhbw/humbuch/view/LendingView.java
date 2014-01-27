@@ -3,14 +3,17 @@ package de.dhbw.humbuch.view;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +126,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		subMenuItemClassList.setEnabled(false);
 		subMenuItemStudentList = menuItemPrinting.addItem("Schülerliste", menuCommandStudentList);
 		subMenuItemStudentList.setEnabled(false);
-		
+
 		studentMaterialSelector.registerAsObserver(this);
 		studentMaterialSelector.setSizeFull();
 
@@ -171,9 +174,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
-				for(Grade g : studentMaterialSelector.getCurrentlySelectedGrades()) {
-					System.out.println("grade: " + g.getGrade() + g.getSuffix());
-				}
 				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
 			}
 		};
@@ -277,7 +277,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private void doStudentListPrinting() {
 
-		Map<Student, List<BorrowedMaterial>> informationForPdf = getPdfInformationFromStundentMaterialSelector();
+		LinkedHashMap<Student, List<BorrowedMaterial>> informationForPdf = getPdfInformationFromStundentMaterialSelector();
 
 		if (informationForPdf != null) {
 			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
@@ -296,26 +296,53 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		}
 	}
 
-	private Map<Student, List<BorrowedMaterial>> getPdfInformationFromStundentMaterialSelector() {
-		Set<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-		Map<Student, List<BorrowedMaterial>> informationForPdf = new HashMap<Student, List<BorrowedMaterial>>();
+	private LinkedHashMap<Student, List<BorrowedMaterial>> getPdfInformationFromStundentMaterialSelector() {
+		HashSet<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Student> allSelectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
+		LinkedHashMap<Student, List<BorrowedMaterial>> studentsWithMaterials = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 
-		for (BorrowedMaterial material : allSelectedMaterials) {
-			Student student = material.getStudent();
-			List<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
-
-			if (informationForPdf.containsKey(student)) {
-				materials = informationForPdf.get(student);
-				materials.add(material);
-				informationForPdf.put(student, materials);
+		// Sort for grades and students
+		TreeMap<Grade, List<Student>> treeToSortForGrades = new TreeMap<Grade, List<Student>>();
+		for (Student student : allSelectedStudents) {
+			if (treeToSortForGrades.containsKey(student.getGrade())) {
+				List<Student> studentsInGrade = treeToSortForGrades.get(student.getGrade());
+				if (studentsInGrade.contains(student)) {
+					continue;
+				}
+				studentsInGrade.add(student);
+				Collections.sort(studentsInGrade);
+				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
 			}
 			else {
-				materials.add(material);
-				informationForPdf.put(student, materials);
+				List<Student> studentList = new ArrayList<Student>();
+				studentList.add(student);
+				treeToSortForGrades.put(student.getGrade(), studentList);
 			}
 		}
 
-		return informationForPdf;
+		// Extract all the informationen needed to create the pdf
+		for (Grade grade : treeToSortForGrades.keySet()) {
+			List<Student> studentsInGrade = treeToSortForGrades.get(grade);
+			for (Student student : studentsInGrade) {
+				for (BorrowedMaterial material : allSelectedMaterials) {
+					if (student.equals(material.getStudent())) {
+						if (studentsWithMaterials.containsKey(student)) {
+							List<BorrowedMaterial> currentlyAddedMaterials = studentsWithMaterials.get(student);
+							currentlyAddedMaterials.add(material);
+							Collections.sort(currentlyAddedMaterials);
+							studentsWithMaterials.put(student, currentlyAddedMaterials);
+						}
+						else {
+							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
+							materialList.add(material);
+							studentsWithMaterials.put(student, materialList);
+						}
+					}
+				}
+			}
+		}
+
+		return studentsWithMaterials;
 	}
 
 	@Override
