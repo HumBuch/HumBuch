@@ -109,7 +109,9 @@ public final class CSVHandler {
 	 */
 	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
 		String foreignLanguage1, foreignLanguage2, foreignLanguage3, gradeString, firstName, lastName, gender, birthDay, religion;
+		String parentTitle, parentLastName, parentFirstName, parentStreet, parentPlace;
 		int id;
+		int parentPostalcode;
 
 		try {
 			foreignLanguage1 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage1")];
@@ -132,12 +134,12 @@ public final class CSVHandler {
 
 		Parent parent = null;
 		try {
-			String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
-			String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
-			String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
-			String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
-			int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
-			String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
+			parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
+			parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
+			parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
+			parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
+			parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
+			parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
 
 			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
 					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
@@ -164,6 +166,13 @@ public final class CSVHandler {
 		checkValidityMap.put(birthDay, false);
 		checkValidityMap.put("" + id, false);
 		checkValidityMap.put(religion, false);
+		checkValidityMap.put(parentTitle, false);
+		checkValidityMap.put(parentLastName, false);
+		checkValidityMap.put(parentFirstName, false);
+		checkValidityMap.put(parentStreet, false);
+		checkValidityMap.put(""+parentPostalcode, false);
+		checkValidityMap.put(parentPlace, false);
+
 
 		if (!checkForValidityOfAttributes(checkValidityMap)) {
 			return null;
