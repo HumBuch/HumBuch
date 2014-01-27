@@ -51,7 +51,8 @@ public final class CSVHandler {
 				String[] headerRecord = allRecordsIterator.next();
 
 				for (int i = 0; i < headerRecord.length; i++) {
-					headerIndexMap.put(headerRecord[i], i);
+					// removes all non-printable characters 
+					headerIndexMap.put(headerRecord[i].replaceAll("\\p{C}", ""), i);
 				}
 			}
 
