@@ -80,6 +80,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
+			
 			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
 		}
 		catch (FileNotFoundException e) {
@@ -183,6 +184,7 @@ public final class CSVHandler {
 
 	private static int getAttributeNameToHeaderIndex(Properties properties, HashMap<String, Integer> indexMap, String attributeName) throws UnsupportedOperationException {
 		String headerValue = (String) properties.getProperty(attributeName);
+
 		if (headerValue != null) {
 			int indexHeader = -1;
 			if (indexMap.get(headerValue) != null) {
