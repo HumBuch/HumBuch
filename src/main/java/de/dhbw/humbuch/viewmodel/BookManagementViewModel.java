@@ -23,32 +23,19 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class BookManagementViewModel {
 
-	public interface TeachingMaterials extends
-			State<Collection<TeachingMaterial>> {
-	}
+	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}
+	public interface Categories extends State<Collection<Category>> {}
 
-	public interface Categories extends State<Collection<Category>> {
-	}
-
-	public interface DoUpdateTeachingMaterial extends ActionHandler {
-	}
-
-	public interface DoFetchTeachingMaterial extends ActionHandler {
-	}
-
-	public interface DoDeleteTeachingMaterial extends ActionHandler {
-	}
-
-	public interface DoUpdateCategory extends ActionHandler {
-	}
+	public interface DoUpdateTeachingMaterial extends ActionHandler {}
+	public interface DoFetchTeachingMaterial extends ActionHandler {}
+	public interface DoDeleteTeachingMaterial extends ActionHandler {}
+	public interface DoUpdateCategory extends ActionHandler {}
 
 	@ProvidesState(TeachingMaterials.class)
-	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
-			Collection.class);
+	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
 
 	@ProvidesState(Categories.class)
-	public final State<Collection<Category>> categories = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Category>> categories = new BasicState<>(	Collection.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
@@ -81,7 +68,8 @@ public class BookManagementViewModel {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
-	private void updateCategories() {
+	// TODO Q&D: have to be changed after "data has changed"-system is implemented
+	public void updateCategories() {
 		categories.set(daoCategory.findAll());
 	}
 
