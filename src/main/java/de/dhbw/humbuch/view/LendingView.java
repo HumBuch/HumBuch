@@ -455,6 +455,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	public void enter(ViewChangeEvent event) {
 		// TODO Q&D: have to be changed after "data has changed"-system is implemented
 		lendingViewModel.updateTeachingMaterials();
+		studentMaterialSelector.setFilterMaterialType(MaterialType.ALL_MATERIALS);
 	}
 
 	@Override
