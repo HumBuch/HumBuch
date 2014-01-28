@@ -14,8 +14,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import com.google.inject.Inject;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
@@ -25,7 +23,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -43,7 +40,6 @@ import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
-import de.dhbw.humbuch.view.components.StudentMaterialSelector.MaterialType;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
 
@@ -58,16 +54,13 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
 	private static final String FILTER_STUDENT = "Schüler filtern";
-	private static final String FILTER_MATERIAL = "Materialien filtern";
 
 	private HorizontalLayout horizontalLayoutHeaderBar;
-	private HorizontalLayout horizontalLayoutFilter;
 	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
 	private TextField textFieldStudentFilter;
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
-	private ComboBox comboBoxMaterialTypes;
 	private ReturnViewModel returnViewModel;
 
 	@BindState(ReturnListStudent.class)
@@ -83,23 +76,17 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	private void init() {
 		horizontalLayoutHeaderBar = new HorizontalLayout();
-		horizontalLayoutFilter = new HorizontalLayout();
 		horizontalLayoutActions = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_RETURNING);
 		buttonStudentList = new Button(STUDENT_LIST);
 		textFieldStudentFilter = new TextField(FILTER_STUDENT);
-		comboBoxMaterialTypes = new ComboBox(FILTER_MATERIAL);
-		
+
 		buttonSaveSelectedData.setEnabled(false);
 		buttonStudentList.setEnabled(false);
 
 		studentMaterialSelector.registerAsObserver(this);
 		studentMaterialSelector.setSizeFull();
-		
-		initMaterialTypesFilter();
-		comboBoxMaterialTypes.setWidth("100%");
-		comboBoxMaterialTypes.setImmediate(true);
 
 		updateReturnList();
 
@@ -108,26 +95,20 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	private void buildLayout() {
 		horizontalLayoutHeaderBar.setWidth("100%");
-		horizontalLayoutFilter.setSpacing(true);
+		horizontalLayoutHeaderBar.setSpacing(true);
 		horizontalLayoutActions.setSpacing(true);
 
 		setSizeFull();
 		setSpacing(true);
 		setMargin(true);
 
-		horizontalLayoutFilter.addComponent(textFieldStudentFilter);
-		horizontalLayoutFilter.addComponent(comboBoxMaterialTypes);
-		horizontalLayoutFilter.setComponentAlignment(textFieldStudentFilter, Alignment.BOTTOM_CENTER);
-		horizontalLayoutFilter.setComponentAlignment(comboBoxMaterialTypes, Alignment.BOTTOM_CENTER);
-
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
 		horizontalLayoutActions.addComponent(buttonStudentList);
 		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.BOTTOM_CENTER);
 		horizontalLayoutActions.setComponentAlignment(buttonStudentList, Alignment.BOTTOM_CENTER);
 
-		horizontalLayoutHeaderBar.addComponent(horizontalLayoutFilter);
+		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
-		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutFilter, Alignment.BOTTOM_LEFT);
 		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.BOTTOM_RIGHT);
 
 		addComponent(horizontalLayoutHeaderBar);
@@ -135,30 +116,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 
-	private void initMaterialTypesFilter() {
-		for(MaterialType materialType : MaterialType.values()) {
-			comboBoxMaterialTypes.addItem(materialType);
-			
-		}
-		
-		comboBoxMaterialTypes.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 2856861736991833862L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				MaterialType materialType = (MaterialType) comboBoxMaterialTypes.getValue();
-				if(materialType == null) {
-					materialType = MaterialType.ALL_MATERIALS;
-					comboBoxMaterialTypes.setValue(MaterialType.ALL_MATERIALS);
-				}
-				studentMaterialSelector.setFilterMaterialType(materialType);
-			}
-		});
-		
-		comboBoxMaterialTypes.setValue(MaterialType.ALL_MATERIALS);
-		studentMaterialSelector.setFilterMaterialType(MaterialType.ALL_MATERIALS);
-	}
-	
 	private void addListeners() {
 		gradeAndStudentsWithMaterials.addStateChangeListener(new StateChangeListener() {
 
