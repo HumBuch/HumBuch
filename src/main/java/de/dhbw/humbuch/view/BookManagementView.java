@@ -168,7 +168,7 @@ public class BookManagementView extends VerticalLayout implements View,
 		btnNew = new Button("Hinzufügen");
 		buttons.addComponent(btnNew);
 
-		// Delte
+		// Delete
 		btnDelete = new Button("Löschen");
 		btnDelete.setEnabled(false);
 		buttons.addComponent(btnDelete);
@@ -476,12 +476,16 @@ public class BookManagementView extends VerticalLayout implements View,
 		 */
 		filter.addTextChangeListener(new TextChangeListener() {
 			private static final long serialVersionUID = -1684545652234105334L;
-
+			
 			@Override
 			public void textChange(TextChangeEvent event) {
-				Filter filter = new Or(new SimpleStringFilter(TABLE_NAME, event
-						.getText(), true, false), new SimpleStringFilter(
-						TABLE_PRODUCER, event.getText(), true, false));
+				String text = event.getText();
+				Filter filter = new Or(new SimpleStringFilter(TABLE_NAME, text, true, false), 
+						new SimpleStringFilter(TABLE_PRODUCER, text, true, false), 
+						new SimpleStringFilter(TABLE_CATEGORY,text,true,false), 
+						new SimpleStringFilter(TABLE_FROMGRADE,text,true,false), 
+						new SimpleStringFilter(TABLE_TOGRADE,text,true,false), 
+						new SimpleStringFilter(TABLE_IDENTNR,text,true,false));
 				tableData.removeAllContainerFilters();
 				tableData.addContainerFilter(filter);
 			}
@@ -592,7 +596,8 @@ public class BookManagementView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Q&D: have to be changed after "data has changed"-system is implemented
+		// TODO Q&D: have to be changed after "data has changed"-system is
+		// implemented
 		bookManagementViewModel.updateCategories();
 	}
 
