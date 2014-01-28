@@ -46,10 +46,10 @@ public final class CSVHandler {
 			Properties csvHeaderProperties = readCSVConfigurationFile();
 			Map<String, String> csvHeaderPropertyStrings = new LinkedHashMap<>();
 
-			for(Object property : csvHeaderProperties.keySet()){
+			for (Object property : csvHeaderProperties.keySet()) {
 				csvHeaderPropertyStrings.put(((String) property).replaceAll("\\p{C}", ""), csvHeaderProperties.getProperty((String) property));
 			}
-			
+
 			List<String[]> allRecords = csvReader.readAll();
 			Iterator<String[]> allRecordsIterator = allRecords.iterator();
 			HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
@@ -63,10 +63,12 @@ public final class CSVHandler {
 				}
 			}
 
+			int index = 0;
 			while (allRecordsIterator.hasNext()) {
 				String[] record = allRecordsIterator.next();
-
-				Student student = createStudentObject(record, csvHeaderPropertyStrings, headerIndexMap);
+				
+				index++;
+				Student student = createStudentObject(record, csvHeaderPropertyStrings, headerIndexMap, index);
 				if (student != null) {
 					studentArrayList.add(student);
 				}
@@ -87,7 +89,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
-			
+
 			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
 		}
 		catch (FileNotFoundException e) {
@@ -105,11 +107,14 @@ public final class CSVHandler {
 	 * 
 	 * @param record
 	 *            is one line of the loaded csv-file
+	 * @param dataSetIndex 
 	 * @return Student
 	 */
-	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
+	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index, int dataSetIndex) throws UnsupportedOperationException {
 		String foreignLanguage1, foreignLanguage2, foreignLanguage3, gradeString, firstName, lastName, gender, birthDay, religion;
+		String parentTitle, parentLastName, parentFirstName, parentStreet, parentPlace;
 		int id;
+		int parentPostalcode;
 
 		try {
 			foreignLanguage1 = record[getAttributeNameToHeaderIndex(properties, index, "foreignLanguage1")];
@@ -124,49 +129,60 @@ public final class CSVHandler {
 			religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
 		}
 		catch (ArrayIndexOutOfBoundsException a) {
-			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden.");
+			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden. Fehler in Datensatz: " + dataSetIndex);
 		}
-		catch(NumberFormatException e){
-			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+		catch (NumberFormatException e) {
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer. Fehler in Datensatz: " + dataSetIndex);
 		}
 
 		Parent parent = null;
 		try {
-			String parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
-			String parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
-			String parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
-			String parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
-			int parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
-			String parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
+			parentTitle = record[getAttributeNameToHeaderIndex(properties, index, "parentTitle")];
+			parentLastName = record[getAttributeNameToHeaderIndex(properties, index, "parentLastName")];
+			parentFirstName = record[getAttributeNameToHeaderIndex(properties, index, "parentFirstName")];
+			parentStreet = record[getAttributeNameToHeaderIndex(properties, index, "parentStreet")];
+			parentPostalcode = Integer.parseInt(record[getAttributeNameToHeaderIndex(properties, index, "parentPostalcode")]);
+			parentPlace = record[getAttributeNameToHeaderIndex(properties, index, "parentPlace")];
 
 			parent = new Parent.Builder(parentFirstName, parentLastName).title(parentTitle)
 					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
 		}
 		catch (NullPointerException e) {
-			System.err.println("Could not create parent object to student");
-			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler");
+			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler. Fehler in Datensatz: " + dataSetIndex);
 		}
-		catch(ArrayIndexOutOfBoundsException e){
-			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
+		catch (ArrayIndexOutOfBoundsException e) {
+			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen. Fehler in Datensatz: " + dataSetIndex);
 		}
-		catch(NumberFormatException e){
-			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+		catch (NumberFormatException e) {
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.Fehler in Datensatz: " + dataSetIndex);
 		}
 
-		ArrayList<String> checkValidityList = new ArrayList<String>();
-		checkValidityList.add(foreignLanguage1);
-		checkValidityList.add(foreignLanguage2);
-		checkValidityList.add(foreignLanguage3);
-		checkValidityList.add(gradeString);
-		checkValidityList.add(firstName);
-		checkValidityList.add(lastName);
-		checkValidityList.add(gender);
-		checkValidityList.add(birthDay);
-		checkValidityList.add("" + id);
-		checkValidityList.add(religion);
+		Map<String, Boolean> checkValidityMap = new LinkedHashMap<>();
+		checkValidityMap.put(foreignLanguage1, true);
+		checkValidityMap.put(foreignLanguage2, true);
+		checkValidityMap.put(foreignLanguage3, true);
+		checkValidityMap.put(gradeString, false);
+		checkValidityMap.put(firstName, false);
+		checkValidityMap.put(lastName, false);
+		checkValidityMap.put(gender, false);
+		checkValidityMap.put(birthDay, false);
+		checkValidityMap.put("" + id, false);
+		checkValidityMap.put(religion, false);
+		checkValidityMap.put(parentTitle, false);
+		checkValidityMap.put(parentLastName, false);
+		checkValidityMap.put(parentFirstName, false);
+		checkValidityMap.put(parentStreet, false);
+		checkValidityMap.put("" + parentPostalcode, false);
+		checkValidityMap.put(parentPlace, false);
 
-		if (!checkForValidityOfAttributes(checkValidityList)) {
-			return null;
+		String check = checkForValidityOfAttributes(checkValidityMap);
+		if (!check.equals("okay")) {
+			if(check.equals("error")){
+				throw new UnsupportedOperationException("Mindestens ein Studenten-Datensatz war korrumpiert. Fehler in Datensatz: " + dataSetIndex);
+			}
+			else if(check.equals("empty")){
+				throw new UnsupportedOperationException("Ein Datensatz ist nicht vollständig gefüllt. Fehler in Datensatz: " + dataSetIndex);
+			}
 		}
 
 		Date date = null;
@@ -206,12 +222,27 @@ public final class CSVHandler {
 		return -1;
 	}
 
-	private static boolean checkForValidityOfAttributes(ArrayList<String> attributeList) {
-		for (String str : attributeList) {
+	/**
+	 * If one string of the map is -1 an error occurred previously and the
+	 * method will return false. If one string is empty that is not to allowed to
+	 * be empty (indicated by 'false' in the map) the method will return false.
+	 * If this method returns false, an exception will be thrown that the CSV lacks important data.
+	 * If this method returns true, the data set of the CSV is correct.
+	 * 
+	 * @param attributes
+	 * @return boolean that indicates whether the data set of the CSV is correct or not.
+	 */
+	private static String checkForValidityOfAttributes(Map<String, Boolean> attributes) {
+		for (String str : attributes.keySet()) {
 			if (str.equals("-1")) {
-				return false;
+				return "error";
+			}
+			if (!attributes.get(str)) {
+				if (str.equals("")) {
+					return "empty";
+				}
 			}
 		}
-		return true;
+		return "okay";
 	}
 }
