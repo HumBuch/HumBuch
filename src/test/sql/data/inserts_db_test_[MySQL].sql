@@ -42,6 +42,7 @@ COMMIT;
 START TRANSACTION;
 USE `humbuch_test`;
 INSERT INTO `humbuch_test`.`category` (`id`, `name`, `description`) VALUES (1, 'Bücher', NULL);
+INSERT INTO `humbuch_test`.`category` (`id`, `name`, `description`) VALUES (2, 'Mobile Device', NULL);
 
 COMMIT;
 
@@ -51,17 +52,17 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (1, 1, 'Englisch 5', '123456789', NULL, 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (2, 1, 'Englisch 6', '123456789', NULL, 0.00, NULL, 6, 6, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (3, 1, 'Englisch 5-8', '123456789', NULL, 0.00, NULL, 5, 8, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (4, 1, 'Englisch 5 ALT', '123456789', NULL, 0.00, NULL, 5, 5, 0, 1, '2011-10-01', '2013-10-01');
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (5, 1, 'Deutsch 5', '123456789', NULL, 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (6, 1, 'Latein 5', '123456789', NULL, 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (7, 1, 'Evg Reli 5', '123456789', NULL, 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (8, 1, 'Evg Reli 7', '123456789', NULL, 0.00, NULL, 7, 7, 0, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (9, 1, 'Gemeinschaftskunde 5', '123456789', NULL, 0.00, NULL, 5, 5, 0, 0, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (10, 1, 'Erdkunde 5', '123456789', NULL, 0.00, NULL, 5, 5, 1, 1, '2013-12-01', NULL);
-INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (11, 1, 'Atlas', '123456789', NULL, 0.00, NULL, 5, 6, 1, 0, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (1, 1, 'Englisch 5', '442275214', 'Cornelsen', 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (2, 1, 'Englisch 6', '136911291', 'Cornelsen', 0.00, NULL, 6, 6, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (3, 1, 'Englisch 5-8', '226899435', 'Cornelsen', 0.00, NULL, 5, 8, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (4, 1, 'Englisch 5 ALT', '419939614', 'Cornelsen', 0.00, NULL, 5, 5, 0, 1, '2011-10-01', '2013-10-01');
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (5, 1, 'Deutsch 5', '648778295', 'Cornelsen', 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (6, 1, 'Latein 5', '208496904', 'Cornelsen', 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (7, 1, 'Evg Reli 5', '391918769', 'Cornelsen', 0.00, NULL, 5, 5, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (8, 1, 'Evg Reli 7', '440499670', 'Cornelsen', 0.00, NULL, 7, 7, 0, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (9, 1, 'Gemeinschaftskunde 5', '129991165', 'Cornelsen', 0.00, NULL, 5, 5, 0, 0, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (10, 1, 'Erdkunde 5', '354180810', 'Cornelsen', 0.00, NULL, 5, 5, 1, 1, '2013-12-01', NULL);
+INSERT INTO `humbuch_test`.`teachingMaterial` (`id`, `categoryId`, `name`, `identifyingNumber`, `producer`, `price`, `comment`, `fromGrade`, `toGrade`, `fromTerm`, `toTerm`, `validFrom`, `validUntil`) VALUES (11, 1, 'Atlas', '860937574', 'Cornelsen', 0.00, NULL, 5, 6, 1, 0, '2013-12-01', NULL);
 
 COMMIT;
 
@@ -85,6 +86,7 @@ INSERT INTO `humbuch_test`.`borrowedMaterial` (`id`, `studentId`, `teachingMater
 INSERT INTO `humbuch_test`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (12, 3, 8, '2014-01-09', NULL, NULL, 0);
 INSERT INTO `humbuch_test`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (13, 4, 3, '2014-01-09', NULL, NULL, 0);
 INSERT INTO `humbuch_test`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (14, 4, 8, '2014-01-09', NULL, NULL, 0);
+INSERT INTO `humbuch_test`.`borrowedMaterial` (`id`, `studentId`, `teachingMaterialId`, `borrowFrom`, `borrowUntil`, `returnDate`, `received`) VALUES (15, 3, 2, '2012-01-01', NULL, NULL, 1);
 
 COMMIT;
 
@@ -144,7 +146,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `fromDate`, `toDate`, `endFirstTerm`, `beginSecondTerm`) VALUES (1, '2012/2013', '2012-08-01', '2013-07-31', '2013-01-31', '2013-01-01');
+INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `fromDate`, `toDate`, `endFirstTerm`, `beginSecondTerm`) VALUES (1, '2012/2013', '2012-08-01', '2013-07-31', '2013-01-31', '2013-02-01');
 INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `fromDate`, `toDate`, `endFirstTerm`, `beginSecondTerm`) VALUES (2, '2013/2014', '2013-08-01', '2014-07-31', '2014-01-31', '2014-02-01');
 INSERT INTO `humbuch_test`.`schoolYear` (`id`, `year`, `fromDate`, `toDate`, `endFirstTerm`, `beginSecondTerm`) VALUES (3, '2014/2015', '2014-08-01', '2015-07-31', '2015-01-31', '2015-02-01');
 
@@ -184,35 +186,5 @@ INSERT INTO `humbuch_test`.`teachingMaterialSubject` (`id`, `teachingMaterialId`
 INSERT INTO `humbuch_test`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (6, 6, 'LATIN');
 INSERT INTO `humbuch_test`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (7, 7, 'EVANGELIC');
 INSERT INTO `humbuch_test`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (8, 8, 'EVANGELIC');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `humbuch_test`.`dunning`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`dunning` (`id`, `studentId`, `type`, `status`) VALUES (1, 1, 'TYPE1', 'OPENED');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `humbuch_test`.`dunning_has_borrowedMaterial`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`dunning_has_borrowedMaterial` (`dunningId`, `borrowedMaterialId`, `borrowedMaterial_studentId`) VALUES (1, 1, 1);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `humbuch_test`.`dunningDate`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `humbuch_test`;
-INSERT INTO `humbuch_test`.`dunningDate` (`id`, `dunningId`, `status`, `statusDate`) VALUES (1, 1, 'OPENED', '2014-01-11');
 
 COMMIT;
