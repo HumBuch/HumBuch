@@ -423,7 +423,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		System.out.println("updated sms");
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
 
@@ -455,7 +454,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@Override
 	public void enter(ViewChangeEvent event) {
 		// TODO Q&D: have to be changed after "data has changed"-system is implemented
-		System.out.println("enter");
 		lendingViewModel.updateTeachingMaterials();
 		studentMaterialSelector.setFilterMaterialType(MaterialType.ALL_MATERIALS);
 	}
