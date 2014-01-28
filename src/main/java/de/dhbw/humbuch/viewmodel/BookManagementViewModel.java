@@ -113,7 +113,7 @@ public class BookManagementViewModel {
 			updateTeachingMaterials();
 			eventBus.post(new MessageEvent(
 					"Löschen nicht möglich",
-					"Das Lehrmittel ist noch ausgeliehen. Das Gültigkeitsdatum wurde jedoch auf das heutige Datum gesetzt.",
+					"Das Lehrmittel ist noch ausgeliehen. \n Das Gültigkeitsdatum wurde jedoch auf das heutige Datum gesetzt.",
 					Type.INFO));
 		}
 	}
