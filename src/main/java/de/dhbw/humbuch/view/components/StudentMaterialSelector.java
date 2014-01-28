@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -22,36 +21,17 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private static final long serialVersionUID = -618911643102742679L;
 
-
-	public enum MaterialType {
-		ALL_MATERIALS("Alle Materialien"),
-		ONLY_MANUAL("Manuelle Materialien"),
-		ONLY_OFFICIAL("Offizielle Materialien");
-
-		private final String title;
-
-		MaterialType(String title) {
-			this.title = title;
-		}
-
-		public String toString() {
-			return title;
-		}
-	}
-
 	private static final int MAX_STUDENTS_BEFORE_COLLAPSE = 12;
 	private static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
 
 	private TreeTable treeTableContent;
-	private Map<Grade, Map<Student, List<BorrowedMaterial>>> currentBaseDataStructure;
-	private LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> currentFilteredDataStructure;
+	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
 	private LinkedHashMap<CheckBox, Object> allGradeCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allStudentCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allMaterialCheckBoxes;
 	private String filterString;
-	private MaterialType materialTypeFilter;
 	private boolean collapseGrades;
 	private boolean changedCollapseFlag;
 	private ValueChangeListener gradeListener;
@@ -68,15 +48,12 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void init() {
 		treeTableContent = new TreeTable();
-		currentBaseDataStructure = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-		currentFilteredDataStructure = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		gradeAndStudentsWithMaterials = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		allGradeCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allStudentCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allMaterialCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		collapseGrades = false;
 		changedCollapseFlag = false;
-		filterString = "";
-		materialTypeFilter = MaterialType.ALL_MATERIALS;
 
 		treeTableContent.setSizeFull();
 		treeTableContent.setWidth("100%");
@@ -162,18 +139,14 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * Call this method when the data which you want to display within the
 	 * StudentMaterialSelector changes. This methods not only saves the new data
 	 * in a member variable but also updates the TreeTable which is responsible
-	 * for showing the data. When passing a null value nothing happens. If you
-	 * want to clear the StudentMaterialSelector pass an empty Map.
+	 * for showing the data.
 	 * 
 	 * @param newGradeAndStudentsWithMaterials
 	 *            the new data to be displayed by the StudentMaterialSelector
 	 * */
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		if (newGradeAndStudentsWithMaterials == null) {
-			return;
-		}
-		this.currentBaseDataStructure = newGradeAndStudentsWithMaterials;
-		updateTable(filterDataStructure(newGradeAndStudentsWithMaterials));
+		updateTable(newGradeAndStudentsWithMaterials);
+		this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
 	}
 
 	/**
@@ -254,78 +227,33 @@ public class StudentMaterialSelector extends CustomComponent {
 			filterString = "";
 		}
 		this.filterString = filterString;
-		currentFilteredDataStructure = filterDataStructure(currentBaseDataStructure);
-		rebuildTable(currentFilteredDataStructure);
-	}
-
-	/**
-	 * Call this method to filter for specific material types. This method not
-	 * only saves the material type to filter for in a member variable but also
-	 * updates TreeTable to show only the borrowed materials matching the
-	 * filter. When passing null all borrowed materials are shown.
-	 * 
-	 * @param materialTypeFilter
-	 *            the material type on which filtering should be based upon
-	 * */
-	public void setFilterMaterialType(MaterialType materialTypeFilter) {
-		if (materialTypeFilter == null) {
-			materialTypeFilter = MaterialType.ALL_MATERIALS;
-		}
-		this.materialTypeFilter = materialTypeFilter;
-		currentFilteredDataStructure = filterDataStructure(currentBaseDataStructure);
-		rebuildTable(currentFilteredDataStructure);
+		filterTableContent();
 	}
 
 	/*
-	 * Method used for filtering. It filters the currently used base data structure inside the StudentMaterialSelector.
-	 * It filters every students first and lastname (ignoring case) and it filters for the material type.
-	 * This method is not responsible for rebuilding / updating the TreeTable afterwards.
-	 * It only saves the filtered structure in the corresponding member variables.
+	 * Method used for filtering. It filters the currently used data structure inside the StudentMaterialSelector
+	 * and filters every students first and lastname (ignoring case). After filtering is done this method
+	 * rebuilds the TreeTable to visualize the result of the filter process.
 	 * */
-	private LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> filterDataStructure(Map<Grade, Map<Student, List<BorrowedMaterial>>> baseDataStructure) {
-		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> filteredDataStructure = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-
-		for (Grade grade : baseDataStructure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> entry = baseDataStructure.get(grade);
+	private void filterTableContent() {
+		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
-
 			for (Student student : entry.keySet()) {
+				// match firstname and lastname ignoring case
 				String fullName = student.getFirstname() + " " + student.getLastname();
 				fullName = fullName.toLowerCase();
 				if (fullName.contains(filterString.toLowerCase())) {
-
-					List<BorrowedMaterial> materials = entry.get(student);
-					List<BorrowedMaterial> filteredMaterials = new ArrayList<BorrowedMaterial>();
-
-					if (materialTypeFilter.equals(MaterialType.ONLY_MANUAL)) {
-						for (BorrowedMaterial material : materials) {
-							if (material.getBorrowUntil() != null) {
-								filteredMaterials.add(material);
-							}
-						}
-					}
-					else if (materialTypeFilter.equals(MaterialType.ONLY_OFFICIAL)) {
-						for (BorrowedMaterial material : materials) {
-							if (material.getBorrowUntil() == null) {
-								filteredMaterials.add(material);
-							}
-						}
-					}
-					else {
-						filteredMaterials.addAll(materials);
-					}
-
-					if (filteredMaterials.size() > 0) {
-						filteredEntries.put(student, filteredMaterials);
-					}
+					filteredEntries.put(student, entry.get(student));
 				}
 			}
 
 			if (filteredEntries.size() != 0) {
-				filteredDataStructure.put(grade, filteredEntries);
+				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
 			}
 		}
-		return filteredDataStructure;
+		rebuildTable(gradeAndStudentsWithMaterialsFiltered);
 	}
 
 	/*
@@ -345,17 +273,12 @@ public class StudentMaterialSelector extends CustomComponent {
 		changedCollapseFlag = false;
 
 		for (Grade grade : newGradeAndStudentWithMaterials.keySet()) {
-			Set<Student> students = newGradeAndStudentWithMaterials.get(grade).keySet();
-			if (students.size() > 0) {
-				addGradeToTree(grade);
-				Map<Student, List<BorrowedMaterial>> entry = newGradeAndStudentWithMaterials.get(grade);
-				for (Student student : entry.keySet()) {
-					if (entry.get(student).size() > 0) {
-						addStudentToTree(student);
-						for (BorrowedMaterial material : entry.get(student)) {
-							addMaterialToTree(material);
-						}
-					}
+			addGradeToTree(grade);
+			Map<Student, List<BorrowedMaterial>> entry = newGradeAndStudentWithMaterials.get(grade);
+			for (Student student : entry.keySet()) {
+				addStudentToTree(student);
+				for (BorrowedMaterial material : entry.get(student)) {
+					addMaterialToTree(material);
 				}
 			}
 		}
@@ -371,7 +294,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		if (newGradeAndStudentsWithMaterials == null ||
-				currentFilteredDataStructure == null) {
+				gradeAndStudentsWithMaterials == null) {
 			return;
 		}
 
@@ -379,9 +302,9 @@ public class StudentMaterialSelector extends CustomComponent {
 		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> newMaterials = getAllMaterialsFromStructure(newGradeAndStudentsWithMaterials);
 
-		ArrayList<Grade> oldGrades = new ArrayList<Grade>(currentFilteredDataStructure.keySet());
-		ArrayList<Student> oldStudents = getAllStudentsFromStructure(currentFilteredDataStructure);
-		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(currentFilteredDataStructure);
+		ArrayList<Grade> oldGrades = new ArrayList<Grade>(gradeAndStudentsWithMaterials.keySet());
+		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
+		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
 
 		updateGradeNodes(oldGrades, newGrades);
 		updateStudentNodes(oldStudents, newStudents);
