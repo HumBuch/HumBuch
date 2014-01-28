@@ -44,8 +44,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private static final String GRADE = "Klasse ";
 
 	private TreeTable treeTableContent;
-	private Map<Grade, Map<Student, List<BorrowedMaterial>>> currentBaseDataStructure;
-	private Map<Grade, Map<Student, List<BorrowedMaterial>>> currentFilteredDataStructure;
+	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
 	private LinkedHashMap<CheckBox, Object> allGradeCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allStudentCheckBoxes;
@@ -68,7 +67,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void init() {
 		treeTableContent = new TreeTable();
-		currentBaseDataStructure = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		gradeAndStudentsWithMaterials = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		allGradeCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allStudentCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allMaterialCheckBoxes = new LinkedHashMap<CheckBox, Object>();
@@ -160,19 +159,14 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * Call this method when the data which you want to display within the
 	 * StudentMaterialSelector changes. This methods not only saves the new data
 	 * in a member variable but also updates the TreeTable which is responsible
-	 * for showing the data. When passing a null value nothing happens. If you want
-	 * to clear the StudentMaterialSelector pass an empty Map.
+	 * for showing the data.
 	 * 
 	 * @param newGradeAndStudentsWithMaterials
 	 *            the new data to be displayed by the StudentMaterialSelector
 	 * */
 	public void setGradesAndStudentsWithMaterials(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		if(newGradeAndStudentsWithMaterials == null) {
-			return;
-		}
-		this.currentBaseDataStructure = newGradeAndStudentsWithMaterials;
-		createFilteredBaseDataStructureForMaterialType();
 		updateTable(newGradeAndStudentsWithMaterials);
+		this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
 	}
 
 	/**
@@ -270,8 +264,7 @@ public class StudentMaterialSelector extends CustomComponent {
 			materialTypeFilter = MaterialType.ALL_MATERIALS;
 		}
 		this.materialTypeFilter = materialTypeFilter;
-		createFilteredBaseDataStructureForMaterialType();
-		rebuildTable((LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>) currentFilteredDataStructure);
+		filterTableContentForMaterialType();
 	}
 
 	/*
@@ -281,8 +274,8 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void filterTableContentForString() {
 		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-		for (Grade grade : currentBaseDataStructure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> entry = currentBaseDataStructure.get(grade);
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 			for (Student student : entry.keySet()) {
 				// match firstname and lastname ignoring case
@@ -303,10 +296,10 @@ public class StudentMaterialSelector extends CustomComponent {
 	/*
 	 * 
 	 * */
-	private void createFilteredBaseDataStructureForMaterialType() {
+	private void filterTableContentForMaterialType() {
 		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-		for (Grade grade : currentBaseDataStructure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> entry = currentBaseDataStructure.get(grade);
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 
 			for (Student student : entry.keySet()) {
@@ -340,7 +333,7 @@ public class StudentMaterialSelector extends CustomComponent {
 				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
 			}
 		}
-		currentFilteredDataStructure = gradeAndStudentsWithMaterialsFiltered;
+		rebuildTable(gradeAndStudentsWithMaterialsFiltered);
 	}
 
 	/*
@@ -386,7 +379,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void updateTable(Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
 		if (newGradeAndStudentsWithMaterials == null ||
-				currentFilteredDataStructure == null) {
+				gradeAndStudentsWithMaterials == null) {
 			return;
 		}
 
@@ -394,9 +387,9 @@ public class StudentMaterialSelector extends CustomComponent {
 		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
 		ArrayList<BorrowedMaterial> newMaterials = getAllMaterialsFromStructure(newGradeAndStudentsWithMaterials);
 
-		ArrayList<Grade> oldGrades = new ArrayList<Grade>(currentFilteredDataStructure.keySet());
-		ArrayList<Student> oldStudents = getAllStudentsFromStructure(currentFilteredDataStructure);
-		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(currentFilteredDataStructure);
+		ArrayList<Grade> oldGrades = new ArrayList<Grade>(gradeAndStudentsWithMaterials.keySet());
+		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
+		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
 
 		updateGradeNodes(oldGrades, newGrades);
 		updateStudentNodes(oldStudents, newStudents);
