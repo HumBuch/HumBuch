@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -21,6 +22,23 @@ public class StudentMaterialSelector extends CustomComponent {
 
 	private static final long serialVersionUID = -618911643102742679L;
 
+
+	public enum MaterialType {
+		ALL_MATERIALS("Alle Materialien"),
+		ONLY_MANUAL("Manuelle Materialien"),
+		ONLY_OFFICIAL("Offizielle Materialien");
+
+		private final String title;
+
+		MaterialType(String title) {
+			this.title = title;
+		}
+
+		public String toString() {
+			return title;
+		}
+	}
+
 	private static final int MAX_STUDENTS_BEFORE_COLLAPSE = 12;
 	private static final String TREE_TABLE_HEADER = "Daten auswählen";
 	private static final String GRADE = "Klasse ";
@@ -32,6 +50,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private LinkedHashMap<CheckBox, Object> allStudentCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allMaterialCheckBoxes;
 	private String filterString;
+	private MaterialType materialTypeFilter;
 	private boolean collapseGrades;
 	private boolean changedCollapseFlag;
 	private ValueChangeListener gradeListener;
@@ -54,6 +73,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		allMaterialCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		collapseGrades = false;
 		changedCollapseFlag = false;
+		materialTypeFilter = MaterialType.ALL_MATERIALS;
 
 		treeTableContent.setSizeFull();
 		treeTableContent.setWidth("100%");
@@ -227,7 +247,24 @@ public class StudentMaterialSelector extends CustomComponent {
 			filterString = "";
 		}
 		this.filterString = filterString;
-		filterTableContent();
+		filterTableContentForString();
+	}
+
+	/**
+	 * Call this method to filter for specific material types. This method not
+	 * only saves the material type to filter for in a member variable but also
+	 * updates TreeTable to show only the borrowed materials matching the
+	 * filter. When passing null all borrowed materials are shown.
+	 * 
+	 * @param materialTypeFilter
+	 *            the material type on which filtering should be based upon
+	 * */
+	public void setFilterMaterialType(MaterialType materialTypeFilter) {
+		if (materialTypeFilter == null) {
+			materialTypeFilter = MaterialType.ALL_MATERIALS;
+		}
+		this.materialTypeFilter = materialTypeFilter;
+		filterTableContentForMaterialType();
 	}
 
 	/*
@@ -235,7 +272,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * and filters every students first and lastname (ignoring case). After filtering is done this method
 	 * rebuilds the TreeTable to visualize the result of the filter process.
 	 * */
-	private void filterTableContent() {
+	private void filterTableContentForString() {
 		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
 			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
@@ -246,6 +283,49 @@ public class StudentMaterialSelector extends CustomComponent {
 				fullName = fullName.toLowerCase();
 				if (fullName.contains(filterString.toLowerCase())) {
 					filteredEntries.put(student, entry.get(student));
+				}
+			}
+
+			if (filteredEntries.size() != 0) {
+				gradeAndStudentsWithMaterialsFiltered.put(grade, filteredEntries);
+			}
+		}
+		rebuildTable(gradeAndStudentsWithMaterialsFiltered);
+	}
+
+	/*
+	 * 
+	 * */
+	private void filterTableContentForMaterialType() {
+		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		for (Grade grade : gradeAndStudentsWithMaterials.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = gradeAndStudentsWithMaterials.get(grade);
+			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
+
+			for (Student student : entry.keySet()) {
+				List<BorrowedMaterial> materials = entry.get(student);
+				List<BorrowedMaterial> filteredMaterials = new ArrayList<BorrowedMaterial>();
+
+				if (materialTypeFilter.equals(MaterialType.ONLY_MANUAL)) {
+					for (BorrowedMaterial material : materials) {
+						if (material.getBorrowUntil() != null) {
+							filteredMaterials.add(material);
+						}
+					}
+				}
+				else if (materialTypeFilter.equals(MaterialType.ONLY_OFFICIAL)) {
+					for (BorrowedMaterial material : materials) {
+						if (material.getBorrowUntil() == null) {
+							filteredMaterials.add(material);
+						}
+					}
+				}
+				else {
+					filteredMaterials.addAll(materials);
+				}
+				
+				if(filteredMaterials.size() > 0) {
+					filteredEntries.put(student, filteredMaterials);
 				}
 			}
 
@@ -273,12 +353,17 @@ public class StudentMaterialSelector extends CustomComponent {
 		changedCollapseFlag = false;
 
 		for (Grade grade : newGradeAndStudentWithMaterials.keySet()) {
-			addGradeToTree(grade);
-			Map<Student, List<BorrowedMaterial>> entry = newGradeAndStudentWithMaterials.get(grade);
-			for (Student student : entry.keySet()) {
-				addStudentToTree(student);
-				for (BorrowedMaterial material : entry.get(student)) {
-					addMaterialToTree(material);
+			Set<Student> students = newGradeAndStudentWithMaterials.get(grade).keySet();
+			if (students.size() > 0) {
+				addGradeToTree(grade);
+				Map<Student, List<BorrowedMaterial>> entry = newGradeAndStudentWithMaterials.get(grade);
+				for (Student student : entry.keySet()) {
+					if (entry.get(student).size() > 0) {
+						addStudentToTree(student);
+						for (BorrowedMaterial material : entry.get(student)) {
+							addMaterialToTree(material);
+						}
+					}
 				}
 			}
 		}
