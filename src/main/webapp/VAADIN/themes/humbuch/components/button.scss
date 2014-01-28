@@ -2,7 +2,8 @@
         
         $outline: 0 0 0 2px rgba(49,50,51,.07);
 
-        .v-button {
+        .v-button,
+        .v-menubar {
                 color: $text-color;
                 padding: .3em 1.4em;
                 
@@ -27,6 +28,26 @@
                 background: -ms-linear-gradient(top, #ffffff 0%,#fafafa 5%,#eaebec 94%,#e2e3e4 100%);
         }
         
+        .v-menubar {
+        	padding: 0;
+        }
+        
+        .v-menubar-menuitem {
+       			display: block !important;
+                cursor: pointer;
+        }
+        
+        .v-menubar-submenu .v-menubar-menuitem-disabled .v-menubar-menuitem-caption {
+        		cursor: default;
+        }
+        
+        .v-menubar-menuitem-caption {
+        		padding: .3em 1.4em;
+        		display: block;
+        		line-height: normal;
+        		cursor: pointer;
+        }
+        
         .v-webkit & .v-button {
                 padding-bottom: .35em;
         }
@@ -46,7 +67,8 @@
         }
         
         .v-button:active,
-        .v-pressed.v-button {
+        .v-pressed.v-button,
+		.v-menubar-menuitem-selected {
                 border-color: #9fa0a2;
                 border-top-color: #b1b1b3;
                 border-bottom-color: #bfc0c1;
@@ -63,8 +85,9 @@
                 -webkit-tap-highlight-color: rgba(0,0,0,0);
         }
         
-        
-        
+        .v-menubar-menuitem-selected {
+        		color: inherit;
+        }
         
         .wide.v-button {
                 padding-left: 1.8em;
@@ -110,8 +133,6 @@
                 @include box-shadow($outline);
         }
         
-        
-        
         .small.v-button {
                 padding: .1em 1.2em;
                 font-size: 13px;
@@ -148,8 +169,6 @@
         .icon-only.v-button .v-button-caption {
                 display: none;
         }
-        
-        
         
         .borderless.v-button {
                 border: none !important;
