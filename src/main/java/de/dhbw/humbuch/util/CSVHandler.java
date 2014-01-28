@@ -63,10 +63,12 @@ public final class CSVHandler {
 				}
 			}
 
+			int index = 0;
 			while (allRecordsIterator.hasNext()) {
 				String[] record = allRecordsIterator.next();
-
-				Student student = createStudentObject(record, csvHeaderPropertyStrings, headerIndexMap);
+				
+				index++;
+				Student student = createStudentObject(record, csvHeaderPropertyStrings, headerIndexMap, index);
 				if (student != null) {
 					studentArrayList.add(student);
 				}
@@ -105,9 +107,10 @@ public final class CSVHandler {
 	 * 
 	 * @param record
 	 *            is one line of the loaded csv-file
+	 * @param dataSetIndex 
 	 * @return Student
 	 */
-	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index) throws UnsupportedOperationException {
+	private static Student createStudentObject(String[] record, Map<String, String> properties, HashMap<String, Integer> index, int dataSetIndex) throws UnsupportedOperationException {
 		String foreignLanguage1, foreignLanguage2, foreignLanguage3, gradeString, firstName, lastName, gender, birthDay, religion;
 		String parentTitle, parentLastName, parentFirstName, parentStreet, parentPlace;
 		int id;
@@ -126,10 +129,10 @@ public final class CSVHandler {
 			religion = record[getAttributeNameToHeaderIndex(properties, index, "religion")];
 		}
 		catch (ArrayIndexOutOfBoundsException a) {
-			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden.");
+			throw new UnsupportedOperationException("Ein Wert im Studentendatensatz konnte nicht gelesen werden. Fehler in Datensatz: " + dataSetIndex);
 		}
 		catch (NumberFormatException e) {
-			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer. Fehler in Datensatz: " + dataSetIndex);
 		}
 
 		Parent parent = null;
@@ -145,14 +148,13 @@ public final class CSVHandler {
 					.street(parentStreet).postcode(parentPostalcode).city(parentPlace).build();
 		}
 		catch (NullPointerException e) {
-			System.err.println("Could not create parent object to student");
-			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler");
+			throw new UnsupportedOperationException("Die Elterndaten enthalten an mindestens einer Stelle einen Fehler. Fehler in Datensatz: " + dataSetIndex);
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
-			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen");
+			throw new UnsupportedOperationException("Mindestens ein Datensatz enthält keine Eltern-Informationen. Fehler in Datensatz: " + dataSetIndex);
 		}
 		catch (NumberFormatException e) {
-			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.");
+			throw new UnsupportedOperationException("Mindestens eine Postleitzahl ist keine gültige Nummer.Fehler in Datensatz: " + dataSetIndex);
 		}
 
 		Map<String, Boolean> checkValidityMap = new LinkedHashMap<>();
@@ -173,8 +175,14 @@ public final class CSVHandler {
 		checkValidityMap.put("" + parentPostalcode, false);
 		checkValidityMap.put(parentPlace, false);
 
-		if (!checkForValidityOfAttributes(checkValidityMap)) {
-			return null;
+		String check = checkForValidityOfAttributes(checkValidityMap);
+		if (!check.equals("okay")) {
+			if(check.equals("error")){
+				throw new UnsupportedOperationException("Mindestens ein Studenten-Datensatz war korrumpiert. Fehler in Datensatz: " + dataSetIndex);
+			}
+			else if(check.equals("empty")){
+				throw new UnsupportedOperationException("Ein Datensatz ist nicht vollständig gefüllt. Fehler in Datensatz: " + dataSetIndex);
+			}
 		}
 
 		Date date = null;
@@ -224,17 +232,17 @@ public final class CSVHandler {
 	 * @param attributes
 	 * @return boolean that indicates whether the data set of the CSV is correct or not.
 	 */
-	private static boolean checkForValidityOfAttributes(Map<String, Boolean> attributes) {
+	private static String checkForValidityOfAttributes(Map<String, Boolean> attributes) {
 		for (String str : attributes.keySet()) {
 			if (str.equals("-1")) {
-				return false;
+				return "error";
 			}
 			if (!attributes.get(str)) {
 				if (str.equals("")) {
-					return false;
+					return "empty";
 				}
 			}
 		}
-		return true;
+		return "okay";
 	}
 }
