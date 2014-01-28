@@ -88,8 +88,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		studentMaterialSelector.registerAsObserver(this);
 		studentMaterialSelector.setSizeFull();
 
-		updateReturnList();
-
 		addListeners();
 	}
 
@@ -124,6 +122,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 				if (value == null) {
 					return;
 				}
+				
 				updateReturnList();
 			}
 		});
@@ -133,7 +132,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	private void addButtonListeners() {
 		buttonSaveSelectedData.addClickListener(new ClickListener() {
-
 			private static final long serialVersionUID = -9208324317096088956L;
 
 			@Override
@@ -144,7 +142,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		});
 
 		buttonStudentList.addClickListener(new ClickListener() {
-
 			private static final long serialVersionUID = -7743939402341845477L;
 
 			@Override
@@ -155,7 +152,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		});
 
 		textFieldStudentFilter.addTextChangeListener(new TextChangeListener() {
-
 			private static final long serialVersionUID = -8656489769177447342L;
 
 			@Override
@@ -171,10 +167,10 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		if (informationForPdf != null) {
 			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
 			for (Student student : informationForPdf.keySet()) {
-
 				PDFStudentList.Builder builder = new PDFStudentList.Builder().returnList(informationForPdf.get(student));
 				builders.add(builder);
 			}
+			
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
 			if (baos != null) {
 				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
@@ -201,8 +197,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 				studentsInGrade.add(student);
 				Collections.sort(studentsInGrade);
 				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
-			}
-			else {
+			} else {
 				List<Student> studentList = new ArrayList<Student>();
 				studentList.add(student);
 				treeToSortForGrades.put(student.getGrade(), studentList);
@@ -220,8 +215,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 							currentlyAddedMaterials.add(material);
 							Collections.sort(currentlyAddedMaterials);
 							studentsWithMaterials.put(student, currentlyAddedMaterials);
-						}
-						else {
+						} else {
 							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
 							materialList.add(material);
 							studentsWithMaterials.put(student, materialList);
@@ -242,8 +236,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		}
-		catch (IllegalAccessException | NoSuchElementException
+		} catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
@@ -266,15 +259,13 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 		if (materials.size() >= 1) {
 			buttonSaveSelectedData.setEnabled(true);
-		}
-		else {
+		} else {
 			buttonSaveSelectedData.setEnabled(false);
 		}
 
 		if (students.size() >= 1) {
 			buttonStudentList.setEnabled(true);
-		}
-		else {
+		} else {
 			buttonStudentList.setEnabled(false);
 		}
 	}

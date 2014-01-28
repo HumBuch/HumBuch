@@ -84,10 +84,16 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	}
 	
 	public Term getCurrentTerm() {
-		if(getEndFirstTerm().after(new Date())) {
-			return Term.FIRST;
-		} else {
+//		if(getEndFirstTerm().after(new Date())) {
+//			return Term.FIRST;
+//		} else {
+//			return Term.SECOND;
+//		}
+		
+		if(getBeginSecondTerm().compareTo(new Date()) <= 0) {
 			return Term.SECOND;
+		} else {
+			return Term.FIRST;
 		}
 	}
 	
