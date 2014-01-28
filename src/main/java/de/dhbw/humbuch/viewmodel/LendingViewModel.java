@@ -141,6 +141,7 @@ public class LendingViewModel {
 	private void updateUnreceivedBorrowedMaterialsState() {
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
+		refresh(daoGrade.findAll());
 		for (Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
@@ -216,6 +217,8 @@ public class LendingViewModel {
 
 	@Subscribe
 	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
+//		refresh(daoGrade.findAll());
+//		refresh(daoStudent.findAll());
 		updateAllStudentsBorrowedMaterials();
 	}
 }
