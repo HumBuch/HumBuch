@@ -294,7 +294,6 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Q&D: have to be changed after "data has changed"-system is implemented
 		returnViewModel.generateStudentReturnList();
 		studentMaterialSelector.setFilterMaterialType(MaterialType.ALL_MATERIALS);
 	}

@@ -281,8 +281,8 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	private void filterTableContentForString() {
 		LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterialsFiltered = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
-		for (Grade grade : currentFilteredDataStructure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> entry = currentFilteredDataStructure.get(grade);
+		for (Grade grade : currentBaseDataStructure.keySet()) {
+			Map<Student, List<BorrowedMaterial>> entry = currentBaseDataStructure.get(grade);
 			Map<Student, List<BorrowedMaterial>> filteredEntries = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 			for (Student student : entry.keySet()) {
 				// match firstname and lastname ignoring case
