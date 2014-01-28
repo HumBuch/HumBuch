@@ -69,8 +69,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private final static Logger LOG = LoggerFactory.getLogger(LendingView.class);
 
 	private static final String TITLE = "Ausleihe";
-	private static final String SAVE_SELECTED_LENDING = "Ausgewählte Bücher erhalten";
-	private static final String MANUAL_LENDING = "Manuell Material ausleihen";
+	private static final String SAVE_SELECTED_LENDING = "Bücher erhalten";
+	private static final String MANUAL_LENDING = "Manuelle Ausleihe";
 	private static final String PRINT = "Listen drucken";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
 	private static final String CLASS_LIST_WINDOW_TITLE = "Klassen Liste";
@@ -126,6 +126,8 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		buttonManualLending = new Button(MANUAL_LENDING);
 		menuBarPrinting = new MenuBar();
 
+		buttonSaveSelectedData.addStyleName("default");
+		
 		defineMenuCommands();
 		
 		menuItemPrinting = menuBarPrinting.addItem(PRINT, null);
