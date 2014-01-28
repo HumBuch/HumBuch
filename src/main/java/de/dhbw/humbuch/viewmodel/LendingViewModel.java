@@ -126,7 +126,8 @@ public class LendingViewModel {
 		updateUnreceivedBorrowedMaterialsState();
 	}
 
-	private void updateTeachingMaterials() {
+	// TODO Q&D: have to be changed after "data has changed"-system is implemented
+	public void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 	
