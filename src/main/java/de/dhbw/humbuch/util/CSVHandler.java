@@ -185,7 +185,6 @@ public final class CSVHandler {
 		foreignLanguage[1] = foreignLanguage2;
 		foreignLanguage[2] = foreignLanguage3;
 		Set<Subject> subjectSet = SubjectHandler.createProfile(foreignLanguage, religion);
-		System.out.println(firstName + " " + lastName);
 		return new Student.Builder(id, firstName, lastName, date, grade).profile(subjectSet).gender(gender).parent(parent).leavingSchool(false).build();
 	}
 
