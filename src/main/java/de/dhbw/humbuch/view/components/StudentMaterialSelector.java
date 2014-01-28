@@ -369,7 +369,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				for (CheckBox checkBoxStudent : allStudentCheckBoxes.keySet()) {
 					if (checkBoxStudent.getData().equals(student)) {
 						treeTableContent.removeItem(allStudentCheckBoxes.get(checkBoxStudent));
-						allGradeCheckBoxes.remove(checkBoxStudent);
+
+						allStudentCheckBoxes.remove(checkBoxStudent);
 						break;
 					}
 				}
@@ -398,7 +399,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				for (CheckBox checkBoxMaterial : allMaterialCheckBoxes.keySet()) {
 					if (checkBoxMaterial.getData().equals(material)) {
 						treeTableContent.removeItem(allMaterialCheckBoxes.get(checkBoxMaterial));
-						allGradeCheckBoxes.remove(checkBoxMaterial);
+
+						allMaterialCheckBoxes.remove(checkBoxMaterial);
 						break;
 					}
 				}

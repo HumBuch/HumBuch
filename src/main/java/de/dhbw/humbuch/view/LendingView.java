@@ -120,7 +120,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		menuBarPrinting = new MenuBar();
 
 		buttonSaveSelectedData.addStyleName("default");
-		
+
 		defineMenuCommands();
 
 		menuItemPrinting = menuBarPrinting.addItem(PRINT, null);
