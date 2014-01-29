@@ -20,6 +20,8 @@ import de.dhbw.humbuch.model.entity.Entity;
  */
 public interface DAO<EntityType extends Entity> {
 
+	public enum FireUpdateEvent { YES, NO }
+
 	/**
 	 * Persist the indicated entity to database
 	 * 
@@ -28,6 +30,8 @@ public interface DAO<EntityType extends Entity> {
 	 */
 	EntityType insert(EntityType entity);
 
+	EntityType insert(EntityType entity, FireUpdateEvent fireUpdateEvent);
+	
 	/**
 	 * Retrieve an object using indicated ID
 	 * 
@@ -43,12 +47,16 @@ public interface DAO<EntityType extends Entity> {
 	 */
 	void update(EntityType entity);
 
+	void update(EntityType entity, FireUpdateEvent fireUpdateEvent);
+
 	/**
 	 * Delete indicated entity from database
 	 * 
 	 * @param entity
 	 */
 	void delete(EntityType entity);
+
+	void delete(EntityType entity, FireUpdateEvent fireUpdateEvent);
 
 	/**
 	 * Return the entity class
@@ -98,5 +106,7 @@ public interface DAO<EntityType extends Entity> {
 	EntityType findSingleWithCriteria(Criterion... criteriaArray);
 	
 	EntityType findSingleWithCriteria(Order order, Criterion... criteriaArray);
-
+	
+	void fireUpdateEvent();
+	
 }
