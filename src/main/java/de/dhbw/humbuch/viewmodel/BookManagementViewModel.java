@@ -6,6 +6,7 @@ import java.util.Date;
 import org.hibernate.criterion.Restrictions;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -14,6 +15,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
@@ -56,6 +58,8 @@ public class BookManagementViewModel {
 		this.daoCategory = daoCategory;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.eventBus = eventBus;
+		
+		eventBus.register(this);
 	}
 
 	@AfterVMBinding
@@ -68,8 +72,7 @@ public class BookManagementViewModel {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
-	// TODO Q&D: have to be changed after "data has changed"-system is implemented
-	public void updateCategories() {
+	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 	}
 
@@ -115,6 +118,13 @@ public class BookManagementViewModel {
 					"Löschen nicht möglich",
 					"Das Lehrmittel ist noch ausgeliehen. \n Das Gültigkeitsdatum wurde jedoch auf das heutige Datum gesetzt.",
 					Type.INFO));
+		}
+	}
+	
+	@Subscribe
+	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
+		if(entityUpdateEvent.contains(Category.class)) {
+			updateCategories();
 		}
 	}
 }
