@@ -350,7 +350,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 	public void selectImportTypeDialog(final ByteArrayOutputStream outputStream) {
 		ConfirmDialog
 				.show("Import-Typ auswählen",
-						"Wie soll die Datei importiert werden? Bei einem delta Import werden lediglich existierende Schüler aktualisiert oder Neue hinzugefügt. Ein vollständiger Import löscht nicht mehr enthaltene Schüler.",
+						"Wie soll die Datei importiert werden? Bei einem Delta Import werden keine Schüler gelöscht",
 						"Vollständiger Import", "Delta Import",
 						new ConfirmDialog.Listener() {
 
