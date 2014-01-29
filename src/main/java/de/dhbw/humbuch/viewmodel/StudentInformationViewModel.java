@@ -128,8 +128,9 @@ public class StudentInformationViewModel {
 	 * Receives the OutputStream provided by an upload.
 	 * 
 	 * @param outputStream
+	 * @param fullImport 
 	 */
-	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream) {
+	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream, boolean fullImport) {
 		try {
 			String encoding = checkEncoding(outputStream);
 			CSVReader reader;
