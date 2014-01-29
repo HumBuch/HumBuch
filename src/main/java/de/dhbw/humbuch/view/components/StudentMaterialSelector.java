@@ -1,6 +1,8 @@
 package de.dhbw.humbuch.view.components;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +24,8 @@ public class StudentMaterialSelector extends CustomComponent {
 	private static final long serialVersionUID = -618911643102742679L;
 
 	private static final int MAX_STUDENTS_BEFORE_COLLAPSE = 12;
-	private static final String TREE_TABLE_HEADER = "Daten auswählen";
+	private static final String TREE_TABLE_HEADER_DATA = "Daten auswählen";
+	private static final String TREE_TABLE_HEADER_DATE = "Ausgeliehen bis";
 	private static final String GRADE = "Klasse ";
 
 	private TreeTable treeTableContent;
@@ -58,7 +61,8 @@ public class StudentMaterialSelector extends CustomComponent {
 		treeTableContent.setSizeFull();
 		treeTableContent.setWidth("100%");
 		treeTableContent.setImmediate(true);
-		treeTableContent.addContainerProperty(TREE_TABLE_HEADER, CheckBox.class, null);
+		treeTableContent.addContainerProperty(TREE_TABLE_HEADER_DATA, CheckBox.class, null);
+		treeTableContent.addContainerProperty(TREE_TABLE_HEADER_DATE, String.class, "");
 
 		implementListeners();
 	}
@@ -423,7 +427,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 		checkBoxGrade.setData(grade);
 		checkBoxGrade.addValueChangeListener(gradeListener);
-		Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade }, null);
+		Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade, "" }, null);
 		treeTableContent.setCollapsed(gradeItemId, collapseGrades);
 
 		allGradeCheckBoxes.put(checkBoxGrade, gradeItemId);
@@ -445,7 +449,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		CheckBox checkBoxStudent = new CheckBox(student.getFirstname() + " " + student.getLastname());
 		checkBoxStudent.setData(student);
 		checkBoxStudent.addValueChangeListener(studentListener);
-		Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent }, null);
+		Object studentItemId = treeTableContent.addItem(new Object[] { checkBoxStudent, "" }, null);
 
 		Object parentGradeItemId = null;
 		for (CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
@@ -488,7 +492,17 @@ public class StudentMaterialSelector extends CustomComponent {
 		CheckBox checkBoxMaterial = new CheckBox(material.getTeachingMaterial().getName());
 		checkBoxMaterial.setData(material);
 		checkBoxMaterial.addValueChangeListener(materialListener);
-		Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial }, null);
+
+		Date dateBorrowedUntil = material.getBorrowUntil();
+		String borrowedUntil = "";
+		if (dateBorrowedUntil != null) {
+			borrowedUntil = new SimpleDateFormat("dd.MM.YYYY").format(dateBorrowedUntil);
+		}
+		else {
+			borrowedUntil = "";
+		}
+
+		Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial, borrowedUntil }, null);
 		treeTableContent.setChildrenAllowed(materialItemId, false);
 
 		Object parentStudentItemId = null;
