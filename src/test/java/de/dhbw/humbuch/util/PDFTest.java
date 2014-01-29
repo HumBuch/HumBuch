@@ -57,8 +57,16 @@ public class PDFTest {
 
 			PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterialList).
 					lendingList(borrowedMaterialList).returnList(borrowedMaterialList);
-
-			new PDFStudentList(builder).savePDF("./testfiles/StudentPDF.pdf");
+			new PDFStudentList(builder).savePDF("./testfiles/StudentPDFMasterList.pdf");
+			
+			builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterialList);
+			new PDFStudentList(builder).savePDF("./testfiles/StudentPDFBorrowedList.pdf");
+			
+			builder = new PDFStudentList.Builder().lendingList(borrowedMaterialList);
+			new PDFStudentList(builder).savePDF("./testfiles/StudentPDFLendingList.pdf");
+			
+			builder = new PDFStudentList.Builder().returnList(borrowedMaterialList);
+			new PDFStudentList(builder).savePDF("./testfiles/StudentPDFReturnList.pdf");
 		}
 		catch (ParseException e) {
 			System.err.println("Could not format date " + e.getStackTrace());
