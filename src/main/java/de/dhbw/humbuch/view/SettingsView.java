@@ -756,7 +756,6 @@ public class SettingsView extends VerticalLayout implements View,
 				currentPassword.setValue("");
 				newPassword.setValue("");
 				newPasswordVerified.setValue("");
-				System.out.println("state-change");
 				// Close the window if successful
 				if (status == ChangeStatus.SUCCESSFULL) {
 					changePwWindow.close();
