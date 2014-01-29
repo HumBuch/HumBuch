@@ -2,8 +2,7 @@ package de.dhbw.humbuch.view;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -18,9 +17,9 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -49,7 +48,6 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.model.entity.Category;
-import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
@@ -212,13 +210,9 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 			public Object generateCell(Table source, Object itemId,
 					Object columnId) {
 				TeachingMaterial item = (TeachingMaterial) itemId;
-				String profile = "";
-				for (Entry<String, Set<Subject>> entry : Profile
-						.getProfileMap().entrySet()) {
-					if (item.getProfile().equals(entry.getValue())) {
-						profile = entry.getKey().toString();
-						break;
-					}
+				String profile = Subject.STANDARD.toString();
+				for(Subject subject : item.getProfile()) {
+					profile = subject.toString();
 				}
 				return profile;
 			}
@@ -257,10 +251,11 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 		cbToTerm.addItem(Term.FIRST);
 		cbToTerm.addItem(Term.SECOND);
 
-		Map<String, Set<Subject>> profiles = Profile.getProfileMap();
-		for (Map.Entry<String, Set<Subject>> profile : profiles.entrySet()) {
-			cbProfiles.addItem(profile.getValue());
-			cbProfiles.setItemCaption(profile.getValue(), profile.getKey());
+		for (Subject subject : Subject.values()) {
+			Set<Subject> subjects = new HashSet<Subject>();
+			subjects.add(subject);
+			cbProfiles.addItem(subjects);
+			cbProfiles.setItemCaption(subjects, subject.toString());
 		}
 
 		// Set Form options
