@@ -2,6 +2,7 @@ package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -42,6 +43,8 @@ import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel;
 import de.dhbw.humbuch.viewmodel.ReturnViewModel.ReturnListStudent;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
+import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 
 public class ReturnView extends VerticalLayout implements View, ViewInformation, StudentMaterialSelectorObserver {
@@ -50,6 +53,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	private static final String TITLE = "Rückgabe";
 	private static final String SAVE_SELECTED_RETURNING = "Material Zurückgegeben";
+	private static final String MANUAL_RETURN = "Manuelle Rückgabe";
+	private static final String MANUAL_RETURN_TITLE = "Manuelle Rückgabe";
 	private static final String STUDENT_LIST = "Schülerliste drucken";
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
@@ -59,6 +64,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
 	private TextField textFieldStudentFilter;
+	private Button buttonManualReturn;
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private ReturnViewModel returnViewModel;
@@ -66,12 +72,15 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	@BindState(ReturnListStudent.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<>(Map.class);
 
+	@BindState(Students.class)
+	public State<Collection<Student>> students = new BasicState<>(Collection.class);
+	
 	@Inject
-	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel) {
+	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, StudentInformationViewModel studentInformationViewModel) {
 		this.returnViewModel = returnViewModel;
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, returnViewModel);
+		bindViewModel(viewModelComposer, returnViewModel, studentInformationViewModel);
 	}
 
 	private void init() {
@@ -80,6 +89,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		studentMaterialSelector = new StudentMaterialSelector();
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_RETURNING);
 		buttonStudentList = new Button(STUDENT_LIST);
+		buttonManualReturn = new Button(MANUAL_RETURN);
 		textFieldStudentFilter = new TextField();
 
 		buttonSaveSelectedData.addStyleName("default");
@@ -89,7 +99,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		textFieldStudentFilter.setInputPrompt(FILTER_STUDENT);
 		textFieldStudentFilter.setWidth("50%");
 		textFieldStudentFilter.setImmediate(true);
-		
+
 		studentMaterialSelector.registerAsObserver(this);
 		studentMaterialSelector.setSizeFull();
 
@@ -106,6 +116,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		setMargin(true);
 
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
+		horizontalLayoutActions.addComponent(buttonManualReturn);
 		horizontalLayoutActions.addComponent(buttonStudentList);
 
 		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
@@ -127,7 +138,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 				if (value == null) {
 					return;
 				}
-				
+
 				updateReturnList();
 			}
 		});
@@ -137,16 +148,18 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	private void addButtonListeners() {
 		buttonSaveSelectedData.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = -9208324317096088956L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-				ReturnView.this.returnViewModel.setBorrowedMaterialsReturned(materials);
+				returnTeachingMaterials(materials);
 			}
 		});
 
 		buttonStudentList.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = -7743939402341845477L;
 
 			@Override
@@ -155,8 +168,29 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 			}
 
 		});
+		
+		buttonManualReturn.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 6196708024508507923L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+				if (selectedStudents.size() == 0) {
+					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(MANUAL_RETURN_TITLE, ReturnView.this, students.get());
+					getUI().addWindow(sspw);
+				}
+				else if (selectedStudents.size() == 1) {
+					// This loop runs only once
+					for (Student student : selectedStudents) {
+						ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(ReturnView.this, student);
+						getUI().addWindow(mlpw);
+					}
+				}
+			}
+		});
 
 		textFieldStudentFilter.addTextChangeListener(new TextChangeListener() {
+
 			private static final long serialVersionUID = -8656489769177447342L;
 
 			@Override
@@ -175,7 +209,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 				PDFStudentList.Builder builder = new PDFStudentList.Builder().returnList(informationForPdf.get(student));
 				builders.add(builder);
 			}
-			
+
 			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
 			if (baos != null) {
 				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
@@ -202,7 +236,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 				studentsInGrade.add(student);
 				Collections.sort(studentsInGrade);
 				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
-			} else {
+			}
+			else {
 				List<Student> studentList = new ArrayList<Student>();
 				studentList.add(student);
 				treeToSortForGrades.put(student.getGrade(), studentList);
@@ -220,7 +255,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 							currentlyAddedMaterials.add(material);
 							Collections.sort(currentlyAddedMaterials);
 							studentsWithMaterials.put(student, currentlyAddedMaterials);
-						} else {
+						}
+						else {
 							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
 							materialList.add(material);
 							studentsWithMaterials.put(student, materialList);
@@ -233,6 +269,10 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		return studentsWithMaterials;
 	}
 
+	public void returnTeachingMaterials(Set<BorrowedMaterial> materials) {
+		returnViewModel.setBorrowedMaterialsReturned(materials);
+	}
+
 	private void updateReturnList() {
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
@@ -241,7 +281,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		} catch (IllegalAccessException | NoSuchElementException
+		}
+		catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
@@ -262,15 +303,27 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
 		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
 
+		// Adapt save button
 		if (materials.size() >= 1) {
 			buttonSaveSelectedData.setEnabled(true);
-		} else {
+		}
+		else {
 			buttonSaveSelectedData.setEnabled(false);
 		}
 
+		// Adapt manual return button
+		if (students.size() <= 1) {
+			buttonManualReturn.setEnabled(true);
+		}
+		else {
+			buttonManualReturn.setEnabled(false);
+		}
+
+		// Adapt student list button
 		if (students.size() >= 1) {
 			buttonStudentList.setEnabled(true);
-		} else {
+		}
+		else {
 			buttonStudentList.setEnabled(false);
 		}
 	}

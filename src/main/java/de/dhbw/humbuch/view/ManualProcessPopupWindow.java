@@ -2,9 +2,10 @@ package de.dhbw.humbuch.view;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -31,24 +32,25 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import elemental.events.KeyboardEvent.KeyCode;
 
 
-public class ManualLendingPopupWindow extends Window {
+public class ManualProcessPopupWindow extends Window {
 
 	private static final long serialVersionUID = -6517435259424504689L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(ManualLendingPopupWindow.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ManualProcessPopupWindow.class);
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
-	private static final String SAVE = "Materialien ausleihen";
-	private static final String TEACHING_MATERIAL_HEADER = "Verfügbare Lehrmittel";
+	private static final String SAVE = "Speichern";
+	private static final String TEACHING_MATERIAL_HEADER = "Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
-	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "";
+	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "Ungültiges Datum";
 	private static final String NOTIFICATION_DESCR_INVALID_DATE = "Bitte geben Sie ein gültiges Datum ein.";
-	private static final String NOTIFICATION_CAPTION_DATE_IN_PAST = "Datum liegt in der Vergangenheit.";
+	private static final String NOTIFICATION_CAPTION_DATE_IN_PAST = "Datum liegt in der Vergangenheit";
 	private static final String NOTIFICATION_DESCR_DATE_IN_PAST = "Bitte geben Sie ein gültiges Datum in der Zukunft ein.";
 
 	private VerticalLayout verticalLayoutContent;
@@ -59,17 +61,53 @@ public class ManualLendingPopupWindow extends Window {
 	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
 	private HashMap<Object, HashMap<TeachingMaterial, PopupDateField>> idForMaterialsWithDates;
+	private HashMap<Object, BorrowedMaterial> idForMaterials;
 	private LendingView lendingView;
+	private ReturnView returnView;
 	private Student selectedStudent;
 
-	public ManualLendingPopupWindow(LendingView lendingView, Student selectedStudent) {
+	/**
+	 * Constructor taking a LendingView as parameter. When using this
+	 * constructor a click on the save button triggers the manual lending
+	 * process.
+	 * 
+	 * @param lendingView
+	 *            lending view used for triggering the manual process
+	 * @param selectedStudent
+	 *            student for whom the process is triggered
+	 * */
+	public ManualProcessPopupWindow(LendingView lendingView, Student selectedStudent) {
 		super("Manuelle Ausleihe für " + selectedStudent.getFirstname() + " " + selectedStudent.getLastname());
+
 		this.lendingView = lendingView;
 		this.selectedStudent = selectedStudent;
+
 		init();
 		buildLayout();
 	}
 
+	/**
+	 * Constructor taking a ReturnView as parameter. When using this constructor
+	 * a click on the save button triggers the manual return process.
+	 * 
+	 * @param lendingView
+	 *            lending view used for triggering the manual process
+	 * @param selectedStudent
+	 *            student for whom the process is triggered
+	 * */
+	public ManualProcessPopupWindow(ReturnView returnView, Student selectedStudent) {
+		super("Manuelle Rückgabe für " + selectedStudent.getFirstname() + " " + selectedStudent.getLastname());
+
+		this.returnView = returnView;
+		this.selectedStudent = selectedStudent;
+
+		init();
+		buildLayout();
+	}
+
+	/*
+	 * Initializes all member variables and configures them.
+	 * */
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutHeaderBar = new HorizontalLayout();
@@ -77,6 +115,7 @@ public class ManualLendingPopupWindow extends Window {
 		tableTeachingMaterials = new Table();
 		buttonSave = new Button(SAVE);
 		idForMaterialsWithDates = new HashMap<Object, HashMap<TeachingMaterial, PopupDateField>>();
+		idForMaterials = new HashMap<Object, BorrowedMaterial>();
 		containerTableTeachingMaterials = new IndexedContainer();
 
 		textFieldSearchBar.focus();
@@ -85,7 +124,9 @@ public class ManualLendingPopupWindow extends Window {
 		buttonSave.setClickShortcut(KeyCode.ENTER, null);
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
-		containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
+		if (lendingView != null) {
+			containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
+		}
 
 		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
 		tableTeachingMaterials.setWidth("100%");
@@ -119,9 +160,25 @@ public class ManualLendingPopupWindow extends Window {
 		setContent(verticalLayoutContent);
 	}
 
+	/*
+	 * Updates the content of the table depending on the process.
+	 * */
 	private void updateTableContent() {
-		teachingMaterials = lendingView.getTeachingMaterials();
+		if (lendingView != null) {
+			updateTableManualLending();
+		}
+		else if (returnView != null) {
+			updateTableManualReturn();
+		}
+	}
 
+	/*
+	 * Updates the table for manual lending. Adding all teaching materials provided from the LendingView and Datefields.
+	 * When adding the date fields a value change listener for validation is added. The default date in the table is one
+	 * month in the future.
+	 * */
+	private void updateTableManualLending() {
+		teachingMaterials = lendingView.getTeachingMaterials();
 		if (teachingMaterials == null) {
 			return;
 		}
@@ -159,6 +216,21 @@ public class ManualLendingPopupWindow extends Window {
 		}
 	}
 
+	/*
+	 * Updates the table for manual return. It adds just the borrowed materials for the student in the table.
+	 * */
+	private void updateTableManualReturn() {
+		List<BorrowedMaterial> materials = selectedStudent.getBorrowedList();
+		for (BorrowedMaterial material : materials) {
+			Object itemId = tableTeachingMaterials.addItem(new Object[] { material.getTeachingMaterial().getName() }, null);
+			idForMaterials.put(itemId, material);
+		}
+	}
+
+	/*
+	 * When an item in the table gets selected the save button is enabled.
+	 * When no item is selected the save button is disabled.
+	 * */
 	private void setTableListener() {
 		tableTeachingMaterials.addValueChangeListener(new ValueChangeListener() {
 
@@ -183,17 +255,36 @@ public class ManualLendingPopupWindow extends Window {
 		});
 	}
 
+	/*
+	 * Adds a listener to the save button and one responsible for filtering the table.
+	 * */
 	private void addListeners() {
+		/*
+		 * Decides whether the manual lending or the manual return is saved.
+		 * */
 		buttonSave.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 4375804067002022079L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				saveTeachingMaterialsForStudent();
+				if (lendingView != null) {
+					finishManualLendingProcess();
+				}
+				else if (returnView != null) {
+					finishManualReturnProcess();
+				}
+				else {
+					LOG.warn("Could not determine which process should be finished. Both views are null.");
+				}
+				closeMe();
 			}
 		});
 
+		/*
+		 * Puts a string filter on the table content. The filter is case-insensitive and matches anywhere
+		 * in the teaching material (not only prefix matching).
+		 * */
 		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
 
 			private static final long serialVersionUID = -6281243106168356850L;
@@ -207,13 +298,13 @@ public class ManualLendingPopupWindow extends Window {
 		});
 	}
 
-	public void setTeachingMaterials(Collection<TeachingMaterial> teachingMaterials) {
-		this.teachingMaterials = new ArrayList<TeachingMaterial>(teachingMaterials);
-		updateTableContent();
-	}
-
+	/*
+	 * Save all selected materials for the student object using LendingView.saveTeachingMaterialsForStudents.
+	 * Afterwards the window is closed.
+	 * */
 	@SuppressWarnings("unchecked")
-	private void saveTeachingMaterialsForStudent() {
+	private void finishManualLendingProcess() {
+
 		HashMap<TeachingMaterial, Date> teachingMaterialsWithDates = new HashMap<TeachingMaterial, Date>();
 
 		Object selectedIds = tableTeachingMaterials.getValue();
@@ -244,11 +335,39 @@ public class ManualLendingPopupWindow extends Window {
 		closeMe();
 	}
 
-	private void closeMe() {
-		UI.getCurrent().removeWindow(this);
-		close();
+	/*
+	 * Return all selected materials for the student object using ReturnView.returnTeachingMaterialsForStudents.
+	 * Afterwards the window is closed.
+	 * */
+	@SuppressWarnings("unchecked")
+	private void finishManualReturnProcess() {
+		Set<BorrowedMaterial> selectedMaterials = new HashSet<BorrowedMaterial>();
+
+		Object selectedIds = tableTeachingMaterials.getValue();
+		if (selectedIds instanceof Set<?>) {
+			Set<Object> ids = (Set<Object>) selectedIds;
+			if (ids.size() == 0) {
+				return;
+			}
+
+			for (Object selectedId : ids) {
+				selectedMaterials.add(idForMaterials.get(selectedId));
+			}
+		}
+		else {
+			LOG.warn("Table selection is not an instance of Set<?>");
+		}
+
+		returnView.returnTeachingMaterials(selectedMaterials);
 	}
 
+	/*
+	 * Method for validating a date object.
+	 * 
+	 * @return
+	 * 		returns false when passing null or a date in the past
+	 *		returns true otherwise
+	 * */
 	private boolean validateDate(Date date) {
 		if (date == null) {
 			Notification.show(NOTIFICATION_CAPTION_INVALID_DATE, NOTIFICATION_DESCR_INVALID_DATE, Type.WARNING_MESSAGE);
@@ -261,5 +380,13 @@ public class ManualLendingPopupWindow extends Window {
 		else {
 			return true;
 		}
+	}
+
+	/*
+	 * Closes this window. Removing it from the UI and calling the Window.close method
+	 * */
+	private void closeMe() {
+		UI.getCurrent().removeWindow(this);
+		close();
 	}
 }

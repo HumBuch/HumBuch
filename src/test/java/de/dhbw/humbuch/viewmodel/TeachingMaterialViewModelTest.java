@@ -19,8 +19,8 @@ import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
-public class BookManagementViewModelTest {
-	private BookManagementViewModel bookManagementViewModel;
+public class TeachingMaterialViewModelTest {
+	private TeachingMaterialViewModel bookManagementViewModel;
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 
 	@Inject
@@ -29,7 +29,7 @@ public class BookManagementViewModelTest {
 	}
 
 	@Inject
-	public void setViewModel(BookManagementViewModel bookManagementViewModel) {
+	public void setViewModel(TeachingMaterialViewModel bookManagementViewModel) {
 		this.bookManagementViewModel = bookManagementViewModel;
 	}
 
