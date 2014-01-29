@@ -49,7 +49,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private static final long serialVersionUID = -525078997965992622L;
 
 	private static final String TITLE = "Rückgabe";
-	private static final String SAVE_SELECTED_RETURNING = "Bücher zurückgegeben";
+	private static final String SAVE_SELECTED_RETURNING = "Zurückgegeben";
 	private static final String STUDENT_LIST = "Schülerliste drucken";
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
@@ -80,11 +80,16 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 		studentMaterialSelector = new StudentMaterialSelector();
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_RETURNING);
 		buttonStudentList = new Button(STUDENT_LIST);
-		textFieldStudentFilter = new TextField(FILTER_STUDENT);
+		textFieldStudentFilter = new TextField();
 
+		buttonSaveSelectedData.addStyleName("default");
 		buttonSaveSelectedData.setEnabled(false);
 		buttonStudentList.setEnabled(false);
 
+		textFieldStudentFilter.setInputPrompt(FILTER_STUDENT);
+		textFieldStudentFilter.setWidth("50%");
+		textFieldStudentFilter.setImmediate(true);
+		
 		studentMaterialSelector.registerAsObserver(this);
 		studentMaterialSelector.setSizeFull();
 
@@ -102,12 +107,12 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
 		horizontalLayoutActions.addComponent(buttonStudentList);
-		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.BOTTOM_CENTER);
-		horizontalLayoutActions.setComponentAlignment(buttonStudentList, Alignment.BOTTOM_CENTER);
 
 		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
-		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.BOTTOM_RIGHT);
+		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.MIDDLE_RIGHT);
+		horizontalLayoutHeaderBar.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setExpandRatio(textFieldStudentFilter, 1);
 
 		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
