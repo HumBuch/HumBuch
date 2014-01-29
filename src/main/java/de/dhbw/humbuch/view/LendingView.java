@@ -65,7 +65,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private final static Logger LOG = LoggerFactory.getLogger(LendingView.class);
 
 	private static final String TITLE = "Ausleihe";
-	private static final String MANUAL_LENDING_TITLE = "Manueller Ausleihvorgang";
+	private static final String MANUAL_LENDING_TITLE = "Manuelle Ausleihe";
 	private static final String SAVE_SELECTED_LENDING = "Material Erhalten";
 	private static final String MANUAL_LENDING = "Manuelle Ausleihe";
 	private static final String MENU_PRINT = "Listen drucken";
@@ -240,11 +240,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				else if (selectedStudents.size() == 1) {
 					// This loop runs only once
 					for (Student student : selectedStudents) {
-						ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(LendingView.this, student);
+						ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(LendingView.this, student);
 						getUI().addWindow(mlpw);
 					}
 				}
-
 			}
 		});
 	}
