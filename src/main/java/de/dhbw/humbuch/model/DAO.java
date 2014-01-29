@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 
 import de.dhbw.humbuch.model.entity.Entity;
 
@@ -80,6 +81,8 @@ public interface DAO<EntityType extends Entity> {
 	 */
 	List<EntityType> findAllWithCriteria(Criterion... criteriaArray);
 
+	List<EntityType> findAllWithCriteria(Order order, Criterion... criteriaArray);
+	
 	/**
 	 * Retrieve <b>a single entity</b> of the type indicated by the {@link DAO}
 	 * with the given {@link Criteria}. Only use this method when you are sure
@@ -93,5 +96,7 @@ public interface DAO<EntityType extends Entity> {
 	 *         found in the database is greater than 0, otherwise <i>null</i>
 	 */
 	EntityType findSingleWithCriteria(Criterion... criteriaArray);
+	
+	EntityType findSingleWithCriteria(Order order, Criterion... criteriaArray);
 
 }
