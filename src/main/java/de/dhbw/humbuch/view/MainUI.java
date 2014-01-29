@@ -34,7 +34,6 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
-import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
 import de.dhbw.humbuch.view.components.ConfirmDialog;
@@ -62,25 +61,25 @@ public class MainUI extends ScopedUI {
 
 	@Inject
 	private LoginView loginView;
-	
+
 	@Inject
 	private DunningView dunningView;
-	
+
 	@Inject
 	private LendingView lendingView;
-	
+
 	@Inject
 	private ReturnView returnView;
-	
+
 	@Inject
 	private TeachingMaterialView bookManagementView;
-	
+
 	@Inject
 	private StudentInformationView studentInformationView;
-	
+
 	@Inject
 	private SettingsView settingsView;
-	
+
 	@Inject
 	private ErrorView errorView;
 
@@ -101,7 +100,8 @@ public class MainUI extends ScopedUI {
 
 	@Inject
 	public MainUI(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel, EventBus eventBus, MVVMConfig mvvmConfig) {
+			LoginViewModel loginViewModel, EventBus eventBus,
+			MVVMConfig mvvmConfig) {
 		this.loginViewModel = loginViewModel;
 		eventBus.register(this);
 		bindViewModel(viewModelComposer, loginViewModel);
@@ -111,12 +111,12 @@ public class MainUI extends ScopedUI {
 	protected void init(VaadinRequest request) {
 
 		getUI().getSession().setLocale(new Locale("de", "DE"));
-		
+
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
 
 		navigator.setErrorView(errorView);
-		
+
 		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", lendingView);
 		navigator.addView(LOGIN_VIEW, loginView);
@@ -129,7 +129,7 @@ public class MainUI extends ScopedUI {
 
 		// Make the displayed view as big as possible
 		viewContainer.setSizeFull();
-		
+
 		if (!isLoggedIn.get()) {
 			buildMainView(true);
 		} else {
@@ -153,7 +153,7 @@ public class MainUI extends ScopedUI {
 		}
 
 		root = new GridLayout(2, 2);
-		
+
 		header.setWidth("100%");
 		sidebar = new Sidebar();
 		sidebar.setWidth("150px");
@@ -163,7 +163,7 @@ public class MainUI extends ScopedUI {
 				loginViewModel.doLogout(new Object());
 			}
 		});
-		
+
 		panelContent.setContent(viewContainer);
 		panelContent.setSizeFull();
 
@@ -279,17 +279,6 @@ public class MainUI extends ScopedUI {
 	}
 
 	/**
-	 * Example for handling events posted via the {@link EventBus}
-	 * 
-	 * @param loginEvent
-	 *            a {@link LoginEvent}
-	 */
-	@Subscribe
-	public void handleLoginEvent(LoginEvent loginEvent) {
-		Notification.show(loginEvent.message);
-	}
-
-	/**
 	 * Handles {@link MessageEvent}s showing the message in a Vaadin
 	 * {@link Notification}
 	 * 
@@ -313,26 +302,28 @@ public class MainUI extends ScopedUI {
 		default:
 			notificationType = Type.HUMANIZED_MESSAGE;
 		}
-		
-		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
+
+		Notification.show(messageEvent.caption, messageEvent.message,
+				notificationType);
 	}
-	
+
 	@Subscribe
 	public void handleConfirmEvent(final ConfirmEvent confirmEvent) {
-		ConfirmDialog.show(confirmEvent.caption, confirmEvent.message, confirmEvent.confirmCaption, confirmEvent.cancelCaption, 
+		ConfirmDialog.show(confirmEvent.caption, confirmEvent.message,
+				confirmEvent.confirmCaption, confirmEvent.cancelCaption,
 				new ConfirmDialog.Listener() {
-			
-			@Override
-			public void onClose(ConfirmDialog dialog) {
-				if(dialog.isConfirmed()) {
-					confirmEvent.confirm();
-				} else {
-					confirmEvent.cancel();
-				}
-			}
-		});
+
+					@Override
+					public void onClose(ConfirmDialog dialog) {
+						if (dialog.isConfirmed()) {
+							confirmEvent.confirm();
+						} else {
+							confirmEvent.cancel();
+						}
+					}
+				});
 	}
-	
+
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {
