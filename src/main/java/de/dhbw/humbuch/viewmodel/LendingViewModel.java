@@ -168,7 +168,7 @@ public class LendingViewModel {
 						Restrictions.le("fromGrade", student.getGrade().getGrade())
 						, Restrictions.ge("toGrade", student.getGrade().getGrade())
 						, Restrictions.le("validFrom", new Date())
-						, Restrictions.le("fromTerm", currentSchoolYear.getCurrentTerm())
+						, Restrictions.le("fromTerm", currentSchoolYear.getRecentlyActiveTerm())
 						, Restrictions.or(
 								Restrictions.ge("validUntil", new Date())
 								, Restrictions.isNull("validUntil"))

@@ -77,7 +77,7 @@ public class ReturnViewModel {
 			for(Student student : grade.getStudents()) {
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
-					boolean isAfterCurrentTerm = currentSchoolYear.getEndDateOfTerm(currentSchoolYear.getCurrentTerm()).before(new Date());
+					boolean isAfterCurrentTerm = currentSchoolYear.getEndOf(currentSchoolYear.getRecentlyActiveTerm()).before(new Date());
 					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
 					boolean isManualLended = borrowedMaterial.getBorrowUntil() == null ? false : true;
@@ -118,7 +118,7 @@ public class ReturnViewModel {
 		Integer toGrade = teachingMaterial.getToGrade();
 		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
 		Term toTerm = teachingMaterial.getToTerm();
-		Term currentTerm = currentSchoolYear.getCurrentTerm();
+		Term currentTerm = currentSchoolYear.getRecentlyActiveTerm();
 
 		if(toGrade == null)
 			return false;

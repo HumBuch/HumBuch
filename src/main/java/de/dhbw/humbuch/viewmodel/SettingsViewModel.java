@@ -102,7 +102,7 @@ public class SettingsViewModel {
 	}
 
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
-		if(!schoolYear.isCurrentYear()) {
+		if(!schoolYear.isActive()) {
 			daoSchoolYear.delete(schoolYear);
 		} else {
 			eventBus.post(new MessageEvent("Löschen nicht möglich!",

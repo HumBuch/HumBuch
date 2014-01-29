@@ -83,8 +83,8 @@ public class DunningViewModel {
 					// check if today is later than end of term
 					Calendar termEndDate = new GregorianCalendar();
 					termEndDate.setTime(currentSchoolYear
-							.getEndDateOfTerm(currentSchoolYear
-									.getCurrentTerm()));
+							.getEndOf(currentSchoolYear
+									.getRecentlyActiveTerm()));
 					termEndDate.add(Calendar.DATE, 15);
 					// collect all borrowed materials for a student
 					if (new GregorianCalendar().after(termEndDate)) {
@@ -169,7 +169,7 @@ public class DunningViewModel {
 		Integer toGrade = teachingMaterial.getToGrade();
 		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
 		Term toTerm = teachingMaterial.getToTerm();
-		Term currentTerm = currentSchoolYear.getCurrentTerm();
+		Term currentTerm = currentSchoolYear.getRecentlyActiveTerm();
 
 		if (toGrade == null)
 			return false;

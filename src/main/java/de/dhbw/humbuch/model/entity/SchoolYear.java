@@ -74,36 +74,17 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		this.beginSecondTerm = beginSecondTerm;
 	}
 	
-	public Date getEndDateOfTerm(Term term) {
-		if(term == Term.FIRST) {
-			return getEndFirstTerm();
-		}
-		else {
-			return getToDate();
-		}
+	public Date getEndOf(Term term) {
+		return term == Term.FIRST ? getEndFirstTerm() : getToDate();
 	}
 	
-	public Term getCurrentTerm() {
-//		if(getEndFirstTerm().after(new Date())) {
-//			return Term.FIRST;
-//		} else {
-//			return Term.SECOND;
-//		}
-		
-		if(getBeginSecondTerm().compareTo(new Date()) <= 0) {
-			return Term.SECOND;
-		} else {
-			return Term.FIRST;
-		}
+	public Term getRecentlyActiveTerm() {
+		return getBeginSecondTerm().after(new Date()) ? Term.SECOND : Term.FIRST;
 	}
 	
-	public boolean isCurrentYear() {
+	public boolean isActive() {
 		Date today = new Date();
-		if(getFromDate().before(today) && getToDate().after(today)) {
-			return true;
-		}
-		
-		return false;
+		return getFromDate().before(today) && getToDate().after(today) ? true : false;
 	}
 	
 	public enum Term {
