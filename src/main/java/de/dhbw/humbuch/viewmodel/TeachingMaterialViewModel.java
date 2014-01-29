@@ -21,7 +21,7 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
-public class BookManagementViewModel {
+public class TeachingMaterialViewModel {
 
 	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}
 	public interface Categories extends State<Collection<Category>> {}
@@ -49,7 +49,7 @@ public class BookManagementViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public BookManagementViewModel(DAO<TeachingMaterial> daoTeachingMaterial,
+	public TeachingMaterialViewModel(DAO<TeachingMaterial> daoTeachingMaterial,
 			DAO<Category> daoCategory,
 			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoTeachingMaterial = daoTeachingMaterial;
