@@ -21,10 +21,9 @@ public class SelectStudentPopupWindow extends Window {
 
 	private static final long serialVersionUID = 4748807796813638121L;
 
-	private static final String TITLE = "Manueller Ausleihvorgang";
 	private static final String CHOOSE_STUDENT = "Schüler auswählen";
-	private static final String CANCEL = "Manuelle Ausleihe abbrechen";
-	private static final String CONTINUE = "Manuelle Ausleihe starten";
+	private static final String CANCEL = "Abbrechen";
+	private static final String CONTINUE = "Fortfahren";
 
 	private VerticalLayout verticalLayoutContent;
 	private HorizontalLayout horizontalLayoutButtonBar;
@@ -33,9 +32,23 @@ public class SelectStudentPopupWindow extends Window {
 	private Button buttonCancel;
 	private ArrayList<Student> allStudents;
 	private LendingView lendingView;
+	private ReturnView returnView;
 
-	public SelectStudentPopupWindow(LendingView lendingView, Collection<Student> allStudents) {
-		super(TITLE);
+	/**
+	 * Constructor taking a LendingView as parameter. When creating the
+	 * SelectStudentPopupWindow with this constructor a press on the continue
+	 * button is going to trigger the manual lending process.
+	 * 
+	 * @param title
+	 *            the title of the window
+	 * @param lendingView
+	 *            the lendingView used for the manual lending process
+	 * @param allStudents
+	 *            Collection of students which can be selected and qualify for
+	 *            the process
+	 * */
+	public SelectStudentPopupWindow(String title, LendingView lendingView, Collection<Student> allStudents) {
+		super(title);
 
 		this.lendingView = lendingView;
 		this.allStudents = new ArrayList<Student>(allStudents);
@@ -44,6 +57,32 @@ public class SelectStudentPopupWindow extends Window {
 		buildLayout();
 	}
 
+	/**
+	 * Constructor taking a ReturnView as parameter. When creating the
+	 * SelectStudentPopupWindow with this constructor a press on the continue
+	 * button is going to trigger the manual return process.
+	 * 
+	 * @param title
+	 *            the title of the window
+	 * @param lendingView
+	 *            the lendingView used for the manual lending process
+	 * @param allStudents
+	 *            Collection of students which can be selected and qualify for
+	 *            the process
+	 * */
+	public SelectStudentPopupWindow(String title, ReturnView returnView, Collection<Student> allStudents) {
+		super(title);
+
+		this.returnView = returnView;
+		this.allStudents = new ArrayList<Student>(allStudents);
+
+		init();
+		buildLayout();
+	}
+
+	/*
+	 * Initializes and configures all member variables.
+	 * */
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
@@ -59,10 +98,6 @@ public class SelectStudentPopupWindow extends Window {
 		comboBoxStudents.setImmediate(true);
 		comboBoxStudents.focus();
 
-		verticalLayoutContent.setSpacing(true);
-		verticalLayoutContent.setMargin(true);
-		horizontalLayoutButtonBar.setSpacing(true);
-
 		center();
 		setImmediate(true);
 		setModal(true);
@@ -74,16 +109,26 @@ public class SelectStudentPopupWindow extends Window {
 	}
 
 	private void buildLayout() {
+		horizontalLayoutButtonBar.setSpacing(true);
 		horizontalLayoutButtonBar.addComponent(buttonCancel);
 		horizontalLayoutButtonBar.addComponent(buttonContinue);
 
+		verticalLayoutContent.setSpacing(true);
+		verticalLayoutContent.setMargin(true);
 		verticalLayoutContent.addComponent(comboBoxStudents);
 		verticalLayoutContent.addComponent(horizontalLayoutButtonBar);
 
 		setContent(verticalLayoutContent);
 	}
 
+	/*
+	 * Add listeners to combo box and buttons.
+	 * */
 	private void addListeners() {
+		/*
+		 * When a student gets selected in the ComboBox enable the continue button.
+		 * If no student is selected the button gets disabled.
+		 * */
 		comboBoxStudents.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 5865059270341130362L;
@@ -100,6 +145,9 @@ public class SelectStudentPopupWindow extends Window {
 
 		});
 
+		/*
+		 * When clicking the cancel button the window closes. Nothing else happens.
+		 * */
 		buttonCancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 481430670731285908L;
@@ -110,32 +158,52 @@ public class SelectStudentPopupWindow extends Window {
 			}
 		});
 
+		/*
+		 * When clicking the continue button a process, determined by the constructor, is triggered.
+		 * @see SelectStudentPopupWindow.continueWithProcess
+		 * */
 		buttonContinue.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = -6743301861593920408L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				showManualLending();
+				continueWithProcess();
 			}
 		});
 	}
 
+	/*
+	 * Fills the ComboBox with all students. It is using CustomStudents to display the firstname and lastname of a student
+	 * and additionally be able to access the Student object later.
+	 * */
 	private void fillComboBox() {
 		comboBoxStudents.removeAllItems();
 
 		for (Student student : allStudents) {
-			CustomStudent customStudentObject = new CustomStudent(student);
+			StudentWrapper customStudentObject = new StudentWrapper(student);
 			comboBoxStudents.addItem(customStudentObject);
 		}
 	}
 
-	private void showManualLending() {
-		CustomStudent customStudent = (CustomStudent) comboBoxStudents.getValue();
+	/*
+	 * This methods decides with which process to continue. When the SelectStudentPopupWindow was constructed with a
+	 * LendingView the ManualLendingPopupWindow is opened.
+	 * When it was created with a ReturnView a ManualReturnPopupWindow is opened.
+	 * After opening the corresponding window. This window is closed.
+	 * */
+	private void continueWithProcess() {
+		StudentWrapper studentWrapper = (StudentWrapper) comboBoxStudents.getValue();
 
-		if (customStudent != null) {
-			ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(lendingView, customStudent.getStudent());
-			getUI().addWindow(mlpw);
+		if (studentWrapper != null) {
+			if (lendingView != null) {
+				ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(lendingView, studentWrapper.getStudent());
+				getUI().addWindow(mlpw);
+			}
+			else if (returnView != null) {
+				// TODO!
+			}
+
 			closeMe();
 		}
 		else {
@@ -143,24 +211,40 @@ public class SelectStudentPopupWindow extends Window {
 		}
 	}
 
+	/*
+	 * Closes this window. Removing it from the UI and calling the Window.close method
+	 * */
 	private void closeMe() {
 		getUI().removeWindow(this);
 		close();
 	}
 
 
-	public class CustomStudent {
+	/*
+	 * Wrapper class for a Student object. Holding a Student object and redefining the toString method.
+	 * */
+	private class StudentWrapper {
 
 		private Student student;
 
-		public CustomStudent(Student student) {
+		/**
+		 * Constructor. Simply sets the Student object hold by Wrapper class
+		 * */
+		public StudentWrapper(Student student) {
 			this.student = student;
 		}
 
+		/**
+		 * Returns a concatenation of firstname, a space and the lastname of the
+		 * wrapped student object
+		 * */
 		public String toString() {
 			return "" + student.getFirstname() + " " + student.getLastname();
 		}
 
+		/**
+		 * @return returns the wrapped student object
+		 * */
 		public Student getStudent() {
 			return student;
 		}

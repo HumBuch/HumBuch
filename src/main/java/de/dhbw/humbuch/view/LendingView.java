@@ -65,6 +65,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private final static Logger LOG = LoggerFactory.getLogger(LendingView.class);
 
 	private static final String TITLE = "Ausleihe";
+	private static final String MANUAL_LENDING_TITLE = "Manueller Ausleihvorgang";
 	private static final String SAVE_SELECTED_LENDING = "Material Erhalten";
 	private static final String MANUAL_LENDING = "Manuelle Ausleihe";
 	private static final String MENU_PRINT = "Listen drucken";
@@ -233,7 +234,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			public void buttonClick(ClickEvent event) {
 				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
 				if (selectedStudents.size() == 0) {
-					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(LendingView.this, students.get());
+					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(MANUAL_LENDING_TITLE, LendingView.this, students.get());
 					getUI().addWindow(sspw);
 				}
 				else if (selectedStudents.size() == 1) {
