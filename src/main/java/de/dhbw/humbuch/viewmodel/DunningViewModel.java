@@ -61,7 +61,7 @@ public class DunningViewModel {
 	}
 
 	@AfterVMBinding
-	private void afterVMBinding() {
+	public void init() {
 		updateSchoolYear();
 		createFirstDunnings();
 		createSecondDunnings();
