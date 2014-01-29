@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -36,13 +38,16 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
+import de.dhbw.humbuch.view.StudentInformationView;
 
 
 public class StudentInformationViewModel {
+	
+	private final static Logger LOG = LoggerFactory
+			.getLogger(StudentInformationView.class);
 
 	public interface Students extends State<Collection<Student>> {
 	}
-
 
 	public interface PersistStudents extends ActionHandler {
 	}
@@ -185,10 +190,10 @@ public class StudentInformationViewModel {
 					}
 				}
 
-				daoStudent.insert(student);
+				daoStudent.insert(student, FireUpdateEvent.NO);
 				insertedStudents++;
 			} else {
-				daoStudent.update(student);
+				daoStudent.update(student, FireUpdateEvent.NO);
 				updatedStudents++;
 			}
 		}
@@ -196,8 +201,7 @@ public class StudentInformationViewModel {
 				+ insertedStudents + " Schüler hinzugefügt, " + updatedStudents
 				+ " aktualisiert und " + deletedStudents + " gelöscht.",
 				Type.TRAYINFO));
-		eventBus.post(new ImportSuccessEvent());
-		updateStudents();
+		daoStudent.fireUpdateEvent();
 	}
 
 	/**
@@ -210,8 +214,7 @@ public class StudentInformationViewModel {
 		try {
 			String encoding = checkEncoding(outputStream);
 			CSVReader reader;
-			//leave System.out in for test purposes on other systems
-			System.out.println(encoding);
+			LOG.warn(encoding);
 			if (encoding != null) {
 				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding), ';', '\'', 0);
 				
