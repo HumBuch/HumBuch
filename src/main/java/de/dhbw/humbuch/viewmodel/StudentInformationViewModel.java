@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import de.dhbw.humbuch.event.ImportSuccessEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
@@ -49,6 +51,7 @@ public class StudentInformationViewModel {
 	private DAO<Student> daoStudent;
 	private DAO<Grade> daoGrade;
 	private DAO<Parent> daoParent;
+	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 
 	/**
 	 * Constructor
@@ -57,10 +60,12 @@ public class StudentInformationViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent, EventBus eventBus) {
+	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent,
+			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;
 		this.daoParent = daoParent;
+		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.eventBus = eventBus;
 	}
 
@@ -74,7 +79,25 @@ public class StudentInformationViewModel {
 	}
 
 	@HandlesAction(PersistStudents.class)
-	public void persistStudents(List<Student> students) {
+	public void persistStudents(List<Student> students, boolean fullImport) {
+
+		if(fullImport){
+			
+			Collection<BorrowedMaterial> borrowedMaterials = this.daoBorrowedMaterial.findAll();
+			Collection<Integer> borrowedMaterialIDs = new ArrayList<Integer>();
+			
+			for(BorrowedMaterial borrowedMaterial : borrowedMaterials){
+				borrowedMaterialIDs.add(borrowedMaterial.getStudent().getId());
+			}
+			Collection<Student> studentsToDelete = this.daoStudent.findAllWithCriteria(		
+				Restrictions.not(Restrictions.in("id", borrowedMaterialIDs))
+				);		
+
+			for(Student student : studentsToDelete){
+				this.daoStudent.delete(student);
+			}
+		}
+		
 		Iterator<Student> studentIterator = students.iterator();
 
 		while (studentIterator.hasNext()) {
@@ -144,7 +167,7 @@ public class StudentInformationViewModel {
 				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
 			}
 			List<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
-			persistStudents(students);
+			persistStudents(students, fullImport);
 		}
 		catch (UnsupportedOperationException uoe) {
 			eventBus.post(new MessageEvent("Import nicht möglich.", uoe.getMessage(), Type.ERROR));
