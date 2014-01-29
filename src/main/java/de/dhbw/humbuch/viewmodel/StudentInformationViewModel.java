@@ -16,6 +16,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -24,10 +25,11 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.ImportSuccessEvent;
+import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.DAO.FireUpdateEvent;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
@@ -67,6 +69,8 @@ public class StudentInformationViewModel {
 		this.daoParent = daoParent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.eventBus = eventBus;
+		
+		eventBus.register(this);
 	}
 
 	@AfterVMBinding
@@ -136,15 +140,15 @@ public class StudentInformationViewModel {
 					}
 				}
 
-				daoStudent.insert(student);
+				daoStudent.insert(student, FireUpdateEvent.NO);
 			}
 			else {
-				daoStudent.update(student);
+				daoStudent.update(student, FireUpdateEvent.NO);
 			}
 		}
+		
 		eventBus.post(new MessageEvent("Import erfolgreich", "Alle Schüler wurden erfolgreich importiert", Type.TRAYINFO));
-		eventBus.post(new ImportSuccessEvent());
-		updateStudents();
+		daoStudent.fireUpdateEvent();
 	}
 
 	/**
@@ -207,5 +211,12 @@ public class StudentInformationViewModel {
 		}
 		return null;
 	}
-
+	
+	
+	@Subscribe
+	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
+		if(entityUpdateEvent.contains(Student.class)) {
+			updateStudents();
+		}
+	}
 }
