@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.persistence.EntityManager;
-
 import org.hibernate.criterion.Restrictions;
 
 import com.google.common.eventbus.EventBus;
@@ -23,10 +21,9 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.ImportSuccessEvent;
+import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
-import de.dhbw.humbuch.model.entity.Entity;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Student;
@@ -72,7 +69,7 @@ public class LendingViewModel {
 	}
 	
 	@AfterVMBinding
-	private void afterVMBinding() {
+	public void init() {
 		updateSchoolYear();
 		updateTeachingMaterials();
 		updateAllStudentsBorrowedMaterials();
@@ -126,8 +123,7 @@ public class LendingViewModel {
 		updateUnreceivedBorrowedMaterialsState();
 	}
 
-	// TODO Q&D: have to be changed after "data has changed"-system is implemented
-	public void updateTeachingMaterials() {
+	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 	
@@ -141,11 +137,9 @@ public class LendingViewModel {
 	private void updateUnreceivedBorrowedMaterialsState() {
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
-		refresh(daoGrade.findAll());
 		for (Grade grade : daoGrade.findAll()) {
+
 			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
-			
-			refresh(grade.getStudents());
 			for (Student student : grade.getStudents()) {
 				if(student.hasUnreceivedBorrowedMaterials()) {
 					List<BorrowedMaterial> unreceivedBorrowedList = student.getUnreceivedBorrowedList();
@@ -208,18 +202,15 @@ public class LendingViewModel {
 		return owning;
 	}
 	
-	private void refresh(Collection<? extends Entity> entities) {
-		EntityManager entityManager = daoStudent.getEntityManager();
-		for (Entity entity : entities) {
-			entityManager.refresh(entity);
-		}
-	}
-
 	@Subscribe
-	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
-//		refresh(daoGrade.findAll());
-//		refresh(daoStudent.findAll());
-		updateAllStudentsBorrowedMaterials();
+	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
+		if(entityUpdateEvent.contains(TeachingMaterial.class)) {
+			updateTeachingMaterials();
+		}
+		
+		if(entityUpdateEvent.contains(Student.class)) {
+			updateAllStudentsBorrowedMaterials();
+		}
 	}
 }
 
