@@ -2,13 +2,16 @@ package de.dhbw.humbuch.model.entity;
 
 public enum Subject {
 	
+	@Deprecated
 	ENGLISH("Englisch"),
-	LATIN("Latein"),
+	STANDARD("Standard"),
 	FRENCH2("Französisch 2"),
 	FRENCH3("Französisch 3"),
+	LATIN("Latein"),
+	SCIENCE("NWT"),
 	
-	EVANGELIC("evangelisch"),
-	ROMAN_CATHOLIC("römisch-katholisch"),
+	EVANGELIC("Evangelisch"),
+	ROMAN_CATHOLIC("Römisch-Katholisch"),
 	ETHICS("Ethik");
 	
 	private String value;

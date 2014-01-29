@@ -65,9 +65,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private final static Logger LOG = LoggerFactory.getLogger(LendingView.class);
 
 	private static final String TITLE = "Ausleihe";
-	private static final String SAVE_SELECTED_LENDING = "Bücher erhalten";
+	private static final String SAVE_SELECTED_LENDING = "Material Erhalten";
 	private static final String MANUAL_LENDING = "Manuelle Ausleihe";
-	private static final String PRINT = "Listen drucken";
+	private static final String MENU_PRINT = "Listen drucken";
+	private static final String MENU_ITEM_STUDENT_LIST = "Schüler Liste";
+	private static final String MENU_ITEM_CLASS_LIST = "Klassen Liste";
 	private static final String CLASS_LIST_PDF = "KlassenListe.pdf";
 	private static final String CLASS_LIST_WINDOW_TITLE = "Klassen Liste";
 	private static final String STUDENT_LIST_PDF = "SchuelerAusleihListe.pdf";
@@ -75,7 +77,6 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private static final String FILTER_STUDENT = "Schüler filtern";
 
 	private HorizontalLayout horizontalLayoutHeaderBar;
-	private HorizontalLayout horizontalLayoutFilter;
 	private HorizontalLayout horizontalLayoutActions;
 	private StudentMaterialSelector studentMaterialSelector;
 	private TextField textFieldStudentFilter;
@@ -111,22 +112,26 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private void init() {
 		horizontalLayoutHeaderBar = new HorizontalLayout();
-		horizontalLayoutFilter = new HorizontalLayout();
 		horizontalLayoutActions = new HorizontalLayout();
 		studentMaterialSelector = new StudentMaterialSelector();
-		textFieldStudentFilter = new TextField(FILTER_STUDENT);
+		textFieldStudentFilter = new TextField();
 		buttonSaveSelectedData = new Button(SAVE_SELECTED_LENDING);
 		buttonManualLending = new Button(MANUAL_LENDING);
 		menuBarPrinting = new MenuBar();
 
 		buttonSaveSelectedData.addStyleName("default");
-
+		buttonSaveSelectedData.setEnabled(false);
+		
+		textFieldStudentFilter.setInputPrompt(FILTER_STUDENT);
+		textFieldStudentFilter.setWidth("50%");
+		textFieldStudentFilter.setImmediate(true);
+		
 		defineMenuCommands();
 
-		menuItemPrinting = menuBarPrinting.addItem(PRINT, null);
-		subMenuItemClassList = menuItemPrinting.addItem("Klassenliste", menuCommandClassList);
+		menuItemPrinting = menuBarPrinting.addItem(MENU_PRINT, null);
+		subMenuItemClassList = menuItemPrinting.addItem(MENU_ITEM_CLASS_LIST, menuCommandClassList);
 		subMenuItemClassList.setEnabled(false);
-		subMenuItemStudentList = menuItemPrinting.addItem("Schülerliste", menuCommandStudentList);
+		subMenuItemStudentList = menuItemPrinting.addItem(MENU_ITEM_STUDENT_LIST, menuCommandStudentList);
 		subMenuItemStudentList.setEnabled(false);
 
 		studentMaterialSelector.registerAsObserver(this);
@@ -137,26 +142,20 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private void buildLayout() {
 		horizontalLayoutHeaderBar.setWidth("100%");
-		horizontalLayoutFilter.setSpacing(true);
 		horizontalLayoutActions.setSpacing(true);
 		setSpacing(true);
 		setMargin(true);
 		setSizeFull();
-
-		horizontalLayoutFilter.addComponent(textFieldStudentFilter);
-		horizontalLayoutFilter.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_CENTER);
-
+		
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
 		horizontalLayoutActions.addComponent(buttonManualLending);
 		horizontalLayoutActions.addComponent(menuBarPrinting);
-		horizontalLayoutActions.setComponentAlignment(buttonSaveSelectedData, Alignment.MIDDLE_CENTER);
-		horizontalLayoutActions.setComponentAlignment(buttonManualLending, Alignment.MIDDLE_CENTER);
-		horizontalLayoutActions.setComponentAlignment(menuBarPrinting, Alignment.MIDDLE_CENTER);
-
-		horizontalLayoutHeaderBar.addComponent(horizontalLayoutFilter);
+		
+		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
-		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutFilter, Alignment.BOTTOM_LEFT);
-		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.BOTTOM_RIGHT);
+		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.MIDDLE_RIGHT);
+		horizontalLayoutHeaderBar.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setExpandRatio(textFieldStudentFilter, 1);
 
 		addComponent(horizontalLayoutHeaderBar);
 		addComponent(studentMaterialSelector);
