@@ -83,7 +83,7 @@ public class DunningViewModelTest {
 				"FooBook1", null, todayPlusDays(-20)).fromGrade(5)
 				.fromTerm(Term.FIRST).toGrade(5).toTerm(Term.FIRST).build();
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-5)).received(true)
+				student, teachingMaterial, todayPlusDays(-25)).received(true)
 				.build();
 		daoBorrowedMaterial.insert(borrowedMaterial);
 	}
@@ -122,7 +122,7 @@ public class DunningViewModelTest {
 				.build();
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
 				"FooBook1", null, todayPlusDays(-20)).fromGrade(4)
-				.fromTerm(Term.FIRST).toGrade(4).toTerm(Term.SECOND).build();
+				.fromTerm(Term.FIRST).toGrade(4).toTerm(Term.FIRST).build();
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
 				student, teachingMaterial, todayPlusDays(-5)).received(true)
 				.build();
