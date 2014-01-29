@@ -135,6 +135,14 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		this.profile = profile;
 	}
 	
+	public void addSubject(Subject subject) {
+		getProfile().add(subject);
+	}
+	
+	public boolean hasSubject(Subject subject) {
+		return getProfile().contains(subject);
+	}
+	
 	public boolean isLeavingSchool() {
 		return leavingSchool;
 	}

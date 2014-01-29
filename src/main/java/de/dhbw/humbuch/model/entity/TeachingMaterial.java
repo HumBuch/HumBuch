@@ -173,6 +173,14 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.profile = profile;
 	}
 
+	public void addSubject(Subject subject) {
+		getProfile().add(subject);
+	}
+	
+	public boolean hasSubject(Subject subject) {
+		return getProfile().contains(subject);
+	}
+	
 	public static class Builder {
 		private final Category category;
 		private final String name;
