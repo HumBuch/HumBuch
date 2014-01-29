@@ -6,9 +6,13 @@ package de.dhbw.humbuch.event;
  * @author David Herrmann
  */
 public class LoginEvent {
-	public final String message;
+	private final String message;
 
 	public LoginEvent(String message) {
 		this.message = message;
+	}
+	
+	public String getMessage() {
+		return message;
 	}
 }
