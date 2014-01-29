@@ -73,10 +73,32 @@ public final class PDFStudentList extends PDFHandler {
 
 			this.addHeading(document);
 			this.addStudentInformation(document);
-			this.addInformationAboutDocument(document, "Informations-Liste");
+			
+			this.addInformationAboutDocument(document, this.getDocumentTitle());
 			this.addContent(document);
 			document.newPage();
 			this.resetPageNumber();
+		}
+	}
+
+	private String getDocumentTitle() {
+		if(this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()
+				&& (this.lendingList == null || this.lendingList.isEmpty()) 
+				&& (this.returnList == null || this.returnList.isEmpty())){
+			return "Ausgeliehene Materialien";
+		}
+		if(this.lendingList != null && !this.lendingList.isEmpty()
+				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty()) 
+				&& (this.returnList == null || this.returnList.isEmpty())){
+			return "Auszuleihende Materialien";
+		}
+		if(this.returnList != null && !this.returnList.isEmpty()
+				&& (this.lendingList == null || this.lendingList.isEmpty()) 
+				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty())){
+			return "Zurückzugebende Materialien";
+		}
+		else{
+			return "Material-Informationen";
 		}
 	}
 
@@ -95,12 +117,11 @@ public final class PDFStudentList extends PDFHandler {
 				e.printStackTrace();
 			}
 
-			table = this.createTableWithRentalInformationHeader();
+			table = this.createTableWithRentalInformationHeaderWithoutSignColumn();
 
 			for (BorrowedMaterial borrowedMaterial : this.borrowedMaterialList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
-											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
-											"" };
+											"" + borrowedMaterial.getTeachingMaterial().getToGrade()};
 				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
 			}
 			try {
