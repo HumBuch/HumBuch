@@ -33,7 +33,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
@@ -52,15 +51,17 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 /**
- * Provides a overview over all students and the possibility to import new ones.
+ * Provides an overview over all students and the possibility to import new ones.
  * 
  * @author Johannes
  */
+@SuppressWarnings("serial")
 public class StudentInformationView extends VerticalLayout implements View,
 		ViewInformation {
 	private static final long serialVersionUID = -739081142499192817L;
@@ -75,9 +76,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 	private static final String TABLE_BIRTHDAY = "birthday";
 	private static final String TABLE_GENDER = "gender";
 
-	/**
-	 * Layout
-	 */
 	private Upload upload;
 	private UploadReceiver receiver = new UploadReceiver(5242880); // =5MB
 	private HorizontalLayout head;
@@ -233,8 +231,8 @@ public class StudentInformationView extends VerticalLayout implements View,
 						TABLE_LASTNAME, event.getText(), true, false);
 				SimpleStringFilter cond2 = new SimpleStringFilter(
 						TABLE_FIRSTNAME, event.getText(), true, false);
-				SimpleStringFilter cond3 = new SimpleStringFilter(
-						TABLE_GRADE, event.getText(), true, false);
+				SimpleStringFilter cond3 = new SimpleStringFilter(TABLE_GRADE,
+						event.getText(), true, false);
 				Filter filter = new Or(cond1, cond2, cond3);
 				tableData.removeAllContainerFilters();
 				tableData.addContainerFilter(filter);
@@ -281,6 +279,10 @@ public class StudentInformationView extends VerticalLayout implements View,
 		setExpandRatio(studentsTable, 1);
 	}
 
+	/**
+	 * Creates a PDF from the currently selected student in the table. The
+	 * generated PDF is displayed in a new Window.
+	 */
 	private void doStudentListPrinting() {
 
 		Student item = (Student) studentsTable.getValue();
@@ -308,16 +310,16 @@ public class StudentInformationView extends VerticalLayout implements View,
 				new PrintingComponent(sr, "Ausgeliehene Materialien von "
 						+ item.getLastname() + ", " + item.getFirstname());
 			} else {
-				/**
-				 * TODO: Implement EventBus
-				 */
-				Notification.show("Der Schüler '" + item.getLastname() + ", "
-						+ item.getFirstname()
-						+ "' hat keine Materialien ausgeliehen.");
+				eventBus.post(new MessageEvent("Der Schüler '"
+						+ item.getLastname() + ", " + item.getFirstname()
+						+ "' hat keine Materialien ausgeliehen."));
 			}
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
 	}
@@ -332,18 +334,37 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getTitle() {
 		return TITLE;
 	}
-	
+
 	/**
-	 * Creates a Window with the question whether the import is a full import or a delta import.
-	 * @return
-	 * 		Whether or not the import is a full or delta import.
+	 * Creates a Window with the question whether the import is a full import or
+	 * a delta import.
 	 */
-	public boolean isFullImportWindow() {
-		return false;
+	public void selectImportTypeDialog(final ByteArrayOutputStream outputStream) {
+		ConfirmDialog.show("Import-Typ auswählen",
+				"Wie soll die Datei importiert werden?",
+				"Vollständiger Import", "Delta Import",
+				new ConfirmDialog.Listener() {
+
+					@Override
+					public void onClose(ConfirmDialog dialog) {
+						boolean fullImport;
+						if (dialog.isConfirmed()) {
+							fullImport = true;
+						} else {
+							fullImport = false;
+						}
+						studentInformationViewModel
+								.receiveUploadByteOutputStream(outputStream,
+										fullImport);
+					}
+				});
 	}
 
 	/**
@@ -369,10 +390,12 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public OutputStream receiveUpload(String filename, String MIMEType) {
-			if (!MIMEType.equals("text/csv") && !MIMEType.equals("application/vnd.ms-excel")) {
+			if (!MIMEType.equals("text/csv")
+					&& !MIMEType.equals("application/vnd.ms-excel")) {
 				upload.interruptUpload();
 				interrupted = true;
-				eventBus.post(new MessageEvent("Import nicht möglich.",
+				eventBus.post(new MessageEvent(
+						"Import nicht möglich.",
 						"Die ausgewählte Datei ist keine CSV-Datei." + MIMEType,
 						Type.ERROR));
 			}
@@ -383,14 +406,9 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public void uploadSucceeded(Upload.SucceededEvent event) {
-						
 			if (!interrupted) {
-				boolean fullImport = isFullImportWindow();
-				studentInformationViewModel
-						.receiveUploadByteOutputStream(outputStream, fullImport);
+				selectImportTypeDialog(this.outputStream);
 			}
-			
-			
 		}
 
 		/**
