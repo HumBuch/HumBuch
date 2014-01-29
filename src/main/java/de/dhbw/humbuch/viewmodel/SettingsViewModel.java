@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.hibernate.criterion.Restrictions;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -14,6 +15,7 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
+import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
@@ -68,6 +70,8 @@ public class SettingsViewModel {
 					updateUser();
 			}
 		});
+		
+		eventBus.register(this);
 	}
 
 	@AfterVMBinding
@@ -119,8 +123,6 @@ public class SettingsViewModel {
 		} else {
 			daoCategory.update(category);
 		}
-		
-		updateCategories();
 	}
 
 	public void doDeleteCategory(Category category) {
@@ -130,8 +132,6 @@ public class SettingsViewModel {
 			eventBus.post(new MessageEvent("Löschen nicht möglich!",
 					"Kategorie wird noch verwendet.", Type.WARNING));
 		}
-		
-		updateCategories();
 	}
 
 	@HandlesAction(DoUpdateUser.class)
@@ -185,7 +185,14 @@ public class SettingsViewModel {
 			eventBus.post(new MessageEvent("Passwort geändert"));
 		}
 	}
-
+	
+	@Subscribe
+	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
+		if(entityUpdateEvent.contains(Category.class)) {
+			updateCategories();
+		}
+	}
+	
 	public enum ChangeStatus {
 		EMPTY_FIELDS, 
 		CURRENT_PASSWORD_WRONG, 
