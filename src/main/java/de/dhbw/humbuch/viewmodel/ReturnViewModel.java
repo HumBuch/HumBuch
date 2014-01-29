@@ -22,7 +22,7 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.ImportSuccessEvent;
+import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Entity;
@@ -61,7 +61,7 @@ public class ReturnViewModel {
 	}
 	
 	@AfterVMBinding
-	private void afterVMBinding() {
+	public void init() {
 		updateSchoolYear();
 		updateReturnList();
 	}
@@ -144,8 +144,10 @@ public class ReturnViewModel {
 	}
 	
 	@Subscribe
-	public void handleImportEvent(ImportSuccessEvent importSuccessEvent) {
-		generateStudentReturnList();
+	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
+		if(entityUpdateEvent.contains(Student.class)) {
+			generateStudentReturnList();
+		}
 	}
 	
 }
