@@ -38,7 +38,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	private String gender;
 	private boolean leavingSchool;
 	
-	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="student", fetch=FetchType.LAZY, cascade = {CascadeType.REMOVE})
 	private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
 
 	@ElementCollection(targetClass=Subject.class)

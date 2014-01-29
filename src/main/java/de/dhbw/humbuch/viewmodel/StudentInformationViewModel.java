@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,18 +35,17 @@ import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
 
-
 public class StudentInformationViewModel {
 
 	public interface Students extends State<Collection<Student>> {
 	}
 
-
 	public interface PersistStudents extends ActionHandler {
 	}
 
 	@ProvidesState(Students.class)
-	public State<Collection<Student>> students = new BasicState<>(Collection.class);
+	public State<Collection<Student>> students = new BasicState<>(
+			Collection.class);
 
 	private EventBus eventBus;
 	private DAO<Student> daoStudent;
@@ -60,7 +60,8 @@ public class StudentInformationViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent,
+	public StudentInformationViewModel(DAO<Student> daoStudent,
+			DAO<Grade> daoGrade, DAO<Parent> daoParent,
 			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;
@@ -75,29 +76,72 @@ public class StudentInformationViewModel {
 	}
 
 	private void updateStudents() {
-		students.set(daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false)));
+		students.set(daoStudent.findAll());
 	}
 
 	@HandlesAction(PersistStudents.class)
 	public void persistStudents(List<Student> students, boolean fullImport) {
 
-		if(fullImport){
-			
-			Collection<BorrowedMaterial> borrowedMaterials = this.daoBorrowedMaterial.findAll();
-			Collection<Integer> borrowedMaterialIDs = new ArrayList<Integer>();
-			
-			for(BorrowedMaterial borrowedMaterial : borrowedMaterials){
-				borrowedMaterialIDs.add(borrowedMaterial.getStudent().getId());
-			}
-			Collection<Student> studentsToDelete = this.daoStudent.findAllWithCriteria(		
-				Restrictions.not(Restrictions.in("id", borrowedMaterialIDs))
-				);		
+		int updatedStudents = 0;
+		int insertedStudents = 0;
+		int deletedStudents = 0;
 
-			for(Student student : studentsToDelete){
-				this.daoStudent.delete(student);
+		// Full import of all students in the csv
+		if (fullImport) {
+			Collection<Student> deltaStudents = new ArrayList<Student>();
+			// All students in DB
+			Collection<Student> allStudents = this.daoStudent.findAll();
+
+			// Calculate the delta between the students in the database and in
+			// the csv
+			for (Student student : allStudents) {
+				boolean isDelta = true;
+				for (Student csvStudent : students) {
+					// If the csv-student is in the database remove it from
+					// delta and move to the next student in the database
+					if (student.getId() == csvStudent.getId()) {
+						isDelta = false;
+						break;
+					}
+				}
+				// Add it to delta
+				if (isDelta) {
+					deltaStudents.add(student);
+				}
+			}
+
+			// Get all unreturned borrowed materials
+			Collection<BorrowedMaterial> unreturnedBorrowedMaterials = this.daoBorrowedMaterial
+					.findAllWithCriteria(Restrictions.eq("received", true),
+							Restrictions.isNull("returnDate"));
+
+			// Iterate over all delta students
+			for (Student student : deltaStudents) {
+				Collection<Student> studentsToNotDelete = new HashSet<>();
+
+				// Checks each material in the unreturned materials collection
+				for (BorrowedMaterial borrowedMaterial : unreturnedBorrowedMaterials) {
+					// If the student of the unreturned borrowed material is a
+					// delta student, exclude him from deletion and set the
+					// flag "leavingSchool"
+					if (borrowedMaterial.getStudent().equals(student)) {
+						Student a = borrowedMaterial.getStudent();
+						a.setLeavingSchool(true);
+						studentsToNotDelete.add(a);
+					}
+				}
+
+				// Delete the student if it isn't an element of the
+				// do-not-delete-list
+				if (!studentsToNotDelete.contains(student)) {
+					this.daoStudent.delete(student);
+					deletedStudents++;
+				}
 			}
 		}
-		
+		// ====== End of full import ====== //
+
+		// Iterator over all csv-students
 		Iterator<Student> studentIterator = students.iterator();
 
 		while (studentIterator.hasNext()) {
@@ -105,11 +149,11 @@ public class StudentInformationViewModel {
 
 			Student persistedStudent = this.daoStudent.find(student.getId());
 
-			Collection<Grade> grades = this.daoGrade.findAllWithCriteria(
-					Restrictions.and(
-							Restrictions.like("grade", student.getGrade().getGrade()),
-							Restrictions.like("suffix", student.getGrade().getSuffix())
-							));
+			Collection<Grade> grades = this.daoGrade
+					.findAllWithCriteria(Restrictions.and(Restrictions.like(
+							"grade", student.getGrade().getGrade()),
+							Restrictions.like("suffix", student.getGrade()
+									.getSuffix())));
 
 			if (grades.size() == 1) {
 				Iterator<Grade> gradesIterator = grades.iterator();
@@ -119,15 +163,19 @@ public class StudentInformationViewModel {
 
 			if (persistedStudent == null) {
 				if (student.getParent() != null) {
-					Collection<Parent> parents = daoParent.findAllWithCriteria(
-							Restrictions.and(
-									Restrictions.like("title", student.getParent().getTitle()),
-									Restrictions.like("firstname", student.getParent().getFirstname()),
-									Restrictions.like("lastname", student.getParent().getLastname()),
-									Restrictions.like("street", student.getParent().getStreet()),
-									Restrictions.eq("postcode", student.getParent().getPostcode()),
-									Restrictions.like("city", student.getParent().getCity())
-									));
+					Collection<Parent> parents = daoParent
+							.findAllWithCriteria(Restrictions.and(Restrictions
+									.like("title", student.getParent()
+											.getTitle()), Restrictions.like(
+									"firstname", student.getParent()
+											.getFirstname()), Restrictions
+									.like("lastname", student.getParent()
+											.getLastname()), Restrictions.like(
+									"street", student.getParent().getStreet()),
+									Restrictions.eq("postcode", student
+											.getParent().getPostcode()),
+									Restrictions.like("city", student
+											.getParent().getCity())));
 
 					if (parents.size() == 1) {
 						Iterator<Parent> parentsIterator = parents.iterator();
@@ -137,12 +185,16 @@ public class StudentInformationViewModel {
 				}
 
 				daoStudent.insert(student);
-			}
-			else {
+				insertedStudents++;
+			} else {
 				daoStudent.update(student);
+				updatedStudents++;
 			}
 		}
-		eventBus.post(new MessageEvent("Import erfolgreich", "Alle Schüler wurden erfolgreich importiert", Type.TRAYINFO));
+		eventBus.post(new MessageEvent("Import erfolgreich", "Es wurden "
+				+ insertedStudents + " Schüler hinzugefügt, " + updatedStudents
+				+ " aktualisiert und " + deletedStudents + " gelöscht.",
+				Type.TRAYINFO));
 		eventBus.post(new ImportSuccessEvent());
 		updateStudents();
 	}
@@ -151,28 +203,32 @@ public class StudentInformationViewModel {
 	 * Receives the OutputStream provided by an upload.
 	 * 
 	 * @param outputStream
-	 * @param fullImport 
+	 * @param fullImport
 	 */
-	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream, boolean fullImport) {
+	public void receiveUploadByteOutputStream(
+			ByteArrayOutputStream outputStream, boolean fullImport) {
 		try {
 			String encoding = checkEncoding(outputStream);
 			CSVReader reader;
-			//leave System.out in for test purposes on other systems
+			// leave System.out in for test purposes on other systems
 			System.out.println(encoding);
 			if (encoding != null) {
-				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding), ';', '\'', 0);
-				
+				reader = new CSVReader(new InputStreamReader(
+						new ByteArrayInputStream(outputStream.toByteArray()),
+						encoding), ';', '\'', 0);
+
+			} else {
+				reader = new CSVReader(new InputStreamReader(
+						new ByteArrayInputStream(outputStream.toByteArray())),
+						';', '\'', 0);
 			}
-			else{
-				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
-			}
-			List<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
+			List<Student> students = CSVHandler
+					.createStudentObjectsFromCSV(reader);
 			persistStudents(students, fullImport);
-		}
-		catch (UnsupportedOperationException uoe) {
-			eventBus.post(new MessageEvent("Import nicht möglich.", uoe.getMessage(), Type.ERROR));
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedOperationException uoe) {
+			eventBus.post(new MessageEvent("Import nicht möglich.", uoe
+					.getMessage(), Type.ERROR));
+		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 	}
@@ -201,8 +257,7 @@ public class StudentInformationViewModel {
 			detector.reset();
 			bais.close();
 			return encoding;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
