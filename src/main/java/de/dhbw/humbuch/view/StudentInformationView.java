@@ -336,6 +336,15 @@ public class StudentInformationView extends VerticalLayout implements View,
 	public String getTitle() {
 		return TITLE;
 	}
+	
+	/**
+	 * Creates a Window with the question whether the import is a full import or a delta import.
+	 * @return
+	 * 		Whether or not the import is a full or delta import.
+	 */
+	public boolean isFullImportWindow() {
+		return false;
+	}
 
 	/**
 	 * Implementation of a vaadin receiver
@@ -374,10 +383,14 @@ public class StudentInformationView extends VerticalLayout implements View,
 		}
 
 		public void uploadSucceeded(Upload.SucceededEvent event) {
+						
 			if (!interrupted) {
+				boolean fullImport = isFullImportWindow();
 				studentInformationViewModel
-						.receiveUploadByteOutputStream(outputStream);
+						.receiveUploadByteOutputStream(outputStream, fullImport);
 			}
+			
+			
 		}
 
 		/**
