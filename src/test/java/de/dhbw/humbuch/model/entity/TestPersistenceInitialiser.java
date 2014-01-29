@@ -14,7 +14,7 @@ public class TestPersistenceInitialiser {
 	public TestPersistenceInitialiser(PersistService persistService) {
 		try {
 			persistService.start();
-			LOG.error("persistService started...");
+			LOG.debug("persistService started...");
 		} catch (IllegalStateException e) {
 			LOG.error("persistService already started...");
 		}
