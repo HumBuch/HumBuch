@@ -3,6 +3,9 @@ package de.dhbw.humbuch.view;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Button;
@@ -20,6 +23,8 @@ import elemental.events.KeyboardEvent.KeyCode;
 public class SelectStudentPopupWindow extends Window {
 
 	private static final long serialVersionUID = 4748807796813638121L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(SelectStudentPopupWindow.class);
 
 	private static final String CHOOSE_STUDENT = "Schüler auswählen";
 	private static final String CANCEL = "Abbrechen";
@@ -196,15 +201,22 @@ public class SelectStudentPopupWindow extends Window {
 		StudentWrapper studentWrapper = (StudentWrapper) comboBoxStudents.getValue();
 
 		if (studentWrapper != null) {
+			ManualProcessPopupWindow mppw = null;
 			if (lendingView != null) {
-				ManualLendingPopupWindow mlpw = new ManualLendingPopupWindow(lendingView, studentWrapper.getStudent());
-				getUI().addWindow(mlpw);
+				mppw = new ManualProcessPopupWindow(lendingView, studentWrapper.getStudent());
+
 			}
 			else if (returnView != null) {
-				// TODO!
+				mppw = new ManualProcessPopupWindow(returnView, studentWrapper.getStudent());
 			}
 
-			closeMe();
+			if (mppw != null) {
+				getUI().addWindow(mppw);
+				closeMe();
+			}
+			else {
+				LOG.error("Error occured while trying to start a new process. ManualProcessPopupWindow could not be created.");
+			}
 		}
 		else {
 			// TODO: UI Notification
