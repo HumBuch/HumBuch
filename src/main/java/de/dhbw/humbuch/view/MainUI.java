@@ -73,7 +73,7 @@ public class MainUI extends ScopedUI {
 	private ReturnView returnView;
 	
 	@Inject
-	private BookManagementView bookManagementView;
+	private TeachingMaterialView bookManagementView;
 	
 	@Inject
 	private StudentInformationView studentInformationView;

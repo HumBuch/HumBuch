@@ -53,16 +53,16 @@ import de.dhbw.humbuch.model.entity.Profile;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
-import de.dhbw.humbuch.viewmodel.BookManagementViewModel;
-import de.dhbw.humbuch.viewmodel.BookManagementViewModel.Categories;
-import de.dhbw.humbuch.viewmodel.BookManagementViewModel.TeachingMaterials;
+import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel;
+import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.Categories;
+import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
 
 /**
  * 
  * @author Martin Wentzel
  * 
  */
-public class BookManagementView extends VerticalLayout implements View,
+public class TeachingMaterialView extends VerticalLayout implements View,
 		ViewInformation {
 	private static final long serialVersionUID = -5063268947544706757L;
 
@@ -82,7 +82,7 @@ public class BookManagementView extends VerticalLayout implements View,
 	private static final String TABLE_VALIDUNTIL = "validUntil";
 
 	private EventBus eventBus;
-	private BookManagementViewModel bookManagementViewModel;
+	private TeachingMaterialViewModel bookManagementViewModel;
 
 	/**
 	 * Layout components
@@ -129,8 +129,8 @@ public class BookManagementView extends VerticalLayout implements View,
 	private Button btnWindowCancel = new Button("Abbrechen");
 
 	@Inject
-	public BookManagementView(ViewModelComposer viewModelComposer,
-			BookManagementViewModel bookManagementViewModel, EventBus eventBus) {
+	public TeachingMaterialView(ViewModelComposer viewModelComposer,
+			TeachingMaterialViewModel bookManagementViewModel, EventBus eventBus) {
 		this.bookManagementViewModel = bookManagementViewModel;
 		this.eventBus = eventBus;
 		init();
