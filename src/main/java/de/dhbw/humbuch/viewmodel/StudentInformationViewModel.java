@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,23 +82,101 @@ public class StudentInformationViewModel {
 	@HandlesAction(PersistStudents.class)
 	public void persistStudents(List<Student> students, boolean fullImport) {
 
-		if(fullImport){
+		if (fullImport) {			
+			Collection<Student> allStudents = this.daoStudent.findAll();
+			Collection<Integer> deltaStudentIDs = new ArrayList<Integer>();
+			for(Student student : allStudents){
+				boolean isDelta = true;
+				for(Student csvStudent : students){
+					if(student.getId() == csvStudent.getId()){
+						isDelta = false;
+					}
+				}
+				if(isDelta){
+					deltaStudentIDs.add(student.getId());
+				}
+			}
 			
+			for(Integer studentID : deltaStudentIDs){
+				Collection<BorrowedMaterial> borrowedMaterials = this.daoBorrowedMaterial.findAllWithCriteria(
+						Restrictions.eq("received", true),
+						Restrictions.isNull("returnDate"),
+						Restrictions.eq("studentId", studentID)
+						);
+				Collection<BorrowedMaterial> deltaBorrowed = this.daoBorrowedMaterial.findAll();				
+				deltaBorrowed.removeAll(borrowedMaterials);
+				Collection<Student> studentsCol = new HashSet<>();
+				for(BorrowedMaterial borrowedMaterial : deltaBorrowed){
+					studentsCol.add(borrowedMaterial.getStudent());
+				}
+				for(Student student : studentsCol){
+					this.daoStudent.delete(student);
+				}
+				
+				for(BorrowedMaterial borrowedMaterial : borrowedMaterials){
+					borrowedMaterial.getStudent().setLeavingSchool(true);
+				}
+			}
+
 			Collection<BorrowedMaterial> borrowedMaterials = this.daoBorrowedMaterial.findAll();
 			Collection<Integer> borrowedMaterialIDs = new ArrayList<Integer>();
-			
-			for(BorrowedMaterial borrowedMaterial : borrowedMaterials){
+			borrowedMaterialIDs.add(-1);
+			for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
 				borrowedMaterialIDs.add(borrowedMaterial.getStudent().getId());
 			}
-			Collection<Student> studentsToDelete = this.daoStudent.findAllWithCriteria(		
-				Restrictions.not(Restrictions.in("id", borrowedMaterialIDs))
-				);		
 
-			for(Student student : studentsToDelete){
+			/**
+			 * BorrowedMaterials that are lend to a student and not returned yet
+			 **/
+			Collection<BorrowedMaterial> borrowedMaterialsUnreturned = this.daoBorrowedMaterial.findAllWithCriteria(
+					Restrictions.isNull("returnDate"),
+					Restrictions.eq("received", true)
+					);
+			Collection<Integer> studentIDsWithUnreturnedMaterials = new HashSet<Integer>();
+			studentIDsWithUnreturnedMaterials.add(-1);
+			for (BorrowedMaterial borrowedMaterial : borrowedMaterialsUnreturned) {
+				studentIDsWithUnreturnedMaterials.add(borrowedMaterial.getStudent().getId());
+			}
+			System.out.println("Size: " + studentIDsWithUnreturnedMaterials.size());
+
+			/** All students that have no entries in borrowed materials **/
+			Collection<Student> studentsToDelete = this.daoStudent.findAllWithCriteria(
+					Restrictions.or(
+							Restrictions.not(Restrictions.in("id", borrowedMaterialIDs)),
+							Restrictions.and(
+									Restrictions.in("id", borrowedMaterialIDs),
+									Restrictions.not(Restrictions.in("id", studentIDsWithUnreturnedMaterials))
+									)
+							)
+					);
+	
+			/** All students that have entries in borrowed materials **/
+			//			Collection<Student> allStudents = this.daoStudent.findAllWithCriteria(
+			//					Restrictions.in("id", borrowedMaterialIDs)
+			//					);
+			//			Collection<Student> allStudents = this.daoStudent.findAll();
+			//			Collection<Student> studentsToDelete = new ArrayList<Student>();
+			//			/** Find all students whose borrowed materials are returned (if all returnDates are not null) **/
+			//			for (Student student : allStudents) {
+			//				boolean canBeDeleted = true;
+			//				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
+			//					//if (borrowedMaterial.getStudent().getId() == student.getId()) {
+			//						if (borrowedMaterial.getReturnDate() == null) {
+			//							canBeDeleted = false;
+			//							break;
+			//						}
+			//					//}
+			//				}
+			//				if (canBeDeleted) {
+			//					studentsToDelete.add(student);
+			//				}
+			//			}
+
+			for (Student student : studentsToDelete) {
 				this.daoStudent.delete(student);
 			}
 		}
-		
+
 		Iterator<Student> studentIterator = students.iterator();
 
 		while (studentIterator.hasNext()) {
@@ -137,7 +216,7 @@ public class StudentInformationViewModel {
 				}
 
 				daoStudent.insert(student);
-			}
+			} 
 			else {
 				daoStudent.update(student);
 			}
@@ -151,7 +230,7 @@ public class StudentInformationViewModel {
 	 * Receives the OutputStream provided by an upload.
 	 * 
 	 * @param outputStream
-	 * @param fullImport 
+	 * @param fullImport
 	 */
 	public void receiveUploadByteOutputStream(ByteArrayOutputStream outputStream, boolean fullImport) {
 		try {
@@ -161,9 +240,9 @@ public class StudentInformationViewModel {
 			System.out.println(encoding);
 			if (encoding != null) {
 				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding), ';', '\'', 0);
-				
+
 			}
-			else{
+			else {
 				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())), ';', '\'', 0);
 			}
 			List<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
