@@ -49,7 +49,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private static final long serialVersionUID = -525078997965992622L;
 
 	private static final String TITLE = "Rückgabe";
-	private static final String SAVE_SELECTED_RETURNING = "Zurückgegeben";
+	private static final String SAVE_SELECTED_RETURNING = "Material Zurückgegeben";
 	private static final String STUDENT_LIST = "Schülerliste drucken";
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
