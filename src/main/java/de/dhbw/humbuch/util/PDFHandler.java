@@ -316,8 +316,7 @@ public abstract class PDFHandler {
 	}
 
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Anzahl
+	 * A table is generated with the header: Bezeichnung Lehrmittel, Anzahl
 	 * 
 	 * @return PdfPTable
 	 */
