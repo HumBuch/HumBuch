@@ -35,7 +35,11 @@ public class LoginViewModel {
 		this.properties = properties;
 		this.eventBus = eventBus;
 		this.daoUser = daoUser;
-		isLoggedIn.set(new Boolean(false));
+		updateLoginStatus();
+	}
+	
+	private void updateLoginStatus() {
+		isLoggedIn.set(properties.currentUser.get() != null);
 	}
 
 	@HandlesAction(DoLogin.class)
@@ -46,8 +50,8 @@ public class LoginViewModel {
 		} else {
 			List<User> user = (List<User>) daoUser.findAllWithCriteria(Restrictions.eq("username", username), Restrictions.eq("password", password));
 			if(!user.isEmpty()) {
-				isLoggedIn.set(new Boolean(true));
 				properties.currentUser.set(user.get(0));
+				updateLoginStatus();
 			} else {
 				eventBus.post(new LoginEvent("Username oder Passwort stimmen nicht überein."));
 			}
@@ -56,7 +60,8 @@ public class LoginViewModel {
 
 	@HandlesAction(DoLogout.class)
 	public void doLogout(Object obj) {
-		isLoggedIn.set(new Boolean(false));
+		properties.currentUser.set(null);
+		updateLoginStatus();
 	}
 
 }
