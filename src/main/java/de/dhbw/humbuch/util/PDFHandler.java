@@ -310,7 +310,7 @@ public abstract class PDFHandler {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f});
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse"}).withBorder(true)
-				.isCenterAligned(true).font(font).fillTable();
+				.isCenterAligned(true).font(font).padding(5f).fillTable();
 
 		return table;
 	}
@@ -323,7 +323,7 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).fillTable();
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(5f).fillTable();
 
 		return table;
 	}
