@@ -18,7 +18,6 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
@@ -47,7 +46,7 @@ public abstract class PDFHandler {
 	}
 
 	public PDFHandler() {
-		this.document = new Document(new RectangleReadOnly(595,842), 10, 10, 25, 25);
+		this.document = new Document(new RectangleReadOnly(595,842), 10, 10, 25, 35);
 	}
 
 	/**
@@ -223,11 +222,10 @@ public abstract class PDFHandler {
 	 */
 	protected void addSignatureField(Document document, String role) {
 		Paragraph paragraph = new Paragraph();
-		//addEmptyLine(paragraph, 1);
 
 		//this table contains the signatureTable and the dataTable.
 		// this purpose makes it easier to format
-		PdfPTable table = new PdfPTable(2);
+		PdfPTable table = createMyStandardTable(2);
 
 		//the first column is double times greater than the second column
 		try {
@@ -709,7 +707,7 @@ public abstract class PDFHandler {
 			//            }
 			ColumnText.showTextAligned(writer.getDirectContent(),
 					Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
-					(rect.getLeft() + rect.getRight()) / 2, 10, 0);
+					(rect.getLeft() + rect.getRight()) / 2, 20, 0);
 		}
 		
 		public void resetPageNumber() {
