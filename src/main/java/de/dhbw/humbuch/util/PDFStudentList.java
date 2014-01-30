@@ -158,6 +158,7 @@ public final class PDFStudentList extends PDFHandler {
 
 			try {
 				document.add(table);
+				//TODO: opens new blank page. has to be checked that content really follows!
 				addEmptyLineToDocument(document, 1);
 			}
 			catch (DocumentException e) {

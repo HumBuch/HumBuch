@@ -18,9 +18,11 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.RectangleReadOnly;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -45,7 +47,7 @@ public abstract class PDFHandler {
 	}
 
 	public PDFHandler() {
-		this.document = new Document();
+		this.document = new Document(new RectangleReadOnly(595,842), 10, 10, 25, 25);
 	}
 
 	/**
@@ -707,9 +709,9 @@ public abstract class PDFHandler {
 			//            }
 			ColumnText.showTextAligned(writer.getDirectContent(),
 					Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
-					(rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
+					(rect.getLeft() + rect.getRight()) / 2, 10, 0);
 		}
-
+		
 		public void resetPageNumber() {
 			this.pagenumber = 1;
 		}
