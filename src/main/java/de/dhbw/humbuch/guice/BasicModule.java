@@ -51,7 +51,7 @@ public class BasicModule extends ServletModule {
 		bind(MVVMConfig.class).in(UIScoped.class);
 		bind(EventBus.class).in(UIScoped.class);
 
-		bind(LoginViewModel.class).in(SessionScoped.class);
+		bind(LoginViewModel.class).in(UIScoped.class);
 		bind(Properties.class).in(SessionScoped.class);
 
 		MapBinder<String, UI> mapbinder = MapBinder.newMapBinder(binder(), String.class, UI.class);
