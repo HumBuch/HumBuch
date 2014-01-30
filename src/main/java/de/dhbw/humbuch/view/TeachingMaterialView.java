@@ -18,9 +18,9 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -596,9 +596,9 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Q&D: have to be changed after "data has changed"-system is
-		// implemented
-		bookManagementViewModel.updateCategories();
+//		// TODO Q&D: have to be changed after "data has changed"-system is
+//		// implemented
+//		bookManagementViewModel.updateCategories();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
