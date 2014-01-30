@@ -8,12 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.persistence.EntityManager;
-
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -22,10 +19,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
-import de.dhbw.humbuch.model.entity.Entity;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
@@ -45,19 +40,14 @@ public class ReturnViewModel {
 	private DAO<Grade> daoGrade;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
-	private DAO<Student> daoStudent;
 	
-	private SchoolYear currentSchoolYear;
+	private SchoolYear recentlyActiveSchoolYear;
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<Student> daoStudent, DAO<BorrowedMaterial> daoBorrowedMaterial, 
-			DAO<SchoolYear> daoSchoolYear, EventBus eventBus) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoGrade = daoGrade;
-		this.daoStudent = daoStudent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
-		
-		eventBus.register(this);
 	}
 	
 	@AfterVMBinding
@@ -73,11 +63,11 @@ public class ReturnViewModel {
 		for(Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			
-			refresh(grade.getStudents());
 			for(Student student : grade.getStudents()) {
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
-					boolean isAfterCurrentTerm = currentSchoolYear.getEndOf(currentSchoolYear.getRecentlyActiveTerm()).before(new Date());
+					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm()).before(new Date());
+//					boolean isAfterCurrentTerm = true;
 					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
 					boolean isManualLended = borrowedMaterial.getBorrowUntil() == null ? false : true;
@@ -118,7 +108,7 @@ public class ReturnViewModel {
 		Integer toGrade = teachingMaterial.getToGrade();
 		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
 		Term toTerm = teachingMaterial.getToTerm();
-		Term currentTerm = currentSchoolYear.getRecentlyActiveTerm();
+		Term currentTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
 
 		if(toGrade == null)
 			return false;
@@ -131,23 +121,8 @@ public class ReturnViewModel {
 	}
 	
 	private void updateSchoolYear() {
-		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
-				Restrictions.le("fromDate", new Date()), 
-				Restrictions.ge("toDate", new Date()));
+		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
+				Order.desc("toDate"),
+				Restrictions.le("fromDate", new Date()));
 	}
-	
-	private void refresh(Collection<? extends Entity> entities) {
-		EntityManager entityManager = daoStudent.getEntityManager();
-		for (Entity entity : entities) {
-			entityManager.refresh(entity);
-		}
-	}
-	
-	@Subscribe
-	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
-		if(entityUpdateEvent.contains(Student.class)) {
-			generateStudentReturnList();
-		}
-	}
-	
 }

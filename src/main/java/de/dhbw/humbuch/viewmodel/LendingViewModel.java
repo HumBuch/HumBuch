@@ -9,10 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -21,8 +20,8 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.DAO;
+import de.dhbw.humbuch.model.DAO.FireUpdateEvent;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
@@ -54,18 +53,16 @@ public class LendingViewModel {
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear; 
 	
-	private SchoolYear currentSchoolYear;
+	private SchoolYear recentlyActiveSchoolYear;
 	
 	@Inject
 	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, 
-			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, EventBus eventBus) {
+			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoStudent = daoStudent;
 		this.daoTeachingMaterial = daoTeachingMaterial;
 		this.daoGrade = daoGrade;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
-		
-		eventBus.register(this);
 	}
 	
 	@AfterVMBinding
@@ -103,9 +100,9 @@ public class LendingViewModel {
 	public void setBorrowedMaterialsReceived(Collection<BorrowedMaterial> borrowedMaterials) {
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
 			borrowedMaterial.setReceived(true);
-			daoBorrowedMaterial.update(borrowedMaterial);
+			daoBorrowedMaterial.update(borrowedMaterial, FireUpdateEvent.NO);
 		}
-		
+		daoBorrowedMaterial.fireUpdateEvent();
 		updateAllStudentsBorrowedMaterials();
 	}
 	
@@ -128,10 +125,9 @@ public class LendingViewModel {
 	}
 	
 	private void updateSchoolYear() {
-		Date today = new Date();
-		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
-				Restrictions.le("fromDate", today), 
-				Restrictions.ge("toDate", today));
+		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
+				Order.desc("toDate"),
+				Restrictions.le("fromDate", new Date()));
 	}
 	
 	private void updateUnreceivedBorrowedMaterialsState() {
@@ -162,7 +158,7 @@ public class LendingViewModel {
 						Restrictions.le("fromGrade", student.getGrade().getGrade())
 						, Restrictions.ge("toGrade", student.getGrade().getGrade())
 						, Restrictions.le("validFrom", new Date())
-						, Restrictions.le("fromTerm", currentSchoolYear.getRecentlyActiveTerm())
+						, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
 						, Restrictions.or(
 								Restrictions.ge("validUntil", new Date())
 								, Restrictions.isNull("validUntil"))
@@ -184,7 +180,10 @@ public class LendingViewModel {
 	private void persistBorrowedMaterials(Student student, List<TeachingMaterial> teachingMaterials) {
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
 			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
-			daoBorrowedMaterial.insert(borrowedMaterial);
+			daoBorrowedMaterial.insert(borrowedMaterial, FireUpdateEvent.NO);
+		}
+		if(!teachingMaterials.isEmpty()) {
+			daoBorrowedMaterial.fireUpdateEvent();
 		}
 	}
 	
@@ -201,16 +200,4 @@ public class LendingViewModel {
 		
 		return owning;
 	}
-	
-	@Subscribe
-	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
-		if(entityUpdateEvent.contains(TeachingMaterial.class)) {
-			updateTeachingMaterials();
-		}
-		
-		if(entityUpdateEvent.contains(Student.class)) {
-			updateAllStudentsBorrowedMaterials();
-		}
-	}
 }
-
