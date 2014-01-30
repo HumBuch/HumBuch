@@ -57,7 +57,8 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
 /**
- * Provides an overview over all students and the possibility to import new ones.
+ * Provides an overview over all students and the possibility to import new
+ * ones.
  * 
  * @author Johannes
  */
@@ -347,24 +348,25 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 * a delta import.
 	 */
 	public void selectImportTypeDialog(final ByteArrayOutputStream outputStream) {
-		ConfirmDialog.show("Import-Typ auswählen",
-				"Wie soll die Datei importiert werden?",
-				"Vollständiger Import", "Delta Import",
-				new ConfirmDialog.Listener() {
+		ConfirmDialog
+				.show("Import-Typ auswählen",
+						"Wie soll die Datei importiert werden? Bei einem Delta Import werden keine Schüler gelöscht",
+						"Vollständiger Import", "Delta Import",
+						new ConfirmDialog.Listener() {
 
-					@Override
-					public void onClose(ConfirmDialog dialog) {
-						boolean fullImport;
-						if (dialog.isConfirmed()) {
-							fullImport = true;
-						} else {
-							fullImport = false;
-						}
-						studentInformationViewModel
-								.receiveUploadByteOutputStream(outputStream,
-										fullImport);
-					}
-				});
+							@Override
+							public void onClose(ConfirmDialog dialog) {
+								boolean fullImport;
+								if (dialog.isConfirmed()) {
+									fullImport = true;
+								} else {
+									fullImport = false;
+								}
+								studentInformationViewModel
+										.receiveUploadByteOutputStream(
+												outputStream, fullImport);
+							}
+						});
 	}
 
 	/**

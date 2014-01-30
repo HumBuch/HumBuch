@@ -7,11 +7,14 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -35,13 +38,16 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
+import de.dhbw.humbuch.view.StudentInformationView;
 
 
 public class StudentInformationViewModel {
+	
+	private final static Logger LOG = LoggerFactory
+			.getLogger(StudentInformationView.class);
 
 	public interface Students extends State<Collection<Student>> {
 	}
-
 
 	public interface PersistStudents extends ActionHandler {
 	}
@@ -62,7 +68,8 @@ public class StudentInformationViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public StudentInformationViewModel(DAO<Student> daoStudent, DAO<Grade> daoGrade, DAO<Parent> daoParent,
+	public StudentInformationViewModel(DAO<Student> daoStudent,
+			DAO<Grade> daoGrade, DAO<Parent> daoParent,
 			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;
@@ -79,29 +86,72 @@ public class StudentInformationViewModel {
 	}
 
 	private void updateStudents() {
-		students.set(daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false)));
+		students.set(daoStudent.findAll());
 	}
 
 	@HandlesAction(PersistStudents.class)
 	public void persistStudents(List<Student> students, boolean fullImport) {
 
-		if(fullImport){
-			
-			Collection<BorrowedMaterial> borrowedMaterials = this.daoBorrowedMaterial.findAll();
-			Collection<Integer> borrowedMaterialIDs = new ArrayList<Integer>();
-			
-			for(BorrowedMaterial borrowedMaterial : borrowedMaterials){
-				borrowedMaterialIDs.add(borrowedMaterial.getStudent().getId());
-			}
-			Collection<Student> studentsToDelete = this.daoStudent.findAllWithCriteria(		
-				Restrictions.not(Restrictions.in("id", borrowedMaterialIDs))
-				);		
+		int updatedStudents = 0;
+		int insertedStudents = 0;
+		int deletedStudents = 0;
 
-			for(Student student : studentsToDelete){
-				this.daoStudent.delete(student);
+		// Full import of all students in the csv
+		if (fullImport) {
+			Collection<Student> deltaStudents = new ArrayList<Student>();
+			// All students in DB
+			Collection<Student> allStudents = this.daoStudent.findAll();
+
+			// Calculate the delta between the students in the database and in
+			// the csv
+			for (Student student : allStudents) {
+				boolean isDelta = true;
+				for (Student csvStudent : students) {
+					// If the csv-student is in the database remove it from
+					// delta and move to the next student in the database
+					if (student.getId() == csvStudent.getId()) {
+						isDelta = false;
+						break;
+					}
+				}
+				// Add it to delta
+				if (isDelta) {
+					deltaStudents.add(student);
+				}
+			}
+
+			// Get all unreturned borrowed materials
+			Collection<BorrowedMaterial> unreturnedBorrowedMaterials = this.daoBorrowedMaterial
+					.findAllWithCriteria(Restrictions.eq("received", true),
+							Restrictions.isNull("returnDate"));
+
+			// Iterate over all delta students
+			for (Student student : deltaStudents) {
+				Collection<Student> studentsToNotDelete = new HashSet<>();
+
+				// Checks each material in the unreturned materials collection
+				for (BorrowedMaterial borrowedMaterial : unreturnedBorrowedMaterials) {
+					// If the student of the unreturned borrowed material is a
+					// delta student, exclude him from deletion and set the
+					// flag "leavingSchool"
+					if (borrowedMaterial.getStudent().equals(student)) {
+						Student a = borrowedMaterial.getStudent();
+						a.setLeavingSchool(true);
+						studentsToNotDelete.add(a);
+					}
+				}
+
+				// Delete the student if it isn't an element of the
+				// do-not-delete-list
+				if (!studentsToNotDelete.contains(student)) {
+					this.daoStudent.delete(student);
+					deletedStudents++;
+				}
 			}
 		}
-		
+		// ====== End of full import ====== //
+
+		// Iterator over all csv-students
 		Iterator<Student> studentIterator = students.iterator();
 
 		while (studentIterator.hasNext()) {
@@ -141,13 +191,16 @@ public class StudentInformationViewModel {
 				}
 
 				daoStudent.insert(student, FireUpdateEvent.NO);
-			}
-			else {
+				insertedStudents++;
+			} else {
 				daoStudent.update(student, FireUpdateEvent.NO);
+				updatedStudents++;
 			}
 		}
-		
-		eventBus.post(new MessageEvent("Import erfolgreich", "Alle Schüler wurden erfolgreich importiert", Type.TRAYINFO));
+		eventBus.post(new MessageEvent("Import erfolgreich", "Es wurden "
+				+ insertedStudents + " Schüler hinzugefügt, " + updatedStudents
+				+ " aktualisiert und " + deletedStudents + " gelöscht.",
+				Type.TRAYINFO));
 		daoStudent.fireUpdateEvent();
 	}
 
@@ -161,8 +214,7 @@ public class StudentInformationViewModel {
 		try {
 			String encoding = checkEncoding(outputStream);
 			CSVReader reader;
-			//leave System.out in for test purposes on other systems
-			System.out.println(encoding);
+			LOG.warn(encoding);
 			if (encoding != null) {
 				reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()), encoding), ';', '\'', 0);
 				
@@ -172,11 +224,9 @@ public class StudentInformationViewModel {
 			}
 			List<Student> students = CSVHandler.createStudentObjectsFromCSV(reader);
 			persistStudents(students, fullImport);
-		}
-		catch (UnsupportedOperationException uoe) {
+		} catch (UnsupportedOperationException uoe) {
 			eventBus.post(new MessageEvent("Import nicht möglich.", uoe.getMessage(), Type.ERROR));
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 	}
@@ -205,8 +255,7 @@ public class StudentInformationViewModel {
 			detector.reset();
 			bais.close();
 			return encoding;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
