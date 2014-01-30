@@ -286,8 +286,7 @@ public abstract class PDFHandler {
 	}
 
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Unterschrift
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel, Unterschrift
 	 * 
 	 * @return PdfPTable
 	 */
@@ -301,8 +300,7 @@ public abstract class PDFHandler {
 	}
 	
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Unterschrift
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel
 	 * 
 	 * @return PdfPTable
 	 */
