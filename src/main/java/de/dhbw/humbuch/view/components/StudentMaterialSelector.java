@@ -17,6 +17,7 @@ import com.vaadin.ui.TreeTable;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 
 public class StudentMaterialSelector extends CustomComponent {
@@ -499,7 +500,9 @@ public class StudentMaterialSelector extends CustomComponent {
 			borrowedUntil = new SimpleDateFormat("dd.MM.YYYY").format(dateBorrowedUntil);
 		}
 		else {
-			borrowedUntil = "";
+			TeachingMaterial teachingMaterial = material.getTeachingMaterial();
+			String to = GRADE + teachingMaterial.getToGrade() + ", " + teachingMaterial.getToTerm();
+			borrowedUntil = to;
 		}
 
 		Object materialItemId = treeTableContent.addItem(new Object[] { checkBoxMaterial, borrowedUntil }, null);
