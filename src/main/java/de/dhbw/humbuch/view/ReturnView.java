@@ -38,6 +38,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
@@ -59,6 +60,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private static final String STUDENT_LIST_PDF = "SchuelerRueckgabeListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Rückgabe Liste";
 	private static final String FILTER_STUDENT = "Schüler filtern";
+	private static final String MSG_CONFIRM_RETURN = "Sind alle Listen für die ausgewählten Lehrmaterialien unterschrieben vorhanden?";
 
 	private HorizontalLayout horizontalLayoutHeaderBar;
 	private HorizontalLayout horizontalLayoutActions;
@@ -68,13 +70,14 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private ReturnViewModel returnViewModel;
+	private ConfirmDialog.Listener confirmListener;
 
 	@BindState(ReturnListStudent.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<>(Map.class);
 
 	@BindState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
-	
+
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, StudentInformationViewModel studentInformationViewModel) {
 		this.returnViewModel = returnViewModel;
@@ -131,6 +134,19 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	}
 
 	private void addListeners() {
+		confirmListener = new ConfirmDialog.Listener() {
+
+			private static final long serialVersionUID = -2819494096932449586L;
+
+			@Override
+			public void onClose(ConfirmDialog dialog) {
+				if (dialog.isConfirmed()) {
+					HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
+					returnTeachingMaterials(materials);
+				}
+			}
+		};
+
 		gradeAndStudentsWithMaterials.addStateChangeListener(new StateChangeListener() {
 
 			@Override
@@ -153,8 +169,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-				returnTeachingMaterials(materials);
+				ConfirmDialog.show(MSG_CONFIRM_RETURN, confirmListener);
 			}
 		});
 
@@ -168,8 +183,9 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 			}
 
 		});
-		
+
 		buttonManualReturn.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = 6196708024508507923L;
 
 			@Override

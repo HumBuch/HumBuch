@@ -47,6 +47,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.util.PDFClassList;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.util.PDFStudentList;
+import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.view.components.StudentMaterialSelector;
 import de.dhbw.humbuch.view.components.StudentMaterialSelectorObserver;
@@ -76,6 +77,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private static final String STUDENT_LIST_PDF = "SchuelerAusleihListe.pdf";
 	private static final String STUDENT_LIST_WINDOW_TITLE = "Schüler Ausleih Liste";
 	private static final String FILTER_STUDENT = "Schüler filtern";
+	private static final String MSG_CONFIRM_RECEIVE = "Sind alle Listen für die ausgewählten Lehrmaterialien unterschrieben vorhanden?";
 
 	private HorizontalLayout horizontalLayoutHeaderBar;
 	private HorizontalLayout horizontalLayoutActions;
@@ -90,6 +92,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private Command menuCommandClassList;
 	private Command menuCommandStudentList;
 	private LendingViewModel lendingViewModel;
+	private ConfirmDialog.Listener confirmListener;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
 	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
@@ -122,11 +125,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		buttonSaveSelectedData.addStyleName("default");
 		buttonSaveSelectedData.setEnabled(false);
-		
+
 		textFieldStudentFilter.setInputPrompt(FILTER_STUDENT);
 		textFieldStudentFilter.setWidth("50%");
 		textFieldStudentFilter.setImmediate(true);
-		
+
 		defineMenuCommands();
 
 		menuItemPrinting = menuBarPrinting.addItem(MENU_PRINT, null);
@@ -147,11 +150,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setSpacing(true);
 		setMargin(true);
 		setSizeFull();
-		
+
 		horizontalLayoutActions.addComponent(buttonSaveSelectedData);
 		horizontalLayoutActions.addComponent(buttonManualLending);
 		horizontalLayoutActions.addComponent(menuBarPrinting);
-		
+
 		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
 		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.MIDDLE_RIGHT);
@@ -164,6 +167,18 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	}
 
 	private void addListeners() {
+		confirmListener = new ConfirmDialog.Listener() {
+
+			private static final long serialVersionUID = 3854273511956714408L;
+
+			@Override
+			public void onClose(ConfirmDialog dialog) {
+				if (dialog.isConfirmed()) {
+					setMaterialsReceived();
+				}
+			}
+		};
+
 		addStateChangeListenersToStates();
 		addFilterListeners();
 		addButtonListeners();
@@ -222,7 +237,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				LendingView.this.lendingViewModel.setBorrowedMaterialsReceived(studentMaterialSelector.getCurrentlySelectedBorrowedMaterials());
+				ConfirmDialog.show(MSG_CONFIRM_RECEIVE, confirmListener);
 			}
 		});
 
@@ -344,6 +359,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		}
 
 		return studentsWithMaterials;
+	}
+
+	private void setMaterialsReceived() {
+		LendingView.this.lendingViewModel.setBorrowedMaterialsReceived(studentMaterialSelector.getCurrentlySelectedBorrowedMaterials());
 	}
 
 	@Override
