@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.google.inject.Inject;
@@ -29,32 +30,25 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class DunningViewModel {
 
-	public interface StudentsDunned extends State<Collection<Dunning>> {
-	}
+	public interface StudentsDunned extends State<Collection<Dunning>> {}
+	public interface StudentsToDun extends State<Collection<Dunning>> {}
 
-	public interface StudentsToDun extends State<Collection<Dunning>> {
-	}
-
-	public interface doUpdateDunning extends ActionHandler {
-	}
+	public interface doUpdateDunning extends ActionHandler {}
 
 	@ProvidesState(StudentsDunned.class)
-	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
+
 	@ProvidesState(StudentsToDun.class)
-	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
 
 	private DAO<Dunning> daoDunning;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
 
-	private SchoolYear currentSchoolYear;
+	private SchoolYear recentlyActiveSchoolYear;
 
 	@Inject
-	public DunningViewModel(DAO<Dunning> daoDunning,
-			DAO<BorrowedMaterial> daoBorrowedMaterial,
-			DAO<SchoolYear> daoSchoolYear) {
+	public DunningViewModel(DAO<Dunning> daoDunning, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
 		this.daoDunning = daoDunning;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
@@ -73,8 +67,7 @@ public class DunningViewModel {
 	 * overdue.
 	 */
 	private void createFirstDunnings() {
-		List<BorrowedMaterial> listBorrowedMaterial = daoBorrowedMaterial
-				.findAll();
+		List<BorrowedMaterial> listBorrowedMaterial = daoBorrowedMaterial.findAll();
 		Map<Integer, List<BorrowedMaterial>> map = new HashMap<Integer, List<BorrowedMaterial>>();
 		for (BorrowedMaterial borrowedMaterial : listBorrowedMaterial) {
 			if (borrowedMaterial.getBorrowUntil() == null) {
@@ -82,8 +75,8 @@ public class DunningViewModel {
 						&& borrowedMaterial.isReceived()) {
 					if (Calendar
 							.getInstance()
-							.after(addDeadlineToDate(currentSchoolYear
-									.getEndOf(currentSchoolYear.getRecentlyActiveTerm())))
+							.after(addDeadlineToDate(recentlyActiveSchoolYear
+									.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm())))
 							|| !(borrowedMaterial.getTeachingMaterial()
 									.getToGrade() == borrowedMaterial
 									.getStudent().getGrade().getGrade())) {
@@ -91,11 +84,7 @@ public class DunningViewModel {
 								borrowedMaterial);
 					}
 				}
-			}
-			// manually borrowed
-			else {
-				if (Calendar.getInstance().after(
-						addDeadlineToDate(borrowedMaterial.getBorrowUntil()))) {
+			} else if (Calendar.getInstance().after(addDeadlineToDate(borrowedMaterial.getBorrowUntil()))) { { // manually borrowed
 					addBorrowedMaterialsFromStudentToMap(map, borrowedMaterial);
 				}
 			}
@@ -103,18 +92,17 @@ public class DunningViewModel {
 
 		for (Integer key : map.keySet()) {
 			List<BorrowedMaterial> entry = map.get(key);
-			List<Dunning> existingFirstDunningsForStudent = daoDunning
-					.findAllWithCriteria(Restrictions.or(
+			List<Dunning> existingFirstDunningsForStudent = daoDunning.findAllWithCriteria(
+					Restrictions.or(
 							Restrictions.eq("status", Dunning.Status.OPENED),
 							Restrictions.eq("status", Dunning.Status.SENT),
 							Restrictions.eq("status", Dunning.Status.CLOSED)),
 							Restrictions.eq("type", Dunning.Type.TYPE1),
-							Restrictions.eq("student", entry.get(0)
-									.getStudent()));
+							Restrictions.eq("student", entry.get(0).getStudent()
+					));
 			Set<BorrowedMaterial> allDunnedBorrowedMaterials = new HashSet<BorrowedMaterial>();
 			for (Dunning existingDunning : existingFirstDunningsForStudent) {
-				allDunnedBorrowedMaterials.addAll(existingDunning
-						.getBorrowedMaterials());
+				allDunnedBorrowedMaterials.addAll(existingDunning.getBorrowedMaterials());
 			}
 			entry.removeAll(allDunnedBorrowedMaterials);
 			if (existingFirstDunningsForStudent.size() == 0 || entry.size() > 0) {
@@ -129,13 +117,12 @@ public class DunningViewModel {
 		}
 	}
 
-	private void addBorrowedMaterialsFromStudentToMap(
-			Map<Integer, List<BorrowedMaterial>> map,
-			BorrowedMaterial borrowedMaterial) {
+	private void addBorrowedMaterialsFromStudentToMap(Map<Integer, List<BorrowedMaterial>> map,	BorrowedMaterial borrowedMaterial) {
 		if (!map.containsKey(borrowedMaterial.getStudent().getId())) {
 			map.put(borrowedMaterial.getStudent().getId(),
 					new ArrayList<BorrowedMaterial>());
 		}
+		
 		map.get(borrowedMaterial.getStudent().getId()).add(borrowedMaterial);
 	}
 
@@ -161,18 +148,17 @@ public class DunningViewModel {
 					addDeadlineToDate(dunning
 							.getStatusDate(Dunning.Status.SENT)))) {
 				if (daoDunning.findAllWithCriteria(
-						Restrictions.or(Restrictions.eq("status",
-								Dunning.Status.OPENED), Restrictions.eq(
-								"status", Dunning.Status.SENT), Restrictions
-								.eq("status", Dunning.Status.CLOSED)),
-						Restrictions.eq("type", Dunning.Type.TYPE2),
-						Restrictions.eq("student", dunning.getStudent()))
-						.size() == 0) {
+						Restrictions.or(
+								Restrictions.eq("status", Dunning.Status.OPENED), 
+								Restrictions.eq("status", Dunning.Status.SENT),
+								Restrictions.eq("status", Dunning.Status.CLOSED)),
+								Restrictions.eq("type", Dunning.Type.TYPE2),
+								Restrictions.eq("student", dunning.getStudent()
+						)).size() == 0) {
 					Dunning newDunning = new Dunning.Builder(
 							dunning.getStudent()).type(Dunning.Type.TYPE2)
 							.status(Dunning.Status.OPENED)
-							.borrowedMaterials(new HashSet<BorrowedMaterial>(dunning
-									.getBorrowedMaterials()))
+							.borrowedMaterials(new HashSet<BorrowedMaterial>(dunning.getBorrowedMaterials()))
 							.build();
 					daoDunning.insert(newDunning);
 					dunning.setStatus(Dunning.Status.CLOSED);
@@ -183,35 +169,34 @@ public class DunningViewModel {
 	}
 
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
-		TeachingMaterial teachingMaterial = borrowedMaterial
-				.getTeachingMaterial();
+		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 
-		Integer toGrade = teachingMaterial.getToGrade();// 4
-		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();// 5
-		Term toTerm = teachingMaterial.getToTerm();// SECOND
-		Term currentTerm = currentSchoolYear.getRecentlyActiveTerm();// FIRST
+		Integer toGrade = teachingMaterial.getToGrade(); // 4
+		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade(); // 5
+		Term toTerm = teachingMaterial.getToTerm(); // SECOND
+		Term currentTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm(); // FIRST
 
 		if (toGrade == null)
 			return false;
 
-		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm
-				.compareTo(currentTerm) > 0)));
+		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm.compareTo(currentTerm) > 0)));
 	}
 
 	private void updateSchoolYear() {
-		currentSchoolYear = daoSchoolYear.findSingleWithCriteria(
-				Restrictions.le("fromDate", new Date()),
-				Restrictions.ge("toDate", new Date()));
+		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
+				Order.desc("toDate"),
+				Restrictions.le("fromDate", new Date()));
 	}
 
 	private void updateStates() {
-		Collection<Dunning> alreadyDunned = daoDunning
-				.findAllWithCriteria(Restrictions.or(
+		Collection<Dunning> alreadyDunned = daoDunning.findAllWithCriteria(
+				Restrictions.or(
 						Restrictions.eq("status", Dunning.Status.SENT),
 						Restrictions.eq("status", Dunning.Status.CLOSED)));
-		Collection<Dunning> toBeDunned = daoDunning
-				.findAllWithCriteria(Restrictions.eq("status",
-						Dunning.Status.OPENED));
+		
+		Collection<Dunning> toBeDunned = daoDunning.findAllWithCriteria(
+				Restrictions.eq("status", Dunning.Status.OPENED));
+		
 		studentsDunned.set(alreadyDunned);
 		studentsToDun.set(toBeDunned);
 	}
@@ -227,5 +212,4 @@ public class DunningViewModel {
 		daoDunning.update(dunning);
 		updateStates();
 	}
-
 }

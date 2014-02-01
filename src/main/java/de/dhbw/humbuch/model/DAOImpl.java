@@ -54,6 +54,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 
 	@Override
 	public EntityType find(final Object id) {
+		getEntityManager().clear();
 		return (EntityType) getEntityManager().find(getEntityClass(),
 				id);
 	}
@@ -62,6 +63,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	@Override
 	public List<EntityType> findAllWithCriteria(
 			final Criterion... criteriaArray) {
+		getEntityManager().clear();
 		Session session = (Session) getEntityManager().getDelegate();
 		Criteria criteria = session.createCriteria(getEntityClass());
 		for (Criterion criterion : criteriaArray) {
@@ -74,6 +76,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	@Override
 	public List<EntityType> findAllWithCriteria(Order order,
 			Criterion... criteriaArray) {
+		getEntityManager().clear();
 		Session session = (Session) getEntityManager().getDelegate();
 		Criteria criteria = session.createCriteria(getEntityClass());
 		criteria.addOrder(order);
@@ -128,6 +131,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 
 	@Override
 	public List<EntityType> findAll() {
+		getEntityManager().clear();
 		return getEntityManager().createQuery(
 				"from " + getEntityClass().getSimpleName(), getEntityClass())
 				.getResultList();
@@ -135,6 +139,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 
 	@Override
 	public EntityType findSingleWithCriteria(Criterion... criteriaArray) {
+		getEntityManager().clear();
 		List<EntityType> resultList = findAllWithCriteria(criteriaArray);
 		if (resultList.size() > 0) {
 			return resultList.get(0);
@@ -146,6 +151,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	@Override
 	public EntityType findSingleWithCriteria(Order order,
 			Criterion... criteriaArray) {
+		getEntityManager().clear();
 		List<EntityType> resultList = findAllWithCriteria(order, criteriaArray);
 		if(resultList.size() > 0) {
 			return resultList.get(0);

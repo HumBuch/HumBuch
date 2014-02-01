@@ -79,7 +79,7 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	}
 	
 	public Term getRecentlyActiveTerm() {
-		return getBeginSecondTerm().after(new Date()) ? Term.SECOND : Term.FIRST;
+		return getBeginSecondTerm().after(new Date()) ? Term.FIRST : Term.SECOND;
 	}
 	
 	public boolean isActive() {

@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import de.davherrmann.mvvm.ActionHandler;
@@ -28,7 +27,6 @@ import de.davherrmann.mvvm.State;
 import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
-import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
@@ -76,8 +74,6 @@ public class StudentInformationViewModel {
 		this.daoParent = daoParent;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.eventBus = eventBus;
-		
-		eventBus.register(this);
 	}
 
 	@AfterVMBinding
@@ -259,13 +255,5 @@ public class StudentInformationViewModel {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	
-	@Subscribe
-	public void handleEntityUpdateEvent(EntityUpdateEvent entityUpdateEvent) {
-		if(entityUpdateEvent.contains(Student.class)) {
-			updateStudents();
-		}
 	}
 }

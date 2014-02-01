@@ -591,9 +591,9 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Q&D: have to be changed after "data has changed"-system is
-		// implemented
-		bookManagementViewModel.updateCategories();
+//		// TODO Q&D: have to be changed after "data has changed"-system is
+//		// implemented
+//		bookManagementViewModel.updateCategories();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

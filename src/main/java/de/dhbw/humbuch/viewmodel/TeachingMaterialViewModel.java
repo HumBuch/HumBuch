@@ -68,8 +68,7 @@ public class TeachingMaterialViewModel {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
-	// TODO Q&D: have to be changed after "data has changed"-system is implemented
-	public void updateCategories() {
+	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 	}
 
@@ -84,6 +83,7 @@ public class TeachingMaterialViewModel {
 		if (teachingMaterial == null) {
 			return;
 		}
+		
 		daoTeachingMaterial.update(teachingMaterial);
 		updateTeachingMaterials();
 	}
