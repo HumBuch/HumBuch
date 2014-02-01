@@ -53,6 +53,11 @@ public class PDFTest {
 			borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
 			borrowedMaterialList.add(borrowedMaterial);
 
+			for(int i = 0; i < 56; i++){
+				borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
+				borrowedMaterialList.add(borrowedMaterial);
+			}
+
 			student.setBorrowedList(borrowedMaterialList);
 
 			PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterialList).

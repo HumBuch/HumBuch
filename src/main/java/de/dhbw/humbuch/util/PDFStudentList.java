@@ -21,6 +21,7 @@ public final class PDFStudentList extends PDFHandler {
 	private List<BorrowedMaterial> borrowedMaterialList;
 	private List<BorrowedMaterial> returnList;
 	private List<BorrowedMaterial> lendingList;
+	private boolean needEmpyLine = false;
 
 	private Set<Builder> builders;
 
@@ -158,13 +159,18 @@ public final class PDFStudentList extends PDFHandler {
 
 			try {
 				document.add(table);
-				addEmptyLineToDocument(document, 1);
+				this.needEmpyLine = true;
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
 			}
 		}
 		if (this.returnList != null && !this.returnList.isEmpty()) {
+			if(this.needEmpyLine){
+				addEmptyLineToDocument(document, 1);
+				this.needEmpyLine = false;
+			}
+			
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher müssen zurückgegeben werden:" })
 					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
@@ -192,7 +198,6 @@ public final class PDFStudentList extends PDFHandler {
 				PDFHandler.addEmptyLineToDocument(document, 1);
 				this.addRentalDisclosure(document);
 				this.addSignatureField(document, "Lehrer");
-				PDFHandler.addEmptyLineToDocument(document, 1);
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();

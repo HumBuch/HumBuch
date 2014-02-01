@@ -21,6 +21,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.RectangleReadOnly;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -45,7 +46,7 @@ public abstract class PDFHandler {
 	}
 
 	public PDFHandler() {
-		this.document = new Document();
+		this.document = new Document(new RectangleReadOnly(595,842), 10, 10, 25, 35);
 	}
 
 	/**
@@ -221,11 +222,10 @@ public abstract class PDFHandler {
 	 */
 	protected void addSignatureField(Document document, String role) {
 		Paragraph paragraph = new Paragraph();
-		//addEmptyLine(paragraph, 1);
 
 		//this table contains the signatureTable and the dataTable.
 		// this purpose makes it easier to format
-		PdfPTable table = new PdfPTable(2);
+		PdfPTable table = createMyStandardTable(2);
 
 		//the first column is double times greater than the second column
 		try {
@@ -286,8 +286,7 @@ public abstract class PDFHandler {
 	}
 
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Unterschrift
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel, Unterschrift
 	 * 
 	 * @return PdfPTable
 	 */
@@ -301,8 +300,7 @@ public abstract class PDFHandler {
 	}
 	
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Unterschrift
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel
 	 * 
 	 * @return PdfPTable
 	 */
@@ -310,21 +308,20 @@ public abstract class PDFHandler {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f});
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse"}).withBorder(true)
-				.isCenterAligned(true).font(font).fillTable();
+				.isCenterAligned(true).font(font).padding(5f).fillTable();
 
 		return table;
 	}
 
 	/**
-	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel,
-	 * Anzahl
+	 * A table is generated with the header: Bezeichnung Lehrmittel, Anzahl
 	 * 
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).fillTable();
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(5f).fillTable();
 
 		return table;
 	}
@@ -406,151 +403,6 @@ public abstract class PDFHandler {
 		}
 
 		return table;
-	}
-
-	/**
-	 * Convenience method to add content to a table in a standard way
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
-	 * @param isAlignedCenter
-	 *            if true the content is horizontally and vertically aligned
-	 */
-	@Deprecated
-	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter) {
-		PdfPCell cell = null;
-
-		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  "));
-			cell.setLeading(1.25f, 1.25f);
-			if (isAlignedCenter) {
-				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-			}
-
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			cell.setPadding(0f);
-			table.addCell(cell);
-		}
-	}
-
-	/**
-	 * Convenience method to add content to a table in a standard way
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
-	 * @param font
-	 *            set a font for the cell content
-	 */
-	@Deprecated
-	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, Font font) {
-		PdfPCell cell = null;
-
-		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  ", font));
-			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-			cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			table.addCell(cell);
-		}
-	}
-
-	/**
-	 * Convenience method to add content to a table in a standard way
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
-	 * @param isAlignedCenter
-	 *            if true the content is horizontally and vertically aligned
-	 */
-	@Deprecated
-	protected static void fillTableWithContent(PdfPTable table, boolean withBorder, String[] contentArray, boolean isAlignedCenter, Font font) {
-		PdfPCell cell = null;
-
-		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  ", font));
-			cell.setLeading(1.25f, 1.25f);
-			if (isAlignedCenter) {
-				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-			}
-
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			cell.setPadding(0f);
-			table.addCell(cell);
-		}
-	}
-
-	/**
-	 * Convenience method to add content to a table in a standard way
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
-	 * @param font
-	 *            set a font for the cell content
-	 */
-	@Deprecated
-	protected static void fillTableWithContentWithoutAlignment(PdfPTable table, boolean withBorder, String[] contentArray, Font font) {
-		PdfPCell cell = null;
-
-		for (int i = 0; i < contentArray.length; i++) {
-			//append '\n' to each String to have an empty space-line before cell ends
-			cell = new PdfPCell(new Phrase(contentArray[i] + "\n  ", font));
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			table.addCell(cell);
-		}
-	}
-
-	/**
-	 * Cell entry is not followed by \n
-	 * 
-	 * @param table
-	 * @param withBorder
-	 *            if true a standard border is used, if false no border is used
-	 * @param contentArray
-	 *            an array with all cell contents
-	 */
-	@Deprecated
-	protected static void fillTableWithContentWithoutSpace(PdfPTable table, boolean withBorder,
-			String[] contentArray, boolean isAlignedCenter, float padding) {
-		PdfPCell cell = null;
-
-		for (int i = 0; i < contentArray.length; i++) {
-
-			cell = new PdfPCell(new Phrase(contentArray[i]));
-			if (isAlignedCenter) {
-				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-			}
-			if (withBorder == false) {
-				cell.setBorder(0);
-			}
-			cell.setPadding(padding);
-			table.addCell(cell);
-		}
 	}
 
 	private static void fillTableWithContent(TableBuilder tableBuilder) {
@@ -707,9 +559,9 @@ public abstract class PDFHandler {
 			//            }
 			ColumnText.showTextAligned(writer.getDirectContent(),
 					Element.ALIGN_CENTER, new Phrase(String.format("- Seite %d -", pagenumber)),
-					(rect.getLeft() + rect.getRight()) / 2, rect.getBottom() - 18, 0);
+					(rect.getLeft() + rect.getRight()) / 2, 20, 0);
 		}
-
+		
 		public void resetPageNumber() {
 			this.pagenumber = 1;
 		}
