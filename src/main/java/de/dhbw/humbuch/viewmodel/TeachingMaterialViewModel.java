@@ -59,7 +59,7 @@ public class TeachingMaterialViewModel {
 	}
 
 	@AfterVMBinding
-	private void afterVMBinding() {
+	public void refresh() {
 		updateTeachingMaterials();
 		updateCategories();
 	}
