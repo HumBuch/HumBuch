@@ -436,7 +436,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		lendingViewModel.refresh();
 	}
 
 	@Override

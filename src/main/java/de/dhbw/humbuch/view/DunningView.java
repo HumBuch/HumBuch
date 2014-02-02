@@ -253,8 +253,7 @@ public class DunningView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		dunningViewModel.refresh();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

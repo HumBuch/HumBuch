@@ -77,7 +77,7 @@ public class StudentInformationViewModel {
 	}
 
 	@AfterVMBinding
-	private void afterVMBinding() {
+	public void refresh() {
 		updateStudents();
 	}
 
@@ -198,6 +198,8 @@ public class StudentInformationViewModel {
 				+ " aktualisiert und " + deletedStudents + " gelöscht.",
 				Type.TRAYINFO));
 		daoStudent.fireUpdateEvent();
+		
+		updateStudents();
 	}
 
 	/**
