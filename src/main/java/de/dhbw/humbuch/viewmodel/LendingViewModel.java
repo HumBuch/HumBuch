@@ -66,7 +66,7 @@ public class LendingViewModel {
 	}
 	
 	@AfterVMBinding
-	public void init() {
+	public void refresh() {
 		updateSchoolYear();
 		updateTeachingMaterials();
 		updateAllStudentsBorrowedMaterials();
