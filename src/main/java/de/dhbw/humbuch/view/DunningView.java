@@ -56,6 +56,9 @@ public class DunningView extends VerticalLayout implements View,
 	private static final String TABLE_CLASS = "Klasse";
 	private static final String TABLE_TYPE = "Typ";
 
+	private EventBus eventBus;
+	private DunningViewModel dunningViewModel;
+	
 	@BindState(StudentsDunned.class)
 	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(
 			Collection.class);
@@ -65,13 +68,16 @@ public class DunningView extends VerticalLayout implements View,
 
 	private Map<Integer,Dunning> allDunnings = new HashMap<>();
 	private Dunning selectedDunning;
-	private DunningViewModel dunningViewModel;
+	
+	/**
+	 * Layout components
+	 */
 	private HorizontalLayout horizontalLayoutButtonBar;
-	private Button buttonSecondDunning = new Button(SECOND_DUNNING);
-	private Button buttonNewDunning = new Button(NEW_DUNNING);
-	private Button buttonShowDunning = new Button(SHOW_DUNNING);
+	private Button btnNewDunning = new Button(NEW_DUNNING);
+	private Button btnSecondDunning = new Button(SECOND_DUNNING);
+	private Button btnShowDunning = new Button(SHOW_DUNNING);
 	private Table tableDunnings;
-	private EventBus eventBus;
+	
 
 	@Inject
 	public DunningView(ViewModelComposer viewModelComposer,
@@ -82,6 +88,40 @@ public class DunningView extends VerticalLayout implements View,
 		buildLayout();
 		bindViewModel(viewModelComposer, dunningViewModel);
 	}
+	
+	private void init() {
+		horizontalLayoutButtonBar = new HorizontalLayout();
+		btnSecondDunning.setEnabled(false); 
+		btnNewDunning.setEnabled(false);
+		btnShowDunning.setEnabled(false);
+		tableDunnings = new Table();
+
+		tableDunnings.setSelectable(true);
+		tableDunnings.setSizeFull();
+		tableDunnings
+				.addContainerProperty(TABLE_FIRST_NAME, String.class, null);
+		tableDunnings.addContainerProperty(TABLE_LAST_NAME, String.class, null);
+		tableDunnings.addContainerProperty(TABLE_CLASS, String.class, null);
+		tableDunnings.addContainerProperty(TABLE_TYPE, String.class, null);
+		setSpacing(true);
+		setMargin(true);
+
+		horizontalLayoutButtonBar.setSpacing(true);
+		addListener();
+	}
+	
+	private void buildLayout() {
+		setSpacing(true);
+		setMargin(true);
+		setSizeFull();
+		horizontalLayoutButtonBar.addComponent(btnNewDunning);
+		horizontalLayoutButtonBar.addComponent(btnSecondDunning);
+		horizontalLayoutButtonBar.addComponent(btnShowDunning);
+		addComponent(horizontalLayoutButtonBar);
+		addComponent(tableDunnings);
+		setExpandRatio(tableDunnings, 1);
+	}
+
 
 	private void addListener() {
 		StateChangeListener stateChange = new StateChangeListener() {
@@ -109,50 +149,50 @@ public class DunningView extends VerticalLayout implements View,
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if(tableDunnings.size()==0 || tableDunnings.getValue() == null) {
-					buttonNewDunning.setEnabled(false);
-					buttonSecondDunning.setEnabled(false);
-					buttonShowDunning.setEnabled(false);
-					buttonShowDunning.removeStyleName("default");
-					buttonSecondDunning.removeStyleName("default");
-					buttonNewDunning.removeStyleName("default");
+					btnNewDunning.setEnabled(false);
+					btnSecondDunning.setEnabled(false);
+					btnShowDunning.setEnabled(false);
+					btnShowDunning.removeStyleName("default");
+					btnSecondDunning.removeStyleName("default");
+					btnNewDunning.removeStyleName("default");
 					return;
 				}
 				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
 				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
-					buttonNewDunning.setEnabled(true);
-					buttonNewDunning.addStyleName("default");
-					buttonSecondDunning.setEnabled(false);
-					buttonSecondDunning.removeStyleName("default");
-					buttonShowDunning.setEnabled(false);
-					buttonShowDunning.removeStyleName("default");
+					btnNewDunning.setEnabled(true);
+					btnNewDunning.addStyleName("default");
+					btnSecondDunning.setEnabled(false);
+					btnSecondDunning.removeStyleName("default");
+					btnShowDunning.setEnabled(false);
+					btnShowDunning.removeStyleName("default");
 				}
 				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
-					buttonNewDunning.setEnabled(false);
-					buttonNewDunning.removeStyleName("default");
-					buttonSecondDunning.setEnabled(true);
-					buttonSecondDunning.addStyleName("default");
-					buttonShowDunning.setEnabled(false);
-					buttonShowDunning.removeStyleName("default");
+					btnNewDunning.setEnabled(false);
+					btnNewDunning.removeStyleName("default");
+					btnSecondDunning.setEnabled(true);
+					btnSecondDunning.addStyleName("default");
+					btnShowDunning.setEnabled(false);
+					btnShowDunning.removeStyleName("default");
 				}
 				else if(selectedDunning.getStatus() == Dunning.Status.SENT) {
-					buttonShowDunning.setEnabled(true);
-					buttonShowDunning.addStyleName("default");
-					buttonNewDunning.setEnabled(false);
-					buttonNewDunning.removeStyleName("default");
-					buttonSecondDunning.setEnabled(false);
-					buttonSecondDunning.removeStyleName("default");
+					btnShowDunning.setEnabled(true);
+					btnShowDunning.addStyleName("default");
+					btnNewDunning.setEnabled(false);
+					btnNewDunning.removeStyleName("default");
+					btnSecondDunning.setEnabled(false);
+					btnSecondDunning.removeStyleName("default");
 				}
 				else {
-					buttonNewDunning.setEnabled(false);
-					buttonSecondDunning.setEnabled(false);
-					buttonShowDunning.setEnabled(false);
-					buttonShowDunning.removeStyleName("default");
-					buttonSecondDunning.removeStyleName("default");
-					buttonNewDunning.removeStyleName("default");
+					btnNewDunning.setEnabled(false);
+					btnSecondDunning.setEnabled(false);
+					btnShowDunning.setEnabled(false);
+					btnShowDunning.removeStyleName("default");
+					btnSecondDunning.removeStyleName("default");
+					btnNewDunning.removeStyleName("default");
 				}
 			}
 		});
-		buttonNewDunning.addClickListener(new ClickListener() {
+		btnNewDunning.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 8123444488274722661L;
 
 			@Override
@@ -165,7 +205,7 @@ public class DunningView extends VerticalLayout implements View,
 				showPDF(baos, fileNameIncludingHash, selectedDunning);	
 			}
 		});
-		buttonSecondDunning.addClickListener(new ClickListener() {
+		btnSecondDunning.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 8123444488274722661L;
 
 			@Override
@@ -178,7 +218,7 @@ public class DunningView extends VerticalLayout implements View,
 				showPDF(baos, fileNameIncludingHash, selectedDunning);
 			}
 		});
-		buttonShowDunning.addClickListener(new ClickListener() {
+		btnShowDunning.addClickListener(new ClickListener() {
 			private static final long serialVersionUID = -1285703858095198175L;
 
 			@Override
@@ -213,48 +253,16 @@ public class DunningView extends VerticalLayout implements View,
 		selectedDunning.setStatus(Dunning.Status.SENT);
 		tableDunnings.removeAllItems();
 		dunningViewModel.doUpdateDunning(selectedDunning);
-		buttonNewDunning.setEnabled(false);
-		buttonSecondDunning.setEnabled(false);
-		buttonShowDunning.setEnabled(false);
-		buttonShowDunning.removeStyleName("default");
-		buttonSecondDunning.removeStyleName("default");
-		buttonNewDunning.removeStyleName("default");
+		btnNewDunning.setEnabled(false);
+		btnSecondDunning.setEnabled(false);
+		btnShowDunning.setEnabled(false);
+		btnShowDunning.removeStyleName("default");
+		btnSecondDunning.removeStyleName("default");
+		btnNewDunning.removeStyleName("default");
 	}
-
-	private void init() {
-		horizontalLayoutButtonBar = new HorizontalLayout();
-		buttonSecondDunning.setEnabled(false); 
-		buttonNewDunning.setEnabled(false);
-		buttonShowDunning.setEnabled(false);
-		tableDunnings = new Table();
-
-		tableDunnings.setSelectable(true);
-		tableDunnings.setSizeFull();
-		tableDunnings
-				.addContainerProperty(TABLE_FIRST_NAME, String.class, null);
-		tableDunnings.addContainerProperty(TABLE_LAST_NAME, String.class, null);
-		tableDunnings.addContainerProperty(TABLE_CLASS, String.class, null);
-		tableDunnings.addContainerProperty(TABLE_TYPE, String.class, null);
-		setSpacing(true);
-		setMargin(true);
-
-		horizontalLayoutButtonBar.setSpacing(true);
-		addListener();
-	}
-
-	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
-		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
-		horizontalLayoutButtonBar.addComponent(buttonShowDunning);
-		addComponent(horizontalLayoutButtonBar);
-		addComponent(tableDunnings);
-	}
-
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
