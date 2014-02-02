@@ -777,6 +777,7 @@ public class SettingsView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		settingsViewModel.refresh();
 	}
 
 	@Override

@@ -60,8 +60,7 @@ import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
  * @author Martin Wentzel
  * 
  */
-public class TeachingMaterialView extends VerticalLayout implements View,
-		ViewInformation {
+public class TeachingMaterialView extends VerticalLayout implements View, ViewInformation {
 	private static final long serialVersionUID = -5063268947544706757L;
 
 	private static final String TITLE = "Lehrmittelverwaltung";
@@ -80,7 +79,7 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 	private static final String TABLE_VALIDUNTIL = "validUntil";
 
 	private EventBus eventBus;
-	private TeachingMaterialViewModel bookManagementViewModel;
+	private TeachingMaterialViewModel teachingMaterialViewModel;
 
 	/**
 	 * Layout components
@@ -94,14 +93,13 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 
 	private Table materialsTable;
 	private BeanItemContainer<TeachingMaterial> tableData;
-	private BeanFieldGroup<TeachingMaterial> binder = new BeanFieldGroup<TeachingMaterial>(
-			TeachingMaterial.class);
+	private BeanFieldGroup<TeachingMaterial> binder = new BeanFieldGroup<TeachingMaterial>(TeachingMaterial.class);
+	
 	@BindState(TeachingMaterials.class)
-	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
-			Collection.class);
+	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
+	
 	@BindState(Categories.class)
-	public final State<Collection<Category>> categories = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
 
 	/**
 	 * All popup-window components and the corresponding binded states. The
@@ -127,13 +125,12 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 	private Button btnWindowCancel = new Button("Abbrechen");
 
 	@Inject
-	public TeachingMaterialView(ViewModelComposer viewModelComposer,
-			TeachingMaterialViewModel bookManagementViewModel, EventBus eventBus) {
-		this.bookManagementViewModel = bookManagementViewModel;
+	public TeachingMaterialView(ViewModelComposer viewModelComposer, TeachingMaterialViewModel teachingMaterialViewModel, EventBus eventBus) {
+		this.teachingMaterialViewModel = teachingMaterialViewModel;
 		this.eventBus = eventBus;
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, bookManagementViewModel);
+		bindViewModel(viewModelComposer, teachingMaterialViewModel);
 	}
 
 	/**
@@ -424,7 +421,7 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 				if (FormFieldsValid()) {
 					try {
 						binder.commit();
-						bookManagementViewModel.doUpdateTeachingMaterial(binder
+						teachingMaterialViewModel.doUpdateTeachingMaterial(binder
 								.getItemDataSource().getBean());
 						windowEditTeachingMaterial.close();
 						eventBus.post(new MessageEvent(
@@ -450,7 +447,7 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 					Runnable runnable = new Runnable() {
 						@Override
 						public void run() {
-							bookManagementViewModel
+							teachingMaterialViewModel
 									.doDeleteTeachingMaterial(item);
 							materialsTable.select(null);
 						}
@@ -505,6 +502,7 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 			@Override
 			public void stateChange(Object arg0) {
 				for (Category cat : categories.get()) {
+					cbCategory.removeAllItems();
 					cbCategory.addItem(cat);
 					cbCategory.setItemCaption(cat, cat.getName());
 				}
@@ -591,9 +589,7 @@ public class TeachingMaterialView extends VerticalLayout implements View,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-//		// TODO Q&D: have to be changed after "data has changed"-system is
-//		// implemented
-//		bookManagementViewModel.updateCategories();
+		teachingMaterialViewModel.refresh();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,

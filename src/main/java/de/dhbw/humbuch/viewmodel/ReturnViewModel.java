@@ -51,7 +51,7 @@ public class ReturnViewModel {
 	}
 	
 	@AfterVMBinding
-	public void init() {
+	public void refresh() {
 		updateSchoolYear();
 		updateReturnList();
 	}

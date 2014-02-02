@@ -144,7 +144,7 @@ public class DunningViewModelTest {
 
 	@Test
 	public void testDunningViewModel() {
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 
 		// states should be initialised (not null)
 		assertNotNull(dunningViewModel.studentsDunned.get());
@@ -156,19 +156,19 @@ public class DunningViewModelTest {
 
 		// add two sent dunnings, check amount
 		persistSomeEmptyDunnings(2, Status.SENT);
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(2, dunningViewModel.studentsDunned.get().size());
 		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 
 		// add three closed dunnings, check amount
 		persistSomeEmptyDunnings(3, Status.CLOSED);
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(5, dunningViewModel.studentsDunned.get().size());
 		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 
 		// add four opened dunnings, check amount
 		persistSomeEmptyDunnings(4, Status.OPENED);
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(5, dunningViewModel.studentsDunned.get().size());
 		assertEquals(4, dunningViewModel.studentsToDun.get().size());
 
@@ -176,27 +176,27 @@ public class DunningViewModelTest {
 		// BorrowedMaterial due after end of term
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterTermEndDate();
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(5, dunningViewModel.studentsToDun.get().size());
 
 		// BorrowedMaterial due after manual lending date
 		persistBorrowedMaterialDueAfterManualEndDate();
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(6, dunningViewModel.studentsToDun.get().size());
 
 		// BorrowedMaterial due in future (manual lending date)
 		persistBorrowedMaterialManualEndDateInFuture();
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(6, dunningViewModel.studentsToDun.get().size());
 
 		// BorrowedMaterial due after term end of last school year
 		persistBorrowedMaterialDueAfterFirstTermEndInLastSchoolYear();
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(7, dunningViewModel.studentsToDun.get().size());
 		
 		// BorrowedMaterial due after term end of last school year
 		persistBorrowedMaterialDueAfterSecondTermEndInLastSchoolYear();
-		dunningViewModel.init();
+		dunningViewModel.refresh();
 		assertEquals(8, dunningViewModel.studentsToDun.get().size());
 	}
 }
