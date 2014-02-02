@@ -71,7 +71,7 @@ public class SettingsViewModel {
 	}
 
 	@AfterVMBinding
-	private void afterAMBindung() {
+	public void refresh() {
 		updateSchoolYears();
 		updateCategories();
 		updateUser();
