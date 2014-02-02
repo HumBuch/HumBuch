@@ -323,6 +323,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		studentInformationViewModel.refresh();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
