@@ -76,7 +76,7 @@ public class DunningViewModel {
 					if (Calendar
 							.getInstance()
 							.after(addDeadlineToDate(recentlyActiveSchoolYear
-									.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm())))
+									.getEndOf(borrowedMaterial.getTeachingMaterial().getToTerm())))
 							|| !(borrowedMaterial.getTeachingMaterial()
 									.getToGrade() == borrowedMaterial
 									.getStudent().getGrade().getGrade())) {
@@ -171,10 +171,10 @@ public class DunningViewModel {
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
 		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 
-		Integer toGrade = teachingMaterial.getToGrade(); // 4
-		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade(); // 5
-		Term toTerm = teachingMaterial.getToTerm(); // SECOND
-		Term currentTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm(); // FIRST
+		Integer toGrade = teachingMaterial.getToGrade();
+		int currentGrade = borrowedMaterial.getStudent().getGrade().getGrade();
+		Term toTerm = teachingMaterial.getToTerm();
+		Term currentTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
 
 		if (toGrade == null)
 			return false;
