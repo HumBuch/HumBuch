@@ -306,7 +306,8 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		returnViewModel.generateStudentReturnList();
+//		returnViewModel.generateStudentReturnList();
+		returnViewModel.refresh();
 	}
 
 	@Override
