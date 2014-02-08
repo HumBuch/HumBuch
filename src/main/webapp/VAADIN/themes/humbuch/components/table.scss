@@ -76,7 +76,7 @@
                 padding-right: 4px;
                 @include box-sizing(border-box);
         }
-        
+        /* */
         .v-table-resizer {
                 font-size: 13px;
                 height: 1.8em;
@@ -99,15 +99,11 @@
                 border-left-color: transparent;
         }
         
-        .v-table-cell-content:first-child .v-table-cell-wrapper {
-                padding-left: 8px;
-                @include box-sizing(border-box);
-        }
-        
         .v-table-cell-content:last-child .v-table-cell-wrapper {
-                padding-right: 14px;
+              
                 @include box-sizing(border-box);
         }
+                
         
         .v-table-body {
                 border: 1px solid #d4d5d5;
@@ -137,7 +133,7 @@
                 border-left-color: transparent;
         }
         
-        
+
         .v-table-header-cell-asc .v-table-sort-indicator,
         .v-table-header-cell-desc .v-table-sort-indicator {
                 background: transparent;
