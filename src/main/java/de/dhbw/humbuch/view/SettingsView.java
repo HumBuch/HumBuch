@@ -378,19 +378,19 @@ public class SettingsView extends VerticalLayout implements View,
 			public Field<?> createField(Container container, Object itemId,
 					Object propertyId, Component uiContext) {
 
-				// If its not the currently selected item in the table, don't
+				//if its not the currently selected item in the table, don't
 				// generate fields
 				if (!itemId.equals(catTable.getValue())) {
 					return null;
 				}
 
-				Field field = super.createField(container, itemId, propertyId,
-						uiContext);
+				TextField field = new TextField();
+				field.setNullRepresentation("");
 
-				// Let us discard the value
+				//discard the value
 				field.setBuffered(true);
 
-				// Let's keep track of all of the attached fields
+				//keep track of all of the attached fields
 				field.addAttachListener(new AttachListener() {
 					@Override
 					public void attach(AttachEvent attachEvent) {
