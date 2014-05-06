@@ -1,8 +1,12 @@
 package de.dhbw.humbuch.viewmodel;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -20,8 +24,12 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.User;
+import de.dhbw.humbuch.util.PasswordHash;
+import de.dhbw.humbuch.view.MainUI;
 
 public class SettingsViewModel {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
 
 	public interface DoUpdateUser extends ActionHandler {}
 	public interface DoPasswordChange extends ActionHandler {}
@@ -161,28 +169,56 @@ public class SettingsViewModel {
 		}
 	}
 
+	/**
+	 * Tries to change the password of the currently logged in user. If one of
+	 * the parameters is empty, a {@link MessageEvent} is posted to the
+	 * {@link EventBus}.<br>
+	 * If the new password and the new verified password do not match, a
+	 * {@link MessageEvent} is posted to the {@link EventBus}.
+	 * 
+	 * After successfully checking the current password, the password is changed.
+	 * 
+	 * @param currentPassword
+	 *            String with the current password
+	 * @param newPassword
+	 *            String with the new password
+	 * @param newPasswordVerified
+	 *            String with the verified new password
+	 */
 	@HandlesAction(DoPasswordChange.class)
 	public void doPasswordChange(String currentPassword, String newPassword, String newPasswordVerified) {
 		User user = currentUser.get();
-		if (currentPassword.isEmpty() || newPassword.isEmpty()
-				|| newPasswordVerified.isEmpty()) {
-			eventBus.post(new MessageEvent("Leere Felder!",
-					"Bitte alle Felder ausfüllen.", Type.WARNING));
-		} else if (!user.getPassword().equals(currentPassword)) {
-			eventBus.post(new MessageEvent("Falsches Passwort!",
-					"Das aktuelle Passwort ist nicht korrekt.", Type.WARNING));
-		} else if (!newPassword.equals(newPasswordVerified)) {
-			eventBus.post(new MessageEvent("Passwörter stimmen nicht überein!",
-					"Die beiden neuen Passwörter stimmen nicht überein.",
-					Type.WARNING));
-		} else {
-			user.setPassword(newPassword);
-			daoUser.update(user);
-			currentUser.notifyAllListeners();
-			passwordChangeStatus.set(null);
-			passwordChangeStatus.set(ChangeStatus.SUCCESSFULL);
-			// TODO: passwordChangeStatus.notifyAllListeners(); does not work
-			eventBus.post(new MessageEvent("Passwort geändert"));
+		
+		try {
+			
+			// Check if one of the fields is empty or the two new passwords do not match
+			if (currentPassword.isEmpty() || newPassword.isEmpty() || newPasswordVerified.isEmpty()) {
+				eventBus.post(new MessageEvent("Leere Felder!",
+						"Bitte alle Felder ausfüllen.", Type.WARNING));
+			} else if (!newPassword.equals(newPasswordVerified)) {
+				eventBus.post(new MessageEvent("Passwörter stimmen nicht überein!",
+						"Die beiden neuen Passwörter stimmen nicht überein.",
+						Type.WARNING));
+			} else if (!PasswordHash.validatePassword(currentPassword, user.getPassword())) {
+				eventBus.post(new MessageEvent("Falsches Passwort!",
+						"Das aktuelle Passwort ist nicht korrekt.", Type.WARNING));
+			} else {
+				//Change the password in the database and update the user object
+				user.setPassword(PasswordHash.createHash(newPassword));
+	
+				daoUser.update(user);
+				currentUser.notifyAllListeners();
+				
+				// TODO: passwordChangeStatus.notifyAllListeners(); does not work
+				passwordChangeStatus.set(null);
+				passwordChangeStatus.set(ChangeStatus.SUCCESSFULL);
+				
+				eventBus.post(new MessageEvent("Passwort geändert"));
+			}
+			
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			LOG.warn(e.getMessage());
+			eventBus.post(new MessageEvent("Fehler bei der Passwortänderung!", "Bitte kontaktieren Sie einen Entwickler.", Type.WARNING));
 		}
 	}
 	
