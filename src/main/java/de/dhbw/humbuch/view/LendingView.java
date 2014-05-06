@@ -67,7 +67,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	private static final String TITLE = "Ausleihe";
 	private static final String MANUAL_LENDING_TITLE = "Manuelle Ausleihe";
-	private static final String SAVE_SELECTED_LENDING = "Material Erhalten";
+	private static final String SAVE_SELECTED_LENDING = "Material erhalten";
 	private static final String MANUAL_LENDING = "Manuelle Ausleihe";
 	private static final String MENU_PRINT = "Listen drucken";
 	private static final String MENU_ITEM_STUDENT_LIST = "Schüler Liste";
