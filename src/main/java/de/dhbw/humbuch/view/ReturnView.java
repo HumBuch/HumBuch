@@ -1,9 +1,7 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.google.inject.Inject;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -37,6 +34,7 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.PDFHandler;
+import de.dhbw.humbuch.util.PDFInformationProcessor;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.PrintingComponent;
@@ -307,51 +305,9 @@ public class ReturnView extends VerticalLayout implements View,
 				.getCurrentlySelectedBorrowedMaterials();
 		HashSet<Student> allSelectedStudents = studentMaterialSelector
 				.getCurrentlySelectedStudents();
-		LinkedHashMap<Student, List<BorrowedMaterial>> studentsWithMaterials = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 
-		// Sort for grades and students
-		TreeMap<Grade, List<Student>> treeToSortForGrades = new TreeMap<Grade, List<Student>>();
-		for (Student student : allSelectedStudents) {
-			if (treeToSortForGrades.containsKey(student.getGrade())) {
-				List<Student> studentsInGrade = treeToSortForGrades.get(student
-						.getGrade());
-				if (studentsInGrade.contains(student)) {
-					continue;
-				}
-				studentsInGrade.add(student);
-				Collections.sort(studentsInGrade);
-				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
-			} else {
-				List<Student> studentList = new ArrayList<Student>();
-				studentList.add(student);
-				treeToSortForGrades.put(student.getGrade(), studentList);
-			}
-		}
-
-		// Extract all the informationen needed to create the pdf
-		for (Grade grade : treeToSortForGrades.keySet()) {
-			List<Student> studentsInGrade = treeToSortForGrades.get(grade);
-			for (Student student : studentsInGrade) {
-				for (BorrowedMaterial material : allSelectedMaterials) {
-					if (student.equals(material.getStudent())) {
-						if (studentsWithMaterials.containsKey(student)) {
-							List<BorrowedMaterial> currentlyAddedMaterials = studentsWithMaterials
-									.get(student);
-							currentlyAddedMaterials.add(material);
-							Collections.sort(currentlyAddedMaterials);
-							studentsWithMaterials.put(student,
-									currentlyAddedMaterials);
-						} else {
-							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
-							materialList.add(material);
-							studentsWithMaterials.put(student, materialList);
-						}
-					}
-				}
-			}
-		}
-
-		return studentsWithMaterials;
+		return PDFInformationProcessor.linkStudentsAndMaterials(
+				allSelectedMaterials, allSelectedStudents);
 	}
 
 	/**
@@ -370,19 +326,6 @@ public class ReturnView extends VerticalLayout implements View,
 	 * for updating the StudentMaterialSelector accordingly.
 	 */
 	private void updateReturnList() {
-		// System.out.println("updated.");
-		// Map<Grade, Map<Student, List<BorrowedMaterial>>> map =
-		// gradeAndStudentsWithMaterials.get();
-		// for(Grade g : map.keySet()) {
-		// Map<Student, List<BorrowedMaterial>> map2 = map.get(g);
-		// for(Student s : map2.keySet()) {
-		// List<BorrowedMaterial> lbm = map2.get(s);
-		// for(BorrowedMaterial bm : lbm) {
-		// System.out.println("g: " + g + " s: " + s.getFirstname() + " " +
-		// s.getLastname() + " bm: " + bm.getTeachingMaterial().getName() );
-		// }
-		// }
-		// }
 		studentMaterialSelector
 				.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials
 						.get());
@@ -411,7 +354,6 @@ public class ReturnView extends VerticalLayout implements View,
 	 * */
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// returnViewModel.generateStudentReturnList();
 		returnViewModel.refresh();
 	}
 

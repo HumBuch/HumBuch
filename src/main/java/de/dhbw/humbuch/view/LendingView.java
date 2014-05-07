@@ -3,7 +3,6 @@ package de.dhbw.humbuch.view;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +44,7 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.util.PDFClassList;
 import de.dhbw.humbuch.util.PDFHandler;
+import de.dhbw.humbuch.util.PDFInformationProcessor;
 import de.dhbw.humbuch.util.PDFStudentList;
 import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.PrintingComponent;
@@ -61,7 +60,8 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 /**
  * This view displays the Lendingscreen. It holds a horizontal headerbar
  * containing actions and a StudentMaterialSelector with all information about
- * the lent books of students.
+ * the lent books of students. It is used to lent books and print student and
+ * class lists.
  * */
 public class LendingView extends VerticalLayout implements View,
 		ViewInformation, StudentMaterialSelectorObserver {
@@ -205,7 +205,7 @@ public class LendingView extends VerticalLayout implements View,
 
 	/*
 	 * General listener method. It adds a listener to the confirm dialog and
-	 * calls all sub methods which add listener as well.
+	 * calls all sub methods which add listeners as well.
 	 */
 	private void addListeners() {
 		confirmListener = new ConfirmDialog.Listener() {
@@ -305,21 +305,7 @@ public class LendingView extends VerticalLayout implements View,
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector
-						.getCurrentlySelectedStudents();
-				if (selectedStudents.size() == 0) {
-					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(
-							MANUAL_LENDING_TITLE, LendingView.this, students
-									.get());
-					getUI().addWindow(sspw);
-				} else if (selectedStudents.size() == 1) {
-					// This loop runs only once
-					for (Student student : selectedStudents) {
-						ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(
-								LendingView.this, student);
-						getUI().addWindow(mlpw);
-					}
-				}
+				doManualLending();
 			}
 		});
 	}
@@ -338,6 +324,30 @@ public class LendingView extends VerticalLayout implements View,
 				studentMaterialSelector.setFilterString(event.getText());
 			}
 		});
+	}
+
+	/*
+	 * Starts the manual lending process. When no student is selected a
+	 * SelectStudentPopupWindow is shown otherwise the ManualProcessPopupWindow
+	 * is shown. When multiple students are selected nothing happens (this
+	 * should never happen since the button get is disabled when multiple
+	 * students are selected).
+	 */
+	private void doManualLending() {
+		HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector
+				.getCurrentlySelectedStudents();
+		if (selectedStudents.size() == 0) {
+			SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(
+					MANUAL_LENDING_TITLE, LendingView.this, students.get());
+			getUI().addWindow(sspw);
+		} else if (selectedStudents.size() == 1) {
+			// This loop runs only once
+			for (Student student : selectedStudents) {
+				ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(
+						LendingView.this, student);
+				getUI().addWindow(mlpw);
+			}
+		}
 	}
 
 	/*
@@ -412,51 +422,9 @@ public class LendingView extends VerticalLayout implements View,
 				.getCurrentlySelectedBorrowedMaterials();
 		HashSet<Student> allSelectedStudents = studentMaterialSelector
 				.getCurrentlySelectedStudents();
-		LinkedHashMap<Student, List<BorrowedMaterial>> studentsWithMaterials = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 
-		// Sort for grades and students
-		TreeMap<Grade, List<Student>> treeToSortForGrades = new TreeMap<Grade, List<Student>>();
-		for (Student student : allSelectedStudents) {
-			if (treeToSortForGrades.containsKey(student.getGrade())) {
-				List<Student> studentsInGrade = treeToSortForGrades.get(student
-						.getGrade());
-				if (studentsInGrade.contains(student)) {
-					continue;
-				}
-				studentsInGrade.add(student);
-				Collections.sort(studentsInGrade);
-				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
-			} else {
-				List<Student> studentList = new ArrayList<Student>();
-				studentList.add(student);
-				treeToSortForGrades.put(student.getGrade(), studentList);
-			}
-		}
-
-		// Extract all the informationen needed to create the pdf
-		for (Grade grade : treeToSortForGrades.keySet()) {
-			List<Student> studentsInGrade = treeToSortForGrades.get(grade);
-			for (Student student : studentsInGrade) {
-				for (BorrowedMaterial material : allSelectedMaterials) {
-					if (student.equals(material.getStudent())) {
-						if (studentsWithMaterials.containsKey(student)) {
-							List<BorrowedMaterial> currentlyAddedMaterials = studentsWithMaterials
-									.get(student);
-							currentlyAddedMaterials.add(material);
-							Collections.sort(currentlyAddedMaterials);
-							studentsWithMaterials.put(student,
-									currentlyAddedMaterials);
-						} else {
-							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
-							materialList.add(material);
-							studentsWithMaterials.put(student, materialList);
-						}
-					}
-				}
-			}
-		}
-
-		return studentsWithMaterials;
+		return PDFInformationProcessor.linkStudentsAndMaterials(
+				allSelectedMaterials, allSelectedStudents);
 	}
 
 	/*
@@ -471,6 +439,29 @@ public class LendingView extends VerticalLayout implements View,
 	}
 
 	/*
+	 * This method is called whenever the the students or their material get
+	 * updated.
+	 */
+	private void updateStudentsWithUnreceivedBorrowedMaterials() {
+		studentMaterialSelector
+				.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials
+						.get());
+	}
+
+	/*
+	 * Binds the view model.
+	 */
+	private void bindViewModel(ViewModelComposer viewModelComposer,
+			Object... viewModels) {
+		try {
+			viewModelComposer.bind(this, viewModels);
+		} catch (IllegalAccessException | NoSuchElementException
+				| UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Update procedure from the view model in order to get new information
 	 * without the need to manually refresh.
 	 */
@@ -513,16 +504,6 @@ public class LendingView extends VerticalLayout implements View,
 		}
 	}
 
-	/*
-	 * This method is called whenever the the students or their material get
-	 * updated.
-	 */
-	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector
-				.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials
-						.get());
-	}
-
 	/**
 	 * Returns a list of all teaching materials. This is used to create the list
 	 * for the manual lending process for example.
@@ -553,19 +534,6 @@ public class LendingView extends VerticalLayout implements View,
 				lendingViewModel.doManualLending(student, material,
 						materialsWithDates.get(material));
 			}
-		}
-	}
-
-	/*
-	 * Binds the view model.
-	 */
-	private void bindViewModel(ViewModelComposer viewModelComposer,
-			Object... viewModels) {
-		try {
-			viewModelComposer.bind(this, viewModels);
-		} catch (IllegalAccessException | NoSuchElementException
-				| UnsupportedOperationException e) {
-			e.printStackTrace();
 		}
 	}
 
