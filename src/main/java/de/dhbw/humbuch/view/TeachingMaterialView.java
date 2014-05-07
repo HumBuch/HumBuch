@@ -51,6 +51,9 @@ import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.util.BookLookup;
+import de.dhbw.humbuch.util.BookLookup.Book;
+import de.dhbw.humbuch.util.BookLookup.BookNotFoundException;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.Categories;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
@@ -110,7 +113,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	private FormLayout windowContent;
 	private HorizontalLayout windowButtons;
 	private TextField txtTmName = new TextField("Titel");
-	private TextField txtIdentNr = new TextField("Nummer/ISBN");
+	private TextField txtIdentNr = new TextField();
 	private TextField txtProducer = new TextField("Hersteller/Verlag");
 	private TextField txtFromGrade = new TextField();
 	private TextField txtToGrade = new TextField();
@@ -123,6 +126,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	private TextArea textAreaComment = new TextArea("Kommentar");
 	private Button btnWindowSave = new Button("Speichern");
 	private Button btnWindowCancel = new Button("Abbrechen");
+	private Button btnISBNImport = new Button("Hole Daten");
 
 	@Inject
 	public TeachingMaterialView(ViewModelComposer viewModelComposer, TeachingMaterialViewModel teachingMaterialViewModel, EventBus eventBus) {
@@ -260,7 +264,6 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 		cbProfiles.setNullSelectionAllowed(false);
 		cbFromTerm.setNullSelectionAllowed(false);
 		cbToTerm.setNullSelectionAllowed(false);
-		txtIdentNr.setRequired(true);
 		txtTmName.setRequired(true);
 		cbCategory.setRequired(true);
 		cbProfiles.setRequired(true);
@@ -299,7 +302,15 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 
 		// Add all components
 		windowContent.addComponent(txtTmName);
-		windowContent.addComponent(txtIdentNr);
+		windowContent.addComponent(new HorizontalLayout(){
+			{
+				setSpacing(true);
+				setCaption("ISBN/Nummer");
+				setStyleName("required");
+				addComponent(txtIdentNr);
+				addComponent(btnISBNImport);
+			}
+		});
 		windowContent.addComponent(cbCategory);
 		windowContent.addComponent(txtProducer);
 		windowContent.addComponent(cbProfiles);
@@ -307,8 +318,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 			{
 				setSpacing(true);
 				setCaption("Von Klassenstufe");
-				txtFromGrade.setWidth("50px");
-				cbFromTerm.setWidth(null);
+				txtFromGrade.setWidth("80px");
 				addComponent(txtFromGrade);
 				addComponent(cbFromTerm);
 			}
@@ -317,7 +327,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 			{
 				setSpacing(true);
 				setCaption("Bis Klassenstufe");
-				txtToGrade.setWidth("50px");
+				txtToGrade.setWidth("80px");
 				addComponent(txtToGrade);
 				addComponent(cbToTerm);
 			}
@@ -342,6 +352,29 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	@SuppressWarnings("serial")
 	private void addListener() {
 
+		/**
+		 * Fetches the book data by using a given ISBN and inserting it into the
+		 * corresponding fields
+		 */
+		btnISBNImport.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Book book = BookLookup.lookup(txtIdentNr.getValue());
+					txtTmName.setValue(book.title);
+					txtProducer.setValue(book.publisher);
+					String commentText = "Autor(en): " + book.author;
+					if (textAreaComment.getValue() != null && textAreaComment.getValue().isEmpty()) {
+						commentText += '\n' + textAreaComment.getValue();
+					}
+					textAreaComment.setValue(commentText);
+				} catch (BookNotFoundException e) {
+					eventBus.post(new MessageEvent("Es konnte kein Buch zu der ISBN gefunden werden."));
+				}
+			}			
+		});
+		
 		/**
 		 * Listens for changes in the Collection teachingMaterials and adds them
 		 * to the container
