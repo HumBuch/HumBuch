@@ -207,7 +207,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 			public Object generateCell(Table source, Object itemId,
 					Object columnId) {
 				TeachingMaterial item = (TeachingMaterial) itemId;
-				String profile = Subject.STANDARD.toString();
+				String profile = "";
 				for(Subject subject : item.getProfile()) {
 					profile = subject.toString();
 				}
@@ -501,8 +501,8 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 		categories.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
+				cbCategory.removeAllItems();
 				for (Category cat : categories.get()) {
-					cbCategory.removeAllItems();
 					cbCategory.addItem(cat);
 					cbCategory.setItemCaption(cat, cat.getName());
 				}
@@ -518,7 +518,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	 */
 	private boolean FormFieldsValid() {
 		// Validate if a field is empty
-		if (txtTmName.getValue() == null || txtIdentNr.getValue() == null
+		if (txtIdentNr.getValue().isEmpty()  || txtTmName.getValue().isEmpty()
 				|| cbCategory.getValue() == null
 				|| dfValidFrom.getValue() == null
 				|| cbProfiles.getValue() == null) {
