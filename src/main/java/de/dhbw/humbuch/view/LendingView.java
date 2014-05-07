@@ -523,10 +523,26 @@ public class LendingView extends VerticalLayout implements View,
 						.get());
 	}
 
+	/**
+	 * Returns a list of all teaching materials. This is used to create the list
+	 * for the manual lending process for example.
+	 * 
+	 * @return a list of all teaching materials
+	 * */
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
 	}
 
+	/**
+	 * Saves all Teaching Materials with the specified return date for all
+	 * students. This method is used for the manual lending process and is
+	 * normally used to update the teaching materials of one student. The passed
+	 * structure has to be valid since no further validation is executed.
+	 * 
+	 * @param saveStructure
+	 *            a map containing all students and their teachingmaterials
+	 *            including a return date.
+	 * */
 	public void saveTeachingMaterialsForStudents(
 			HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
 		// the outer loop runs only once
@@ -540,6 +556,9 @@ public class LendingView extends VerticalLayout implements View,
 		}
 	}
 
+	/*
+	 * Binds the view model.
+	 */
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {
@@ -550,11 +569,24 @@ public class LendingView extends VerticalLayout implements View,
 		}
 	}
 
+	/**
+	 * This method is alway called when the view is entered (navigated to). It
+	 * refreshes the viewmodel and thus updates the StudentMaterialSelector and
+	 * other view components.
+	 * 
+	 * @param event
+	 *            the event is not used.
+	 * */
 	@Override
 	public void enter(ViewChangeEvent event) {
 		lendingViewModel.refresh();
 	}
 
+	/**
+	 * Returns the title of this view.
+	 * 
+	 * @return the title of this view
+	 * */
 	@Override
 	public String getTitle() {
 		return TITLE;
