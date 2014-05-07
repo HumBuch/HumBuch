@@ -288,7 +288,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	public void returnTeachingMaterials(Set<BorrowedMaterial> materials) {
 		returnViewModel.setBorrowedMaterialsReturned(materials);
 	}
-
+	
 	private void updateReturnList() {
 		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
 	}
