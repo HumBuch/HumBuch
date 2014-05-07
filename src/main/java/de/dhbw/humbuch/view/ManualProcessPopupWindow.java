@@ -140,6 +140,7 @@ public class ManualProcessPopupWindow extends Window {
 		verticalLayoutContent.setSpacing(true);
 		verticalLayoutContent.setMargin(true);
 
+		setWidth("50%");
 		center();
 		setCloseShortcut(KeyCode.ESC, null);
 		setImmediate(true);
@@ -156,7 +157,7 @@ public class ManualProcessPopupWindow extends Window {
 
 		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
-
+		
 		setContent(verticalLayoutContent);
 	}
 
