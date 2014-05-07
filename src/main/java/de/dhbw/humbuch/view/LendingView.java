@@ -58,12 +58,18 @@ import de.dhbw.humbuch.viewmodel.LendingViewModel.TeachingMaterials;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel;
 import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
 
-
-public class LendingView extends VerticalLayout implements View, ViewInformation, StudentMaterialSelectorObserver {
+/**
+ * This view displays the Lendingscreen. It holds a horizontal headerbar
+ * containing actions and a StudentMaterialSelector with all information about
+ * the lent books of students.
+ * */
+public class LendingView extends VerticalLayout implements View,
+		ViewInformation, StudentMaterialSelectorObserver {
 
 	private static final long serialVersionUID = -6400075534193735694L;
 
-	private final static Logger LOG = LoggerFactory.getLogger(LendingView.class);
+	private final static Logger LOG = LoggerFactory
+			.getLogger(LendingView.class);
 
 	private static final String TITLE = "Ausleihe";
 	private static final String MANUAL_LENDING_TITLE = "Manuelle Ausleihe";
@@ -95,25 +101,49 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private ConfirmDialog.Listener confirmListener;
 
 	@BindState(StudentsWithUnreceivedBorrowedMaterials.class)
-	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(Map.class);
+	private State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> gradeAndStudentsWithMaterials = new BasicState<Map<Grade, Map<Student, List<BorrowedMaterial>>>>(
+			Map.class);
 
 	@BindState(MaterialListGrades.class)
-	public State<Map<Grade, Map<TeachingMaterial, Integer>>> materialListGrades = new BasicState<>(Map.class);
+	public State<Map<Grade, Map<TeachingMaterial, Integer>>> materialListGrades = new BasicState<>(
+			Map.class);
 
 	@BindState(TeachingMaterials.class)
-	private State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
+	private State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(
+			Collection.class);
 
 	@BindState(Students.class)
-	public State<Collection<Student>> students = new BasicState<>(Collection.class);
+	public State<Collection<Student>> students = new BasicState<>(
+			Collection.class);
 
+	/**
+	 * Default constructor gets injected. It initializes all views and builds
+	 * the layout. It connects the viewmodel automatically. All parameter get
+	 * injected.
+	 * 
+	 * @param viewModelComposer
+	 *            the viewmodel composer
+	 * @param lendingViewModel
+	 *            the lending viewmodel
+	 * @param studentInformationViewModel
+	 *            the student information viewmodel
+	 * */
 	@Inject
-	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, StudentInformationViewModel studentInformationViewModel) {
+	public LendingView(ViewModelComposer viewModelComposer,
+			LendingViewModel lendingViewModel,
+			StudentInformationViewModel studentInformationViewModel) {
 		this.lendingViewModel = lendingViewModel;
 		init();
 		buildLayout();
-		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
+		bindViewModel(viewModelComposer, lendingViewModel,
+				studentInformationViewModel);
 	}
 
+	/*
+	 * The init method is responsible for initializing all member variables and
+	 * view components. It configures the components and finally builds the
+	 * layout.
+	 */
 	private void init() {
 		horizontalLayoutHeaderBar = new HorizontalLayout();
 		horizontalLayoutActions = new HorizontalLayout();
@@ -133,9 +163,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		defineMenuCommands();
 
 		menuItemPrinting = menuBarPrinting.addItem(MENU_PRINT, null);
-		subMenuItemClassList = menuItemPrinting.addItem(MENU_ITEM_CLASS_LIST, menuCommandClassList);
+		subMenuItemClassList = menuItemPrinting.addItem(MENU_ITEM_CLASS_LIST,
+				menuCommandClassList);
 		subMenuItemClassList.setEnabled(false);
-		subMenuItemStudentList = menuItemPrinting.addItem(MENU_ITEM_STUDENT_LIST, menuCommandStudentList);
+		subMenuItemStudentList = menuItemPrinting.addItem(
+				MENU_ITEM_STUDENT_LIST, menuCommandStudentList);
 		subMenuItemStudentList.setEnabled(false);
 
 		studentMaterialSelector.registerAsObserver(this);
@@ -144,6 +176,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		addListeners();
 	}
 
+	/*
+	 * Builds the layout.
+	 */
 	private void buildLayout() {
 		horizontalLayoutHeaderBar.setWidth("100%");
 		horizontalLayoutActions.setSpacing(true);
@@ -157,8 +192,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 		horizontalLayoutHeaderBar.addComponent(textFieldStudentFilter);
 		horizontalLayoutHeaderBar.addComponent(horizontalLayoutActions);
-		horizontalLayoutHeaderBar.setComponentAlignment(horizontalLayoutActions, Alignment.MIDDLE_RIGHT);
-		horizontalLayoutHeaderBar.setComponentAlignment(textFieldStudentFilter, Alignment.MIDDLE_LEFT);
+		horizontalLayoutHeaderBar.setComponentAlignment(
+				horizontalLayoutActions, Alignment.MIDDLE_RIGHT);
+		horizontalLayoutHeaderBar.setComponentAlignment(textFieldStudentFilter,
+				Alignment.MIDDLE_LEFT);
 		horizontalLayoutHeaderBar.setExpandRatio(textFieldStudentFilter, 1);
 
 		addComponent(horizontalLayoutHeaderBar);
@@ -166,6 +203,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		setExpandRatio(studentMaterialSelector, 1);
 	}
 
+	/*
+	 * General listener method. It adds a listener to the confirm dialog and
+	 * calls all sub methods which add listener as well.
+	 */
 	private void addListeners() {
 		confirmListener = new ConfirmDialog.Listener() {
 
@@ -184,6 +225,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		addButtonListeners();
 	}
 
+	/*
+	 * Defines the menu command. The menubar is styled as button which when
+	 * clicked two menu commands appear. They allow to choose between printing a
+	 * student or class list.
+	 */
 	private void defineMenuCommands() {
 		menuCommandClassList = new Command() {
 
@@ -191,7 +237,9 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
-				LendingView.this.lendingViewModel.generateMaterialListGrades(studentMaterialSelector.getCurrentlySelectedGrades());
+				LendingView.this.lendingViewModel
+						.generateMaterialListGrades(studentMaterialSelector
+								.getCurrentlySelectedGrades());
 			}
 		};
 
@@ -206,17 +254,23 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		};
 	}
 
+	/*
+	 * Adds the listeners to the states in order to get notified whenever a
+	 * state changes. This view is listening to changes of the grade and
+	 * students state as well as the material list state.
+	 */
 	private void addStateChangeListenersToStates() {
-		gradeAndStudentsWithMaterials.addStateChangeListener(new StateChangeListener() {
+		gradeAndStudentsWithMaterials
+				.addStateChangeListener(new StateChangeListener() {
 
-			@Override
-			public void stateChange(Object value) {
-				if (value == null) {
-					return;
-				}
-				updateStudentsWithUnreceivedBorrowedMaterials();
-			}
-		});
+					@Override
+					public void stateChange(Object value) {
+						if (value == null) {
+							return;
+						}
+						updateStudentsWithUnreceivedBorrowedMaterials();
+					}
+				});
 
 		materialListGrades.addStateChangeListener(new StateChangeListener() {
 
@@ -230,6 +284,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		});
 	}
 
+	/*
+	 * Adds listeners to the buttons. ClickListener are added to the save and
+	 * manual lending button.
+	 */
 	private void addButtonListeners() {
 		buttonSaveSelectedData.addClickListener(new ClickListener() {
 
@@ -247,15 +305,18 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector.getCurrentlySelectedStudents();
+				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector
+						.getCurrentlySelectedStudents();
 				if (selectedStudents.size() == 0) {
-					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(MANUAL_LENDING_TITLE, LendingView.this, students.get());
+					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(
+							MANUAL_LENDING_TITLE, LendingView.this, students
+									.get());
 					getUI().addWindow(sspw);
-				}
-				else if (selectedStudents.size() == 1) {
+				} else if (selectedStudents.size() == 1) {
 					// This loop runs only once
 					for (Student student : selectedStudents) {
-						ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(LendingView.this, student);
+						ManualProcessPopupWindow mlpw = new ManualProcessPopupWindow(
+								LendingView.this, student);
 						getUI().addWindow(mlpw);
 					}
 				}
@@ -263,6 +324,10 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		});
 	}
 
+	/*
+	 * Adds the listener to the filter above the StudentMaterialSelector. This
+	 * allows a live search for the students names.
+	 */
 	private void addFilterListeners() {
 		textFieldStudentFilter.addTextChangeListener(new TextChangeListener() {
 
@@ -275,22 +340,39 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		});
 	}
 
+	/*
+	 * This method triggers the pdf creation of a class list. The pdf is created
+	 * for the selected class in the StudentMaterialSelector. It is possible to
+	 * create multiple pdfs (meaning the pdf having multiple pages) when
+	 * multiple classes are selected.
+	 */
 	private void doClassListPrinting() {
-		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades.get();
+		Map<Grade, Map<TeachingMaterial, Integer>> gradesAndTeachingMaterials = materialListGrades
+				.get();
 		if (gradesAndTeachingMaterials != null) {
-			ByteArrayOutputStream baos = new PDFClassList(gradesAndTeachingMaterials).createByteArrayOutputStreamForPDF();
+			ByteArrayOutputStream baos = new PDFClassList(
+					gradesAndTeachingMaterials)
+					.createByteArrayOutputStreamForPDF();
 			if (baos != null) {
-				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + CLASS_LIST_PDF;
-				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				String fileNameIncludingHash = "" + new Date().hashCode() + "_"
+						+ CLASS_LIST_PDF;
+				StreamResource sr = new StreamResource(
+						new PDFHandler.PDFStreamSource(baos),
+						fileNameIncludingHash);
 
 				new PrintingComponent(sr, CLASS_LIST_WINDOW_TITLE);
 			}
-		}
-		else {
+		} else {
 			LOG.warn("Grades and Teaching materials are null. No list will be generated / shown.");
 		}
 	}
 
+	/*
+	 * This method triggers the pdf creation of a student list. The pdf is
+	 * created for the selected students in the StudentMaterialSelector. It is
+	 * possible to create multiple pdfs (meaning the pdf having multiple pages)
+	 * when multiple students or classes are selected.
+	 */
 	private void doStudentListPrinting() {
 
 		LinkedHashMap<Student, List<BorrowedMaterial>> informationForPdf = getPdfInformationFromStundentMaterialSelector();
@@ -299,37 +381,52 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			Set<PDFStudentList.Builder> builders = new LinkedHashSet<PDFStudentList.Builder>();
 			for (Student student : informationForPdf.keySet()) {
 
-				PDFStudentList.Builder builder = new PDFStudentList.Builder().lendingList(informationForPdf.get(student));
+				PDFStudentList.Builder builder = new PDFStudentList.Builder()
+						.lendingList(informationForPdf.get(student));
 				builders.add(builder);
 			}
-			ByteArrayOutputStream baos = new PDFStudentList(builders).createByteArrayOutputStreamForPDF();
+			ByteArrayOutputStream baos = new PDFStudentList(builders)
+					.createByteArrayOutputStreamForPDF();
 			if (baos != null) {
-				String fileNameIncludingHash = "" + new Date().hashCode() + "_" + STUDENT_LIST_PDF;
-				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				String fileNameIncludingHash = "" + new Date().hashCode() + "_"
+						+ STUDENT_LIST_PDF;
+				StreamResource sr = new StreamResource(
+						new PDFHandler.PDFStreamSource(baos),
+						fileNameIncludingHash);
 
 				new PrintingComponent(sr, STUDENT_LIST_WINDOW_TITLE);
 			}
 		}
 	}
 
+	/*
+	 * Collects all information needed for the pdf generation from the
+	 * StudentMaterialSelector. The information is collected and processed. It
+	 * gets sorted and applied to the needed data structure.
+	 * 
+	 * @return all information needed for the pdf generation from the
+	 * StudentMaterialSelector
+	 */
 	private LinkedHashMap<Student, List<BorrowedMaterial>> getPdfInformationFromStundentMaterialSelector() {
-		HashSet<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-		HashSet<Student> allSelectedStudents = studentMaterialSelector.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> allSelectedMaterials = studentMaterialSelector
+				.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Student> allSelectedStudents = studentMaterialSelector
+				.getCurrentlySelectedStudents();
 		LinkedHashMap<Student, List<BorrowedMaterial>> studentsWithMaterials = new LinkedHashMap<Student, List<BorrowedMaterial>>();
 
 		// Sort for grades and students
 		TreeMap<Grade, List<Student>> treeToSortForGrades = new TreeMap<Grade, List<Student>>();
 		for (Student student : allSelectedStudents) {
 			if (treeToSortForGrades.containsKey(student.getGrade())) {
-				List<Student> studentsInGrade = treeToSortForGrades.get(student.getGrade());
+				List<Student> studentsInGrade = treeToSortForGrades.get(student
+						.getGrade());
 				if (studentsInGrade.contains(student)) {
 					continue;
 				}
 				studentsInGrade.add(student);
 				Collections.sort(studentsInGrade);
 				treeToSortForGrades.put(student.getGrade(), studentsInGrade);
-			}
-			else {
+			} else {
 				List<Student> studentList = new ArrayList<Student>();
 				studentList.add(student);
 				treeToSortForGrades.put(student.getGrade(), studentList);
@@ -343,12 +440,13 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 				for (BorrowedMaterial material : allSelectedMaterials) {
 					if (student.equals(material.getStudent())) {
 						if (studentsWithMaterials.containsKey(student)) {
-							List<BorrowedMaterial> currentlyAddedMaterials = studentsWithMaterials.get(student);
+							List<BorrowedMaterial> currentlyAddedMaterials = studentsWithMaterials
+									.get(student);
 							currentlyAddedMaterials.add(material);
 							Collections.sort(currentlyAddedMaterials);
-							studentsWithMaterials.put(student, currentlyAddedMaterials);
-						}
-						else {
+							studentsWithMaterials.put(student,
+									currentlyAddedMaterials);
+						} else {
 							List<BorrowedMaterial> materialList = new ArrayList<BorrowedMaterial>();
 							materialList.add(material);
 							studentsWithMaterials.put(student, materialList);
@@ -361,64 +459,83 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 		return studentsWithMaterials;
 	}
 
+	/*
+	 * This method is called after the save button is pressed and the appearing
+	 * confirm dialog is accepted. It then communicates with the view model in
+	 * order to save the selected borrowed materials.
+	 */
 	private void setMaterialsReceived() {
-		LendingView.this.lendingViewModel.setBorrowedMaterialsReceived(studentMaterialSelector.getCurrentlySelectedBorrowedMaterials());
+		LendingView.this.lendingViewModel
+				.setBorrowedMaterialsReceived(studentMaterialSelector
+						.getCurrentlySelectedBorrowedMaterials());
 	}
 
+	/*
+	 * Update procedure from the view model in order to get new information
+	 * without the need to manually refresh.
+	 */
 	@Override
 	public void update() {
 		// Get information about current selection of student material selector
-		HashSet<Student> students = studentMaterialSelector.getCurrentlySelectedStudents();
-		HashSet<BorrowedMaterial> materials = studentMaterialSelector.getCurrentlySelectedBorrowedMaterials();
-		HashSet<Grade> grades = studentMaterialSelector.getCurrentlySelectedGrades();
+		HashSet<Student> students = studentMaterialSelector
+				.getCurrentlySelectedStudents();
+		HashSet<BorrowedMaterial> materials = studentMaterialSelector
+				.getCurrentlySelectedBorrowedMaterials();
+		HashSet<Grade> grades = studentMaterialSelector
+				.getCurrentlySelectedGrades();
 
 		// Adapt manual lending button
 		if (students.size() <= 1) {
 			buttonManualLending.setEnabled(true);
-		}
-		else {
+		} else {
 			buttonManualLending.setEnabled(false);
 		}
 
 		// Adapt student list button
 		if (students.size() >= 1) {
 			subMenuItemStudentList.setEnabled(true);
-		}
-		else {
+		} else {
 			subMenuItemStudentList.setEnabled(false);
 		}
 
 		// Adapt class list button
 		if (grades.size() >= 1) {
 			subMenuItemClassList.setEnabled(true);
-		}
-		else {
+		} else {
 			subMenuItemClassList.setEnabled(false);
 		}
 
 		// Adapt save button
 		if (materials.size() >= 1) {
 			buttonSaveSelectedData.setEnabled(true);
-		}
-		else {
+		} else {
 			buttonSaveSelectedData.setEnabled(false);
 		}
 	}
 
+	/*
+	 * This method is called whenever the the students or their material get
+	 * updated.
+	 */
 	private void updateStudentsWithUnreceivedBorrowedMaterials() {
-		studentMaterialSelector.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials.get());
+		studentMaterialSelector
+				.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials
+						.get());
 	}
 
 	public ArrayList<TeachingMaterial> getTeachingMaterials() {
 		return new ArrayList<TeachingMaterial>(teachingMaterials.get());
 	}
 
-	public void saveTeachingMaterialsForStudents(HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
+	public void saveTeachingMaterialsForStudents(
+			HashMap<Student, HashMap<TeachingMaterial, Date>> saveStructure) {
 		// the outer loop runs only once
 		for (Student student : saveStructure.keySet()) {
-			HashMap<TeachingMaterial, Date> materialsWithDates = saveStructure.get(student);
+			HashMap<TeachingMaterial, Date> materialsWithDates = saveStructure
+					.get(student);
 			for (TeachingMaterial material : materialsWithDates.keySet()) {
-				lendingViewModel.doManualLending(student, material, materialsWithDates.get(material));
+				lendingViewModel.doManualLending(student, material,
+						materialsWithDates.get(material));
 			}
 		}
 	}
@@ -427,8 +544,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		}
-		catch (IllegalAccessException | NoSuchElementException
+		} catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
