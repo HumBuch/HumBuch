@@ -74,6 +74,7 @@ public class ReturnView extends VerticalLayout implements View,
 	private Button buttonSaveSelectedData;
 	private Button buttonStudentList;
 	private ReturnViewModel returnViewModel;
+	private StudentInformationViewModel studentInformationViewModel;
 	private ConfirmDialog.Listener confirmListener;
 
 	@BindState(ReturnListStudent.class)
@@ -101,6 +102,7 @@ public class ReturnView extends VerticalLayout implements View,
 			ReturnViewModel returnViewModel,
 			StudentInformationViewModel studentInformationViewModel) {
 		this.returnViewModel = returnViewModel;
+		this.studentInformationViewModel = studentInformationViewModel;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, returnViewModel,
@@ -354,6 +356,7 @@ public class ReturnView extends VerticalLayout implements View,
 	 * */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		studentInformationViewModel.refresh();
 		returnViewModel.refresh();
 	}
 

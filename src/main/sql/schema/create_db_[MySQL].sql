@@ -80,11 +80,11 @@ AUTO_INCREMENT = 4;
 CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterial` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `categoryId` INT(11) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `identifyingNumber` VARCHAR(45) NOT NULL,
-  `producer` VARCHAR(80) NULL,
+  `producer` VARCHAR(255) NULL,
   `price` DECIMAL(5,2) NULL DEFAULT 0.00,
-  `comment` VARCHAR(45) NULL,
+  `comment` TEXT,
   `fromGrade` INT(11) NULL,
   `toGrade` INT(11) NULL,
   `fromTerm` INT(2) NULL,
@@ -313,4 +313,15 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`dunningDate` (
     REFERENCES `humbuch`.`dunning` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `humbuch`.`setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `humbuch`.`setting` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `key` VARCHAR(255) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;

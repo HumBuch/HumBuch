@@ -17,6 +17,7 @@ delete from `humbuch`.`permission`;
 delete from `humbuch`.`role`;
 delete from `humbuch`.`user`;
 delete from `humbuch`.`grade`;
+delete from `humbuch`.`setting`;
 
 -- -----------------------------------------------------
 -- Data for table `humbuch`.`grade`
@@ -203,8 +204,24 @@ INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `su
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (2, 2, 'ENGLISH');
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (3, 3, 'ENGLISH');
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (4, 4, 'ENGLISH');
+INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (5, 5, 'STANDARD');
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (6, 6, 'LATIN');
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (7, 7, 'EVANGELIC');
 INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (8, 8, 'EVANGELIC');
+INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (9, 9, 'STANDARD');
+INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (10, 10, 'STANDARD');
+INSERT INTO `humbuch`.`teachingMaterialSubject` (`id`, `teachingMaterialId`, `subject`) VALUES (11, 11, 'STANDARD');
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table `humbuch`.`setting`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `humbuch`;
+INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (1, 'feld1', 'Hallo1');
+INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (2, 'feld2', 'Hallo2');
+INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (3, 'feld3', 'Hallo3');
 
 COMMIT;
