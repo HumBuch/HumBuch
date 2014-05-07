@@ -20,16 +20,27 @@ import de.dhbw.humbuch.model.entity.Entity;
  */
 public interface DAO<EntityType extends Entity> {
 
+	/**
+	 * Should an event be fired?
+	 */
 	public enum FireUpdateEvent { YES, NO }
 
 	/**
-	 * Persist the indicated entity to database
+	 * Persist the indicated entity to database, automatically fire an update event
 	 * 
 	 * @param entity
 	 * @return the primary key
 	 */
 	EntityType insert(EntityType entity);
 
+	/**
+	 * Persist the indicated entity to database, fire an update event when 
+	 * {@link FireUpdateEvent.YES} is passed
+	 * 
+	 * @param entity
+	 * @param fireUpdateEvent
+	 * @return the primary key
+	 */
 	EntityType insert(EntityType entity, FireUpdateEvent fireUpdateEvent);
 	
 	/**
@@ -41,21 +52,35 @@ public interface DAO<EntityType extends Entity> {
 	EntityType find(final Object id);
 
 	/**
-	 * Update indicated entity to database
+	 * Update indicated entity to database, automatically fire an update event
 	 * 
 	 * @param entity
 	 */
 	void update(EntityType entity);
 
+	/**
+	 * Update indicated entity to database, fire an update event when 
+	 * {@link FireUpdateEvent.YES} is passed
+	 * 
+	 * @param entity
+	 * @param fireUpdateEvent
+	 */
 	void update(EntityType entity, FireUpdateEvent fireUpdateEvent);
 
 	/**
-	 * Delete indicated entity from database
+	 * Delete indicated entity from database, automatically fire an update event
 	 * 
 	 * @param entity
 	 */
 	void delete(EntityType entity);
 
+	/**
+	 * Delete indicated entity from database, fire an update event when 
+	 * {@link FireUpdateEvent.YES} is passed
+	 * 
+	 * @param entity
+	 * @param fireUpdateEvent
+	 */
 	void delete(EntityType entity, FireUpdateEvent fireUpdateEvent);
 
 	/**
@@ -89,6 +114,16 @@ public interface DAO<EntityType extends Entity> {
 	 */
 	List<EntityType> findAllWithCriteria(Criterion... criteriaArray);
 
+	/**
+	 * Retrieve all entities of the type indicated by the {@link DAO} with the
+	 * given {@link Criteria} in the given {@link Order}
+	 * 
+	 * @param order
+	 * 			  - {@link Order}
+	 * @param criteriaArray
+	 *            - {@link Criterion}s, separated by commas
+	 * @return {@link Collection} of entities
+	 */
 	List<EntityType> findAllWithCriteria(Order order, Criterion... criteriaArray);
 	
 	/**
@@ -105,8 +140,27 @@ public interface DAO<EntityType extends Entity> {
 	 */
 	EntityType findSingleWithCriteria(Criterion... criteriaArray);
 	
+	/**
+	 * Retrieve <b>a single entity</b> of the type indicated by the {@link DAO}
+	 * with the given {@link Criteria} in the given {@link Order}. 
+	 * Only use this method when you are sure
+	 * there is only one entity retrieved from the database - this just frees
+	 * you from the hassle of getting the first and only element out of a
+	 * {@link Collection}
+	 * 
+	 * @param order
+	 * 			  - {@link Order}
+	 * @param criteriaArray
+	 *            - {@link Criterion}s, separated by commas
+	 * @return <b>a single entity</b> if the amount of entities
+	 *         found in the database is greater than 0, otherwise <i>null</i>
+	 */
 	EntityType findSingleWithCriteria(Order order, Criterion... criteriaArray);
 	
+	
+	/**
+	 * Fire an update event
+	 */
 	void fireUpdateEvent();
 	
 }
