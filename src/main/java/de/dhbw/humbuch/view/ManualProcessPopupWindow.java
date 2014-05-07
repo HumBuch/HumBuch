@@ -50,7 +50,7 @@ public class ManualProcessPopupWindow extends Window {
 	private static final String SAVE_RETURN = "Zurückgeben";
 	private static final String TEACHING_MATERIAL_HEADER = "Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
-	private static final String MULTI_CHOICE_EXPLANATION = "Die Tabelle unterstützt Mehrfachauswahl mit Shift bzw. Strg.";
+	private static final String MULTI_CHOICE_EXPLANATION = "Mehrfachauswahl mittels Strg. oder Shift möglich";
 	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "Ungültiges Datum";
 	private static final String NOTIFICATION_DESCR_INVALID_DATE = "Bitte geben Sie ein gültiges Datum ein.";
 	private static final String NOTIFICATION_CAPTION_DATE_IN_PAST = "Datum liegt in der Vergangenheit";
@@ -122,7 +122,7 @@ public class ManualProcessPopupWindow extends Window {
 		containerTableTeachingMaterials = new IndexedContainer();
 		labelMultiChoiceExplanation = new Label(MULTI_CHOICE_EXPLANATION);
 
-//		labelMultiChoiceExplanation.set
+		labelMultiChoiceExplanation.addStyleName("caption");
 		textFieldSearchBar.focus();
 		adaptButton();
 
@@ -159,8 +159,8 @@ public class ManualProcessPopupWindow extends Window {
 		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
 
 		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
-		verticalLayoutContent.addComponent(labelMultiChoiceExplanation);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
+		verticalLayoutContent.addComponent(labelMultiChoiceExplanation);
 		
 		setContent(verticalLayoutContent);
 	}
