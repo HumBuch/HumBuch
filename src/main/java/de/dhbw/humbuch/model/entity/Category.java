@@ -26,6 +26,13 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 	@OneToMany(mappedBy="category", fetch=FetchType.LAZY)
 	private List<TeachingMaterial> teachingMaterials = new ArrayList<>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Category() {}
 
 	public int getId() {
