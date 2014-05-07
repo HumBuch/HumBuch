@@ -365,7 +365,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 					txtTmName.setValue(book.title);
 					txtProducer.setValue(book.publisher);
 					String commentText = "Autor(en): " + book.author;
-					if (textAreaComment.getValue() != null && textAreaComment.getValue().isEmpty()) {
+					if (textAreaComment.getValue() != null && !textAreaComment.getValue().isEmpty()) {
 						commentText += '\n' + textAreaComment.getValue();
 					}
 					textAreaComment.setValue(commentText);
