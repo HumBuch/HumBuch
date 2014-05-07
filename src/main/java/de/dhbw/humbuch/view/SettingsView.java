@@ -80,23 +80,18 @@ public class SettingsView extends VerticalLayout implements View,
 	private State<String> userEmail = new BasicState<>(String.class);
 	private TextField txtUserName = new TextField("Nutzername:");
 	private TextField txtUserEmail = new TextField("E-Mail-Adresse: ");
-	@BindAction(value = DoUpdateUser.class, source = { "txtUserName",
-			"txtUserEmail" })
+	@BindAction(value = DoUpdateUser.class, source = { "txtUserName", "txtUserEmail" })
 	private Button userSaveBtn = new Button("Speichern");
 
 	private Window changePwWindow = new Window();;
-	private PasswordField currentPassword = new PasswordField(
-			"Aktuelles Passwort:");
+	private PasswordField currentPassword = new PasswordField("Aktuelles Passwort:");
 	private PasswordField newPassword = new PasswordField("Neues Passwort:");
-	private PasswordField newPasswordVerified = new PasswordField(
-			"Neues Passwort wiederholen:");
-	@BindAction(value = DoPasswordChange.class, source = { "currentPassword",
-			"newPassword", "newPasswordVerified" })
+	private PasswordField newPasswordVerified = new PasswordField("Neues Passwort wiederholen:");
+	@BindAction(value = DoPasswordChange.class, source = { "currentPassword", "newPassword", "newPasswordVerified" })
 	private Button changePwSave = new Button("Speichern");
 	private Button changePwCancel = new Button("Abbrechen");
 	@BindState(PasswordChangeStatus.class)
-	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(
-			ChangeStatus.class);
+	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
 
 	/**
 	 * Due dates

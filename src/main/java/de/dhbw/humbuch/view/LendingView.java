@@ -91,6 +91,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	private MenuItem subMenuItemStudentList;
 	private Command menuCommandClassList;
 	private Command menuCommandStudentList;
+	private StudentInformationViewModel studentInformationViewModel;
 	private LendingViewModel lendingViewModel;
 	private ConfirmDialog.Listener confirmListener;
 
@@ -106,9 +107,11 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 	@BindState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
 
+
 	@Inject
 	public LendingView(ViewModelComposer viewModelComposer, LendingViewModel lendingViewModel, StudentInformationViewModel studentInformationViewModel) {
 		this.lendingViewModel = lendingViewModel;
+		this.studentInformationViewModel = studentInformationViewModel;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, lendingViewModel, studentInformationViewModel);
@@ -436,6 +439,7 @@ public class LendingView extends VerticalLayout implements View, ViewInformation
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		studentInformationViewModel.refresh();
 		lendingViewModel.refresh();
 	}
 

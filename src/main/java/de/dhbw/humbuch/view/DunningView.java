@@ -59,11 +59,10 @@ public class DunningView extends VerticalLayout implements View,
 	private DunningViewModel dunningViewModel;
 	
 	@BindState(StudentsDunned.class)
-	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
+	
 	@BindState(StudentsToDun.class)
-	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(
-			Collection.class);
+	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
 
 	private Map<Integer,Dunning> allDunnings = new HashMap<>();
 	private Dunning selectedDunning;
