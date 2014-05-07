@@ -405,6 +405,11 @@ public abstract class PDFHandler {
 		return table;
 	}
 
+	
+	/**
+	 * Use the configuration information to fill the table cells
+	 * @param tableBuilder Table configuration
+	 */
 	private static void fillTableWithContent(TableBuilder tableBuilder) {
 		PdfPCell cell = null;
 		for (int i = 0; i < tableBuilder.contentArray.length; i++) {
