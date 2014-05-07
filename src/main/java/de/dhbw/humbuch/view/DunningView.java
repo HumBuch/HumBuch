@@ -123,6 +123,7 @@ public class DunningView extends VerticalLayout implements View,
 			@Override
 			public void stateChange(Object value) {
 				Collection<Dunning> tableData = (Collection<Dunning>) value;
+				tableDunnings.removeAllItems();
 				for (Dunning dunning : tableData) {
 					allDunnings.put(dunning.getId(), dunning);
 					tableDunnings.addItem(new Object[] {
