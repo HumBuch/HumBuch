@@ -518,7 +518,9 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	 */
 	private boolean FormFieldsValid() {
 		// Validate if a field is empty
-		if (txtIdentNr.getValue().isEmpty()  || txtTmName.getValue().isEmpty()
+		if (txtIdentNr.getValue() == null || txtIdentNr.getValue().isEmpty()
+				|| txtTmName.getValue() == null
+				|| txtTmName.getValue().isEmpty()
 				|| cbCategory.getValue() == null
 				|| dfValidFrom.getValue() == null
 				|| cbProfiles.getValue() == null) {
