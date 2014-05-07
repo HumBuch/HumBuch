@@ -52,7 +52,6 @@ public class LoginViewModel {
 
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
-		
 		try {
 			if (username.equals("") || password.equals("")) {
 				eventBus.post(new LoginEvent("Bitte geben Sie einen Nutzernamen und Passwort an."));
@@ -73,7 +72,6 @@ public class LoginViewModel {
 			LOG.warn(e.getMessage());
 			return;
 		}
-		
 	}
 
 	@HandlesAction(DoLogout.class)

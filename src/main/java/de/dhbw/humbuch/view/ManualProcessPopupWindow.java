@@ -23,6 +23,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PopupDateField;
@@ -45,9 +46,11 @@ public class ManualProcessPopupWindow extends Window {
 	private static final Logger LOG = LoggerFactory.getLogger(ManualProcessPopupWindow.class);
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
-	private static final String SAVE = "Speichern";
+	private static final String SAVE_LEND = "Ausleihen";
+	private static final String SAVE_RETURN = "Zurückgeben";
 	private static final String TEACHING_MATERIAL_HEADER = "Lehrmittel";
 	private static final String BORROW_UNTIL_HEADER = "Ausleihen bis zum";
+	private static final String MULTI_CHOICE_EXPLANATION = "Die Tabelle unterstützt Mehrfachauswahl mit Shift bzw. Strg.";
 	private static final String NOTIFICATION_CAPTION_INVALID_DATE = "Ungültiges Datum";
 	private static final String NOTIFICATION_DESCR_INVALID_DATE = "Bitte geben Sie ein gültiges Datum ein.";
 	private static final String NOTIFICATION_CAPTION_DATE_IN_PAST = "Datum liegt in der Vergangenheit";
@@ -58,6 +61,7 @@ public class ManualProcessPopupWindow extends Window {
 	private TextField textFieldSearchBar;
 	private Table tableTeachingMaterials;
 	private Button buttonSave;
+	private Label labelMultiChoiceExplanation;
 	private IndexedContainer containerTableTeachingMaterials;
 	private ArrayList<TeachingMaterial> teachingMaterials;
 	private HashMap<Object, HashMap<TeachingMaterial, PopupDateField>> idForMaterialsWithDates;
@@ -113,15 +117,14 @@ public class ManualProcessPopupWindow extends Window {
 		horizontalLayoutHeaderBar = new HorizontalLayout();
 		textFieldSearchBar = new TextField(SEARCH_MATERIALS);
 		tableTeachingMaterials = new Table();
-		buttonSave = new Button(SAVE);
 		idForMaterialsWithDates = new HashMap<Object, HashMap<TeachingMaterial, PopupDateField>>();
 		idForMaterials = new HashMap<Object, BorrowedMaterial>();
 		containerTableTeachingMaterials = new IndexedContainer();
+		labelMultiChoiceExplanation = new Label(MULTI_CHOICE_EXPLANATION);
 
+//		labelMultiChoiceExplanation.set
 		textFieldSearchBar.focus();
-		buttonSave.setEnabled(false);
-		buttonSave.addStyleName("default");
-		buttonSave.setClickShortcut(KeyCode.ENTER, null);
+		adaptButton();
 
 		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
 		if (lendingView != null) {
@@ -156,11 +159,28 @@ public class ManualProcessPopupWindow extends Window {
 		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
 
 		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
+		verticalLayoutContent.addComponent(labelMultiChoiceExplanation);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
 		
 		setContent(verticalLayoutContent);
 	}
-
+	
+	/*
+	 * Adapts the button label to the given process (return / lend)
+	 * */
+	private void adaptButton() {
+		if (lendingView != null) {
+			buttonSave = new Button(SAVE_LEND);
+		}
+		else {
+			buttonSave = new Button(SAVE_RETURN);
+		}	
+		
+		buttonSave.setEnabled(false);
+		buttonSave.addStyleName("default");
+		buttonSave.setClickShortcut(KeyCode.ENTER, null);
+	}
+	
 	/*
 	 * Updates the content of the table depending on the process.
 	 * */
@@ -221,7 +241,7 @@ public class ManualProcessPopupWindow extends Window {
 	 * Updates the table for manual return. It adds just the borrowed materials for the student in the table.
 	 * */
 	private void updateTableManualReturn() {
-		List<BorrowedMaterial> materials = selectedStudent.getBorrowedList();
+		List<BorrowedMaterial> materials = selectedStudent.getUnreturnedBorrowedMaterials();
 		for (BorrowedMaterial material : materials) {
 			Object itemId = tableTeachingMaterials.addItem(new Object[] { material.getTeachingMaterial().getName() }, null);
 			idForMaterials.put(itemId, material);
