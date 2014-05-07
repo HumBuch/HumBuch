@@ -66,9 +66,7 @@ public final class SubjectHandler {
 				}
 			}
 		}
-		
-		System.out.println(subjectParam);
-		System.out.println(languageProfile);
+
 		return languageProfile;
 	}
 	
