@@ -32,6 +32,13 @@ public class Role implements de.dhbw.humbuch.model.entity.Entity, Serializable {
 			)
 	private List<Permission> permissions = new ArrayList<Permission>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Role() {}
 
 	public int getId() {

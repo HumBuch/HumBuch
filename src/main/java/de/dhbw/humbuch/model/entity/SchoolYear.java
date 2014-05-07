@@ -24,6 +24,13 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	private Date endFirstTerm;
 	private Date beginSecondTerm;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public SchoolYear() {}
 
 	public int getId() {

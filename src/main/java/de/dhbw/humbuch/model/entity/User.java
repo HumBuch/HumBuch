@@ -33,6 +33,13 @@ public class User implements de.dhbw.humbuch.model.entity.Entity, Serializable {
 			)
 	private List<Role> roles = new ArrayList<Role>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public User() {}
 
 	public int getId() {

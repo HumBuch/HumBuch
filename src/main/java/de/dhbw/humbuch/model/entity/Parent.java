@@ -30,6 +30,13 @@ public class Parent implements de.dhbw.humbuch.model.entity.Entity, Serializable
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	private List<Student> studentList = new ArrayList<>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Parent() {}
 
 	public int getId() {
