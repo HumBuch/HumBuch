@@ -95,13 +95,10 @@ public class MainUI extends ScopedUI {
 	public Navigator navigator;
 
 	@BindState(IsLoggedIn.class)
-	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-			Boolean.class);
+	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
 
 	@Inject
-	public MainUI(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel, EventBus eventBus,
-			MVVMConfig mvvmConfig) {
+	public MainUI(ViewModelComposer viewModelComposer, LoginViewModel loginViewModel, EventBus eventBus, MVVMConfig mvvmConfig) {
 		this.loginViewModel = loginViewModel;
 		eventBus.register(this);
 		bindViewModel(viewModelComposer, loginViewModel);
@@ -303,8 +300,7 @@ public class MainUI extends ScopedUI {
 			notificationType = Type.HUMANIZED_MESSAGE;
 		}
 
-		Notification.show(messageEvent.caption, messageEvent.message,
-				notificationType);
+		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
 	}
 
 	@Subscribe

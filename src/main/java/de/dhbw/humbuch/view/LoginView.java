@@ -45,12 +45,10 @@ public class LoginView extends VerticalLayout implements View {
 	private Button btnLogin = new Button("Login");
 
 	@BindState(IsLoggedIn.class)
-	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-			Boolean.class);
+	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
 
 	@Inject
-	public LoginView(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel, EventBus eventBus) {
+	public LoginView(ViewModelComposer viewModelComposer, LoginViewModel loginViewModel, EventBus eventBus) {
 		eventBus.register(this);
 		init();
 		buildLayout();

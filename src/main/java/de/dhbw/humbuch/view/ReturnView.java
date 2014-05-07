@@ -78,8 +78,11 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 	@BindState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
 
+	private StudentInformationViewModel studentInformationViewModel;
+
 	@Inject
 	public ReturnView(ViewModelComposer viewModelComposer, ReturnViewModel returnViewModel, StudentInformationViewModel studentInformationViewModel) {
+		this.studentInformationViewModel = studentInformationViewModel;
 		this.returnViewModel = returnViewModel;
 		init();
 		buildLayout();
@@ -306,7 +309,7 @@ public class ReturnView extends VerticalLayout implements View, ViewInformation,
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-//		returnViewModel.generateStudentReturnList();
+		studentInformationViewModel.refresh();
 		returnViewModel.refresh();
 	}
 
