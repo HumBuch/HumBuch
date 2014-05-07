@@ -6,10 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.dhbw.humbuch.guice.GuiceJUnitRunner;
 import de.dhbw.humbuch.guice.GuiceJUnitRunner.GuiceModules;
@@ -27,8 +31,7 @@ import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
-public class DunningViewModelTest {
-
+public class DunningViewModelTest extends BaseTest {
 	private DunningViewModel dunningViewModel;
 	private DAO<Dunning> daoDunning;
 	private DAO<SchoolYear> daoSchoolYear;
@@ -36,9 +39,12 @@ public class DunningViewModelTest {
 
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
+			Provider<EntityManager> emProvider,
 			DunningViewModel dunningViewModel, DAO<Dunning> daoDunning,
 			DAO<SchoolYear> daoSchoolYear,
 			DAO<BorrowedMaterial> daoBorrowedMaterial) {
+		super.setInjected(persistenceInitialiser, emProvider);
+		
 		this.dunningViewModel = dunningViewModel;
 		this.daoDunning = daoDunning;
 		this.daoSchoolYear = daoSchoolYear;
@@ -141,62 +147,97 @@ public class DunningViewModelTest {
 				.build();
 		daoBorrowedMaterial.insert(borrowedMaterial);
 	}
-
-	@Test
-	public void testDunningViewModel() {
+	
+	@Before
+	public void refreshDunningViewModel() {
 		dunningViewModel.refresh();
-
+	}
+	
+	@Test
+	public void testStateInitialisation() {
 		// states should be initialised (not null)
 		assertNotNull(dunningViewModel.studentsDunned.get());
 		assertNotNull(dunningViewModel.studentsToDun.get());
-
+	}
+	
+	@Test
+	public void testInitialDunningAmount() {
 		// amount of dunnings should be 0 with an empty database
 		assertEquals(0, dunningViewModel.studentsDunned.get().size());
 		assertEquals(0, dunningViewModel.studentsToDun.get().size());
-
+	}
+	
+	@Test
+	public void testAddTwoSentDunnings() {
 		// add two sent dunnings, check amount
 		persistSomeEmptyDunnings(2, Status.SENT);
 		dunningViewModel.refresh();
 		assertEquals(2, dunningViewModel.studentsDunned.get().size());
 		assertEquals(0, dunningViewModel.studentsToDun.get().size());
-
+	}
+	
+	public void testAddTwoSentThreeClosedDunnings() {
+		// add two sent dunnings
+		persistSomeEmptyDunnings(2, Status.SENT);
 		// add three closed dunnings, check amount
 		persistSomeEmptyDunnings(3, Status.CLOSED);
 		dunningViewModel.refresh();
 		assertEquals(5, dunningViewModel.studentsDunned.get().size());
 		assertEquals(0, dunningViewModel.studentsToDun.get().size());
-
+	}
+	
+	@Test
+	public void testAddFourOpenedDunnings() {
 		// add four opened dunnings, check amount
 		persistSomeEmptyDunnings(4, Status.OPENED);
 		dunningViewModel.refresh();
-		assertEquals(5, dunningViewModel.studentsDunned.get().size());
+		assertEquals(0, dunningViewModel.studentsDunned.get().size());
 		assertEquals(4, dunningViewModel.studentsToDun.get().size());
-
-		// test automatic creation of dunning
+	}
+	
+	@Test
+	public void testAutoDunningAfterEndOfTerm() {
 		// BorrowedMaterial due after end of term
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterTermEndDate();
 		dunningViewModel.refresh();
-		assertEquals(5, dunningViewModel.studentsToDun.get().size());
-
+		assertEquals(1, dunningViewModel.studentsToDun.get().size());
+	}
+	
+	@Test
+	public void testAutoDunningAfterManualLendingDate() {
 		// BorrowedMaterial due after manual lending date
+		persistSchoolYear();
 		persistBorrowedMaterialDueAfterManualEndDate();
 		dunningViewModel.refresh();
-		assertEquals(6, dunningViewModel.studentsToDun.get().size());
-
+		assertEquals(1, dunningViewModel.studentsToDun.get().size());
+	}
+	
+	@Test
+	public void testNoActionBeforeManualLendingDate() {
 		// BorrowedMaterial due in future (manual lending date)
+		persistSchoolYear();
 		persistBorrowedMaterialManualEndDateInFuture();
 		dunningViewModel.refresh();
-		assertEquals(6, dunningViewModel.studentsToDun.get().size());
-
+		assertEquals(0, dunningViewModel.studentsToDun.get().size());
+	}
+	
+	@Test
+	public void testAutoDunningAfterFirstTermEndOfLastSchoolYear() {
 		// BorrowedMaterial due after term end of last school year
+		persistSchoolYear();
 		persistBorrowedMaterialDueAfterFirstTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
-		assertEquals(7, dunningViewModel.studentsToDun.get().size());
-		
+		assertEquals(1, dunningViewModel.studentsToDun.get().size());
+	}
+	
+	@Test
+	public void testAutoDunningAfterSecondTermInLastSchoolYear() {
 		// BorrowedMaterial due after term end of last school year
+		persistSchoolYear();
 		persistBorrowedMaterialDueAfterSecondTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
-		assertEquals(8, dunningViewModel.studentsToDun.get().size());
+		assertEquals(1, dunningViewModel.studentsToDun.get().size());
 	}
+	
 }
