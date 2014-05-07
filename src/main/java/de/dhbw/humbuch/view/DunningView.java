@@ -46,8 +46,7 @@ public class DunningView extends VerticalLayout implements View,
 	private static final long serialVersionUID = 1284094636968999625L;
 
 	private static final String TITLE = "Mahnungs Übersicht";
-	private static final String SECOND_DUNNING = "2. Mahnung erzeugen";
-	private static final String NEW_DUNNING = "1. Mahnung erzeugen";
+	private static final String DUNNING_SENT = "Mahnung als versendet markieren";
 	private static final String SHOW_DUNNING = "Mahnung anzeigen";
 
 	// TODO: Dynamically / directly from database
@@ -73,8 +72,7 @@ public class DunningView extends VerticalLayout implements View,
 	 * Layout components
 	 */
 	private HorizontalLayout horizontalLayoutButtonBar;
-	private Button btnNewDunning = new Button(NEW_DUNNING);
-	private Button btnSecondDunning = new Button(SECOND_DUNNING);
+	private Button btnDunningSent = new Button(DUNNING_SENT);
 	private Button btnShowDunning = new Button(SHOW_DUNNING);
 	private Table tableDunnings;
 	
@@ -91,8 +89,7 @@ public class DunningView extends VerticalLayout implements View,
 	
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
-		btnSecondDunning.setEnabled(false); 
-		btnNewDunning.setEnabled(false);
+		btnDunningSent.setEnabled(false);
 		btnShowDunning.setEnabled(false);
 		tableDunnings = new Table();
 
@@ -114,8 +111,7 @@ public class DunningView extends VerticalLayout implements View,
 		setSpacing(true);
 		setMargin(true);
 		setSizeFull();
-		horizontalLayoutButtonBar.addComponent(btnNewDunning);
-		horizontalLayoutButtonBar.addComponent(btnSecondDunning);
+		horizontalLayoutButtonBar.addComponent(btnDunningSent);
 		horizontalLayoutButtonBar.addComponent(btnShowDunning);
 		addComponent(horizontalLayoutButtonBar);
 		addComponent(tableDunnings);
@@ -149,73 +145,44 @@ public class DunningView extends VerticalLayout implements View,
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if(tableDunnings.size()==0 || tableDunnings.getValue() == null) {
-					btnNewDunning.setEnabled(false);
-					btnSecondDunning.setEnabled(false);
 					btnShowDunning.setEnabled(false);
-					btnShowDunning.removeStyleName("default");
-					btnSecondDunning.removeStyleName("default");
-					btnNewDunning.removeStyleName("default");
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
 					return;
 				}
 				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
 				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
-					btnNewDunning.setEnabled(true);
-					btnNewDunning.addStyleName("default");
-					btnSecondDunning.setEnabled(false);
-					btnSecondDunning.removeStyleName("default");
-					btnShowDunning.setEnabled(false);
-					btnShowDunning.removeStyleName("default");
+					btnDunningSent.setEnabled(true);
+					btnDunningSent.addStyleName("default");
+					btnShowDunning.setEnabled(true);
 				}
 				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
-					btnNewDunning.setEnabled(false);
-					btnNewDunning.removeStyleName("default");
-					btnSecondDunning.setEnabled(true);
-					btnSecondDunning.addStyleName("default");
-					btnShowDunning.setEnabled(false);
-					btnShowDunning.removeStyleName("default");
+					btnDunningSent.setEnabled(true);
+					btnDunningSent.addStyleName("default");
+					btnShowDunning.setEnabled(true);
 				}
 				else if(selectedDunning.getStatus() == Dunning.Status.SENT) {
 					btnShowDunning.setEnabled(true);
-					btnShowDunning.addStyleName("default");
-					btnNewDunning.setEnabled(false);
-					btnNewDunning.removeStyleName("default");
-					btnSecondDunning.setEnabled(false);
-					btnSecondDunning.removeStyleName("default");
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
 				}
 				else {
-					btnNewDunning.setEnabled(false);
-					btnSecondDunning.setEnabled(false);
-					btnShowDunning.setEnabled(false);
-					btnShowDunning.removeStyleName("default");
-					btnSecondDunning.removeStyleName("default");
-					btnNewDunning.removeStyleName("default");
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
+					btnShowDunning.setEnabled(true);
+					
 				}
 			}
 		});
-		btnNewDunning.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 8123444488274722661L;
+		btnDunningSent.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 7963891536949402850L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
-				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
-				ByteArrayOutputStream baos = PDFDunning.createFirstDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
-				
-				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
-				showPDF(baos, fileNameIncludingHash, selectedDunning);	
-			}
-		});
-		btnSecondDunning.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 8123444488274722661L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
-				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
-				ByteArrayOutputStream baos = PDFDunning.createSecondDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
-				
-				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
-				showPDF(baos, fileNameIncludingHash, selectedDunning);
+				selectedDunning.setStatus(Dunning.Status.SENT);
+				dunningViewModel.doUpdateDunning(selectedDunning);
+				tableDunnings.removeAllItems();
+				dunningViewModel.refresh();
 			}
 		});
 		btnShowDunning.addClickListener(new ClickListener() {
@@ -242,24 +209,6 @@ public class DunningView extends VerticalLayout implements View,
 			}
 		});
 	}
-	
-	private void showPDF(ByteArrayOutputStream baos, String fileName, Dunning selectedDunning) {
-		if(baos == null) {
-			eventBus.post(new MessageEvent("Fehler", "PDF konnte nicht erstellt werden", Type.ERROR));
-			return;
-		}
-		StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileName);
-		new PrintingComponent(sr, "Mahnung");
-		selectedDunning.setStatus(Dunning.Status.SENT);
-		tableDunnings.removeAllItems();
-		dunningViewModel.doUpdateDunning(selectedDunning);
-		btnNewDunning.setEnabled(false);
-		btnSecondDunning.setEnabled(false);
-		btnShowDunning.setEnabled(false);
-		btnShowDunning.removeStyleName("default");
-		btnSecondDunning.removeStyleName("default");
-		btnNewDunning.removeStyleName("default");
-	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -280,5 +229,4 @@ public class DunningView extends VerticalLayout implements View,
 	public String getTitle() {
 		return TITLE;
 	}
-
 }
