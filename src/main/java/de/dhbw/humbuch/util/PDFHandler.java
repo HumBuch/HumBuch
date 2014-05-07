@@ -408,7 +408,6 @@ public abstract class PDFHandler {
 	private static void fillTableWithContent(TableBuilder tableBuilder) {
 		PdfPCell cell = null;
 		for (int i = 0; i < tableBuilder.contentArray.length; i++) {
-			System.out.println(tableBuilder.contentArray[i]);
 			if(tableBuilder.contentArray[i] == null || tableBuilder.contentArray[i].equals("null")){
 				tableBuilder.contentArray[i] = "";
 			}
