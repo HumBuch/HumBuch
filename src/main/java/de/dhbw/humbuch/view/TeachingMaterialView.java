@@ -207,7 +207,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 			public Object generateCell(Table source, Object itemId,
 					Object columnId) {
 				TeachingMaterial item = (TeachingMaterial) itemId;
-				String profile = Subject.STANDARD.toString();
+				String profile = "";
 				for(Subject subject : item.getProfile()) {
 					profile = subject.toString();
 				}
