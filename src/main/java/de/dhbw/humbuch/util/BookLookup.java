@@ -34,7 +34,7 @@ public class BookLookup {
 	 * @throws BookNotFoundException
 	 *             when a book is not found
 	 */
-	public Book lookup(String isbn) throws BookNotFoundException {
+	public static Book lookup(String isbn) throws BookNotFoundException {
 		Document document = retrieveDocument(buildLookupURL(processISBN(isbn)));
 		validateDocument(document);
 		return parseDocument(document);
@@ -47,7 +47,7 @@ public class BookLookup {
 	 *            {@link String} containing the ISBN
 	 * @return {@link String} without all non-numerical characters
 	 */
-	protected String processISBN(String isbn) {
+	protected static String processISBN(String isbn) {
 		return isbn.replaceAll("[^\\d]", "");
 	}
 
@@ -58,7 +58,7 @@ public class BookLookup {
 	 *            {@link String} containing the ISBN
 	 * @return {@link String} containing the ISBN API URL
 	 */
-	protected String buildLookupURL(String isbn) {
+	protected static String buildLookupURL(String isbn) {
 		return LOOKUP_URL + isbn;
 	}
 
@@ -71,7 +71,7 @@ public class BookLookup {
 	 * @throws BookNotFoundException
 	 *             thrown when an error occurs while retrieving the document
 	 */
-	protected Document retrieveDocument(String uri)
+	protected static Document retrieveDocument(String uri)
 			throws BookNotFoundException {
 		try {
 			DocumentBuilder documentBuilder = DocumentBuilderFactory
@@ -93,7 +93,7 @@ public class BookLookup {
 	 * @throws BookNotFoundException
 	 *             thrown when the document contains no valid book data
 	 */
-	protected void validateDocument(Document document)
+	protected static void validateDocument(Document document)
 			throws BookNotFoundException {
 		Object error = getNodeValue(document, "error");
 		if (error != null) {
@@ -108,9 +108,9 @@ public class BookLookup {
 	 *            {@link Document} containing the book data
 	 * @return {@link Book} with the extracted data
 	 */
-	protected Book parseDocument(Document document) {
+	protected static Book parseDocument(Document document) {
 		return new Book.Builder(getNodeValue(document, "title"))
-				.author(getNodeValue(document, "author"))
+				.author(getNodeValue(document, "name"))
 				.isbn10(getNodeValue(document, "isbn10"))
 				.isbn13(getNodeValue(document, "isbn13"))
 				.publisher(getNodeValue(document, "publisher_name")).build();
@@ -126,7 +126,7 @@ public class BookLookup {
 	 * @return {@link String} containing the content of the element if it
 	 *         exists, otherwise <code>null</code>
 	 */
-	private String getNodeValue(Document document, String elementName) {
+	private static String getNodeValue(Document document, String elementName) {
 		NodeList data = document.getElementsByTagName(elementName);
 		Element element = (Element) data.item(0);
 		if (element != null) {
