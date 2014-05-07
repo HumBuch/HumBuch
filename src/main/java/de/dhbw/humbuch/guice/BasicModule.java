@@ -19,6 +19,7 @@ import de.dhbw.humbuch.model.entity.Dunning;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.User;
@@ -46,7 +47,9 @@ public class BasicModule extends ServletModule {
 		bind(new TypeLiteral<DAO<Category>>() {}).to(new TypeLiteral<DAOImpl<Category>>() {});
 		bind(new TypeLiteral<DAO<SchoolYear>>() {}).to(new TypeLiteral<DAOImpl<SchoolYear>>() {});
 		bind(new TypeLiteral<DAO<Dunning>>() {}).to(new TypeLiteral<DAOImpl<Dunning>>() {});
+		bind(new TypeLiteral<DAO<SettingsEntry>>() {}).to(new TypeLiteral<DAOImpl<SettingsEntry>>() {});
 
+		
 		bind(ViewModelComposer.class).in(UIScoped.class);
 		bind(MVVMConfig.class).in(UIScoped.class);
 		bind(EventBus.class).in(UIScoped.class);
