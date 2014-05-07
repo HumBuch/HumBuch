@@ -57,6 +57,7 @@ public class DunningViewModel {
 	@AfterVMBinding
 	public void refresh() {
 		updateSchoolYear();
+		checkIfDunningShouldBeClosed();
 		createFirstDunnings();
 		createSecondDunnings();
 		updateStates();
@@ -186,6 +187,28 @@ public class DunningViewModel {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
 				Restrictions.le("fromDate", new Date()));
+	}
+	
+	/**
+	 * Checks for every open dunning whether the contained borrowedMaterials have been returned.
+	 * If so, close the dunning.
+	 */
+	private void checkIfDunningShouldBeClosed() {
+		List<Dunning> openDunnings = daoDunning.findAllWithCriteria(Restrictions.eq("status", Dunning.Status.SENT));
+		for (Dunning dunning : openDunnings) {
+			Set<BorrowedMaterial> borrowedMaterials = dunning.getBorrowedMaterials();
+			Boolean toBeClosed = true;
+			for(BorrowedMaterial material : borrowedMaterials) {
+				if(material.getReturnDate() == null) {
+					toBeClosed = false;
+					break;
+				}
+			}
+			if(toBeClosed) {
+				dunning.setStatus(Dunning.Status.CLOSED);
+				daoDunning.update(dunning);
+			}
+		}
 	}
 
 	private void updateStates() {
