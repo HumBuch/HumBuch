@@ -169,7 +169,22 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	public List<BorrowedMaterial> getReceivedBorrowedMaterials() {
 		List<BorrowedMaterial> receivedBorrowedMaterials = getBorrowedList();
 		receivedBorrowedMaterials.removeAll(getUnreceivedBorrowedList());
+		
+
+		
 		return receivedBorrowedMaterials;
+	}
+	
+	public List<BorrowedMaterial> getUnreturnedBorrowedMaterials() {
+		List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
+		
+		for(BorrowedMaterial borrowedMaterial : getReceivedBorrowedMaterials()) {
+			if(borrowedMaterial.getReturnDate() == null) {
+				unreturnedBorrowedMaterials.add(borrowedMaterial);
+			}
+		}
+		
+		return unreturnedBorrowedMaterials;
 	}
 	
 	public boolean hasUnreceivedBorrowedMaterials() {
