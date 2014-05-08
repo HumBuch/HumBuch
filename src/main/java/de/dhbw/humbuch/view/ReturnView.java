@@ -328,6 +328,7 @@ public class ReturnView extends VerticalLayout implements View,
 	 * for updating the StudentMaterialSelector accordingly.
 	 */
 	private void updateReturnList() {
+		returnViewModel.refreshStudents();
 		studentMaterialSelector
 				.setGradesAndStudentsWithMaterials(gradeAndStudentsWithMaterials
 						.get());
