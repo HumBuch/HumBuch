@@ -107,7 +107,7 @@ public class ReturnViewModel {
 	}
 	
 	@HandlesAction(RefreshStudents.class)
-	private void refreshStudents() {
+	public void refreshStudents() {
 		daoStudents.findAll();
 	}
 	
