@@ -38,6 +38,13 @@ public class LoginViewModel {
 	@ProvidesState(IsLoggedIn.class)
 	public final BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param daoUser
+	 * @param properties
+	 * @param eventBus
+	 */
 	@Inject
 	public LoginViewModel(DAO<User> daoUser, Properties properties, EventBus eventBus) {
 		this.properties = properties;
@@ -50,6 +57,13 @@ public class LoginViewModel {
 		isLoggedIn.set(properties.currentUser.get() != null);
 	}
 
+	/**
+	 * Validates {@code username} and {@code password}. Fires an event if something is wrong.<br>
+	 * Sets the logged in {@link User} in the corresponding {@link Properties} state
+	 * 
+	 * @param username
+	 * @param password
+	 */
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
 		try {

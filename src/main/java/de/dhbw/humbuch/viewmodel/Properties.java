@@ -11,6 +11,10 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.User;
 
+/**
+ * Provides a sessionscoped set of properties. 
+ *
+ */
 public class Properties {
 	
 	private DAO<SettingsEntry> daoSettingsEnty;
@@ -18,6 +22,11 @@ public class Properties {
 	public final State<User> currentUser = new BasicState<>(User.class);
 	public final State<Map<String, String>> settings = new BasicState<>(Map.class);
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param daoSettingsEntry
+	 */
 	@Inject
 	public Properties(DAO<SettingsEntry> daoSettingsEntry) {
 		this.daoSettingsEnty = daoSettingsEntry;
