@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0">
 	
-	<persistence-unit name="${config.persistence.openshift">
+	<persistence-unit name="${config.persistence.openshift}">
 		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
