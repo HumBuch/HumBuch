@@ -6,10 +6,12 @@
 	version="2.0">
 	
 	<persistence-unit name="${config.persistence.openshift}">
-		<jta-data-source>jdbc/MySQLDS</jta-data-source>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+	
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.connection.datasource" value="java:comp/env/jdbc/MySQLDS"/>
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
 			<property name="hibernate.connection.provider_class"
 				value="org.hibernate.connection.C3P0ConnectionProvider" />
