@@ -234,6 +234,7 @@
 			<id>openshift</id>
 			<properties>
 				<config.persistence.openshift>persistModule</config.persistence.openshift>
+				<config.persistence.localhost>persistDummy</config.persistence.localhost>
 			</properties>
 			<build>
 				<finalName>${app.name}</finalName>
