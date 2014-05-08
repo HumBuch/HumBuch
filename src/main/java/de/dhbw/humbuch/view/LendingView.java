@@ -523,7 +523,7 @@ public class LendingView extends VerticalLayout implements View,
 	 * structure has to be valid since no further validation is executed.
 	 * 
 	 * @param saveStructure
-	 *            a map containing all students and their teachingmaterials
+	 *            a map containing all students and their teaching materials
 	 *            including a return date.
 	 * */
 	public void saveTeachingMaterialsForStudents(

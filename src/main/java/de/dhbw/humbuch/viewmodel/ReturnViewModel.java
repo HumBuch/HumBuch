@@ -46,6 +46,14 @@ public class ReturnViewModel {
 	private SchoolYear recentlyActiveSchoolYear;
 
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param daoGrade
+	 * @param daoBorrowedMaterial
+	 * @param daoSchoolYear
+	 * @param daoStudents
+	 */
 	@Inject
 	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, DAO<Student> daoStudents) {
 		this.daoGrade = daoGrade;
@@ -60,6 +68,11 @@ public class ReturnViewModel {
 		updateReturnList();
 	}
 	
+	/**
+	 * Generates "list" of all {@link BorrowedMaterial}s that have to returned by a {@link Student}.<br>
+	 * the "list" is returned as {@code Map<Grade, Map<Student, List<BorrowedMaterial>>>} in the state {@link ReturnListStudent}
+	 * 
+	 */
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student,List<BorrowedMaterial>>>();
@@ -96,6 +109,11 @@ public class ReturnViewModel {
 		returnListStudent.set(toReturn);
 	}
 	
+	/**
+	 * Marks the given {@link BorrowedMaterial}s as {@code returned}
+	 * 
+	 * @param borrowedMaterials that should be marked as {@code returned}
+	 */
 	@HandlesAction(SetBorrowedMaterialsReturned.class)
 	public void setBorrowedMaterialsReturned(Collection<BorrowedMaterial> borrowedMaterials) {
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
@@ -107,10 +125,16 @@ public class ReturnViewModel {
 	}
 	
 	@HandlesAction(RefreshStudents.class)
-	private void refreshStudents() {
+	public void refreshStudents() {
 		daoStudents.findAll();
 	}
 	
+	/**
+	 * Checks if the given {@link BorrowedMaterial} is needed in the next {@link Term}.
+	 * 
+	 * @param borrowedMaterial
+	 * @return <code>true</code> if needed, <code>false</code> otherwise
+	 */
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
 		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 
@@ -129,6 +153,9 @@ public class ReturnViewModel {
 		generateStudentReturnList();
 	}
 	
+	/**
+	 * Updates the recently actice {@link SchoolYear}
+	 */
 	private void updateSchoolYear() {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
