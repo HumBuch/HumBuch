@@ -37,8 +37,7 @@ import de.dhbw.humbuch.util.PDFDunning;
 import de.dhbw.humbuch.util.PDFHandler;
 import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.DunningViewModel;
-import de.dhbw.humbuch.viewmodel.DunningViewModel.StudentsDunned;
-import de.dhbw.humbuch.viewmodel.DunningViewModel.StudentsToDun;
+import de.dhbw.humbuch.viewmodel.DunningViewModel.Dunnings;
 
 public class DunningView extends VerticalLayout implements View,
 		ViewInformation {
@@ -58,11 +57,13 @@ public class DunningView extends VerticalLayout implements View,
 	private EventBus eventBus;
 	private DunningViewModel dunningViewModel;
 	
-	@BindState(StudentsDunned.class)
-	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
-	
-	@BindState(StudentsToDun.class)
-	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
+//	@BindState(StudentsDunned.class)
+//	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
+//	
+//	@BindState(StudentsToDun.class)
+//	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
+	@BindState(Dunnings.class)
+	public final State<Collection<Dunning>> dunnings = new BasicState<>(Collection.class);
 
 	private Map<Integer,Dunning> allDunnings = new HashMap<>();
 	private Dunning selectedDunning;
@@ -123,6 +124,7 @@ public class DunningView extends VerticalLayout implements View,
 			@Override
 			public void stateChange(Object value) {
 				Collection<Dunning> tableData = (Collection<Dunning>) value;
+				tableDunnings.removeAllItems();
 				for (Dunning dunning : tableData) {
 					allDunnings.put(dunning.getId(), dunning);
 					tableDunnings.addItem(new Object[] {
@@ -135,8 +137,9 @@ public class DunningView extends VerticalLayout implements View,
 			}
 
 		};
-		studentsDunned.addStateChangeListener(stateChange);
-		studentsToDun.addStateChangeListener(stateChange);
+//		studentsDunned.addStateChangeListener(stateChange);
+//		studentsToDun.addStateChangeListener(stateChange);
+		dunnings.addStateChangeListener(stateChange);
 		tableDunnings.setImmediate(true);
 		tableDunnings.addValueChangeListener(new Table.ValueChangeListener() {
 			private static final long serialVersionUID = -4224382328843243771L;
