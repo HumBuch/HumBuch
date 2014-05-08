@@ -6,7 +6,7 @@
 	version="2.0">
 	
 	<persistence-unit name="${config.persistence.openshift}">
-		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
+		<jta-data-source>jdbc/MySQLDS</jta-data-source>
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
