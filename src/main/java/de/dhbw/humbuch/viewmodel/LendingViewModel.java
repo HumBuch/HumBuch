@@ -188,7 +188,7 @@ public class LendingViewModel {
 	}
 	
 	private void persistBorrowedMaterial(Student student, TeachingMaterial teachingMaterial, Date borrowUntil) {
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).build();
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).received(true).build();
 		daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 	

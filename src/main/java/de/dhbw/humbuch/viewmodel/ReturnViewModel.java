@@ -31,6 +31,7 @@ public class ReturnViewModel {
 	
 	public interface GenerateStudentReturnList extends ActionHandler {}
 	public interface SetBorrowedMaterialsReturned extends ActionHandler {}
+	public interface RefreshStudents extends ActionHandler {}
 	
 	public interface ReturnListStudent extends State<Map<Grade, Map<Student, List<BorrowedMaterial>>>> {}
 	
@@ -40,14 +41,17 @@ public class ReturnViewModel {
 	private DAO<Grade> daoGrade;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
+	private DAO<Student> daoStudents;
 	
 	private SchoolYear recentlyActiveSchoolYear;
+
 	
 	@Inject
-	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public ReturnViewModel(DAO<Grade> daoGrade, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, DAO<Student> daoStudents) {
 		this.daoGrade = daoGrade;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
+		this.daoStudents = daoStudents;
 	}
 	
 	@AfterVMBinding
@@ -65,15 +69,15 @@ public class ReturnViewModel {
 			
 			for(Student student : grade.getStudents()) {
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
-				for (BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
+				for (BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
 					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm()).before(new Date());
-//					boolean isAfterCurrentTerm = true;
-					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
+//					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
+					boolean notNeededNextTerm = borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
 					boolean isManualLended = borrowedMaterial.getBorrowUntil() == null ? false : true;
 					if(!isManualLended && isAfterCurrentTerm && notNeededNextTerm) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
-					} else if (borrowUntilExceeded){
+					} else if (borrowedMaterial.getReturnDate() == null && borrowUntilExceeded) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);						
 					}
 				}
@@ -100,6 +104,11 @@ public class ReturnViewModel {
 		}
 		
 		updateReturnList();
+	}
+	
+	@HandlesAction(RefreshStudents.class)
+	private void refreshStudents() {
+		daoStudents.findAll();
 	}
 	
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
