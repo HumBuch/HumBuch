@@ -15,9 +15,9 @@
 			<property name="hibernate.connection.provider_class"
 				value="org.hibernate.connection.C3P0ConnectionProvider" />
 			<property name="hibernate.connection.url"
-				value="jdbc:mysql://${OPENSHIFT_MYSQL_DB_HOST}:${OPENSHIFT_MYSQL_DB_PORT}/${OPENSHIFT_APP_NAME}" />
-			<property name="hibernate.connection.username" value="${OPENSHIFT_MYSQL_DB_USERNAME}" />
-			<property name="hibernate.connection.password" value="${OPENSHIFT_MYSQL_DB_PASSWORD}" />
+				value="jdbc:mysql://${env.OPENSHIFT_MYSQL_DB_HOST}:${env.OPENSHIFT_MYSQL_DB_PORT}/$OPENSHIFT_APP_NAMEtest" />
+			<property name="hibernate.connection.username" value="${env.OPENSHIFT_MYSQL_DB_USERNAME}" />
+			<property name="hibernate.connection.password" value="${env.OPENSHIFT_MYSQL_DB_PASSWORD}" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
