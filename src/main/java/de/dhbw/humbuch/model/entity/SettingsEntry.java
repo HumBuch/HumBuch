@@ -20,7 +20,8 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	
 	private String settingKey;
 	private String settingValue;
-	
+	private String settingsStandardValue;
+
 	/**
 	 * Required by Hibernate.<p>
 	 * Use the {@link Builder} instead.
@@ -52,6 +53,14 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 
 	public void setSettingValue(String settingValue) {
 		this.settingValue = settingValue;
+	}
+	
+	public String getSettingsStandardValue() {
+		return settingsStandardValue;
+	}
+
+	public void setSettingsStandardValue(String settingsStandardValue) {
+		this.settingsStandardValue = settingsStandardValue;
 	}
 
 	@Override
