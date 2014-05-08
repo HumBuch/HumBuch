@@ -220,8 +220,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch`;
-INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (1, 'feld1', 'Hallo1');
-INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (2, 'feld2', 'Hallo2');
-INSERT INTO `humbuch`.`setting` (`id`, `key`, `value`) VALUES (3, 'feld3', 'Hallo3');
+INSERT INTO `humbuch`.`setting` (`id`, `settingsKey`, `settingsValue`) VALUES (1, 'feld1', 'Hallo1');
+INSERT INTO `humbuch`.`setting` (`id`, `settingsKey`, `settingsValue`) VALUES (2, 'feld2', 'Hallo2');
+INSERT INTO `humbuch`.`setting` (`id`, `settingsKey`, `settingsValue`) VALUES (3, 'feld3', 'Hallo3');
 
 COMMIT;
