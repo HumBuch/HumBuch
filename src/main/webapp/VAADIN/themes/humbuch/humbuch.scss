@@ -1,0 +1,400 @@
+@import "../base/base.scss";
+
+@import "components/button.scss";
+@import "components/table.scss";
+@import "components/tabsheet.scss";
+@import "components/window.scss";
+@import "components/textfield.scss";
+@import "components/notification.scss";
+@import "components/label.scss";
+@import "components/combobox.scss";
+@import "components/panel.scss";
+@import "components/datefield.scss";
+
+@import "keyframes.scss";
+@import "common.scss";
+@import "mixins.scss";
+
+@import "icons/fontello.scss";
+@import "fonts/open-sans.scss";
+
+$main-color: #329d90;
+
+@mixin humbuch {
+	
+	@include base;
+	@include humbuch-common;
+	
+	@include humbuch-button;
+	@include humbuch-table;
+	@include humbuch-tabsheet;
+	@include humbuch-window;
+	@include humbuch-textfield;
+	@include humbuch-notification;
+	@include humbuch-label;
+	@include humbuch-combobox;
+	@include humbuch-panel;
+	@include reindeer-datefield;
+	
+
+       
+    &.v-app {
+       background: #353637;
+    }
+    
+    a {
+    	outline: 0;
+    }
+	
+	/********* Login View *********/
+	.v-slot-login-panel {
+		background: url("images/login-bg.jpg") no-repeat;
+		-webkit-transition: opacity 300ms linear;
+        -moz-transition: opacity 300ms linear;
+		transition: opacity 300ms linear;
+	}
+	
+	.login-panel {
+		background: #252f32 url("images/background.jpg") repeat;
+		color: #fff;
+		@include border-radius(4px);
+		@include box-shadow(0 4px 20px rgba(0,0,0,.5));
+		@include move-up-100;
+		padding: 1em 1em 2em;
+		border: 1px solid #000000;
+		position: relative;
+		z-index: 1;
+	}
+	
+	.login-panel:before {
+		content: "";
+		border: 1px solid #414141;
+		position: absolute;
+	   	top: 0;
+	   	left: 0;
+	   	right: 0;
+	   	bottom: 0;
+		z-index: -1;
+		@include border-radius(4px);
+	}
+	
+	.login-panel .v-textfield {
+		color: #7d7d7d;
+		width: 180px;
+		background: #141414;
+		border: 1px solid #131313;
+		border-top: #191919 1px solid;
+		border-bottom: #0b0b0b 1px solid;
+	}
+	
+	.login-panel .labels,
+	.login-panel .fields {
+		display: block;
+	}
+	
+	.login-panel .h2 {
+		padding: 0;
+		font-size: 16px;
+		color: inherit;
+		text-align: right;
+		font-family: "Open Sans",Arial,sans-serif;
+		font-weight: 500;
+	}
+	
+	.login-panel .h4 {
+		font-size: 22px;
+		color: rgb(50, 157, 144);
+		font-weight: 300;
+		font-family: "Open Sans",Arial,sans-serif;
+	}
+	
+	.login-panel .v-caption {
+		color: #fff;
+	}
+	.login-panel .error {
+		font-size: 13px;
+		height: 20px;
+		padding-left: 14px;
+	}
+	
+	
+	/********* Animations *********/
+	.v-animate-reveal {
+		@include reveal;
+	}
+	
+	.v-animate-hide {
+		@include hide;
+	}
+	
+	
+	/********* Sidebar *********/
+	.sidebar {
+                background: #252e32;
+                @include move-right;
+        }
+        
+        .sidebar .branding {
+                position: relative;
+                -webkit-font-smoothing: antialiased;
+        }
+        
+        .sidebar .branding .v-label {
+                position: relative;
+                z-index: 2;
+                
+                white-space: normal;
+                font-size: 16px;
+                line-height: 1.1;
+                color: #fff;
+                text-shadow: 0 2px 2px rgba(0,0,0,.5);
+                
+                display: block !important;
+                padding: .8em .8em 1.2em;
+                
+        }
+        
+        .sidebar .branding .v-label span {
+                font-size: 13px;
+                color: #d0d1d3;
+                display: block;
+        }
+        
+        .sidebar .menu {
+                overflow: auto;
+                height: 100%;
+				border-top: 1px solid #374146;
+        }
+        
+        .sidebar .menu .v-ddwrapper {
+                padding: 2px;
+        }
+        
+        .sidebar .menu .v-ddwrapper .v-nativebutton {
+                margin: -2px -2px;
+        }
+        
+        .sidebar .menu .v-ddwrapper-over {
+                padding: 0;
+                border: 2px solid #2d90f3;
+                background: transparent;
+                @include border-radius(4px);
+        }
+        
+        .sidebar .menu .v-nativebutton {
+                -webkit-appearance: none;
+                
+                display: block;
+                padding: 10px 14px 10px;
+                width: 100%;
+                border: none;
+                margin: 0;
+                position: relative;
+                
+                border-top: 1px solid transparent;
+                border-bottom: 1px solid #374146;
+                
+                background: transparent;
+                
+                color: #bcc8cc;
+                font-weight: 300;
+                text-shadow: 0 1px 0 rgba(0,0,0,.5);
+                text-align: center;
+
+				webkit-transition: color ease-in-out 100ms, background-color linear 60ms;
+				moz-transition: color ease-in-out 100ms, background-color linear 60ms;
+				transition: color ease-in-out 100ms, background-color linear 60ms;
+        }
+        
+        .sidebar .menu .v-nativebutton-caption {
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                display: block;
+                margin: .2em 0 0 0;
+        }
+        
+        .sidebar .menu .v-nativebutton:focus {
+                outline: none;
+        }
+        
+        .sidebar .menu .v-nativebutton:hover,
+        .sidebar .menu .v-nativebutton:focus,
+        .sidebar .menu .v-nativebutton.selected {
+				color: #e4fafd;
+                text-shadow: 0 1px 1px rgba(0,0,0,.5);
+                border-top: 1px solid #56bcb2;
+                border-bottom: 1px solid #56bcb2;
+                background: $main-color;
+        }
+        
+        .sidebar .menu .v-nativebutton:before {
+                font-size: 24px;
+                line-height: 1;
+                margin: 0;
+        }
+        
+        .v-webkit & .menu .v-nativebutton:hover:before,
+        .v-webkit & .menu .v-nativebutton:focus:before {
+                opacity: 1;
+        }
+        
+        .v-webkit & .menu .v-nativebutton.selected:before {
+                text-shadow: none;
+                opacity: 1;
+        }
+        
+        .sidebar .user {
+                display: block;
+                
+                background: transparent;
+                
+				color: #bcc8cc;
+                font-weight: normal;
+                text-shadow: 0 1px 0 rgba(0,0,0,.5);
+                
+                @include box-shadow(inset 0 1px 0 rgba(255,255,255,.08));
+        }
+
+        .sidebar .user > .v-slot {
+                display: inline-block;
+                width: 50%;
+        }
+        
+        .sidebar .user .v-nativebutton {
+                -webkit-appearance: none;
+                
+                border: none;
+                background: transparent;
+                width: 100%;
+                padding: 0;
+                
+                color: inherit;
+        }
+        
+        .sidebar .user .v-nativebutton:hover,
+        .sidebar .user .v-nativebutton.selected {
+				color: #e4fafd;
+                text-shadow: 0 1px 1px rgba(0,0,0,.5);
+                outline: none;
+                background: $main-color;
+        }
+        
+        .sidebar .user .v-label {
+                white-space: normal;
+                font-size: 12px;
+                line-height: 14px;
+                font-weight: 600;
+                max-width: 50px;
+                overflow: visible;
+                padding: 2px 8px;
+                height: 34px;
+                color: inherit;
+                -webkit-font-smoothing: antialiased;
+        }
+        
+        .sidebar .user .v-nativebutton-caption {
+                display: none;
+        }
+        
+        .sidebar .user .v-nativebutton:before {
+                font-size: 16px;
+                margin: 0;
+                display: inline-block;
+                padding: .3em 0 .4em;
+        }
+        
+        .sidebar .user .icon-logout {
+                border-left: 1px solid #374146;
+        }
+        
+        /********* Main Layout Components *********/
+        .layout-panel {
+                background: #fff;
+                @include border-radius(4px);
+                -webkit-box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+                -moz-box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+                box-shadow: 0 2px 3px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.07);
+        }
+        
+        .v-ie8 & .layout-panel {
+                border: 1px solid #d8d9d9;
+        }
+        
+        
+        .main-view {
+                @include fade-in;
+                background: #f4f4f4;
+        }
+        
+        .view-content {
+                overflow: visible;
+        }
+        
+        /********* Header *********/
+        
+        .header .v-nativebutton {
+                -webkit-appearance: none;
+                
+                border: none;
+                background: transparent;
+                width: 100%;
+                padding: 0;
+                
+                color: inherit;
+        }
+        
+        .header .v-nativebutton-caption {
+                display: inline;
+                margin: 0 5px;
+                line-height: 16px;
+        }
+        
+        .header .v-nativebutton:before {
+                font-size: 16px;
+                margin: 0;
+                display: inline-block;
+        }
+        
+        /********* Loading indicator *********/
+        
+        .v-loading-indicator,
+        .v-loading-indicator-delay,
+        .v-loading-indicator-wait {
+                top: 50%;
+                left: 50%;
+                right: auto;
+                width: 44px;
+                height: 44px;
+                margin-top: -22px;
+                margin-left: -22px;
+                
+                background: transparent url(images/spinner.png);
+                
+                -webkit-animation: spinner 1s steps(12, end) 0 infinite;
+                
+                -moz-animation-name: spinner;
+                -moz-animation-duration: 1s;
+                -moz-animation-timing-function: steps(12, end);
+                -moz-animation-iteration-count: infinite;
+                
+                -o-animation-name: spinner;
+                -o-animation-duration: 1s;
+                -o-animation-timing-function: steps(12, end);
+                -o-animation-iteration-count: infinite;
+                
+                -ms-animation: spinner 1s steps(12, end) 0 infinite;
+        }
+        
+        .v-ie &,
+        .v-op & {
+                .v-loading-indicator,
+                .v-loading-indicator-delay,
+                .v-loading-indicator-wait {
+                        background-image: url(images/spinner.gif);
+                        opacity: .8;
+                        filter: alpha(opacity=80);
+                }
+        }
+
+}
