@@ -8,4 +8,4 @@ deploy:
   domain: davherrmann
   on:
     repo: HumBuch/HumBuch
-    branch: master
+    branch: publish
