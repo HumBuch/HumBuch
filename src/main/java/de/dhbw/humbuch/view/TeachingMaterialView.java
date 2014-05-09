@@ -353,14 +353,18 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	private void addListener() {
 
 		/**
-		 * Fetches the book data by using a given ISBN and inserting it into the
-		 * corresponding fields
+		 * Fetches the book data by using a given ISBN. After fetching the data
+		 * it is inserted into the corresponding fields.
 		 */
 		btnISBNImport.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
+					if (txtIdentNr.getValue() == null) {
+						eventBus.post(new MessageEvent("Bitte geben Sie eine ISBN an."));
+						return;
+					}
 					Book book = BookLookup.lookup(txtIdentNr.getValue());
 					txtTmName.setValue(book.title);
 					txtProducer.setValue(book.publisher);
@@ -377,7 +381,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 		
 		/**
 		 * Listens for changes in the Collection teachingMaterials and adds them
-		 * to the container
+		 * to the container.
 		 */
 		teachingMaterials.addStateChangeListener(new StateChangeListener() {
 			@Override
