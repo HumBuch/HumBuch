@@ -321,7 +321,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `humbuch`.`setting` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `key` VARCHAR(255) NOT NULL,
-  `value` VARCHAR(255) NOT NULL,
+  `settingKey` VARCHAR(255) NOT NULL,
+  `settingValue` VARCHAR(255) NOT NULL,
+  `settingStandardValue` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
