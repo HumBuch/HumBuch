@@ -13,4 +13,4 @@ deploy:
   domain: davherrmann
   on:
     repo: HumBuch/HumBuch
-    branch: publish
+    branch: master
