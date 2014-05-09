@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="borrowedMaterial")
-public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<BorrowedMaterial> {
 	private static final long serialVersionUID = -7956138735111492455L;
 
 	@Id
@@ -34,8 +34,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private Date borrowUntil;
 	private Date returnDate;
 	private boolean received;
-	private boolean defect;
-	private String defectComment;
 	
 	/**
 	 * Required by Hibernate.<p>
@@ -94,22 +92,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.returnDate = returnDate;
 	}
 
-	public boolean isDefect() {
-		return defect;
-	}
-
-	public void setDefect(boolean defect) {
-		this.defect = defect;
-	}
-
-	public String getDefectComment() {
-		return defectComment;
-	}
-
-	public void setDefectComment(String defectComment) {
-		this.defectComment = defectComment;
-	}
-
 	public boolean isReceived() {
 		return received;
 	}
@@ -126,8 +108,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private Date borrowUntil;
 		private Date returnDate;
 		private boolean received;
-		private boolean defect;
-		private String defectComment;
 		
 		public Builder(Student student, TeachingMaterial teachingMaterial, Date borrowFrom) {
 			this.student = student;
@@ -150,16 +130,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder defect(boolean defect) {
-			this.defect = defect;
-			return this;
-		}
-		
-		public Builder defectComment(String defectComment) {
-			this.defectComment = defectComment;
-			return this;
-		}
-		
 		public BorrowedMaterial build() {
 			return new BorrowedMaterial(this);
 		}
@@ -173,8 +143,6 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.borrowUntil = builder.borrowUntil;
 		this.returnDate = builder.returnDate;
 		this.received = builder.received;
-		this.defect = builder.defect;
-		this.defectComment = builder.defectComment;
 	}
 
 	@Override
@@ -197,6 +165,16 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(BorrowedMaterial o) {
+		int compareResult = getTeachingMaterial().compareTo(o.getTeachingMaterial());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

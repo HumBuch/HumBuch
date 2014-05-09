@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="category")
-public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Category> {
 	private static final long serialVersionUID = -1497919629033299136L;
 	
 	@Id
@@ -26,6 +26,13 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 	@OneToMany(mappedBy="category", fetch=FetchType.LAZY)
 	private List<TeachingMaterial> teachingMaterials = new ArrayList<>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Category() {}
 
 	public int getId() {
@@ -107,4 +114,18 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
+	public int compareTo(Category o) {
+		int compareResult = getName().compareTo(o.getName());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
+	}
 }

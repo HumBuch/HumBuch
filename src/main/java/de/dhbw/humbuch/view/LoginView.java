@@ -2,6 +2,8 @@ package de.dhbw.humbuch.view;
 
 import java.util.NoSuchElementException;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
@@ -22,16 +24,14 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.LoginEvent;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.DoLogin;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
-import de.dhbw.humbuch.viewmodel.LoginViewModel.LoginError;
 
 /**
- * Provides the UI for the login
- * 
- * @author Johannes
- * 
+ * Provides the UI for the login and displays error messages, if the user uses
+ * wrong credentials
  */
 public class LoginView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 5187769743375079627L;
@@ -45,20 +45,19 @@ public class LoginView extends VerticalLayout implements View {
 	private Button btnLogin = new Button("Login");
 
 	@BindState(IsLoggedIn.class)
-	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(
-			Boolean.class);
-
-	@BindState(LoginError.class)
-	private BasicState<String> loginError = new BasicState<String>(String.class);
+	private BasicState<Boolean> isLoggedIn = new BasicState<Boolean>(Boolean.class);
 
 	@Inject
-	public LoginView(ViewModelComposer viewModelComposer,
-			LoginViewModel loginViewModel) {
+	public LoginView(ViewModelComposer viewModelComposer, LoginViewModel loginViewModel, EventBus eventBus) {
+		eventBus.register(this);
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, loginViewModel);
 	}
 
+	/**
+	 * Initializes the components and sets attributes.
+	 */
 	private void init() {
 
 		loginLayout = new VerticalLayout();
@@ -83,8 +82,9 @@ public class LoginView extends VerticalLayout implements View {
 		labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
 		// HumBuch
-		Label title = new Label("HumBuch Schulbuchverwaltung");
-
+		Label title = new Label("HumBuch<br />Schulbuchverwaltung",
+				ContentMode.HTML);
+		title.setSizeUndefined();
 		title.addStyleName("h2");
 		labels.addComponent(title);
 		labels.setComponentAlignment(title, Alignment.MIDDLE_RIGHT);
@@ -96,14 +96,10 @@ public class LoginView extends VerticalLayout implements View {
 		fields.addStyleName("fields");
 
 		// Username
-		username.setRequired(true);
 		username.setNullRepresentation("");
-		username.setInvalidAllowed(false);
 		fields.addComponent(username);
 
 		// Password
-		password.setRequired(true);
-		password.setValue("");
 		password.setNullRepresentation("");
 		fields.addComponent(password);
 
@@ -121,6 +117,9 @@ public class LoginView extends VerticalLayout implements View {
 
 	}
 
+	/**
+	 * Adds all listener to their corresponding components
+	 */
 	private void attachListeners() {
 
 		/**
@@ -130,36 +129,10 @@ public class LoginView extends VerticalLayout implements View {
 			@Override
 			public void stateChange(Object arg0) {
 				if (isLoggedIn.get()) {
-
 					// Navigate to main view
 					if (getUI() != null && getUI().getNavigator() != null) {
-						getUI().getNavigator().navigateTo(MainUI.HOME_VIEW);
+						getUI().getNavigator().navigateTo(MainUI.LENDING_VIEW);
 					}
-				}
-
-			}
-		});
-
-		/**
-		 * Listens for login errors and displays them
-		 */
-		loginError.addStateChangeListener(new StateChangeListener() {
-			@Override
-			public void stateChange(Object arg0) {
-				if (!isLoggedIn.get()) {
-
-					if (loginPanel.getComponentCount() > 2) {
-						// Remove the previous error message
-						loginPanel.removeComponent(loginPanel.getComponent(2));
-					}
-
-					Label error = new Label(loginError.get(), ContentMode.HTML);
-					error.setStyleName("error");
-					error.setSizeUndefined();
-					// add animation
-					error.addStyleName("v-animate-reveal");
-					loginPanel.addComponent(error);
-					username.focus();
 				}
 
 			}
@@ -182,11 +155,37 @@ public class LoginView extends VerticalLayout implements View {
 		username.addShortcutListener(enter);
 		password.addShortcutListener(enter);
 	}
-	
 
+	/**
+	 * Builds the layout by adding the components to the view
+	 */
 	private void buildLayout() {
 		setSizeFull();
 		addComponent(loginLayout);
+	}
+
+	/**
+	 * Handles {@link LoginEvent}s posted via the {@link EventBus}
+	 * 
+	 * @param loginEvent
+	 *            a {@link LoginEvent}
+	 */
+	@Subscribe
+	public void handleLoginEvent(LoginEvent loginEvent) {
+
+		if (loginPanel.getComponentCount() > 2) {
+			// Remove the previous error message
+			loginPanel.removeComponent(loginPanel.getComponent(2));
+		}
+
+		Label error = new Label(loginEvent.getMessage(), ContentMode.HTML);
+		error.setStyleName("error");
+		error.setSizeUndefined();
+		// add animation
+		error.addStyleName("v-animate-reveal");
+		loginPanel.addComponent(error);
+		username.focus();
+
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
@@ -199,8 +198,17 @@ public class LoginView extends VerticalLayout implements View {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		if (loginPanel.getComponentCount() > 2) {
+			// Remove the previous error message
+			loginPanel.removeComponent(loginPanel.getComponent(2));
+		}
+		username.setValue("");
+		password.setValue("");
 		username.focus();
 	}
 }

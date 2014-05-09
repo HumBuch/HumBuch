@@ -11,20 +11,30 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 
 public final class PDFClassList extends PDFHandler {
+
 	private Grade grade;
 	private Map<Grade, Map<TeachingMaterial, Integer>> gradesMap;
-	
-	public PDFClassList(Map<Grade, Map<TeachingMaterial, Integer>> gradesMap){
+
+	/**
+	 * Prints all teachingMaterials and their amount of each grade in the map.
+	 * 
+	 * @param gradesMap
+	 *            To each grade in the map another map belongs that contains all
+	 *            teachingMaterials of the grade and the amount of their
+	 *            occurrences.
+	 */
+	public PDFClassList(Map<Grade, Map<TeachingMaterial, Integer>> gradesMap) {
 		super();
 		this.gradesMap = gradesMap;
 	}
 
 	protected void insertDocumentParts(Document document) {
-		if(this.gradesMap != null){
-			for(Grade grade : this.gradesMap.keySet()){
+		if (this.gradesMap != null) {
+			for (Grade grade : this.gradesMap.keySet()) {
 				this.grade = grade;
-				this.addHeading(document, "Ausgabe-Liste 2013");
+				this.addHeading(document);
 				this.addGradeInformation(document);
+				this.addInformationAboutDocument(document, "Klassen-Liste");
 				this.addContent(document);
 				document.newPage();
 				this.resetPageNumber();
@@ -36,12 +46,10 @@ public final class PDFClassList extends PDFHandler {
 		PdfPTable table = this.createTableWithRentalInformationHeaderForClass();
 
 		Map<TeachingMaterial, Integer> map = this.gradesMap.get(this.grade);
-		System.out.println(map.size());
-		for(TeachingMaterial teachingMaterial : map.keySet()) {
-			String[] contentArray = {""+teachingMaterial.getToGrade(),
-			                         	teachingMaterial.getName(),
-			                         ""+ map.get(teachingMaterial)};
-			PDFHandler.fillTableWithContent(table, true, contentArray);
+
+		for (TeachingMaterial teachingMaterial : map.keySet()) {
+			String[] contentArray = { teachingMaterial.getName(), "" + map.get(teachingMaterial) };
+			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
 		}
 
 		try {
@@ -51,19 +59,18 @@ public final class PDFClassList extends PDFHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Inserts information about the grade.
 	 * 
-	 * @param document represents the PDF before it is saved
-	 */	
-	private void addGradeInformation(Document document){
-		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[]{1f, 6f});
+	 * @param document
+	 *            represents the PDF before it is saved
+	 */
+	private void addGradeInformation(Document document) {
+		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
 
-		String[] contentArray = {"Klasse: ", "" + this.grade.toString(),
-		                         "Schuljahr: ", "#SCHOOLYEAR"}; 
-
-		PDFHandler.fillTableWithContentWithoutSpace(table, false, contentArray);
+		String[] contentArray = { "Klasse: ", "" + this.grade.toString() };
+		new PDFHandler.TableBuilder(table, contentArray).withBorder(false).isCenterAligned(false).fillTable();
 		
 		try {
 			document.add(table);
@@ -73,8 +80,8 @@ public final class PDFClassList extends PDFHandler {
 			e.printStackTrace();
 		}
 	}
-	
-	public PDFClassList(){
-		
+
+	public PDFClassList() {
+
 	}
 }

@@ -71,8 +71,7 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`category` (
   `description` VARCHAR(128) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = latin1;
+AUTO_INCREMENT = 4;
 
 
 -- -----------------------------------------------------
@@ -81,14 +80,14 @@ DEFAULT CHARACTER SET = latin1;
 CREATE TABLE IF NOT EXISTS `humbuch`.`teachingMaterial` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `categoryId` INT(11) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `identifyingNumber` VARCHAR(45) NOT NULL,
-  `producer` VARCHAR(80) NULL,
+  `producer` VARCHAR(255) NULL,
   `price` DECIMAL(5,2) NULL DEFAULT 0.00,
-  `comment` VARCHAR(45) NULL,
+  `comment` TEXT,
   `fromGrade` INT(11) NULL,
-  `fromTerm` INT(1) NULL,
   `toGrade` INT(11) NULL,
+  `fromTerm` INT(2) NULL,
   `toTerm` INT(2) NULL,
   `validFrom` DATE NOT NULL,
   `validUntil` DATE NULL,
@@ -114,8 +113,6 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`borrowedMaterial` (
   `borrowUntil` DATE NULL,
   `returnDate` DATE NULL,
   `received` TINYINT(1) NULL,
-  `defect` TINYINT(1) NULL,
-  `defectComment` TEXT NULL,
   PRIMARY KEY (`id`, `studentId`),
   INDEX `fk_Ausleihliste_Schueler1_idx` (`studentId` ASC),
   INDEX `fk_Ausleihliste_Lehrmittel1_idx` (`teachingMaterialId` ASC),
@@ -138,11 +135,12 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `humbuch`.`user` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(32) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   `email` VARCHAR(60) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = latin1;
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
+ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -215,12 +213,13 @@ ENGINE = InnoDB;
 -- Table `humbuch`.`schoolYear`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `humbuch`.`schoolYear` (
-  `year` INT NOT NULL,
-  `from` DATE NOT NULL,
-  `to` DATE NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `year` VARCHAR(45) NOT NULL,
+  `fromDate` DATE NOT NULL,
+  `toDate` DATE NOT NULL,
   `endFirstTerm` DATE NULL,
   `beginSecondTerm` DATE NULL,
-  PRIMARY KEY (`year`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -317,6 +316,12 @@ CREATE TABLE IF NOT EXISTS `humbuch`.`dunningDate` (
 ENGINE = InnoDB;
 
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- -----------------------------------------------------
+-- Table `humbuch`.`setting`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `humbuch`.`setting` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `key` VARCHAR(255) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;

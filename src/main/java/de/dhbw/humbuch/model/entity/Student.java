@@ -19,12 +19,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="student")
-public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Student> {
 	private static final long serialVersionUID = -3020872456290703528L;
 
 	@Id
@@ -48,8 +47,8 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	@Column(name="subject")
 	private Set<Subject> profile = EnumSet.noneOf(Subject.class);
 	
-	@OneToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinColumn(name="parentId")
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinColumn(name="parentId", referencedColumnName="id")
 	private Parent parent;
 	
 	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
@@ -136,6 +135,14 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		this.profile = profile;
 	}
 	
+	public void addSubject(Subject subject) {
+		getProfile().add(subject);
+	}
+	
+	public boolean hasSubject(Subject subject) {
+		return getProfile().contains(subject);
+	}
+	
 	public boolean isLeavingSchool() {
 		return leavingSchool;
 	}
@@ -162,7 +169,22 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	public List<BorrowedMaterial> getReceivedBorrowedMaterials() {
 		List<BorrowedMaterial> receivedBorrowedMaterials = getBorrowedList();
 		receivedBorrowedMaterials.removeAll(getUnreceivedBorrowedList());
+		
+
+		
 		return receivedBorrowedMaterials;
+	}
+	
+	public List<BorrowedMaterial> getUnreturnedBorrowedMaterials() {
+		List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
+		
+		for(BorrowedMaterial borrowedMaterial : getReceivedBorrowedMaterials()) {
+			if(borrowedMaterial.getReturnDate() == null) {
+				unreturnedBorrowedMaterials.add(borrowedMaterial);
+			}
+		}
+		
+		return unreturnedBorrowedMaterials;
 	}
 	
 	public boolean hasUnreceivedBorrowedMaterials() {
@@ -261,5 +283,20 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Student o) {
+		int compareResult = getLastname().compareTo(o.getLastname());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		compareResult = getFirstname().compareTo(o.getFirstname());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 }

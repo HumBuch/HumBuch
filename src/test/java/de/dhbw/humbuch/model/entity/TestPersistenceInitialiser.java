@@ -12,7 +12,11 @@ public class TestPersistenceInitialiser {
 
 	@Inject
 	public TestPersistenceInitialiser(PersistService persistService) {
-		LOG.info("STARTING PERSISTSERVICE...");
-		persistService.start();
+		try {
+			persistService.start();
+			LOG.info("persistService started...");
+		} catch (IllegalStateException e) {
+			LOG.info("persistService already started...");
+		}
 	}
 }

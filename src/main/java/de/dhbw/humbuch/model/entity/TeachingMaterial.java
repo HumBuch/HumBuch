@@ -20,9 +20,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import de.dhbw.humbuch.model.entity.SchoolYear.Term;
+
 @Entity
 @Table(name="teachingMaterial")
-public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<TeachingMaterial> {
 	private static final long serialVersionUID = -6153270685462221761L;
 
 	@Id
@@ -45,13 +47,25 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private double price;
 	private String comment;
 	
-	private int fromGrade;
-	private int fromTerm;
-	private int toGrade;
-	private int toTerm;
+	private Integer fromGrade;
+	private Integer toGrade;
+	
+	@Enumerated(EnumType.ORDINAL)
+	private Term fromTerm = Term.FIRST;
+	
+	@Enumerated(EnumType.ORDINAL)
+	private Term toTerm = Term.SECOND;
+	
 	private Date validFrom;
 	private Date validUntil;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public TeachingMaterial() {}
 
 	public int getId() {
@@ -110,35 +124,35 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.comment = comment;
 	}
 
-	public int getFromGrade() {
+	public Integer getFromGrade() {
 		return fromGrade;
 	}
 
-	public void setFromGrade(int fromGrade) {
+	public void setFromGrade(Integer fromGrade) {
 		this.fromGrade = fromGrade;
 	}
 
-	public int getFromTerm() {
-		return fromTerm;
-	}
-
-	public void setFromTerm(int fromTerm) {
-		this.fromTerm = fromTerm;
-	}
-
-	public int getToGrade() {
+	public Integer getToGrade() {
 		return toGrade;
 	}
 
-	public void setToGrade(int toGrade) {
+	public void setToGrade(Integer toGrade) {
 		this.toGrade = toGrade;
 	}
 
-	public int getToTerm() {
+	public Term getFromTerm() {
+		return fromTerm;
+	}
+
+	public void setFromTerm(Term fromTerm) {
+		this.fromTerm = fromTerm;
+	}
+
+	public Term getToTerm() {
 		return toTerm;
 	}
 
-	public void setToTerm(int toTerm) {
+	public void setToTerm(Term toTerm) {
 		this.toTerm = toTerm;
 	}
 
@@ -166,6 +180,14 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.profile = profile;
 	}
 
+	public void addSubject(Subject subject) {
+		getProfile().add(subject);
+	}
+	
+	public boolean hasSubject(Subject subject) {
+		return getProfile().contains(subject);
+	}
+	
 	public static class Builder {
 		private final Category category;
 		private final String name;
@@ -176,10 +198,10 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		private String producer;
 		private double price;
 		private String comment;
-		private int fromGrade;
-		private int fromTerm;
-		private int toGrade;
-		private int toTerm;
+		private Integer fromGrade;
+		private Integer toGrade;
+		private Term fromTerm;
+		private Term toTerm;
 		private Date validUntil;
 		
 		public Builder(Category category, String name, String identifyingNumber, Date validFrom) {
@@ -187,6 +209,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			this.name = name;
 			this.identifyingNumber = identifyingNumber;
 			this.validFrom = validFrom;
+			this.fromTerm = Term.FIRST;
+			this.toTerm = Term.SECOND;
 		}
 		
 		public Builder profile(Set<Subject> profile) {
@@ -209,22 +233,22 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 			return this;
 		}
 		
-		public Builder fromGrade(int fromGrade) {
+		public Builder fromGrade(Integer fromGrade) {
 			this.fromGrade = fromGrade;
 			return this;
 		}
 		
-		public Builder fromTerm(int fromTerm) {
-			this.fromTerm = fromTerm;
-			return this;
-		}
-		
-		public Builder toGrade(int toGrade) {
+		public Builder toGrade(Integer toGrade) {
 			this.toGrade = toGrade;
 			return this;
 		}
 		
-		public Builder toTerm(int toTerm) {
+		public Builder fromTerm(Term fromTerm) {
+			this.fromTerm = fromTerm;
+			return this;
+		}
+		
+		public Builder toTerm(Term toTerm) {
 			this.toTerm = toTerm;
 			return this;
 		}
@@ -250,8 +274,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.price = builder.price;
 		this.comment = builder.comment;
 		this.fromGrade = builder.fromGrade;
-		this.fromTerm = builder.fromTerm;
 		this.toGrade = builder.toGrade;
+		this.fromTerm = builder.fromTerm;
 		this.toTerm = builder.toTerm;
 		this.validUntil = builder.validUntil;
 	}
@@ -276,6 +300,16 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(TeachingMaterial o) {
+		int compareResult = getName().compareTo(o.getName());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

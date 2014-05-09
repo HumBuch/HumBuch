@@ -1,30 +1,52 @@
 package de.dhbw.humbuch.view;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import de.davherrmann.mvvm.BasicState;
+import de.davherrmann.mvvm.State;
+import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.ViewModelComposer;
+import de.davherrmann.mvvm.annotations.BindState;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
+import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Dunning;
+import de.dhbw.humbuch.util.PDFDunning;
+import de.dhbw.humbuch.util.PDFHandler;
+import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.DunningViewModel;
+import de.dhbw.humbuch.viewmodel.DunningViewModel.Dunnings;
 
-
-public class DunningView extends VerticalLayout implements View, ViewInformation {
+public class DunningView extends VerticalLayout implements View,
+		ViewInformation {
 
 	private static final long serialVersionUID = 1284094636968999625L;
 
 	private static final String TITLE = "Mahnungs Übersicht";
-	private static final String SECOND_DUNNING = "2. Mahnung";
-	private static final String RETURN_BOOK = "Buch zurueck";
-	private static final String NEW_DUNNING = "Neue Mahnung";
-	private static final String CREATE_DUNNING = "Mahnung erzeugen";
-	private static final String SEARCH_STUDENT = "Schueler suchen";
+	private static final String DUNNING_SENT = "Mahnung als versendet markieren";
+	private static final String SHOW_DUNNING = "Mahnung anzeigen";
 
 	// TODO: Dynamically / directly from database
 	private static final String TABLE_LAST_NAME = "Nachname";
@@ -32,32 +54,44 @@ public class DunningView extends VerticalLayout implements View, ViewInformation
 	private static final String TABLE_CLASS = "Klasse";
 	private static final String TABLE_TYPE = "Typ";
 
+	private EventBus eventBus;
+	private DunningViewModel dunningViewModel;
+	
+//	@BindState(StudentsDunned.class)
+//	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
+//	
+//	@BindState(StudentsToDun.class)
+//	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
+	@BindState(Dunnings.class)
+	public final State<Collection<Dunning>> dunnings = new BasicState<>(Collection.class);
+
+	private Map<Integer,Dunning> allDunnings = new HashMap<>();
+	private Dunning selectedDunning;
+	
+	/**
+	 * Layout components
+	 */
 	private HorizontalLayout horizontalLayoutButtonBar;
-	private Button buttonSecondDunning;
-	private Button buttonReturnBook;
-	private Button buttonNewDunning;
+	private Button btnDunningSent = new Button(DUNNING_SENT);
+	private Button btnShowDunning = new Button(SHOW_DUNNING);
 	private Table tableDunnings;
-	private TextField textFieldSearch;
-	private Button buttonCreateDunning;
-	private Table tableSearchResults;
+	
 
 	@Inject
 	public DunningView(ViewModelComposer viewModelComposer,
-			DunningViewModel dunningViewModel) {
+			DunningViewModel dunningViewModel, EventBus eventBus) {
+		this.dunningViewModel = dunningViewModel;
+		this.eventBus = eventBus;
 		init();
 		buildLayout();
 		bindViewModel(viewModelComposer, dunningViewModel);
 	}
-
+	
 	private void init() {
 		horizontalLayoutButtonBar = new HorizontalLayout();
-		buttonSecondDunning = new Button(SECOND_DUNNING);
-		buttonReturnBook = new Button(RETURN_BOOK);
-		buttonNewDunning = new Button(NEW_DUNNING);
-		buttonCreateDunning = new Button(CREATE_DUNNING);
-		textFieldSearch = new TextField(SEARCH_STUDENT);
+		btnDunningSent.setEnabled(false);
+		btnShowDunning.setEnabled(false);
 		tableDunnings = new Table();
-		tableSearchResults = new Table();
 
 		tableDunnings.setSelectable(true);
 		tableDunnings.setSizeFull();
@@ -66,69 +100,128 @@ public class DunningView extends VerticalLayout implements View, ViewInformation
 		tableDunnings.addContainerProperty(TABLE_LAST_NAME, String.class, null);
 		tableDunnings.addContainerProperty(TABLE_CLASS, String.class, null);
 		tableDunnings.addContainerProperty(TABLE_TYPE, String.class, null);
-		fillTableDunnings();
-
-		tableSearchResults.setSelectable(true);
-		tableSearchResults.setSizeFull();
-		tableSearchResults.addContainerProperty(TABLE_LAST_NAME, String.class,
-				null);
-		tableSearchResults.addContainerProperty(TABLE_FIRST_NAME, String.class,
-				null);
-		tableSearchResults
-				.addContainerProperty(TABLE_CLASS, String.class, null);
-
 		setSpacing(true);
 		setMargin(true);
 
 		horizontalLayoutButtonBar.setSpacing(true);
+		addListener();
 	}
-
+	
 	private void buildLayout() {
-		horizontalLayoutButtonBar.addComponent(buttonNewDunning);
-		horizontalLayoutButtonBar.addComponent(buttonSecondDunning);
-		horizontalLayoutButtonBar.addComponent(buttonReturnBook);
-		addComponent(tableDunnings);
+		setSpacing(true);
+		setMargin(true);
+		setSizeFull();
+		horizontalLayoutButtonBar.addComponent(btnDunningSent);
+		horizontalLayoutButtonBar.addComponent(btnShowDunning);
 		addComponent(horizontalLayoutButtonBar);
-		addComponent(textFieldSearch);
-		addComponent(tableSearchResults);
-		addComponent(buttonCreateDunning);
+		addComponent(tableDunnings);
+		setExpandRatio(tableDunnings, 1);
 	}
 
-	private void fillTableDunnings() {
-		tableDunnings.addItem(new Object[] { "Hans", "Wurst", "5a",
-											"1. Mahnung" }, 1);
-		tableDunnings.addItem(new Object[] { "Peter", "Lustig", "7b",
-											"2. Mahnung" }, 2);
-		tableDunnings.addItem(new Object[] { "Angela", "Merkel", "6c",
-											"1. Mahnung generieren" }, 3);
-		tableDunnings.addItem(new Object[] { "Max", "Muster", "7a",
-											"1. Mahnung" }, 4);
-		tableDunnings.addItem(new Object[] { "Super", "Richie", "6b",
-											"2. Mahnung generieren" }, 5);
-		tableDunnings.addItem(new Object[] { "Hannah", "Montana", "5a",
-											"1. Mahnung" }, 6);
-		tableDunnings.addItem(new Object[] { "Joko", "Winterscheidt", "8a",
-											"2. Mahnung" }, 7);
-		tableDunnings.addItem(new Object[] { "Test", "Name", "5a",
-											"1. Mahnung generieren" }, 8);
-		tableDunnings.addItem(new Object[] { "Er mag", "Zuege", "7a",
-											"2. Mahnung" }, 9);
-		tableDunnings.addItem(new Object[] { "Heino", "Kein plan", "8c",
-											"2. Mahnung generieren" }, 10);
+
+	private void addListener() {
+		StateChangeListener stateChange = new StateChangeListener() {
+			@Override
+			public void stateChange(Object value) {
+				Collection<Dunning> tableData = (Collection<Dunning>) value;
+				tableDunnings.removeAllItems();
+				for (Dunning dunning : tableData) {
+					allDunnings.put(dunning.getId(), dunning);
+					tableDunnings.addItem(new Object[] {
+							dunning.getStudent().getFirstname(),
+							dunning.getStudent().getLastname(),
+							dunning.getStudent().getGrade().toString(),
+							dunning.getType().toString() + " " + dunning.getStatus().toString() },
+							dunning.getId());
+				}
+			}
+
+		};
+//		studentsDunned.addStateChangeListener(stateChange);
+//		studentsToDun.addStateChangeListener(stateChange);
+		dunnings.addStateChangeListener(stateChange);
+		tableDunnings.setImmediate(true);
+		tableDunnings.addValueChangeListener(new Table.ValueChangeListener() {
+			private static final long serialVersionUID = -4224382328843243771L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if(tableDunnings.size()==0 || tableDunnings.getValue() == null) {
+					btnShowDunning.setEnabled(false);
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
+					return;
+				}
+				selectedDunning = allDunnings.get(Integer.parseInt(tableDunnings.getValue().toString()));
+				if(selectedDunning.getType() == Dunning.Type.TYPE1 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
+					btnDunningSent.setEnabled(true);
+					btnDunningSent.addStyleName("default");
+					btnShowDunning.setEnabled(true);
+				}
+				else if(selectedDunning.getType() == Dunning.Type.TYPE2 && selectedDunning.getStatus() == Dunning.Status.OPENED) {
+					btnDunningSent.setEnabled(true);
+					btnDunningSent.addStyleName("default");
+					btnShowDunning.setEnabled(true);
+				}
+				else if(selectedDunning.getStatus() == Dunning.Status.SENT) {
+					btnShowDunning.setEnabled(true);
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
+				}
+				else {
+					btnDunningSent.setEnabled(false);
+					btnDunningSent.removeStyleName("default");
+					btnShowDunning.setEnabled(true);
+					
+				}
+			}
+		});
+		btnDunningSent.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 7963891536949402850L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				selectedDunning.setStatus(Dunning.Status.SENT);
+				dunningViewModel.doUpdateDunning(selectedDunning);
+				tableDunnings.removeAllItems();
+				dunningViewModel.refresh();
+			}
+		});
+		btnShowDunning.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = -1285703858095198175L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Set<List<BorrowedMaterial>> setBorrowedMaterial = new HashSet<List<BorrowedMaterial>>(); 
+				setBorrowedMaterial.add(new ArrayList<BorrowedMaterial>(selectedDunning.getBorrowedMaterials()));
+				ByteArrayOutputStream baos;
+				if(selectedDunning.getType() == Dunning.Type.TYPE1) {
+					baos = PDFDunning.createFirstDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				}
+				else {
+					baos = PDFDunning.createSecondDunning(setBorrowedMaterial).createByteArrayOutputStreamForPDF();
+				}
+				String fileNameIncludingHash = ""+ new Date().hashCode() + "_MAHNUNG_"+selectedDunning.getStudent().getFirstname()+"_"+selectedDunning.getStudent().getLastname();
+				if(baos == null) {
+					eventBus.post(new MessageEvent("Fehler", "PDF konnte nicht erstellt werden", Type.ERROR));
+					return;
+				}
+				StreamResource sr = new StreamResource(new PDFHandler.PDFStreamSource(baos), fileNameIncludingHash);
+				new PrintingComponent(sr, "Mahnung");
+			}
+		});
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		dunningViewModel.refresh();
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
 		try {
 			viewModelComposer.bind(this, viewModels);
-		}
-		catch (IllegalAccessException | NoSuchElementException
+		} catch (IllegalAccessException | NoSuchElementException
 				| UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
@@ -138,5 +231,4 @@ public class DunningView extends VerticalLayout implements View, ViewInformation
 	public String getTitle() {
 		return TITLE;
 	}
-
 }

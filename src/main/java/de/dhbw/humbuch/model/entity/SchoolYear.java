@@ -4,46 +4,65 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="schoolYear")
-public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable {
+public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<SchoolYear> {
 	private static final long serialVersionUID = -3752454317452902743L;
 
 	@Id
-	private int year;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
 	
-	private Date from;
-	private Date to;
+	private String year;
+	private Date fromDate;
+	private Date toDate;
 	private Date endFirstTerm;
 	private Date beginSecondTerm;
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public SchoolYear() {}
 
-	public int getYear() {
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 
-	public Date getFrom() {
-		return from;
+	public Date getFromDate() {
+		return fromDate;
 	}
 
-	public void setFrom(Date from) {
-		this.from = from;
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
-	public Date getTo() {
-		return to;
+	public Date getToDate() {
+		return toDate;
 	}
 
-	public void setTo(Date to) {
-		this.to = to;
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public Date getEndFirstTerm() {
@@ -62,18 +81,47 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		this.beginSecondTerm = beginSecondTerm;
 	}
 	
+	public Date getEndOf(Term term) {
+		return term == Term.FIRST ? getEndFirstTerm() : getToDate();
+	}
+	
+	public Term getRecentlyActiveTerm() {
+		return getBeginSecondTerm().after(new Date()) ? Term.FIRST : Term.SECOND;
+	}
+	
+	public boolean isActive() {
+		Date today = new Date();
+		return getFromDate().before(today) && getToDate().after(today) ? true : false;
+	}
+	
+	public enum Term {
+		FIRST("1. Halbjahr"),
+		SECOND("2. Halbjahr");
+		
+		private String value;
+		
+		private Term(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+	
 	public static class Builder {
-		private final int year;
-		private final Date from;
-		private final Date to;
+		private final String year;
+		private final Date fromDate;
+		private final Date toDate;
 		
 		private Date endFirstTerm;
 		private Date beginSecondTerm;
 		
-		public Builder(int year, Date from, Date to) {
+		public Builder(String year, Date fromDate, Date toDate) {
 			this.year = year;
-			this.from = from;
-			this.to = to;
+			this.fromDate = fromDate;
+			this.toDate = toDate;
 		}
 		
 		public Builder endFirstTerm(Date endFirstTerm) {
@@ -93,8 +141,8 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	
 	private SchoolYear(Builder builder) {
 		this.year = builder.year;
-		this.from = builder.from;
-		this.to = builder.to;
+		this.fromDate = builder.fromDate;
+		this.toDate = builder.toDate;
 
 		this.endFirstTerm = builder.endFirstTerm;
 		this.beginSecondTerm = builder.beginSecondTerm;
@@ -104,7 +152,7 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + year;
+		result = prime * result + id;
 		return result;
 	}
 
@@ -117,9 +165,19 @@ public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializ
 		if (!(obj instanceof SchoolYear))
 			return false;
 		SchoolYear other = (SchoolYear) obj;
-		if (getYear() != other.getYear())
+		if (getId() != other.getId())
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(SchoolYear o) {
+		int compareResult = getFromDate().compareTo(o.getFromDate());
+		if(compareResult != 0) {
+			return compareResult;
+		}
+		
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 	
 }

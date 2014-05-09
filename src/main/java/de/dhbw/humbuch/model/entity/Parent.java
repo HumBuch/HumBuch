@@ -1,12 +1,15 @@
 package de.dhbw.humbuch.model.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,9 +27,16 @@ public class Parent implements de.dhbw.humbuch.model.entity.Entity, Serializable
 	private int postcode;
 	private String city;
 	
-	@OneToOne(mappedBy="parent")
-	private Student student;
+	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
+	private List<Student> studentList = new ArrayList<>();
 	
+	/**
+	 * Required by Hibernate.<p>
+	 * Use the {@link Builder} instead.
+	 * 
+	 * @see Builder
+	 */
+	@Deprecated
 	public Parent() {}
 
 	public int getId() {
