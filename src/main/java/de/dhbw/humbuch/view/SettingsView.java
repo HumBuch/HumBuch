@@ -27,7 +27,9 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -143,7 +145,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		tabs.addTab(buildUserTab(), "Benutzer");
 		tabs.addTab(buildCategoryTab(), "Lehrmittelkategorien");
 		tabs.addTab(buildDueDatesTab(), "Schuljahre");
-		tabs.addTab(buildSettingsTab(), "Sonstige Einstellungen");
+		tabs.addTab(buildSettingsTab(), "Weitere Einstellungen");
 
 		addComponent(tabs);
 		setMargin(true);
@@ -682,7 +684,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		/*
 		 * Initialize the tab
 		 */
-		VerticalLayout tab = new VerticalLayout();
+		final VerticalLayout tab = new VerticalLayout();
 		tab.setMargin(true);
 		tab.setSpacing(true);
 		tab.setSizeFull();
@@ -727,12 +729,48 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		/*
 		 * Define listeners and factories
 		 */
+		//Warning that is displayed when settings tab is accessed
+		tabs.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+			
+            boolean   preventEvent = false;
+            
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+                if (preventEvent) {
+                    preventEvent = false;
+                    return;
+                }
+				
+				final TabSheet source = (TabSheet) event.getSource();
+				
+				if(source.getSelectedTab() == tab) {
+					preventEvent = true;
+					
+					Runnable runnable = new Runnable() {
+						@Override
+						public void run() {
+							source.setSelectedTab(0);
+						}
+					};
+					eventBus.post(new ConfirmEvent.Builder(
+							"Änderungen der Standardwerte können unter Umständen dazu führen, dass die Anwendung<br>" 
+							+ "nicht mehr wie erwartet funktioniert. Sie sollten nur fortfahren, wenn Sie genau wissen,<br>"
+							+ "was Sie tun.")
+							.caption("Achtung, hier endet möglicherweise die Gewährleistung!")
+							.cancelCaption("Ich werde vorsichtig sein, versprochen!")
+							.confirmCaption("Abbrechen").confirmRunnable(runnable)
+							.build());
+					
+				}
+			}
+		});
 		
+		//Print cell bold if not equal to standard value
 		settingsTable.setCellStyleGenerator(new CellStyleGenerator() {
 			@Override
 			public String getStyle(Table source, Object itemId, Object propertyId) {
-				if (!settingsTable.getItem(itemId).getItemProperty(SETTINGS_VALUE).getValue()
-						.equals(settingsTable.getItem(itemId).getItemProperty(SETTINGS_STANDARD_VALUE).getValue())) {
+				if (!source.getItem(itemId).getItemProperty(SETTINGS_VALUE).getValue()
+						.equals(source.getItem(itemId).getItemProperty(SETTINGS_STANDARD_VALUE).getValue())) {
 					if(SETTINGS_VALUE.equals(propertyId))
 						return "bold";
 				}
@@ -878,7 +916,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	
 	/**
 	 * Commit all field edits and handle handle validation problems here
-	 * @param fields {@link List} of fields to be commited
+	 * @param fields {@link List} of fields to be committed
 	 */
 	protected void commitFields(List<Field> fields) {
 		for (Field field : fields) {
@@ -900,6 +938,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	@Override
 	public void enter(ViewChangeEvent event) {
 		settingsViewModel.refresh();
+		tabs.setSelectedTab(0);
 	}
 
 	@Override
