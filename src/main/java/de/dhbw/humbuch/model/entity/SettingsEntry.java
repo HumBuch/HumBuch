@@ -20,7 +20,7 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	
 	private String settingKey;
 	private String settingValue;
-	private String settingsStandardValue;
+	private String settingStandardValue;
 
 	/**
 	 * Required by Hibernate.<p>
@@ -55,12 +55,12 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 		this.settingValue = settingValue;
 	}
 	
-	public String getSettingsStandardValue() {
-		return settingsStandardValue;
+	public String getSettingStandardValue() {
+		return settingStandardValue;
 	}
 
-	public void setSettingsStandardValue(String settingsStandardValue) {
-		this.settingsStandardValue = settingsStandardValue;
+	public void setSettingStandardValue(String settingStandardValue) {
+		this.settingStandardValue = settingStandardValue;
 	}
 
 	@Override
@@ -81,10 +81,12 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	public static class Builder {
 		private String key;
 		private String value;
+		private String standardValue;
 		
-		public Builder(String key, String value) {
+		public Builder(String key, String value, String standardValue) {
 			this.key = key;
 			this.value = value;
+			this.standardValue = standardValue;
 		}
 		
 		public SettingsEntry build() {
@@ -95,6 +97,7 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	public SettingsEntry(Builder builder) {
 		this.settingKey = builder.key;
 		this.settingValue = builder.value;
+		this.settingStandardValue = builder.standardValue;
 	}
 
 	@Override
@@ -103,6 +106,7 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 		int result = 1;
 		result = prime * result + ((settingKey == null) ? 0 : settingKey.hashCode());
 		result = prime * result + ((settingValue == null) ? 0 : settingValue.hashCode());
+		result = prime * result + ((settingStandardValue == null) ? 0 : settingStandardValue.hashCode());
 		return result;
 	}
 
@@ -124,6 +128,11 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 			if (other.settingValue != null)
 				return false;
 		} else if (!settingValue.equals(other.settingValue))
+			return false;
+		if (settingStandardValue == null) {
+			if (other.settingStandardValue != null)
+				return false;
+		} else if (!settingStandardValue.equals(other.settingStandardValue))
 			return false;
 		return true;
 	}

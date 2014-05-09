@@ -28,6 +28,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -42,8 +43,10 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Category;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.Categories;
+import de.dhbw.humbuch.viewmodel.SettingsViewModel.SettingsEntries;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.SchoolYears;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.ChangeStatus;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.UserEmail;
@@ -66,6 +69,10 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	
 	private static final String CAT_NAME = "name";
 	private static final String CAT_DESCRIPTION = "description";
+	
+	private static final String SETTINGS_KEY = "settingKey";
+	private static final String SETTINGS_VALUE = "settingValue";
+	private static final String SETTINGS_STANDARD_VALUE = "settingStandardValue";
 
 	/**
 	 * User
@@ -107,6 +114,15 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	@BindState(Categories.class)
 	private State<Collection<Category>> categories = new BasicState<>(Collection.class);
 	private List<Field> categoryFields = new ArrayList<Field>();
+	
+	/**
+	 * Settings
+	 */
+	private Table settingsTable = new Table();
+	private BeanItemContainer<SettingsEntry> settingsData = new BeanItemContainer<SettingsEntry>(SettingsEntry.class);
+	private List<Field> settingsFields = new ArrayList<Field>();
+	@BindState(SettingsEntries.class)
+	private State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
 
 	private EventBus eventBus;
 	private SettingsViewModel settingsViewModel;
@@ -127,6 +143,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		tabs.addTab(buildUserTab(), "Benutzer");
 		tabs.addTab(buildCategoryTab(), "Lehrmittelkategorien");
 		tabs.addTab(buildDueDatesTab(), "Schuljahre");
+		tabs.addTab(buildSettingsTab(), "Sonstige Einstellungen");
 
 		addComponent(tabs);
 		setMargin(true);
@@ -656,6 +673,168 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		return tab;
 	}
 
+	
+	/**
+	 * Creates the general settings tab
+	 * @return A Component with the generated tab
+	 */
+	private Component buildSettingsTab() {
+		/*
+		 * Initialize the tab
+		 */
+		VerticalLayout tab = new VerticalLayout();
+		tab.setMargin(true);
+		tab.setSpacing(true);
+		tab.setSizeFull();
+		
+		/*
+		 * Define edit, save and cancel buttons
+		 */
+		final HorizontalLayout editButtons = new HorizontalLayout();
+		editButtons.setSpacing(true);
+		tab.addComponent(editButtons);
+		tab.setComponentAlignment(editButtons, Alignment.MIDDLE_RIGHT);
+		
+		final Button btnEdit = new Button("Bearbeiten");
+		final Button btnSave = new Button("Speichern");
+		final Button btnCancel = new Button("Abbrechen");
+		
+		editButtons.addComponent(btnEdit);
+		editButtons.addComponent(btnCancel);
+		editButtons.addComponent(btnSave);
+		
+		btnEdit.setEnabled(false);
+		btnSave.setVisible(false);
+		btnSave.addStyleName("default");
+		btnCancel.setVisible(false);
+
+		/*
+		 * Define table
+		 */
+		settingsTable.setSizeFull();
+		settingsTable.setSelectable(true);
+		settingsTable.setImmediate(true);
+
+		settingsTable.setContainerDataSource(settingsData);
+		settingsTable.setVisibleColumns(new Object[] { SETTINGS_KEY, SETTINGS_VALUE, SETTINGS_STANDARD_VALUE });
+		settingsTable.setColumnHeader(SETTINGS_KEY, "Schlüssel");
+		settingsTable.setColumnHeader(SETTINGS_VALUE, "Wert");
+		settingsTable.setColumnHeader(SETTINGS_STANDARD_VALUE, "Standardwert");
+		
+		tab.addComponent(settingsTable);
+		tab.setExpandRatio(settingsTable, 1);
+		
+		/*
+		 * Define listeners and factories
+		 */
+		
+		settingsTable.setCellStyleGenerator(new CellStyleGenerator() {
+			@Override
+			public String getStyle(Table source, Object itemId, Object propertyId) {
+				if (!settingsTable.getItem(itemId).getItemProperty(SETTINGS_VALUE).getValue()
+						.equals(settingsTable.getItem(itemId).getItemProperty(SETTINGS_STANDARD_VALUE).getValue())) {
+					if(SETTINGS_VALUE.equals(propertyId))
+						return "bold";
+				}
+				return null;
+			}
+		});
+		
+		//Edit button listeners
+		btnEdit.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, true);
+			}
+		});
+
+		//Cancel button listeners
+		btnCancel.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				discardFields(settingsFields);
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, false);
+			}
+		});
+
+		//Save button listeners
+		btnSave.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				commitFields(settingsFields);
+				SettingsEntry item = (SettingsEntry) settingsTable.getValue();
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, false);
+				settingsViewModel.doUpdateSettingsEntry(item);
+				
+			}
+		});
+		
+		//Enable/Disable edit button
+		settingsTable.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				SettingsEntry item = (SettingsEntry) settingsTable.getValue();
+				btnEdit.setEnabled(item != null);
+			}
+		});
+		
+		//Double click on a row to make it editable
+		settingsTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+				if (itemClickEvent.isDoubleClick() && !settingsTable.isEditable()) {
+					settingsTable.setValue(itemClickEvent.getItemId());
+					configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, true);
+				}
+			}
+		});
+
+		// Fill table container
+		settingsEntries.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				settingsTable.removeAllItems();
+				settingsData.addAll(settingsEntries.get());
+			}
+		});
+
+		// define field factory
+		settingsTable.setTableFieldFactory(new DefaultFieldFactory() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public Field<?> createField(Container container, Object itemId,
+					Object propertyId, Component uiContext) {
+				//if its not the currently selected item in the table, don't
+				// generate fields
+				if (!itemId.equals(settingsTable.getValue())) {
+					return null;
+				}
+				if(!SETTINGS_VALUE.equals(propertyId)) {
+					return null;
+				}
+				TextField field = new TextField();
+				field.setNullRepresentation("");
+				//discard the value
+				field.setBuffered(true);
+				//keep track of all of the attached fields
+				field.addAttachListener(new AttachListener() {
+					@Override
+					public void attach(AttachEvent attachEvent) {
+						settingsFields.add((Field) attachEvent.getConnector());
+					}
+				});
+				field.addDetachListener(new DetachListener() {
+					@Override
+					public void detach(DetachEvent event) {
+						settingsFields.remove((Field) event.getConnector());
+					}
+				});
+				return field;
+			}
+		});
+		return tab;
+	}
+	
 
 	/**
 	 * Configures the given table to be editable or not and changes the buttons visibility accordingly.

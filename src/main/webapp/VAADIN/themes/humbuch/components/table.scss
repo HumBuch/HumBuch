@@ -95,6 +95,10 @@
                 padding-bottom: .2em;
         }
         
+        .v-table-cell-content-bold {
+        		font-weight: bold;
+        }
+        
         .v-table-cell-content:first-child {
                 border-left-color: transparent;
         }
@@ -209,6 +213,7 @@
         
         .v-table .v-textfield {
         		width: 100%;
+        		font-size: 12px;
         }
         
         .v-table .v-datefield {
