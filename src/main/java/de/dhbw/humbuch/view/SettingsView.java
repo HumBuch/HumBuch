@@ -27,7 +27,10 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -42,8 +45,10 @@ import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Category;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.Categories;
+import de.dhbw.humbuch.viewmodel.SettingsViewModel.SettingsEntries;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.SchoolYears;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.ChangeStatus;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.UserEmail;
@@ -52,8 +57,8 @@ import de.dhbw.humbuch.viewmodel.SettingsViewModel.DoUpdateUser;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.DoPasswordChange;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.PasswordChangeStatus;
 
-public class SettingsView extends VerticalLayout implements View,
-		ViewInformation {
+@SuppressWarnings({"rawtypes", "serial"})
+public class SettingsView extends VerticalLayout implements View, ViewInformation {
 	private static final long serialVersionUID = 410136048295487570L;
 
 	private static final String TITLE = "Einstellungen";
@@ -63,17 +68,19 @@ public class SettingsView extends VerticalLayout implements View,
 	private static final String YEAR_TO = "toDate";
 	private static final String YEAR_END_FIRST = "endFirstTerm";
 	private static final String YEAR_BEGIN_SEC = "beginSecondTerm";
+	
 	private static final String CAT_NAME = "name";
 	private static final String CAT_DESCRIPTION = "description";
-
-	private SettingsViewModel settingsViewModel;
+	
+	private static final String SETTINGS_KEY = "settingKey";
+	private static final String SETTINGS_VALUE = "settingValue";
+	private static final String SETTINGS_STANDARD_VALUE = "settingStandardValue";
 
 	/**
 	 * User
 	 */
 	private TabSheet tabs;
-	private FormLayout tabUser = new FormLayout();
-	private Button userChangePw = new Button("Kennwort ändern...");
+	private Button btnChangePw = new Button("Kennwort ändern...");
 	@BindState(UserName.class)
 	private State<String> userName = new BasicState<>(String.class);
 	@BindState(UserEmail.class)
@@ -82,14 +89,13 @@ public class SettingsView extends VerticalLayout implements View,
 	private TextField txtUserEmail = new TextField("E-Mail-Adresse: ");
 	@BindAction(value = DoUpdateUser.class, source = { "txtUserName", "txtUserEmail" })
 	private Button userSaveBtn = new Button("Speichern");
-
 	private Window changePwWindow = new Window();;
 	private PasswordField currentPassword = new PasswordField("Aktuelles Passwort:");
 	private PasswordField newPassword = new PasswordField("Neues Passwort:");
 	private PasswordField newPasswordVerified = new PasswordField("Neues Passwort wiederholen:");
 	@BindAction(value = DoPasswordChange.class, source = { "currentPassword", "newPassword", "newPasswordVerified" })
 	private Button changePwSave = new Button("Speichern");
-	private Button changePwCancel = new Button("Abbrechen");
+	private Button btnChangePwCancel = new Button("Abbrechen");
 	@BindState(PasswordChangeStatus.class)
 	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
 
@@ -97,37 +103,32 @@ public class SettingsView extends VerticalLayout implements View,
 	 * Due dates
 	 */
 	private Table yearTable;
-	private BeanItemContainer<SchoolYear> yearData = new BeanItemContainer<SchoolYear>(
-			SchoolYear.class);
+	private BeanItemContainer<SchoolYear> yearData = new BeanItemContainer<SchoolYear>(SchoolYear.class);
 	@BindState(SchoolYears.class)
-	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(
-			Collection.class);
-	private Button yearAdd = new Button("Hinzufügen");
-	private Button yearDelete = new Button("Löschen");
-	private Button yearEdit = new Button("Bearbeiten");
-	private Button yearCancel = new Button("Abbrechen");
-	private Button yearSave = new Button("Speichern");
-	@SuppressWarnings("rawtypes")
+	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(Collection.class);
 	private List<Field> yearFields = new ArrayList<Field>();
 
 	/**
 	 * Categories
 	 */
-	private Table catTable = new Table();
-	private BeanItemContainer<Category> catData = new BeanItemContainer<Category>(
-			Category.class);
+	private Table categoryTable = new Table();
+	private BeanItemContainer<Category> categoryData = new BeanItemContainer<Category>(Category.class);
 	@BindState(Categories.class)
-	private State<Collection<Category>> categories = new BasicState<>(
-			Collection.class);
-	private Button catAdd = new Button("Hinzufügen");
-	private Button catDelete = new Button("Löschen");
-	private Button catEdit = new Button("Bearbeiten");
-	private Button catCancel = new Button("Abbrechen");
-	private Button catSave = new Button("Speichern");
-	@SuppressWarnings("rawtypes")
-	private List<Field> catFields = new ArrayList<Field>();
+	private State<Collection<Category>> categories = new BasicState<>(Collection.class);
+	private List<Field> categoryFields = new ArrayList<Field>();
+	
+	/**
+	 * Settings
+	 */
+	private Table settingsTable = new Table();
+	private BeanItemContainer<SettingsEntry> settingsData = new BeanItemContainer<SettingsEntry>(SettingsEntry.class);
+	private List<Field> settingsFields = new ArrayList<Field>();
+	@BindState(SettingsEntries.class)
+	private State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
 
 	private EventBus eventBus;
+	private SettingsViewModel settingsViewModel;
+	
 
 	@Inject
 	public SettingsView(ViewModelComposer viewModelComposer, SettingsViewModel settingsViewModel, EventBus eventBus) {
@@ -141,11 +142,11 @@ public class SettingsView extends VerticalLayout implements View,
 		tabs = new TabSheet();
 		tabs.setSizeFull();
 
-		buildUserTab();
-		buildCategoryTab();
-		buildDueDatesTab();
+		tabs.addTab(buildUserTab(), "Benutzer");
+		tabs.addTab(buildCategoryTab(), "Lehrmittelkategorien");
+		tabs.addTab(buildDueDatesTab(), "Schuljahre");
+		tabs.addTab(buildSettingsTab(), "Weitere Einstellungen");
 
-		addListeners();
 		addComponent(tabs);
 		setMargin(true);
 		setSizeFull();
@@ -154,14 +155,15 @@ public class SettingsView extends VerticalLayout implements View,
 	/**
 	 * User tab
 	 */
-	private void buildUserTab() {
-		tabUser.setMargin(true);
-		tabUser.setSpacing(true);
+	private Component buildUserTab() {
+		FormLayout tab = new FormLayout();
+		tab.setMargin(true);
+		tab.setSpacing(true);
 
-		tabUser.addComponent(userChangePw);
+		tab.addComponent(btnChangePw);
 
 		txtUserName.setValue(userName.get());
-		tabUser.addComponent(txtUserName);
+		tab.addComponent(txtUserName);
 		userName.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
@@ -170,7 +172,7 @@ public class SettingsView extends VerticalLayout implements View,
 		});
 
 		txtUserEmail.setValue(userEmail.get());
-		tabUser.addComponent(txtUserEmail);
+		tab.addComponent(txtUserEmail);
 		userEmail.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
@@ -179,9 +181,11 @@ public class SettingsView extends VerticalLayout implements View,
 		});
 
 		userSaveBtn.addStyleName("default");
-		tabUser.addComponent(userSaveBtn);
+		tab.addComponent(userSaveBtn);
 
-		// Change password window
+		/*
+		 * Change password window
+		 */
 		VerticalLayout wContent = new VerticalLayout();
 		wContent.setMargin(true);
 		wContent.setSpacing(true);
@@ -199,7 +203,7 @@ public class SettingsView extends VerticalLayout implements View,
 		wContent.setComponentAlignment(changePwButtons, Alignment.MIDDLE_RIGHT);
 
 		changePwSave.addStyleName("default");
-		changePwButtons.addComponent(changePwCancel);
+		changePwButtons.addComponent(btnChangePwCancel);
 		changePwButtons.addComponent(changePwSave);
 		changePwButtons.setSpacing(true);
 
@@ -209,134 +213,184 @@ public class SettingsView extends VerticalLayout implements View,
 		changePwWindow.setClosable(false);
 		changePwWindow.setResizable(false);
 		changePwWindow.setModal(true);
-		// <----------------------------------------
+		
+		/**
+		 * Opens the password change window
+		 */
+		btnChangePw.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 5691533989323693312L;
 
-		tabs.addTab(tabUser, "Benutzer");
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UI.getCurrent().addWindow(changePwWindow);
+				changePwWindow.focus();
+			}
+
+		});
+
+		/**
+		 * Closes the password change window
+		 */
+		btnChangePwCancel.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 5691533989323693312L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				changePwWindow.close();
+			}
+
+		});
+
+		/**
+		 * Reacts on states from the doPasswordChange state
+		 */
+		passwordChangeStatus.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				ChangeStatus status = passwordChangeStatus.get();
+				// Clear the password fields
+				currentPassword.setValue("");
+				newPassword.setValue("");
+				newPasswordVerified.setValue("");
+				// Close the window if successful
+				if (status == ChangeStatus.SUCCESSFULL) {
+					changePwWindow.close();
+				}
+			}
+		});
+		return tab;
 	}
 
 	/**
 	 * Categories
 	 */
-	@SuppressWarnings("serial")
-	private void buildCategoryTab() {
+	private Component buildCategoryTab() {
 
-		VerticalLayout tabCategories = new VerticalLayout();
-		tabCategories.setMargin(true);
-		tabCategories.setSpacing(true);
-		tabCategories.setSizeFull();
+		VerticalLayout tab = new VerticalLayout();
+		tab.setMargin(true);
+		tab.setSpacing(true);
+		tab.setSizeFull();
 		
-		final HorizontalLayout catEditButtons = new HorizontalLayout();
-		catEditButtons.setSpacing(true);
+		final HorizontalLayout editButtons = new HorizontalLayout();
+		editButtons.setSpacing(true);
+		
 
-		catDelete.setEnabled(false);
-		catEdit.setEnabled(false);
-		catSave.setVisible(false);
-		catSave.addStyleName("default");
-		catCancel.setVisible(false);
+		final Button btnEdit = new Button("Bearbeiten");
+		final Button btnCancel = new Button("Abbrechen");
+		final Button btnSave = new Button("Speichern");
 
-		catEditButtons.addComponent(catEdit);
-		catEditButtons.addComponent(catCancel);
-		catEditButtons.addComponent(catSave);
+		btnEdit.setEnabled(false);
+		btnSave.setVisible(false);
+		btnSave.addStyleName("default");
+		btnCancel.setVisible(false);
 
-		final HorizontalLayout catAddButtons = new HorizontalLayout();
-		catAddButtons.setSpacing(true);
-		catAddButtons.addComponent(catAdd);
-		catAddButtons.addComponent(catDelete);
+		editButtons.addComponent(btnEdit);
+		editButtons.addComponent(btnCancel);
+		editButtons.addComponent(btnSave);
 
-		tabCategories.addComponent(new HorizontalLayout() {
+		final HorizontalLayout addButtons = new HorizontalLayout();
+		addButtons.setSpacing(true);
+		
+		final Button btnAdd = new Button("Hinzufügen");
+		final Button btnDelete = new Button("Löschen");
+		
+		btnDelete.setEnabled(false);
+		
+		addButtons.addComponent(btnAdd);
+		addButtons.addComponent(btnDelete);
+
+		tab.addComponent(new HorizontalLayout() {
 			{
 				setWidth("100%");
 				setHeight(null);
-				addComponent(catAddButtons);
-				addComponent(catEditButtons);
-				setComponentAlignment(catEditButtons, Alignment.MIDDLE_RIGHT);
+				addComponent(addButtons);
+				addComponent(editButtons);
+				setComponentAlignment(editButtons, Alignment.MIDDLE_RIGHT);
 			}
 		});
 
 		// Table
-		catTable.setSizeFull();
-		catTable.setSelectable(true);
-		catTable.setImmediate(true);
+		categoryTable.setSizeFull();
+		categoryTable.setSelectable(true);
+		categoryTable.setImmediate(true);
 
-		catTable.setContainerDataSource(catData);
-		catTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
-		catTable.setColumnHeader(CAT_NAME, "Kategorie");
-		catTable.setColumnHeader(CAT_DESCRIPTION, "Beschreibung");
+		categoryTable.setContainerDataSource(categoryData);
+		categoryTable.setVisibleColumns(new Object[] { CAT_NAME, CAT_DESCRIPTION });
+		categoryTable.setColumnHeader(CAT_NAME, "Kategorie");
+		categoryTable.setColumnHeader(CAT_DESCRIPTION, "Beschreibung");
 
-		tabCategories.addComponent(catTable);
-		tabCategories.setExpandRatio(catTable, 1);
-		
-		tabs.addTab(tabCategories, "Lehrmittelkategorien");
+		tab.addComponent(categoryTable);
+		tab.setExpandRatio(categoryTable, 1);
 
 		/*
 		 * Listeners
 		 */
 
 		// Enable/Disable edit button
-		catTable.addValueChangeListener(new Property.ValueChangeListener() {
+		categoryTable.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				Category item = (Category) catTable.getValue();
-				catEdit.setEnabled(item != null);
-				catDelete.setEnabled(item != null);
+				Category item = (Category) categoryTable.getValue();
+				btnEdit.setEnabled(item != null);
+				btnDelete.setEnabled(item != null);
 			}
 		});
 
 		// Edit
-		catEdit.addClickListener(new ClickListener() {
+		btnEdit.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				catConfigureEditable(true);
+				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, true);
 			}
 		});
 
 		// Cancel
-		catCancel.addClickListener(new ClickListener() {
+		btnCancel.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				catDiscard();
-				catConfigureEditable(false);
+				discardFields(categoryFields);
+				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, false);
 			}
 		});
 
 		// Save
-		catSave.addClickListener(new ClickListener() {
+		btnSave.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				catCommit();
-				Category item = (Category) catTable.getValue();
-				catConfigureEditable(false);
+				commitFields(categoryFields);
+				Category item = (Category) categoryTable.getValue();
+				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, false);
 				settingsViewModel.doUpdateCategory(item);
 			}
 		});
 
 		// Add
-		catAdd.addClickListener(new ClickListener() {
+		btnAdd.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Category item = new Category.Builder("").description("")
 						.build();
-				catTable.addItem(item);
-				catTable.select(item);
-				catConfigureEditable(true);
-				catCancel.setVisible(false);
+				categoryTable.addItem(item);
+				categoryTable.select(item);
+				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, true);
+				btnCancel.setVisible(false);
 			}
 		});
 
 		// Delete
-		catDelete.addClickListener(new ClickListener() {
+		btnDelete.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Runnable confirmRunnable = new Runnable() {
 					@Override
 					public void run() {
-						Category item = (Category) catTable.getValue();
+						Category item = (Category) categoryTable.getValue();
 						settingsViewModel.doDeleteCategory(item);
-						catConfigureEditable(false);
-						catTable.select(null);
+						configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, false);
+						categoryTable.select(null);
 					}
 				};
 				eventBus.post(new ConfirmEvent.Builder("Wollen Sie diese Kategorie wirklich löschen?")
@@ -348,140 +402,103 @@ public class SettingsView extends VerticalLayout implements View,
 		categories.addStateChangeListener(new StateChangeListener() {
 			@Override
 			public void stateChange(Object arg0) {
-				catTable.removeAllItems();
-				catData.addAll(categories.get());
+				categoryTable.removeAllItems();
+				categoryData.addAll(categories.get());
 			}
 		});
 
 		// Double click on a row: make it editable
-		catTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+		categoryTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent itemClickEvent) {
-				if (itemClickEvent.isDoubleClick() && !catTable.isEditable()) {
-					catTable.setValue(itemClickEvent.getItemId());
-					catConfigureEditable(true);
+				if (itemClickEvent.isDoubleClick() && !categoryTable.isEditable()) {
+					categoryTable.setValue(itemClickEvent.getItemId());
+					configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, true);
 				}
 			}
 		});
 
 		// define field factory
-		catTable.setTableFieldFactory(new DefaultFieldFactory() {
+		categoryTable.setTableFieldFactory(new DefaultFieldFactory() {
 			private static final long serialVersionUID = 1L;
-
-			@SuppressWarnings("rawtypes")
 			@Override
-			public Field<?> createField(Container container, Object itemId,
-					Object propertyId, Component uiContext) {
-
+			public Field<?> createField(Container container, Object itemId,Object propertyId, Component uiContext) {
 				//if its not the currently selected item in the table, don't
 				// generate fields
-				if (!itemId.equals(catTable.getValue())) {
+				if (!itemId.equals(categoryTable.getValue())) {
 					return null;
 				}
-
 				TextField field = new TextField();
 				field.setNullRepresentation("");
-
 				//discard the value
 				field.setBuffered(true);
-
 				//keep track of all of the attached fields
 				field.addAttachListener(new AttachListener() {
 					@Override
 					public void attach(AttachEvent attachEvent) {
-						catFields.add((Field) attachEvent.getConnector());
+						categoryFields.add((Field) attachEvent.getConnector());
 					}
 				});
 				field.addDetachListener(new DetachListener() {
 					@Override
 					public void detach(DetachEvent event) {
-						catFields.remove((Field) event.getConnector());
+						categoryFields.remove((Field) event.getConnector());
 					}
 				});
-
 				return field;
-
 			}
 
 		});
-
+		return tab;
 	}
 
-	/**
-	 * Commit all field edits.
-	 * 
-	 * NB: Should handle validation problems here
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void catCommit() {
-		for (Field field : catFields) {
-			field.commit();
-		}
-	}
-
-	/**
-	 * Discard any field edits
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void catDiscard() {
-		for (Field field : catFields) {
-			field.discard();
-		}
-	}
-
-	/**
-	 * Configure the categories-table for edit (or not)
-	 * 
-	 * @param editable
-	 *            Whether the table should be editable or not
-	 */
-	public void catConfigureEditable(boolean editable) {
-		catTable.setSelectable(!editable);
-		catTable.setEditable(editable);
-		catSave.setVisible(editable);
-		catCancel.setVisible(editable);
-		catEdit.setVisible(!editable);
-		if (editable && !catFields.isEmpty()) {
-			catFields.get(0).focus();
-		}
-	}
 
 	/**
 	 * Due dates
 	 */
-	@SuppressWarnings("serial")
-	private void buildDueDatesTab() {
+	private Component buildDueDatesTab() {
 
-		VerticalLayout tabDates = new VerticalLayout();
-		tabDates.setSizeFull();
-		tabDates.setMargin(true);
-		tabDates.setSpacing(true);
+		VerticalLayout tab = new VerticalLayout();
+		tab.setSizeFull();
+		tab.setMargin(true);
+		tab.setSpacing(true);
 
-		final HorizontalLayout yearEditButtons = new HorizontalLayout();
-		yearEditButtons.setSpacing(true);
+		//Edit buttons
+		final HorizontalLayout editButtons = new HorizontalLayout();
+		editButtons.setSpacing(true);
+
+		final Button btnEdit = new Button("Bearbeiten");
+		final Button btnCancel = new Button("Abbrechen");
+		final Button btnSave = new Button("Speichern");
 		
-		yearDelete.setEnabled(false);
-		yearEdit.setEnabled(false);
-		yearSave.setVisible(false);
-		yearSave.addStyleName("default");
-		yearCancel.setVisible(false);
+		btnEdit.setEnabled(false);
+		btnSave.setVisible(false);
+		btnSave.addStyleName("default");
+		btnCancel.setVisible(false);
 
-		yearEditButtons.addComponent(yearEdit);
-		yearEditButtons.addComponent(yearCancel);
-		yearEditButtons.addComponent(yearSave);
+		editButtons.addComponent(btnEdit);
+		editButtons.addComponent(btnCancel);
+		editButtons.addComponent(btnSave);
 
-		final HorizontalLayout yearAddButtons = new HorizontalLayout();
-		yearAddButtons.setSpacing(true);
-		yearAddButtons.addComponent(yearAdd);
-		yearAddButtons.addComponent(yearDelete);
+		//Add/Delete buttons
+		final HorizontalLayout addButtons = new HorizontalLayout();
+		addButtons.setSpacing(true);
+		
+		final Button btnAdd = new Button("Hinzufügen");
+		final Button btnDelete = new Button("Löschen");
+		
+		btnDelete.setEnabled(false);
+		
+		addButtons.addComponent(btnAdd);
+		addButtons.addComponent(btnDelete);
 
-		tabDates.addComponent(new HorizontalLayout() {
+		tab.addComponent(new HorizontalLayout() {
 			{
 				setWidth("100%");
 				setHeight(null);
-				addComponent(yearAddButtons);
-				addComponent(yearEditButtons);
-				setComponentAlignment(yearEditButtons, Alignment.MIDDLE_RIGHT);
+				addComponent(addButtons);
+				addComponent(editButtons);
+				setComponentAlignment(editButtons, Alignment.MIDDLE_RIGHT);
 			}
 		});
 		
@@ -524,58 +541,55 @@ public class SettingsView extends VerticalLayout implements View,
 		yearTable.setColumnAlignment(YEAR_END_FIRST, Table.Align.RIGHT);
 		yearTable.setColumnAlignment(YEAR_BEGIN_SEC, Table.Align.RIGHT);
 
-		tabDates.addComponent(yearTable);
-		tabDates.setExpandRatio(yearTable, 1);
-		
-		tabs.addTab(tabDates, "Schuljahresdaten");
+		tab.addComponent(yearTable);
+		tab.setExpandRatio(yearTable, 1);
 
 		/*
 		 * Listeners
 		 */
-
 		// Enable/Disable edit + delete button
 		yearTable.addValueChangeListener(new Property.ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				SchoolYear item = (SchoolYear) yearTable.getValue();
-				yearEdit.setEnabled(item != null);
-				yearDelete.setEnabled(item != null);
+				btnEdit.setEnabled(item != null);
+				btnDelete.setEnabled(item != null);
 			}
 		});
 
 		// Edit
-		yearEdit.addClickListener(new ClickListener() {
+		btnEdit.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				yearConfigureEditable(true);
+				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, true);
 
 			}
 		});
 
 		// Cancel
-		yearCancel.addClickListener(new ClickListener() {
+		btnCancel.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				yearDiscard();
-				yearConfigureEditable(false);
+				discardFields(yearFields);
+				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
 			}
 		});
 
 		// Save
-		yearSave.addClickListener(new ClickListener() {
+		btnSave.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				yearCommit();
-				yearConfigureEditable(false);
+				commitFields(yearFields);
+				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
 				SchoolYear item = (SchoolYear) yearTable.getValue();
 				settingsViewModel.doUpdateSchoolYear(item);
 			}
 		});
 
 		// Add
-		yearAdd.addClickListener(new ClickListener() {
+		btnAdd.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -583,13 +597,13 @@ public class SettingsView extends VerticalLayout implements View,
 						new Date()).build();
 				yearData.addBean(item);
 				yearTable.select(item);
-				yearConfigureEditable(true);
-				yearCancel.setVisible(false);
+				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, true);
+				btnCancel.setVisible(false);
 			}
 		});
 
 		// Delete
-		yearDelete.addClickListener(new ClickListener() {
+		btnDelete.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Runnable confirmRunnable = new Runnable() {
@@ -597,7 +611,7 @@ public class SettingsView extends VerticalLayout implements View,
 					public void run() {
 						SchoolYear item = (SchoolYear) yearTable.getValue();
 						settingsViewModel.doDeleteSchoolYear(item);
-						yearConfigureEditable(false);
+						configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
 						yearTable.select(null);
 					}
 				};
@@ -622,7 +636,7 @@ public class SettingsView extends VerticalLayout implements View,
 
 				if (itemClickEvent.isDoubleClick() && !yearTable.isEditable()) {
 					yearTable.setValue(itemClickEvent.getItemId());
-					yearConfigureEditable(true);
+					configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, true);
 				}
 			}
 		});
@@ -630,24 +644,17 @@ public class SettingsView extends VerticalLayout implements View,
 		// define field factory
 		yearTable.setTableFieldFactory(new DefaultFieldFactory() {
 			private static final long serialVersionUID = 1L;
-
-			@SuppressWarnings("rawtypes")
 			@Override
 			public Field<?> createField(Container container, Object itemId,
 					Object propertyId, Component uiContext) {
-
 				// If its not the currently selected item in the table, don't
 				// generate fields
 				if (!itemId.equals(yearTable.getValue())) {
 					return null;
 				}
-
-				Field field = super.createField(container, itemId, propertyId,
-						uiContext);
-
+				Field field = super.createField(container, itemId, propertyId,uiContext);
 				// Possibility to discard the value
 				field.setBuffered(true);
-
 				// keep track of all of the attached fields
 				field.addAttachListener(new AttachListener() {
 					@Override
@@ -661,104 +668,262 @@ public class SettingsView extends VerticalLayout implements View,
 						yearFields.remove((Field) event.getConnector());
 					}
 				});
-
 				return field;
-
 			}
-
 		});
+
+		return tab;
 	}
 
+	
 	/**
-	 * Commit all field edits.
-	 * 
-	 * NB: Should handle validation problems here
+	 * Creates the general settings tab
+	 * @return A Component with the generated tab
 	 */
-	@SuppressWarnings("rawtypes")
-	protected void yearCommit() {
-		for (Field field : yearFields) {
-			field.commit();
-		}
-	}
-
-	/**
-	 * Discard any field edits
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void yearDiscard() {
-		for (Field field : yearFields) {
-			field.discard();
-		}
-	}
-
-	/**
-	 * Configure the year-table for edit (or not)
-	 * 
-	 * @param editable
-	 *            Whether the table should be editable or not
-	 */
-	public void yearConfigureEditable(boolean editable) {
-		yearTable.setSelectable(!editable);
-		yearTable.setEditable(editable);
-		yearSave.setVisible(editable);
-		yearCancel.setVisible(editable);
-		yearEdit.setVisible(!editable);
-		if (editable && !yearFields.isEmpty()) {
-			yearFields.get(0).focus();
-		}
-	}
-
-	/**
-	 * Adds all Listeners for the components
-	 */
-	private void addListeners() {
-
-		/**
-		 * Opens the password change window
+	private Component buildSettingsTab() {
+		/*
+		 * Initialize the tab
 		 */
-		userChangePw.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 5691533989323693312L;
+		final VerticalLayout tab = new VerticalLayout();
+		tab.setMargin(true);
+		tab.setSpacing(true);
+		tab.setSizeFull();
+		
+		/*
+		 * Define edit, save and cancel buttons
+		 */
+		final HorizontalLayout editButtons = new HorizontalLayout();
+		editButtons.setSpacing(true);
+		tab.addComponent(editButtons);
+		tab.setComponentAlignment(editButtons, Alignment.MIDDLE_RIGHT);
+		
+		final Button btnEdit = new Button("Bearbeiten");
+		final Button btnSave = new Button("Speichern");
+		final Button btnCancel = new Button("Abbrechen");
+		
+		editButtons.addComponent(btnEdit);
+		editButtons.addComponent(btnCancel);
+		editButtons.addComponent(btnSave);
+		
+		btnEdit.setEnabled(false);
+		btnSave.setVisible(false);
+		btnSave.addStyleName("default");
+		btnCancel.setVisible(false);
 
+		/*
+		 * Define table
+		 */
+		settingsTable.setSizeFull();
+		settingsTable.setSelectable(true);
+		settingsTable.setImmediate(true);
+
+		settingsTable.setContainerDataSource(settingsData);
+		settingsTable.setVisibleColumns(new Object[] { SETTINGS_KEY, SETTINGS_VALUE, SETTINGS_STANDARD_VALUE });
+		settingsTable.setColumnHeader(SETTINGS_KEY, "Schlüssel");
+		settingsTable.setColumnHeader(SETTINGS_VALUE, "Wert");
+		settingsTable.setColumnHeader(SETTINGS_STANDARD_VALUE, "Standardwert");
+		
+		tab.addComponent(settingsTable);
+		tab.setExpandRatio(settingsTable, 1);
+		
+		/*
+		 * Define listeners and factories
+		 */
+		//Warning that is displayed when settings tab is accessed
+		tabs.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+			
+            boolean   preventEvent = false;
+            
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+                if (preventEvent) {
+                    preventEvent = false;
+                    return;
+                }
+				
+				final TabSheet source = (TabSheet) event.getSource();
+				
+				if(source.getSelectedTab() == tab) {
+					preventEvent = true;
+					
+					Runnable runnable = new Runnable() {
+						@Override
+						public void run() {
+							source.setSelectedTab(0);
+						}
+					};
+					eventBus.post(new ConfirmEvent.Builder(
+							"Änderungen der Standardwerte können unter Umständen dazu führen, dass die Anwendung<br>" 
+							+ "nicht mehr wie erwartet funktioniert. Sie sollten nur fortfahren, wenn Sie genau wissen,<br>"
+							+ "was Sie tun.")
+							.caption("Achtung, hier endet möglicherweise die Gewährleistung!")
+							.cancelCaption("Ich werde vorsichtig sein, versprochen!")
+							.confirmCaption("Abbrechen").confirmRunnable(runnable)
+							.build());
+					
+				}
+			}
+		});
+		
+		//Print cell bold if not equal to standard value
+		settingsTable.setCellStyleGenerator(new CellStyleGenerator() {
+			@Override
+			public String getStyle(Table source, Object itemId, Object propertyId) {
+				if (!source.getItem(itemId).getItemProperty(SETTINGS_VALUE).getValue()
+						.equals(source.getItem(itemId).getItemProperty(SETTINGS_STANDARD_VALUE).getValue())) {
+					if(SETTINGS_VALUE.equals(propertyId))
+						return "bold";
+				}
+				return null;
+			}
+		});
+		
+		//Edit button listeners
+		btnEdit.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				UI.getCurrent().addWindow(changePwWindow);
-				changePwWindow.focus();
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, true);
 			}
-
 		});
 
-		/**
-		 * Closes the password change window
-		 */
-		changePwCancel.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 5691533989323693312L;
-
+		//Cancel button listeners
+		btnCancel.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				changePwWindow.close();
+				discardFields(settingsFields);
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, false);
 			}
-
 		});
 
-		/**
-		 * Reacts on states from the doPasswordChange
-		 */
-		passwordChangeStatus.addStateChangeListener(new StateChangeListener() {
+		//Save button listeners
+		btnSave.addClickListener(new ClickListener() {
 			@Override
-			public void stateChange(Object arg0) {
-				ChangeStatus status = passwordChangeStatus.get();
-				// Clear the password fields
-				currentPassword.setValue("");
-				newPassword.setValue("");
-				newPasswordVerified.setValue("");
-				// Close the window if successful
-				if (status == ChangeStatus.SUCCESSFULL) {
-					changePwWindow.close();
+			public void buttonClick(ClickEvent event) {
+				commitFields(settingsFields);
+				SettingsEntry item = (SettingsEntry) settingsTable.getValue();
+				configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, false);
+				settingsViewModel.doUpdateSettingsEntry(item);
+				
+			}
+		});
+		
+		//Enable/Disable edit button
+		settingsTable.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				SettingsEntry item = (SettingsEntry) settingsTable.getValue();
+				btnEdit.setEnabled(item != null);
+			}
+		});
+		
+		//Double click on a row to make it editable
+		settingsTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+				if (itemClickEvent.isDoubleClick() && !settingsTable.isEditable()) {
+					settingsTable.setValue(itemClickEvent.getItemId());
+					configureEditable(settingsTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, settingsFields, true);
 				}
 			}
 		});
 
+		// Fill table container
+		settingsEntries.addStateChangeListener(new StateChangeListener() {
+			@Override
+			public void stateChange(Object arg0) {
+				settingsTable.removeAllItems();
+				settingsData.addAll(settingsEntries.get());
+			}
+		});
+
+		// define field factory
+		settingsTable.setTableFieldFactory(new DefaultFieldFactory() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public Field<?> createField(Container container, Object itemId,
+					Object propertyId, Component uiContext) {
+				//if its not the currently selected item in the table, don't
+				// generate fields
+				if (!itemId.equals(settingsTable.getValue())) {
+					return null;
+				}
+				if(!SETTINGS_VALUE.equals(propertyId)) {
+					return null;
+				}
+				TextField field = new TextField();
+				field.setNullRepresentation("");
+				//discard the value
+				field.setBuffered(true);
+				//keep track of all of the attached fields
+				field.addAttachListener(new AttachListener() {
+					@Override
+					public void attach(AttachEvent attachEvent) {
+						settingsFields.add((Field) attachEvent.getConnector());
+					}
+				});
+				field.addDetachListener(new DetachListener() {
+					@Override
+					public void detach(DetachEvent event) {
+						settingsFields.remove((Field) event.getConnector());
+					}
+				});
+				return field;
+			}
+		});
+		return tab;
 	}
+	
+
+	/**
+	 * Configures the given table to be editable or not and changes the buttons visibility accordingly.
+	 * @param table The {@link Table} to be configured
+	 * @param editButtons {@link Button}s to be displayed when the table is editable
+	 * @param nonEditButtons {@link Button}s to be displayed when the table is not editable
+	 * @param fields {@link List} with generated {@link Field}s in row to edit
+	 * @param editable Whether the table should be editable or not
+	 */
+	public void configureEditable(Table table, Button[] editButtons,
+			Button[] nonEditButtons, List<Field> fields, boolean editable) {
+		//Set the table editable
+		table.setSelectable(!editable);
+		table.setEditable(editable);
+		
+		//Switch visibility of buttons
+		for (Button btn : editButtons) {
+			btn.setVisible(editable);
+		}
+		for (Button btn : nonEditButtons) {
+			btn.setVisible(!editable);
+		}
+		
+		//Set focus to the first field
+		if (editable && !fields.isEmpty()) {
+			fields.get(0).focus();
+		}
+	}
+	
+	
+	/**
+	 * Discard any field edits
+	 * @param fields {@link List} of fields
+	 */
+	protected void discardFields(List<Field> fields) {
+		for (Field field : fields) {
+			field.discard();
+		}
+	}
+	
+	
+	/**
+	 * Commit all field edits and handle handle validation problems here
+	 * @param fields {@link List} of fields to be committed
+	 */
+	protected void commitFields(List<Field> fields) {
+		for (Field field : fields) {
+			field.commit();
+		}
+	}
+
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
 			Object... viewModels) {
@@ -773,6 +938,7 @@ public class SettingsView extends VerticalLayout implements View,
 	@Override
 	public void enter(ViewChangeEvent event) {
 		settingsViewModel.refresh();
+		tabs.setSelectedTab(0);
 	}
 
 	@Override

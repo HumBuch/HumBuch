@@ -18,9 +18,10 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	private String key;
-	private String value;
-	
+	private String settingKey;
+	private String settingValue;
+	private String settingStandardValue;
+
 	/**
 	 * Required by Hibernate.<p>
 	 * Use the {@link Builder} instead.
@@ -38,28 +39,54 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 		this.id = id;
 	}
 
+	public String getSettingKey() {
+		return settingKey;
+	}
+
+	public void setSettingKey(String settingKey) {
+		this.settingKey = settingKey;
+	}
+
+	public String getSettingValue() {
+		return settingValue;
+	}
+
+	public void setSettingValue(String settingValue) {
+		this.settingValue = settingValue;
+	}
+	
+	public String getSettingStandardValue() {
+		return settingStandardValue;
+	}
+
+	public void setSettingStandardValue(String settingStandardValue) {
+		this.settingStandardValue = settingStandardValue;
+	}
+
 	@Override
 	public String getKey() {
-		return key;
+		return settingKey;
 	}
 
 	@Override
 	public String getValue() {
-		return value;
+		return settingValue;
 	}
 
 	@Override
 	public String setValue(String value) {
-		return this.value = value;
+		return this.settingValue = value;
 	}
 	
 	public static class Builder {
 		private String key;
 		private String value;
+		private String standardValue;
 		
-		public Builder(String key, String value) {
+		public Builder(String key, String value, String standardValue) {
 			this.key = key;
 			this.value = value;
+			this.standardValue = standardValue;
 		}
 		
 		public SettingsEntry build() {
@@ -68,16 +95,18 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 	}
 	
 	public SettingsEntry(Builder builder) {
-		this.key = builder.key;
-		this.value = builder.value;
+		this.settingKey = builder.key;
+		this.settingValue = builder.value;
+		this.settingStandardValue = builder.standardValue;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((key == null) ? 0 : key.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((settingKey == null) ? 0 : settingKey.hashCode());
+		result = prime * result + ((settingValue == null) ? 0 : settingValue.hashCode());
+		result = prime * result + ((settingStandardValue == null) ? 0 : settingStandardValue.hashCode());
 		return result;
 	}
 
@@ -90,15 +119,20 @@ public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch
 		if (!(obj instanceof SettingsEntry))
 			return false;
 		SettingsEntry other = (SettingsEntry) obj;
-		if (key == null) {
-			if (other.key != null)
+		if (settingKey == null) {
+			if (other.settingKey != null)
 				return false;
-		} else if (!key.equals(other.key))
+		} else if (!settingKey.equals(other.settingKey))
 			return false;
-		if (value == null) {
-			if (other.value != null)
+		if (settingValue == null) {
+			if (other.settingValue != null)
 				return false;
-		} else if (!value.equals(other.value))
+		} else if (!settingValue.equals(other.settingValue))
+			return false;
+		if (settingStandardValue == null) {
+			if (other.settingStandardValue != null)
+				return false;
+		} else if (!settingStandardValue.equals(other.settingStandardValue))
 			return false;
 		return true;
 	}
