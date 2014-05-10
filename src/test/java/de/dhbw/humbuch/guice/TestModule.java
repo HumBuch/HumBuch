@@ -12,6 +12,7 @@ import de.dhbw.humbuch.model.entity.Dunning;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.User;
@@ -31,5 +32,6 @@ public class TestModule extends AbstractModule {
 		bind(new TypeLiteral<DAO<Student>>() {}).to(new TypeLiteral<DAOImpl<Student>>() {});
 		bind(new TypeLiteral<DAO<TeachingMaterial>>() {}).to(new TypeLiteral<DAOImpl<TeachingMaterial>>() {});
 		bind(new TypeLiteral<DAO<User>>() {}).to(new TypeLiteral<DAOImpl<User>>() {});
+		bind(new TypeLiteral<DAO<SettingsEntry>>() {}).to(new TypeLiteral<DAOImpl<SettingsEntry>>() {});
 	}
 }
