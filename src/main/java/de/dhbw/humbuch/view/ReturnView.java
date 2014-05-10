@@ -236,6 +236,7 @@ public class ReturnView extends VerticalLayout implements View,
 			public void buttonClick(ClickEvent event) {
 				HashSet<Student> selectedStudents = (HashSet<Student>) studentMaterialSelector
 						.getCurrentlySelectedStudents();
+				studentInformationViewModel.refresh();
 				if (selectedStudents.size() == 0) {
 					SelectStudentPopupWindow sspw = new SelectStudentPopupWindow(
 							MANUAL_RETURN_TITLE, ReturnView.this, students
