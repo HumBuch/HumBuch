@@ -1,6 +1,6 @@
 SET SQL_SAFE_UPDATES=0;
 
-delete from `humbuch`.`schoolyear`;
+delete from `humbuch`.`schoolYear`;
 delete from `humbuch`.`student`;
 delete from `humbuch`.`studentSubject`;
 delete from `humbuch`.`teachingMaterial`;
