@@ -323,6 +323,11 @@ public class StudentInformationView extends VerticalLayout implements View,
 	 */
 	@Override
 	public void enter(ViewChangeEvent event) {
+		/*
+		 * BUGFIX: Set the value of the table to null so the user has to update
+		 * the selection if he/she wants to edit the same item again.
+		 */
+		studentsTable.setValue(null);
 		studentInformationViewModel.refresh();
 	}
 
