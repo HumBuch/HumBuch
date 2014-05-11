@@ -111,13 +111,7 @@ public class SettingsViewModel {
 	}
 
 	public void doUpdateSchoolYear(SchoolYear schoolYear) {
-		if (schoolYear.getYear().isEmpty()) {
-			eventBus.post(new MessageEvent("Speichern nicht möglich!",
-					"Das Feld 'Schuljahr' darf nicht leer sein.", Type.WARNING));
-		} else {
-			daoSchoolYear.update(schoolYear);
-		}
-		
+		daoSchoolYear.update(schoolYear);
 		updateSchoolYears();
 	}
 

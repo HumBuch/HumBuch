@@ -43,6 +43,8 @@ import de.davherrmann.mvvm.ViewModelComposer;
 import de.davherrmann.mvvm.annotations.BindAction;
 import de.davherrmann.mvvm.annotations.BindState;
 import de.dhbw.humbuch.event.ConfirmEvent;
+import de.dhbw.humbuch.event.MessageEvent;
+import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SettingsEntry;
@@ -138,6 +140,9 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		bindViewModel(viewModelComposer, settingsViewModel);
 	}
 
+	/**
+	 * Initializes the {@link Tabsheet}
+	 */
 	public void init() {
 		tabs = new TabSheet();
 		tabs.setSizeFull();
@@ -153,7 +158,8 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	}
 
 	/**
-	 * User tab
+	 * Constructs the user tab of the {@link Tabsheet}
+	 * @return The {@link Component} with the constructed tab
 	 */
 	private Component buildUserTab() {
 		FormLayout tab = new FormLayout();
@@ -262,7 +268,8 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 	}
 
 	/**
-	 * Categories
+	 * Constructs the tab to manage categories
+	 * @return The {@link Component} with the constructed tab
 	 */
 	private Component buildCategoryTab() {
 
@@ -454,7 +461,8 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 
 
 	/**
-	 * Due dates
+	 * Constructs the tab to manage school years
+	 * @return The {@link Component} with the constructed tab
 	 */
 	private Component buildDueDatesTab() {
 
@@ -582,9 +590,23 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 			@Override
 			public void buttonClick(ClickEvent event) {
 				commitFields(yearFields);
-				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
 				SchoolYear item = (SchoolYear) yearTable.getValue();
-				settingsViewModel.doUpdateSchoolYear(item);
+				if (item.getYear().isEmpty()) {
+					eventBus.post(new MessageEvent("Speichern nicht möglich!",
+							"Das Feld 'Schuljahr' darf nicht leer sein.", Type.WARNING));
+				} if (!item.getFromDate().before(item.getEndFirstTerm())) {
+					eventBus.post(new MessageEvent("Speichern nicht möglich!",
+							"Das Anfangsdatum muss vor dem Ende des 1. Halbjahres liegen.", Type.WARNING));
+				} if (!item.getEndFirstTerm().before(item.getBeginSecondTerm())) {
+					eventBus.post(new MessageEvent("Speichern nicht möglich!",
+							"Das Enddatum des 1. Halbjahres muss vor dem Anfangsdatum des 2. Halbjahres liegen.", Type.WARNING));
+				} if (!item.getBeginSecondTerm().before(item.getToDate())) {
+					eventBus.post(new MessageEvent("Speichern nicht möglich!",
+							"Das Anfangsdatum des 2. Halbjahres muss vor dem Enddatum des gesamten Schuljahres liegen.", Type.WARNING));
+				} else {
+					configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
+					settingsViewModel.doUpdateSchoolYear(item);
+				}
 			}
 		});
 
