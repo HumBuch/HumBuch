@@ -11,7 +11,7 @@ public final class SubjectHandler {
 		Set<Subject> subjectSet = new LinkedHashSet<Subject>();
 		for(int i = 0; i < languageInformation.length; i++){
 			if(languageInformation[i].equals("E")){
-				subjectSet.add(Subject.ENGLISH);
+				subjectSet.add(Subject.STANDARD);
 			}
 			if(languageInformation[i].equals("F")){
 				if(i == 1){
@@ -46,7 +46,7 @@ public final class SubjectHandler {
 	public static String getLanguageProfile(Set<Subject> subjectParam){
 		String languageProfile = "";
 		for(Subject subject : subjectParam){
-			if(subject.equals(Subject.ENGLISH)){
+			if(subject.equals(Subject.STANDARD)){
 				languageProfile = "E";
 			}
 			else if(subject.equals(Subject.FRENCH2) || (subject.equals(Subject.FRENCH3))){
