@@ -95,7 +95,11 @@ public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	public boolean isReceived() {
 		return received;
 	}
-
+	
+	public boolean isReturned() {
+		return getReturnDate() != null ? true : false;
+	}
+	
 	public void setReceived(boolean received) {
 		this.received = received;
 	}

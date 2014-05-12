@@ -1,0 +1,2 @@
+mysql --default-character-set=UTF8 "$OPENSHIFT_APP_NAME" < ../../src/main/sql/schema/create_db_\[MySQL\].sql
+mysql --default-character-set=UTF8 "$OPENSHIFT_APP_NAME" < ../../src/main/sql/data/clean\&inserts_db_\[MySQL\].sql
