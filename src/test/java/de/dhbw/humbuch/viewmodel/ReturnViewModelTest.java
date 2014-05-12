@@ -100,6 +100,16 @@ public class ReturnViewModelTest extends BaseTest {
 				studentInGrade(6), teachingMaterialInSecondTermOfGrade(5));
 		return daoBorrowedMaterial.insert(borrowedMaterial);
 	}
+	
+	/**
+	 * Persist a {@link BorrowedMaterial} which is due after the first term end
+	 * of last grade
+	 */
+	private BorrowedMaterial persistBorrowedMaterialDueAfterFirstTermOfLastGrade() {
+		BorrowedMaterial borrowedMaterial = borrowedMaterialReceivedInPast(
+				studentInGrade(6), teachingMaterialInFirstTermOfGrade(5));
+		return daoBorrowedMaterial.insert(borrowedMaterial);
+	}
 
 	@Before
 	public void refreshViewModel() {
@@ -170,6 +180,24 @@ public class ReturnViewModelTest extends BaseTest {
 		persistSchoolYearSecondTermEnded();
 		persistSchoolYearSecondTermBegun();
 		persistBorrowedMaterialDueAfterSecondTermOfLastGrade();
+		vm.refresh();
+		assertEquals(1, vm.returnListStudent.get().size());
+	}
+	
+	@Test
+	public void testOneToReturnWhenInSecondTermBorrowedUntilFirstTermOfLastGrade() {
+		persistSchoolYearSecondTermEnded();
+		persistSchoolYearSecondTermBegun();
+		persistBorrowedMaterialDueAfterFirstTermOfLastGrade();
+		vm.refresh();
+		assertEquals(1, vm.returnListStudent.get().size());
+	}
+	
+	@Test
+	public void testOneToReturnWhenInFirstTermBorrowedUntilFirstTermOfLastGrade() {
+		persistSchoolYearSecondTermEnded();
+		persistSchoolYearFirstTermBegun();
+		persistBorrowedMaterialDueAfterFirstTermOfLastGrade();
 		vm.refresh();
 		assertEquals(1, vm.returnListStudent.get().size());
 	}
