@@ -28,7 +28,7 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class ReturnViewModel {
-	
+
 	public interface GenerateStudentReturnList extends ActionHandler {}
 	public interface SetBorrowedMaterialsReturned extends ActionHandler {}
 	public interface RefreshStudents extends ActionHandler {}
@@ -45,7 +45,6 @@ public class ReturnViewModel {
 	
 	private SchoolYear recentlyActiveSchoolYear;
 
-	
 	/**
 	 * Constructor
 	 * 
@@ -83,14 +82,16 @@ public class ReturnViewModel {
 			for(Student student : grade.getStudents()) {
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
 				for (BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
-					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm()).before(new Date());
-//					boolean notNeededNextTerm = borrowedMaterial.isReceived() && borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
+					Term recentlyActiveTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
+					Date borrowUntilDate = borrowedMaterial.getBorrowUntil();
+					
+					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveTerm).before(new Date());
 					boolean notNeededNextTerm = borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
-					boolean borrowUntilExceeded = borrowedMaterial.getBorrowUntil() == null ? false : borrowedMaterial.getBorrowUntil().before(new Date());
-					boolean isManualLended = borrowedMaterial.getBorrowUntil() == null ? false : true;
-					if(!isManualLended && isAfterCurrentTerm && notNeededNextTerm) {
+					boolean borrowUntilExceeded = borrowUntilDate == null ? false : borrowUntilDate.before(new Date());
+					boolean isManualLended = borrowUntilDate == null ? false : true;
+					if(!isManualLended && notNeededNextTerm && (borrowedMaterial.getTeachingMaterial().getToTerm() != recentlyActiveTerm ? true : isAfterCurrentTerm)) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
-					} else if (borrowedMaterial.getReturnDate() == null && borrowUntilExceeded) {
+					} else if (!borrowedMaterial.isReturned() && borrowUntilExceeded) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);						
 					}
 				}
