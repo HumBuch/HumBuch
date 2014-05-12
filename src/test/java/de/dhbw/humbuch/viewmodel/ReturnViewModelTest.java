@@ -8,6 +8,9 @@ import static de.dhbw.humbuch.test.TestUtils.todayPlusDays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
@@ -73,29 +76,29 @@ public class ReturnViewModelTest extends BaseTest {
 	/**
 	 * Persist a {@link BorrowedMaterial} which is due after the first term end
 	 */
-	private void persistBorrowedMaterialDueAfterFirstTermOfThisGrade() {
+	private BorrowedMaterial persistBorrowedMaterialDueAfterFirstTermOfThisGrade() {
 		BorrowedMaterial borrowedMaterial = borrowedMaterialReceivedInPast(
 				studentInGrade(6), teachingMaterialInFirstTermOfGrade(6));
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		return daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 
 	/**
 	 * Persist a {@link BorrowedMaterial} which is due after the second term end
 	 */
-	private void persistBorrowedMaterialDueAfterSecondTermOfThisGrade() {
+	private BorrowedMaterial persistBorrowedMaterialDueAfterSecondTermOfThisGrade() {
 		BorrowedMaterial borrowedMaterial = borrowedMaterialReceivedInPast(
 				studentInGrade(6), teachingMaterialInSecondTermOfGrade(6));
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		return daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 
 	/**
 	 * Persist a {@link BorrowedMaterial} which is due after the second term end
 	 * of last grade
 	 */
-	private void persistBorrowedMaterialDueAfterSecondTermOfLastGrade() {
+	private BorrowedMaterial persistBorrowedMaterialDueAfterSecondTermOfLastGrade() {
 		BorrowedMaterial borrowedMaterial = borrowedMaterialReceivedInPast(
 				studentInGrade(6), teachingMaterialInSecondTermOfGrade(5));
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		return daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 
 	@Before
@@ -162,5 +165,16 @@ public class ReturnViewModelTest extends BaseTest {
 		assertEquals(1, vm.returnListStudent.get().size());
 	}
 	
-	//TODO: test returning material
+	@Test
+	public void testZeroToReturnAfterReturningOneToReturn() {
+		persistSchoolYearFirstTermEnded();
+		BorrowedMaterial borrowedMaterial = persistBorrowedMaterialDueAfterFirstTermOfThisGrade();
+		vm.refresh();
+		assertEquals(1, vm.returnListStudent.get().size());
+		Collection<BorrowedMaterial> borrowedMaterials = new ArrayList<>();
+		borrowedMaterials.add(borrowedMaterial);
+		vm.setBorrowedMaterialsReturned(borrowedMaterials);
+		vm.refresh();
+		assertEquals(0, vm.returnListStudent.get().size());
+	}
 }
