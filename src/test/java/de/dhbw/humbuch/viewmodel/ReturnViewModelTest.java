@@ -166,6 +166,15 @@ public class ReturnViewModelTest extends BaseTest {
 	}
 	
 	@Test
+	public void testOneToReturnWhenInSecondTermBorrowedUntilSecondTermOfLastGrade() {
+		persistSchoolYearSecondTermEnded();
+		persistSchoolYearSecondTermBegun();
+		persistBorrowedMaterialDueAfterSecondTermOfLastGrade();
+		vm.refresh();
+		assertEquals(1, vm.returnListStudent.get().size());
+	}
+	
+	@Test
 	public void testZeroToReturnAfterReturningOneToReturn() {
 		persistSchoolYearFirstTermEnded();
 		BorrowedMaterial borrowedMaterial = persistBorrowedMaterialDueAfterFirstTermOfThisGrade();
