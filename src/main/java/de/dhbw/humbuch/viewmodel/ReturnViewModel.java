@@ -74,40 +74,44 @@ public class ReturnViewModel {
 	 */
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student,List<BorrowedMaterial>>>();
-		
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+
 		for(Grade grade : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
-			
+
 			for(Student student : grade.getStudents()) {
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
-				for (BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
+				for(BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
+					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 					Term recentlyActiveTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
 					Date borrowUntilDate = borrowedMaterial.getBorrowUntil();
-					
+
 					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveTerm).before(new Date());
 					boolean notNeededNextTerm = borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowUntilDate == null ? false : borrowUntilDate.before(new Date());
 					boolean isManualLended = borrowUntilDate == null ? false : true;
-					if(!isManualLended && notNeededNextTerm && (borrowedMaterial.getTeachingMaterial().getToTerm() != recentlyActiveTerm ? true : isAfterCurrentTerm)) {
+					boolean toTermEqualsRecentlyActiceTerm = teachingMaterial.getToGrade() == student.getGrade().getGrade()	&& teachingMaterial.getToTerm() == recentlyActiveTerm;
+
+					if(!isManualLended	&& notNeededNextTerm && (toTermEqualsRecentlyActiceTerm ? isAfterCurrentTerm : true)) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					} else if (!borrowedMaterial.isReturned() && borrowUntilExceeded) {
-						unreturnedBorrowedMaterials.add(borrowedMaterial);						
+						unreturnedBorrowedMaterials.add(borrowedMaterial);
 					}
 				}
-				
+
 				if(!unreturnedBorrowedMaterials.isEmpty()) {
 					Collections.sort(unreturnedBorrowedMaterials);
-					studentWithUnreturnedBorrowedMaterials.put(student, unreturnedBorrowedMaterials);
+					studentWithUnreturnedBorrowedMaterials.put(student,	unreturnedBorrowedMaterials);
 				}
 			}
-			
+
 			if(!studentWithUnreturnedBorrowedMaterials.isEmpty()) {
 				toReturn.put(grade, studentWithUnreturnedBorrowedMaterials);
 			}
 		}
 
 		returnListStudent.set(toReturn);
+
 	}
 	
 	/**
