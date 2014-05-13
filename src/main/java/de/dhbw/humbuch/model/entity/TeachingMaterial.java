@@ -22,6 +22,10 @@ import javax.persistence.Table;
 
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="teachingMaterial")
 public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<TeachingMaterial> {

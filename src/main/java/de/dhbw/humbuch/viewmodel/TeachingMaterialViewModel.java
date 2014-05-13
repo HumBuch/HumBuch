@@ -21,6 +21,10 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
+/**
+ * @author David Vitt
+ *
+ */
 public class TeachingMaterialViewModel {
 
 	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}

@@ -9,6 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="setting")
 public class SettingsEntry implements Map.Entry<String, String>, de.dhbw.humbuch.model.entity.Entity, Serializable  {

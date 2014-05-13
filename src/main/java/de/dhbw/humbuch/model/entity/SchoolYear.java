@@ -9,6 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="schoolYear")
 public class SchoolYear implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<SchoolYear> {

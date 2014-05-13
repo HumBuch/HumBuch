@@ -21,6 +21,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="student")
 public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Student> {

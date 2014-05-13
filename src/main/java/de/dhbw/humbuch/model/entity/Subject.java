@@ -1,5 +1,9 @@
 package de.dhbw.humbuch.model.entity;
 
+/**
+ * @author David Vitt
+ *
+ */
 public enum Subject {
 	
 	@Deprecated
