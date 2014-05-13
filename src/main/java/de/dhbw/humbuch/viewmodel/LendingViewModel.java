@@ -218,8 +218,6 @@ public class LendingViewModel {
 	 */
 	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
 //		LOG.info("getNewTeachingMaterials()_start");
-		LOG.info("" + student.getGrade());
-		LOG.info("" + recentlyActiveSchoolYear.getRecentlyActiveTerm());
 		Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
 				Restrictions.and(
 						Restrictions.le("fromGrade", student.getGrade().getGrade())
