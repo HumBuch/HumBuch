@@ -45,8 +45,8 @@ public class StudentInformationViewModelTest extends BaseTest {
 	private void importTwoStudents(boolean fullImport) {
 		Grade grade = new Grade.Builder(5, "").build();
 		List<Student> students = new ArrayList<Student>();
-		Student student1 = new Student.Builder(4, "Peter", "Doe", null, grade).build();
-		Student student2 = new Student.Builder(5, "Claude", "Gable", null, grade).build();
+		Student student1 = new Student.Builder(4, "Roberto", "Rastapopoulos", null, grade).build();
+		Student student2 = new Student.Builder(5, "Bianca", "Castafiore", null, grade).build();
 		students.add(student1);
 		students.add(student2);
 		vm.persistStudents(students, fullImport);
@@ -61,6 +61,14 @@ public class StudentInformationViewModelTest extends BaseTest {
 		students.add(student1);
 		students.add(student2);
 		students.add(student3);
+		vm.persistStudents(students, true);
+	}
+	
+	private void overrideStudentWithId(int id){
+		Grade grade = new Grade.Builder(7, "").build();
+		List<Student> students = new ArrayList<Student>();
+		Student student1 = new Student.Builder(id, "Balduin", "Bienlein", null, grade).build();
+		students.add(student1);
 		vm.persistStudents(students, true);
 	}
 
@@ -81,7 +89,7 @@ public class StudentInformationViewModelTest extends BaseTest {
 		importTwoStudents(true);
 		refreshViewModel();
 		assertEquals(2, daoStudent.findAll().size());
-		assertEquals("Claude", daoStudent.find(5).getFirstname());
+		assertEquals("Bianca", daoStudent.find(5).getFirstname());
 	}
 	
 	@Test
@@ -92,5 +100,16 @@ public class StudentInformationViewModelTest extends BaseTest {
 		refreshViewModel();
 		assertEquals(5, daoStudent.findAll().size());
 		assertEquals("Milou", daoStudent.find(2).getLastname());
+	}
+	
+	@Test
+	public void updateStudentByImport(){
+		importThreeStudents();
+		refreshViewModel();
+		int id = 3;
+		assertEquals("Haddock", daoStudent.find(id).getLastname());
+		overrideStudentWithId(id);
+		refreshViewModel();
+		assertEquals("Bienlein", daoStudent.find(id).getLastname());
 	}
 }
