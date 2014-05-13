@@ -190,7 +190,10 @@ public class DunningViewModel {
 	 * If so, close the dunning.
 	 */
 	private void checkIfDunningShouldBeClosed() {
-		List<Dunning> openDunnings = daoDunning.findAllWithCriteria(Restrictions.eq("status", Dunning.Status.SENT));
+		List<Dunning> openDunnings = daoDunning.findAllWithCriteria(
+				Restrictions.or(
+							Restrictions.eq("status", Dunning.Status.SENT),
+							Restrictions.eq("status", Dunning.Status.OPENED)));
 		for (Dunning dunning : openDunnings) {
 			Set<BorrowedMaterial> borrowedMaterials = dunning.getBorrowedMaterials();
 			Boolean toBeClosed = true;
