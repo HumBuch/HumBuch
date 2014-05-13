@@ -30,17 +30,10 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 public class DunningViewModel {
 
-//	public interface StudentsDunned extends State<Collection<Dunning>> {}
-//	public interface StudentsToDun extends State<Collection<Dunning>> {}
 	public interface Dunnings extends State<Collection<Dunning>> {}
 
 	public interface doUpdateDunning extends ActionHandler {}
 
-//	@ProvidesState(StudentsDunned.class)
-//	public final State<Collection<Dunning>> studentsDunned = new BasicState<>(Collection.class);
-//
-//	@ProvidesState(StudentsToDun.class)
-//	public final State<Collection<Dunning>> studentsToDun = new BasicState<>(Collection.class);
 	@ProvidesState(Dunnings.class)
 	public final State<Collection<Dunning>> dunnings = new BasicState<>(Collection.class);
 
@@ -215,16 +208,6 @@ public class DunningViewModel {
 	}
 
 	private void updateStates() {
-//		Collection<Dunning> alreadyDunned = daoDunning.findAllWithCriteria(
-//				Restrictions.or(
-//						Restrictions.eq("status", Dunning.Status.SENT),
-//						Restrictions.eq("status", Dunning.Status.CLOSED)));
-//		
-//		Collection<Dunning> toBeDunned = daoDunning.findAllWithCriteria(
-//				Restrictions.eq("status", Dunning.Status.OPENED));
-//		
-//		studentsDunned.set(alreadyDunned);
-//		studentsToDun.set(toBeDunned);
 		Collection<Dunning> dunnings = daoDunning.findAll();
 		this.dunnings.set(dunnings);
 	}
