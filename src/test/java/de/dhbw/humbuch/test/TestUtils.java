@@ -76,6 +76,10 @@ public class TestUtils {
 				.beginSecondTerm(todayPlusDays(beginSecondTermDays)).build();
 		return schoolYear;
 	}
+	
+	public static SchoolYear schoolYearFirstTermNotStarted() {
+		return schoolYear(1, 2, 3, 4);
+	}
 
 	public static SchoolYear schoolYearFirstTermStarted() {
 		return schoolYear(-1, 1, 1, 2);
