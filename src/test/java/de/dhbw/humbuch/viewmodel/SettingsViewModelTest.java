@@ -53,7 +53,7 @@ public class SettingsViewModelTest extends BaseTest {
 
 	@Before
 	public void refreshViewModel() {
-		properties.currentUser.set(user());
+		properties.currentUser.set(randomUser());
 		vm.refresh();
 	}
 
@@ -147,5 +147,51 @@ public class SettingsViewModelTest extends BaseTest {
 		vm.doDeleteCategory(category);
 		assertEquals(0, vm.categories.get().size());
 	}
+	
+	@Test
+	public void testDoDeleteSchoolYearNotAllowedWhenInFirstTerm() {
+		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermStarted());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		vm.doDeleteSchoolYear(schoolYear);
+		assertEquals(1, vm.schoolYears.get().size());
+	}
+
+	@Test
+	public void testDoDeleteSchoolYearNotAllowedWhenAfterFirstTerm() {
+		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermEnded());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		vm.doDeleteSchoolYear(schoolYear);
+		assertEquals(1, vm.schoolYears.get().size());
+	}
+	
+	@Test
+	public void testDoDeleteSchoolYearNotAllowedWhenInSecondTerm() {
+		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearSecondTermStarted());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		vm.doDeleteSchoolYear(schoolYear);
+		assertEquals(1, vm.schoolYears.get().size());
+	}
+	
+	@Test
+	public void testDoDeleteSchoolYearAllowedWhenBeforeFirstTerm() {
+		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermNotStarted());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		vm.doDeleteSchoolYear(schoolYear);
+		assertEquals(0, vm.schoolYears.get().size());
+	}
+	
+	@Test
+	public void testDoDeleteSchoolYearAllowedWhenAfterSecondTerm() {
+		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearSecondTermEnded());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		vm.doDeleteSchoolYear(schoolYear);
+		assertEquals(0, vm.schoolYears.get().size());
+	}
+	
 	// assertNotNull(vm.passwordChangeStatus.get());
 }
