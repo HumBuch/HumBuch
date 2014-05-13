@@ -77,7 +77,7 @@ public class Sidebar extends VerticalLayout {
 				}
 			});
 			String f = Page.getCurrent().getUriFragment();
-			if (f.substring(1).equals(view[1])) {
+			if (f != null && f.substring(1).equals(view[1])) {
 				b.addStyleName("selected");
 			}
 

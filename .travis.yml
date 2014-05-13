@@ -1,1 +1,16 @@
 language: java
+
+before_install:
+  - sudo rm /etc/apt/sources.list.d/git-ppa-source.list
+  - sudo apt-get remove git && sudo apt-get remove git-man && sudo apt-get install git-man && sudo apt-get install git
+
+deploy:
+  provider: openshift
+  user: davherrmann@googlemail.com
+  password:
+    secure: WvsEwdJJfxMfQrFt66UaL+COj+7VpsNHhOgTv3x5e+FShjluXDj2f+kw80kkAc9vQhLFqj8p00bS/vyx/HAW4ST8r5/4NJsHgfXFpxM0/1gBsDLvMx3BiEanDaFRNuykCZKGr7/Uzj4skHP0Kz7KfjgZjfpSpTGp+qxB3F5pd/M=
+  app: HumBuch
+  domain: davherrmann
+  on:
+    repo: HumBuch/HumBuch
+    branch: master

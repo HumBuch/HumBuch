@@ -1,0 +1,6 @@
+echo "recreating and filling DB..."
+echo "current path: $PWD"
+cd "$OPENSHIFT_REPO_DIR"
+echo "current path: $PWD"
+mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" -p"$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" --default-character-set=UTF8 "$OPENSHIFT_APP_NAME" < ./src/main/sql/schema/create_db_\[MySQL\].sql
+mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" -p"$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" --default-character-set=UTF8 "$OPENSHIFT_APP_NAME" < ./src/main/sql/data/clean\&inserts_db_\[MySQL\].sql

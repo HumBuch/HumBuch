@@ -23,6 +23,7 @@ import de.dhbw.humbuch.event.MessageEvent.Type;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.User;
 import de.dhbw.humbuch.util.PasswordHash;
 import de.dhbw.humbuch.view.MainUI;
@@ -36,6 +37,7 @@ public class SettingsViewModel {
 
 	public interface SchoolYears extends State<Collection<SchoolYear>> {}
 	public interface Categories extends State<Collection<Category>> {}
+	public interface SettingsEntries extends State<Collection<SettingsEntry>> {}
 	public interface PasswordChangeStatus extends State<ChangeStatus> {}
 	public interface UserName extends State<String> {}
 	public interface UserEmail extends State<String> {}
@@ -46,6 +48,9 @@ public class SettingsViewModel {
 	@ProvidesState(Categories.class)
 	private State<Collection<Category>> categories = new BasicState<>(Collection.class);
 
+	@ProvidesState(SettingsEntries.class)
+	private State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
+	
 	@ProvidesState(PasswordChangeStatus.class)
 	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
 
@@ -60,14 +65,16 @@ public class SettingsViewModel {
 	private DAO<SchoolYear> daoSchoolYear;
 	private DAO<User> daoUser;
 	private DAO<Category> daoCategory;
+	private DAO<SettingsEntry> daoSettingsEntry;
 
 	@Inject
 	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser, DAO<Category> daoCategory, 
-			Properties properties, EventBus eventBus) {
+			DAO<SettingsEntry> daoSettingsEntry, Properties properties, EventBus eventBus) {
 		this.eventBus = eventBus;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoUser = daoUser;
 		this.daoCategory = daoCategory;
+		this.daoSettingsEntry = daoSettingsEntry;
 		this.currentUser = properties.currentUser;
 		this.currentUser.addStateChangeListener(new StateChangeListener() {
 			@Override
@@ -82,6 +89,7 @@ public class SettingsViewModel {
 	public void refresh() {
 		updateSchoolYears();
 		updateCategories();
+		updateSettingsEntries();
 		updateUser();
 	}
 
@@ -92,6 +100,10 @@ public class SettingsViewModel {
 	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 	}
+	
+	private void updateSettingsEntries() {
+		settingsEntries.set(daoSettingsEntry.findAll());
+	}
 
 	private void updateUser() {
 		userName.set(currentUser.get().getUsername());
@@ -99,13 +111,7 @@ public class SettingsViewModel {
 	}
 
 	public void doUpdateSchoolYear(SchoolYear schoolYear) {
-		if (schoolYear.getYear().isEmpty()) {
-			eventBus.post(new MessageEvent("Speichern nicht möglich!",
-					"Das Feld 'Schuljahr' darf nicht leer sein.", Type.WARNING));
-		} else {
-			daoSchoolYear.update(schoolYear);
-		}
-		
+		daoSchoolYear.update(schoolYear);
 		updateSchoolYears();
 	}
 
@@ -129,6 +135,11 @@ public class SettingsViewModel {
 		}
 		
 		updateCategories();
+	}
+	
+	public void doUpdateSettingsEntry(SettingsEntry settingsEntry) {
+		daoSettingsEntry.update(settingsEntry);
+		updateSettingsEntries();
 	}
 
 	public void doDeleteCategory(Category category) {

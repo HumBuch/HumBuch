@@ -55,6 +55,15 @@ public class LendingViewModel {
 	
 	private SchoolYear recentlyActiveSchoolYear;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param daoStudent
+	 * @param daoTeachingMaterial
+	 * @param daoGrade
+	 * @param daoBorrowedMaterial
+	 * @param daoSchoolYear
+	 */
 	@Inject
 	public LendingViewModel(DAO<Student> daoStudent, DAO<TeachingMaterial> daoTeachingMaterial, DAO<Grade> daoGrade, 
 			DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
@@ -72,6 +81,12 @@ public class LendingViewModel {
 		updateAllStudentsBorrowedMaterials();
 	}
 	
+	/**
+	 * Generates "list" of all {@link TeachingMaterial}s required by the given {@link Grade}s.<br>
+	 * The "list" is returned as {@code Map<Grade, Map<TeachingMaterial, Integer>>} in the state {@link MaterialListGrades}
+	 * 
+	 * @param selectedGrades {@link Set} of {@link Grade}s
+	 */
 	@HandlesAction(GenerateMaterialListGrades.class)
 	public void generateMaterialListGrades(Set<Grade> selectedGrades) {
 		Map<Grade, Map<TeachingMaterial, Integer>> materialList = new TreeMap<Grade, Map<TeachingMaterial, Integer>>();
@@ -96,6 +111,11 @@ public class LendingViewModel {
 		materialListGrades.set(materialList);
 	}
 	
+	/**
+	 * Marks the given {@link BorrowedMaterial}s as {@code received}.
+	 * 
+	 * @param borrowedMaterials {@link Collection} of {@link BorrowedMaterial}s that should be marked {@code received} 
+	 */
 	@HandlesAction(SetBorrowedMaterialsReceived.class)
 	public void setBorrowedMaterialsReceived(Collection<BorrowedMaterial> borrowedMaterials) {
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
@@ -106,12 +126,22 @@ public class LendingViewModel {
 		updateAllStudentsBorrowedMaterials();
 	}
 	
+	/**
+	 * Lends the given {@link TeachingMaterial} for the given {@link Student} until the given {@link Date}.
+	 * 
+	 * @param student {@link Student} to lend this...
+	 * @param toLend {@link TeachingMaterial} ...
+	 * @param borrowUntil until this {@link Date}
+	 */
 	@HandlesAction(DoManualLending.class)
 	public void doManualLending(Student student, TeachingMaterial toLend, Date borrowUntil) {
 		persistBorrowedMaterial(student, toLend, borrowUntil);
 		updateAllStudentsBorrowedMaterials();
 	}
 	
+	/**
+	 * Updates the list of {@link BorrowedMaterial}s for all {@link Student}s
+	 */
 	private void updateAllStudentsBorrowedMaterials() {
 		for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false))) {
 			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
@@ -120,16 +150,27 @@ public class LendingViewModel {
 		updateUnreceivedBorrowedMaterialsState();
 	}
 
+	/**
+	 * Updates the {@link State} {@link TeachingMaterials}
+	 */
 	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 	
+	/**
+	 * Updates the recently actice {@link SchoolYear}
+	 */
 	private void updateSchoolYear() {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
 				Restrictions.le("fromDate", new Date()));
 	}
 	
+	/**
+	 * Updates the {@link State} of all {@link Student}s unreceived {@link BorrowedMaterial}s.<br>
+	 * Returned as {@code Map<Grade, Map<Student, List<BorrowedMaterial>>>} in {@link StudentsWithUnreceivedBorrowedMaterials}
+	 * 
+	 */
 	private void updateUnreceivedBorrowedMaterialsState() {
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
@@ -152,6 +193,12 @@ public class LendingViewModel {
 		studentsWithUnreceivedBorrowedMaterials.set(unreceivedMap);
 	}
 	
+	/**
+	 * Returns list of {@link TeachingMaterial}s that have to be lended by the given {@link Student}
+	 * 
+	 * @param student
+	 * @return {@link Collection} of {@link TeachingMaterial}s that have to be lended
+	 */
 	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
 		Collection<TeachingMaterial> teachingMerterials = daoTeachingMaterial.findAllWithCriteria(
 				Restrictions.and(
@@ -177,6 +224,12 @@ public class LendingViewModel {
 		return toLend;
 	}
 	
+	/**
+	 * Persists the {@link TeachingMaterial}s for the {@link Student} as {@link BorrowedMaterial}s in the database.
+	 * 
+	 * @param student
+	 * @param teachingMaterials
+	 */
 	private void persistBorrowedMaterials(Student student, List<TeachingMaterial> teachingMaterials) {
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
 			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
@@ -187,11 +240,25 @@ public class LendingViewModel {
 		}
 	}
 	
+	/**
+	 * Persists a single {@link TeachingMaterial} as {@link BorrowedMaterial}.<br>
+	 * Is needed for manual lending.
+	 * 
+	 * @param student
+	 * @param teachingMaterial
+	 * @param borrowUntil
+	 */
 	private void persistBorrowedMaterial(Student student, TeachingMaterial teachingMaterial, Date borrowUntil) {
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).build();
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).received(true).build();
 		daoBorrowedMaterial.insert(borrowedMaterial);
 	}
 	
+	/**
+	 * Returns list of all {@link TeachingMaterial}s owned by the given {@link Student}.
+	 * 
+	 * @param student
+	 * @return {@link List} of the {@link Student}s {@link TeachingMaterial}s
+	 */
 	private List<TeachingMaterial> getOwningTeachingMaterials(Student student) {
 		List<TeachingMaterial> owning = new ArrayList<TeachingMaterial>();
 		for(BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {

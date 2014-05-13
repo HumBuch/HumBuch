@@ -21,6 +21,7 @@
 	</ciManagement>
 
 	<properties>
+		<app.name>humbuch</app.name>
 		<build.number>SNAPSHOT</build.number>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<vaadin.version>7.1.5</vaadin.version>
@@ -31,6 +32,7 @@
 		<db.passwd></db.passwd>
 		<db.url>127.0.0.1</db.url>
 		<db.port>3306</db.port>
+		<config.persistence.localhost>persistModule</config.persistence.localhost>
 	</properties>
 
 	<repositories>
@@ -219,9 +221,39 @@
 			<version>1.0.3</version>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<!-- When built in OpenShift the 'openshift' profile will be used when 
+				invoking mvn. -->
+			<!-- Use this profile for any OpenShift specific customization your app 
+				will need. -->
+			<!-- By default that is to put the resulting archive into the 'webapps' 
+				folder. -->
+			<!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
+			<id>openshift</id>
+			<properties>
+				<config.persistence.openshift>persistModule</config.persistence.openshift>
+				<config.persistence.localhost>persistDummy</config.persistence.localhost>
+			</properties>
+			<build>
+				<finalName>${app.name}</finalName>
+				<plugins>
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.1.1</version>
+						<configuration>
+							<outputDirectory>webapps</outputDirectory>
+							<warName>ROOT</warName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
-		<finalName>humbuch</finalName>
+		<finalName>${app.name}</finalName>
 
 		<resources>
 			<resource>
