@@ -77,7 +77,7 @@ public class TestUtils {
 	}
 
 	public static TeachingMaterial teachingMaterialInBothTermsOfGrade(int grade) {
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(category(),
 				"FooBook1", null, todayPlusDays(-20)).fromGrade(grade)
 				.fromTerm(Term.FIRST).toGrade(grade).toTerm(Term.SECOND)
 				.build();
@@ -85,14 +85,14 @@ public class TestUtils {
 	}
 
 	public static TeachingMaterial teachingMaterialInFirstTermOfGrade(int grade) {
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(category(),
 				"FooBook1", null, todayPlusDays(-20)).fromGrade(grade)
 				.fromTerm(Term.FIRST).toGrade(grade).toTerm(Term.FIRST).build();
 		return teachingMaterial;
 	}
 
 	public static TeachingMaterial teachingMaterialInSecondTermOfGrade(int grade) {
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(category(),
 				"FooBook1", null, todayPlusDays(-20)).fromGrade(grade)
 				.fromTerm(Term.SECOND).toGrade(grade).toTerm(Term.SECOND)
 				.build();
