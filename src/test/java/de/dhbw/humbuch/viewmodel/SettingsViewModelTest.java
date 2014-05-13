@@ -2,6 +2,8 @@ package de.dhbw.humbuch.viewmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 import static de.dhbw.humbuch.test.TestUtils.*;
 
 import javax.persistence.EntityManager;
@@ -147,10 +149,11 @@ public class SettingsViewModelTest extends BaseTest {
 		vm.doDeleteCategory(category);
 		assertEquals(0, vm.categories.get().size());
 	}
-	
+
 	@Test
 	public void testDoDeleteSchoolYearNotAllowedWhenInFirstTerm() {
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermStarted());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearFirstTermStarted());
 		vm.refresh();
 		assertEquals(1, vm.schoolYears.get().size());
 		vm.doDeleteSchoolYear(schoolYear);
@@ -159,39 +162,105 @@ public class SettingsViewModelTest extends BaseTest {
 
 	@Test
 	public void testDoDeleteSchoolYearNotAllowedWhenAfterFirstTerm() {
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermEnded());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearFirstTermEnded());
 		vm.refresh();
 		assertEquals(1, vm.schoolYears.get().size());
 		vm.doDeleteSchoolYear(schoolYear);
 		assertEquals(1, vm.schoolYears.get().size());
 	}
-	
+
 	@Test
 	public void testDoDeleteSchoolYearNotAllowedWhenInSecondTerm() {
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearSecondTermStarted());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearSecondTermStarted());
 		vm.refresh();
 		assertEquals(1, vm.schoolYears.get().size());
 		vm.doDeleteSchoolYear(schoolYear);
 		assertEquals(1, vm.schoolYears.get().size());
 	}
-	
+
 	@Test
 	public void testDoDeleteSchoolYearAllowedWhenBeforeFirstTerm() {
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearFirstTermNotStarted());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearFirstTermNotStarted());
 		vm.refresh();
 		assertEquals(1, vm.schoolYears.get().size());
 		vm.doDeleteSchoolYear(schoolYear);
 		assertEquals(0, vm.schoolYears.get().size());
 	}
-	
+
 	@Test
 	public void testDoDeleteSchoolYearAllowedWhenAfterSecondTerm() {
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearSecondTermEnded());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearSecondTermEnded());
 		vm.refresh();
 		assertEquals(1, vm.schoolYears.get().size());
 		vm.doDeleteSchoolYear(schoolYear);
 		assertEquals(0, vm.schoolYears.get().size());
 	}
-	
+
+	@Test
+	public void testDoUpdateSchoolYear() {
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearFirstTermStarted());
+		vm.refresh();
+		assertEquals(1, vm.schoolYears.get().size());
+		SchoolYear referenceSchoolYear = schoolYearSecondTermEnded();
+		schoolYear.setFromDate(referenceSchoolYear.getFromDate());
+		schoolYear.setEndFirstTerm(referenceSchoolYear.getEndFirstTerm());
+		schoolYear.setBeginSecondTerm(referenceSchoolYear.getBeginSecondTerm());
+		schoolYear.setToDate(referenceSchoolYear.getToDate());
+		vm.doUpdateSchoolYear(schoolYear);
+		schoolYear = vm.schoolYears.get().iterator().next();
+		assertEquals(referenceSchoolYear.getFromDate(),
+				schoolYear.getFromDate());
+		assertEquals(referenceSchoolYear.getEndFirstTerm(),
+				schoolYear.getEndFirstTerm());
+		assertEquals(referenceSchoolYear.getBeginSecondTerm(),
+				schoolYear.getBeginSecondTerm());
+		assertEquals(referenceSchoolYear.getToDate(), schoolYear.getToDate());
+	}
+
+	@Test
+	public void testDoUpdateCategoryAllowed() {
+		final String newName = "NEWNAME";
+		Category category = daoCategory.insert(category());
+		vm.refresh();
+		category.setName(newName);
+		vm.doUpdateCategory(category);
+		assertEquals(newName, vm.categories.get().iterator().next().getName());
+	}
+
+	@Test
+	public void testDoUpdateCategoryNotAllowedWithEmptyName() {
+		final String newName = "";
+		Category category = daoCategory.insert(category());
+		vm.refresh();
+		category.setName(newName);
+		vm.doUpdateCategory(category);
+		assertThat(vm.categories.get().iterator().next().getName(),
+				not(newName));
+	}
+
+	@Test
+	public void testDoUpdateSettingsEntry() {
+		SettingsEntry settingsEntry = daoSettingsEntry.insert(settingsEntry());
+		vm.refresh();
+		assertEquals(1, vm.settingsEntries.get().size());
+
+		SettingsEntry referenceSettingsEntry = settingsEntry();
+		settingsEntry.setSettingStandardValue(referenceSettingsEntry
+				.getSettingStandardValue());
+		settingsEntry.setSettingValue(referenceSettingsEntry.getSettingValue());
+		vm.doUpdateSettingsEntry(settingsEntry);
+		assertThat(vm.settingsEntries.get().iterator().next()
+				.getSettingStandardValue(),
+				is(referenceSettingsEntry.getSettingStandardValue()));
+		assertThat(
+				vm.settingsEntries.get().iterator().next().getSettingValue(),
+				is(referenceSettingsEntry.getSettingValue()));
+	}
+
 	// assertNotNull(vm.passwordChangeStatus.get());
 }
