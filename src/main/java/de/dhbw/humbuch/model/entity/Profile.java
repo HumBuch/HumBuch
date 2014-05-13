@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Deprecated
 public class Profile {
 

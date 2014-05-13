@@ -12,6 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="category")
 public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Category> {

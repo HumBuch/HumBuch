@@ -13,6 +13,8 @@ import de.dhbw.humbuch.model.entity.User;
 
 /**
  * Provides a sessionscoped set of properties. 
+ * 
+ * @author David Vitt
  *
  */
 public class Properties {

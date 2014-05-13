@@ -14,6 +14,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+/**
+ * @author David Vitt
+ *
+ */
 public class ConfirmDialog extends Window {
 	private static final long serialVersionUID = 5531902128467189080L;
 

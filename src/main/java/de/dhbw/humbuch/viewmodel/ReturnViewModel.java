@@ -10,6 +10,8 @@ import java.util.TreeMap;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -27,7 +29,12 @@ import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
+/**
+ * @author David Vitt
+ *
+ */
 public class ReturnViewModel {
+	private final static Logger LOG = LoggerFactory.getLogger(ReturnViewModel.class);
 
 	public interface GenerateStudentReturnList extends ActionHandler {}
 	public interface SetBorrowedMaterialsReturned extends ActionHandler {}
@@ -63,8 +70,10 @@ public class ReturnViewModel {
 	
 	@AfterVMBinding
 	public void refresh() {
+		LOG.info("refresh_start");
 		updateSchoolYear();
 		updateReturnList();
+		LOG.info("refresh_end");
 	}
 	
 	/**
@@ -74,6 +83,7 @@ public class ReturnViewModel {
 	 */
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
+		LOG.info("generateStudentReturnList()_start");
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 
 		for(Grade grade : daoGrade.findAll()) {
@@ -111,7 +121,7 @@ public class ReturnViewModel {
 		}
 
 		returnListStudent.set(toReturn);
-
+		LOG.info("generateStudentReturnList()_end");
 	}
 	
 	/**
@@ -121,12 +131,14 @@ public class ReturnViewModel {
 	 */
 	@HandlesAction(SetBorrowedMaterialsReturned.class)
 	public void setBorrowedMaterialsReturned(Collection<BorrowedMaterial> borrowedMaterials) {
+		LOG.info("setBorrowedMaterialsReturned()_start");
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
 			borrowedMaterial.setReturnDate(new Date());
 			daoBorrowedMaterial.update(borrowedMaterial);
 		}
 		
 		updateReturnList();
+		LOG.info("setBorrowedMaterialsReturned()_end");
 	}
 	
 	@HandlesAction(RefreshStudents.class)
