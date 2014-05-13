@@ -134,8 +134,6 @@ public class SettingsViewModelTest extends BaseTest {
 	public void testDoDeleteCategoryNotAllowed() {
 		TeachingMaterial teachingMaterial = daoTeachingMaterial
 				.insert(teachingMaterialInBothTermsOfGrade(6));
-		Category category = teachingMaterial.getCategory();
-		category = daoCategory.insert(category);
 		vm.refresh();
 		assertEquals(1, vm.categories.get().size());
 		vm.doDeleteCategory(teachingMaterial.getCategory());
