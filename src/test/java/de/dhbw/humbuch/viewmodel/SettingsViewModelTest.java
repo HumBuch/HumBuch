@@ -1,6 +1,5 @@
 package de.dhbw.humbuch.viewmodel;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static de.dhbw.humbuch.test.TestUtils.*;
@@ -21,6 +20,7 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SettingsEntry;
+import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
 @RunWith(GuiceJUnitRunner.class)
@@ -32,30 +32,31 @@ public class SettingsViewModelTest extends BaseTest {
 	private DAO<Category> daoCategory;
 	private DAO<SchoolYear> daoSchoolYear;
 	private DAO<SettingsEntry> daoSettingsEntry;
+	private DAO<TeachingMaterial> daoTeachingMaterial;
 
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
 			Provider<EntityManager> emProvider,
-			SettingsViewModel settingsViewModel,
-			Properties properties,
-			DAO<Category> daoCategory,
-			DAO<SchoolYear> daoSchoolYear,
-			DAO<SettingsEntry> daoSettingsEntry) {
+			SettingsViewModel settingsViewModel, Properties properties,
+			DAO<Category> daoCategory, DAO<SchoolYear> daoSchoolYear,
+			DAO<SettingsEntry> daoSettingsEntry,
+			DAO<TeachingMaterial> daoTeachingMaterial) {
 		this.properties = properties;
 		this.daoCategory = daoCategory;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoSettingsEntry = daoSettingsEntry;
+		this.daoTeachingMaterial = daoTeachingMaterial;
 		super.setInjected(persistenceInitialiser, emProvider);
-		
+
 		this.vm = settingsViewModel;
 	}
-	
+
 	@Before
 	public void refreshViewModel() {
 		properties.currentUser.set(user());
 		vm.refresh();
 	}
-	
+
 	@Test
 	public void testStateInitialisation() {
 		assertNotNull(vm.schoolYears.get());
@@ -64,7 +65,7 @@ public class SettingsViewModelTest extends BaseTest {
 		assertNotNull(vm.userName.get());
 		assertNotNull(vm.userEmail.get());
 	}
-	
+
 	@Test
 	public void testStateCategoriesInsertOne() {
 		daoCategory.insert(category());
@@ -72,7 +73,7 @@ public class SettingsViewModelTest extends BaseTest {
 		vm.refresh();
 		assertEquals(2, vm.categories.get().size());
 	}
-	
+
 	@Test
 	public void testStateCategoriesInsertThreeDeleteOne() {
 		daoCategory.insert(category());
@@ -80,12 +81,12 @@ public class SettingsViewModelTest extends BaseTest {
 		Category category = daoCategory.insert(category());
 		vm.refresh();
 		assertEquals(3, vm.categories.get().size());
-		
+
 		daoCategory.delete(category);
 		vm.refresh();
 		assertEquals(2, vm.categories.get().size());
 	}
-	
+
 	@Test
 	public void testStateSchoolYearsInsertTwo() {
 		daoSchoolYear.insert(schoolYearSecondTermEnded());
@@ -93,20 +94,21 @@ public class SettingsViewModelTest extends BaseTest {
 		vm.refresh();
 		assertEquals(2, vm.schoolYears.get().size());
 	}
-	
+
 	@Test
 	public void testStateSchoolYearsInsertThreeDeleteOne() {
 		daoSchoolYear.insert(schoolYearSecondTermEnded());
 		daoSchoolYear.insert(schoolYearFirstTermStarted());
-		SchoolYear schoolYear = daoSchoolYear.insert(schoolYearSecondTermStarted());
+		SchoolYear schoolYear = daoSchoolYear
+				.insert(schoolYearSecondTermStarted());
 		vm.refresh();
 		assertEquals(3, vm.schoolYears.get().size());
-		
+
 		daoSchoolYear.delete(schoolYear);
 		vm.refresh();
 		assertEquals(2, vm.schoolYears.get().size());
 	}
-	
+
 	@Test
 	public void testStateSettingsEntriesInsertTwo() {
 		daoSettingsEntry.insert(settingsEntry());
@@ -114,5 +116,38 @@ public class SettingsViewModelTest extends BaseTest {
 		vm.refresh();
 		assertEquals(2, vm.settingsEntries.get().size());
 	}
-	//assertNotNull(vm.passwordChangeStatus.get());
+
+	@Test
+	public void testStateSettingsEntriesInsertThreeDeleteOne() {
+		daoSettingsEntry.insert(settingsEntry());
+		daoSettingsEntry.insert(settingsEntry());
+		SettingsEntry settingsEntry = daoSettingsEntry.insert(settingsEntry());
+		vm.refresh();
+		assertEquals(3, vm.settingsEntries.get().size());
+
+		daoSettingsEntry.delete(settingsEntry);
+		vm.refresh();
+		assertEquals(2, vm.settingsEntries.get().size());
+	}
+
+	@Test
+	public void testDoDeleteCategoryNotAllowed() {
+		TeachingMaterial teachingMaterial = daoTeachingMaterial
+				.insert(teachingMaterialInBothTermsOfGrade(6));
+		Category category = teachingMaterial.getCategory();
+		category = daoCategory.insert(category);
+		vm.refresh();
+		assertEquals(1, vm.categories.get().size());
+		vm.doDeleteCategory(teachingMaterial.getCategory());
+		assertEquals(1, vm.categories.get().size());
+	}
+
+	@Test
+	public void testDoDeleteCategoryAllowed() {
+		Category category = daoCategory.insert(category());
+		vm.refresh();
+		vm.doDeleteCategory(category);
+		assertEquals(0, vm.categories.get().size());
+	}
+	// assertNotNull(vm.passwordChangeStatus.get());
 }
