@@ -4,11 +4,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
+import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
+import de.dhbw.humbuch.model.entity.User;
 
 public class TestUtils {
 	public static int random() {
@@ -21,11 +24,25 @@ public class TestUtils {
 		calendar.add(Calendar.DATE, days);
 		return calendar.getTime();
 	}
-	
+
+	public static User user() {
+		return new User.Builder("" + random(), "" + random()).email(
+				"" + random() + "@" + random() + "." + random()).build();
+	}
+
+	public static Category category() {
+		return new Category.Builder("" + random()).build();
+	}
+
 	public static Grade grade(int grade) {
 		return new Grade.Builder(grade, "").build();
 	}
-	
+
+	public static SettingsEntry settingsEntry() {
+		return new SettingsEntry.Builder("" + random(), "" + random(), ""
+				+ random()).build();
+	}
+
 	public static SchoolYear schoolYear(int fromDays, int endFirstTermDays,
 			int beginSecondTermDays, int toDays) {
 		SchoolYear schoolYear = new SchoolYear.Builder("now",
