@@ -1,6 +1,9 @@
 package de.dhbw.humbuch.viewmodel;
 
 
+import static de.dhbw.humbuch.test.TestUtils.PASSWORD;
+import static de.dhbw.humbuch.test.TestUtils.USERNAME;
+import static de.dhbw.humbuch.test.TestUtils.standardUser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -17,8 +20,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.dhbw.humbuch.guice.GuiceJUnitRunner;
-import de.dhbw.humbuch.guice.TestModule;
 import de.dhbw.humbuch.guice.GuiceJUnitRunner.GuiceModules;
+import de.dhbw.humbuch.guice.TestModule;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 import de.dhbw.humbuch.model.entity.User;
@@ -30,9 +33,6 @@ public class LoginViewModelTest extends BaseTest {
 
 	private LoginViewModel vm;
 	private DAO<User> daoUser;
-	
-	public static final String USERNAME = "USERNAME";
-	public static final String PASSWORD = "PASSWORD";
 
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
@@ -45,14 +45,6 @@ public class LoginViewModelTest extends BaseTest {
 		this.vm = loginViewModel;
 	}
 	
-	private void insertUser() {
-		try {
-			daoUser.insert(new User.Builder(USERNAME, PasswordHash.createHash(PASSWORD)).build());
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	@Test
 	public void testStateInitialisation() {
 		assertNotNull(vm.isLoggedIn.get());
@@ -60,7 +52,7 @@ public class LoginViewModelTest extends BaseTest {
 	
 	@Test
 	public void testUserInsert() throws NoSuchAlgorithmException, InvalidKeySpecException {
-		insertUser();
+		daoUser.insert(standardUser());
 		User userInDB = daoUser.findSingleWithCriteria(Restrictions.eq("username", USERNAME));
 		assertNotNull(userInDB);
 		assertEquals(true, PasswordHash.validatePassword(PASSWORD, userInDB.getPassword()));
@@ -73,42 +65,42 @@ public class LoginViewModelTest extends BaseTest {
 	
 	@Test
 	public void testStateAfterSuccessfulLogin() {
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin(USERNAME, PASSWORD);
 		assertEquals(true, vm.isLoggedIn.get());
 	}
 	
 	@Test
 	public void testStateAfterUnsuccessfulLoginWithWrongPassword() {
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin(USERNAME, "wrongPassword");
 		assertEquals(false, vm.isLoggedIn.get());
 	}
 	
 	@Test
 	public void testStateAfterUnsuccessfulLoginWithWrongUsername() {
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin("wrongUser", PASSWORD);
 		assertEquals(false, vm.isLoggedIn.get());
 	}
 	
 	@Test
 	public void testStateAfterUnsuccessfulLoginWithAwfullyLongUsername()	{
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin(new String(new char[1025]).replace('\0', 'X'), PASSWORD);
 		assertEquals(false, vm.isLoggedIn.get());
 	}
 	
 	@Test
 	public void testStateAfterUnsuccessfulLoginWithAwfullyLongPassword()	{
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin(USERNAME, new String(new char[1025]).replace('\0', 'X'));
 		assertEquals(false, vm.isLoggedIn.get());
 	}
 	
 	@Test
 	public void testStateAfterSuccessfulLoginAndLogout() {
-		insertUser();
+		daoUser.insert(standardUser());
 		vm.doLogin(USERNAME, PASSWORD);
 		vm.doLogout(null);
 		assertEquals(false, vm.isLoggedIn.get());
