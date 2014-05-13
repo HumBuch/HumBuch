@@ -29,33 +29,52 @@ import de.dhbw.humbuch.util.PasswordHash;
 
 /**
  * @author David Vitt
- *
+ * 
  */
 public class SettingsViewModel {
-	
-	private final static Logger LOG = LoggerFactory.getLogger(SettingsViewModel.class);
 
-	public interface DoUpdateUser extends ActionHandler {}
-	public interface DoPasswordChange extends ActionHandler {}
+	private final static Logger LOG = LoggerFactory
+			.getLogger(SettingsViewModel.class);
 
-	public interface SchoolYears extends State<Collection<SchoolYear>> {}
-	public interface Categories extends State<Collection<Category>> {}
-	public interface SettingsEntries extends State<Collection<SettingsEntry>> {}
-	public interface PasswordChangeStatus extends State<ChangeStatus> {}
-	public interface UserName extends State<String> {}
-	public interface UserEmail extends State<String> {}
+	public interface DoUpdateUser extends ActionHandler {
+	}
+
+	public interface DoPasswordChange extends ActionHandler {
+	}
+
+	public interface SchoolYears extends State<Collection<SchoolYear>> {
+	}
+
+	public interface Categories extends State<Collection<Category>> {
+	}
+
+	public interface SettingsEntries extends State<Collection<SettingsEntry>> {
+	}
+
+	public interface PasswordChangeStatus extends State<ChangeStatus> {
+	}
+
+	public interface UserName extends State<String> {
+	}
+
+	public interface UserEmail extends State<String> {
+	}
 
 	@ProvidesState(SchoolYears.class)
-	public final State<Collection<SchoolYear>> schoolYears = new BasicState<>(Collection.class);
+	public final State<Collection<SchoolYear>> schoolYears = new BasicState<>(
+			Collection.class);
 
 	@ProvidesState(Categories.class)
-	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
+	public final State<Collection<Category>> categories = new BasicState<>(
+			Collection.class);
 
 	@ProvidesState(SettingsEntries.class)
-	public final State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
-	
+	public final State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(
+			Collection.class);
+
 	@ProvidesState(PasswordChangeStatus.class)
-	public final State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
+	public final State<ChangeStatus> passwordChangeStatus = new BasicState<>(
+			ChangeStatus.class);
 
 	@ProvidesState(UserName.class)
 	public final State<String> userName = new BasicState<>(String.class);
@@ -71,8 +90,9 @@ public class SettingsViewModel {
 	private DAO<SettingsEntry> daoSettingsEntry;
 
 	@Inject
-	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser, DAO<Category> daoCategory, 
-			DAO<SettingsEntry> daoSettingsEntry, Properties properties, EventBus eventBus) {
+	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser,
+			DAO<Category> daoCategory, DAO<SettingsEntry> daoSettingsEntry,
+			Properties properties, EventBus eventBus) {
 		this.eventBus = eventBus;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoUser = daoUser;
@@ -103,7 +123,7 @@ public class SettingsViewModel {
 	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 	}
-	
+
 	private void updateSettingsEntries() {
 		settingsEntries.set(daoSettingsEntry.findAll());
 	}
@@ -119,13 +139,14 @@ public class SettingsViewModel {
 	}
 
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
-		if(!schoolYear.isActive()) {
+		if (!schoolYear.isActive()) {
 			daoSchoolYear.delete(schoolYear);
 		} else {
 			eventBus.post(new MessageEvent("Löschen nicht möglich!",
-					"Das aktuelle Schuljahr kann nicht gelöscht werden.", Type.WARNING));
+					"Das aktuelle Schuljahr kann nicht gelöscht werden.",
+					Type.WARNING));
 		}
-		
+
 		updateSchoolYears();
 	}
 
@@ -136,23 +157,23 @@ public class SettingsViewModel {
 		} else {
 			daoCategory.update(category);
 		}
-		
+
 		updateCategories();
 	}
-	
+
 	public void doUpdateSettingsEntry(SettingsEntry settingsEntry) {
 		daoSettingsEntry.update(settingsEntry);
 		updateSettingsEntries();
 	}
 
 	public void doDeleteCategory(Category category) {
-		if(category.getTeachingMaterials().isEmpty()) {
+		if (category.getTeachingMaterials().isEmpty()) {
 			daoCategory.delete(category);
 		} else {
 			eventBus.post(new MessageEvent("Löschen nicht möglich!",
 					"Kategorie wird noch verwendet.", Type.WARNING));
 		}
-		
+
 		updateCategories();
 	}
 
@@ -166,7 +187,9 @@ public class SettingsViewModel {
 						Restrictions.eq("username", userName),
 						Restrictions.eq("email", userEmail)));
 		
-		if (!userWithSameNameOrPassword.isEmpty()) {
+		if ((userWithSameNameOrPassword.size() == 1 
+				&& userWithSameNameOrPassword.contains(currentUser.get())) 
+					|| userWithSameNameOrPassword.isEmpty()) {
 			User user = currentUser.get();
 			user.setUsername(userName);
 			user.setEmail(userEmail);
@@ -190,7 +213,8 @@ public class SettingsViewModel {
 	 * If the new password and the new verified password do not match, a
 	 * {@link MessageEvent} is posted to the {@link EventBus}.
 	 * 
-	 * After successfully checking the current password, the password is changed.
+	 * After successfully checking the current password, the password is
+	 * changed.
 	 * 
 	 * @param currentPassword
 	 *            String with the current password
@@ -200,48 +224,52 @@ public class SettingsViewModel {
 	 *            String with the verified new password
 	 */
 	@HandlesAction(DoPasswordChange.class)
-	public void doPasswordChange(String currentPassword, String newPassword, String newPasswordVerified) {
+	public void doPasswordChange(String currentPassword, String newPassword,
+			String newPasswordVerified) {
 		User user = currentUser.get();
-		
+
 		try {
-			
-			// Check if one of the fields is empty or the two new passwords do not match
-			if (currentPassword.isEmpty() || newPassword.isEmpty() || newPasswordVerified.isEmpty()) {
+
+			// Check if one of the fields is empty or the two new passwords do
+			// not match
+			if (currentPassword.isEmpty() || newPassword.isEmpty()
+					|| newPasswordVerified.isEmpty()) {
 				eventBus.post(new MessageEvent("Leere Felder!",
 						"Bitte alle Felder ausfüllen.", Type.WARNING));
 			} else if (!newPassword.equals(newPasswordVerified)) {
-				eventBus.post(new MessageEvent("Passwörter stimmen nicht überein!",
+				eventBus.post(new MessageEvent(
+						"Passwörter stimmen nicht überein!",
 						"Die beiden neuen Passwörter stimmen nicht überein.",
 						Type.WARNING));
-			} else if (!PasswordHash.validatePassword(currentPassword, user.getPassword())) {
+			} else if (!PasswordHash.validatePassword(currentPassword,
+					user.getPassword())) {
 				eventBus.post(new MessageEvent("Falsches Passwort!",
-						"Das aktuelle Passwort ist nicht korrekt.", Type.WARNING));
+						"Das aktuelle Passwort ist nicht korrekt.",
+						Type.WARNING));
 			} else {
-				//Change the password in the database and update the user object
+				// Change the password in the database and update the user
+				// object
 				user.setPassword(PasswordHash.createHash(newPassword));
-	
+
 				daoUser.update(user);
 				currentUser.notifyAllListeners();
-				
-				// TODO: passwordChangeStatus.notifyAllListeners(); does not work
+
+				// TODO: passwordChangeStatus.notifyAllListeners(); does not
+				// work
 				passwordChangeStatus.set(null);
 				passwordChangeStatus.set(ChangeStatus.SUCCESSFULL);
-				
+
 				eventBus.post(new MessageEvent("Passwort geändert"));
 			}
-			
+
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			LOG.warn(e.getMessage());
-			eventBus.post(new MessageEvent("Fehler bei der Passwortänderung!", "Bitte kontaktieren Sie einen Entwickler.", Type.WARNING));
+			eventBus.post(new MessageEvent("Fehler bei der Passwortänderung!",
+					"Bitte kontaktieren Sie einen Entwickler.", Type.WARNING));
 		}
 	}
-	
+
 	public enum ChangeStatus {
-		EMPTY_FIELDS, 
-		CURRENT_PASSWORD_WRONG, 
-		NEW_PASSWORD_NOT_EQUALS, 
-		NAME_OR_MAIL_ALREADY_EXISTS, 
-		FAILED, 
-		SUCCESSFULL;
+		EMPTY_FIELDS, CURRENT_PASSWORD_WRONG, NEW_PASSWORD_NOT_EQUALS, NAME_OR_MAIL_ALREADY_EXISTS, FAILED, SUCCESSFULL;
 	}
 }
