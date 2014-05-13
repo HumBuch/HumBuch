@@ -328,6 +328,4 @@ public class SettingsViewModelTest extends BaseTest {
 		assertThat(vm.userName.get(), not(NEW_USERNAME));
 		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
 	}
-
-	// assertNotNull(vm.passwordChangeStatus.get());
 }
