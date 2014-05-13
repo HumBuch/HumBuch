@@ -218,12 +218,15 @@ public class LendingViewModel {
 	 */
 	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
 //		LOG.info("getNewTeachingMaterials()_start");
+		LOG.info("" + student.getGrade());
+		LOG.info("" + recentlyActiveSchoolYear.getRecentlyActiveTerm());
 		Collection<TeachingMaterial> teachingMerterials = daoTeachingMaterial.findAllWithCriteria(
 				Restrictions.and(
 						Restrictions.le("fromGrade", student.getGrade().getGrade())
 						, Restrictions.ge("toGrade", student.getGrade().getGrade())
 						, Restrictions.le("validFrom", new Date())
 						, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
+						, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
 						, Restrictions.or(
 								Restrictions.ge("validUntil", new Date())
 								, Restrictions.isNull("validUntil"))
@@ -234,7 +237,8 @@ public class LendingViewModel {
 
 		for(TeachingMaterial teachingMaterial : teachingMerterials) {
 			if(student.getProfile().containsAll(teachingMaterial.getProfile())
-					&& !owningTeachingMaterials.contains(teachingMaterial)) {
+					&& !owningTeachingMaterials.contains(teachingMaterial)
+					&& !recentlyActiveSchoolYear.getToDate().before(new Date())) {
 				toLend.add(teachingMaterial);
 			}
 		}
