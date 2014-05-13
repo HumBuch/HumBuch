@@ -209,8 +209,10 @@ public class MainUI extends ScopedUI {
 				if (isLoggedIn.get()) {
 					View newView = event.getNewView();
 					if (newView instanceof ViewInformation) {
-						panelContent.setCaption(((ViewInformation) newView)
+						ViewInformation view = (ViewInformation) newView;
+						panelContent.setCaption(((ViewInformation) view)
 								.getTitle());
+						sidebar.changeMenuBarSelection(event.getViewName());
 					} else {
 						LOG.warn("New View does not implement ViewInformation interface."
 								+ " Could not set caption of panel correctly.");
