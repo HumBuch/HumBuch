@@ -43,22 +43,22 @@ public class SettingsViewModel {
 	public interface UserEmail extends State<String> {}
 
 	@ProvidesState(SchoolYears.class)
-	private State<Collection<SchoolYear>> schoolYears = new BasicState<>(Collection.class);
+	public final State<Collection<SchoolYear>> schoolYears = new BasicState<>(Collection.class);
 
 	@ProvidesState(Categories.class)
-	private State<Collection<Category>> categories = new BasicState<>(Collection.class);
+	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
 
 	@ProvidesState(SettingsEntries.class)
-	private State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
+	public final State<Collection<SettingsEntry>> settingsEntries = new BasicState<>(Collection.class);
 	
 	@ProvidesState(PasswordChangeStatus.class)
-	private State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
+	public final State<ChangeStatus> passwordChangeStatus = new BasicState<>(ChangeStatus.class);
 
 	@ProvidesState(UserName.class)
-	private State<String> userName = new BasicState<>(String.class);
+	public final State<String> userName = new BasicState<>(String.class);
 
 	@ProvidesState(UserEmail.class)
-	private State<String> userEmail = new BasicState<>(String.class);
+	public final State<String> userEmail = new BasicState<>(String.class);
 
 	private EventBus eventBus;
 	private State<User> currentUser;
