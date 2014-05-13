@@ -300,21 +300,21 @@ public class SettingsViewModelTest extends BaseTest {
 	public void testDoUpdateUserNotAllowedWithChangeOfUsernameToExistingUsername() {
 		final User secondUser = daoUser.insert(randomUser());
 		final String NEW_USERNAME = secondUser.getUsername();
-		final String NEW_USEREMAIL = vm.userEmail.get();
+		final String OLDER_USEREMAIL = vm.userEmail.get();
 		
-		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		vm.doUpdateUser(NEW_USERNAME, OLDER_USEREMAIL);
 		assertThat(vm.userName.get(), not(NEW_USERNAME));
-		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
+		assertThat(vm.userEmail.get(), is(OLDER_USEREMAIL));
 	}
 	
 	@Test
 	public void testDoUpdateUserNotAllowedWithChangeOfEmailToExistingEmail() {
 		final User secondUser = daoUser.insert(randomUser());
-		final String NEW_USERNAME = vm.userName.get();
+		final String OLD_USERNAME = vm.userName.get();
 		final String NEW_USEREMAIL = secondUser.getEmail();
 		
-		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
-		assertThat(vm.userName.get(), not(NEW_USERNAME));
+		vm.doUpdateUser(OLD_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), is(OLD_USERNAME));
 		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
 	}
 	
