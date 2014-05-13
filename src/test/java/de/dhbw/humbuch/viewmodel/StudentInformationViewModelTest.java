@@ -11,8 +11,6 @@ import javax.persistence.EntityManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -33,8 +31,6 @@ public class StudentInformationViewModelTest extends BaseTest {
 	private StudentInformationViewModel vm;
 	private DAO<Student> daoStudent;
 
-	private final static Logger LOG = LoggerFactory.getLogger(StudentInformationViewModelTest.class);
-
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
 			Provider<EntityManager> emProvider,
@@ -49,11 +45,23 @@ public class StudentInformationViewModelTest extends BaseTest {
 	private void importTwoStudents(boolean fullImport) {
 		Grade grade = new Grade.Builder(5, "").build();
 		List<Student> students = new ArrayList<Student>();
-		Student student1 = new Student.Builder(2, "Peter", "Doe", null, grade).build();
-		Student student2 = new Student.Builder(2, "Claude", "Gable", null, grade).build();
+		Student student1 = new Student.Builder(4, "Peter", "Doe", null, grade).build();
+		Student student2 = new Student.Builder(5, "Claude", "Gable", null, grade).build();
 		students.add(student1);
 		students.add(student2);
 		vm.persistStudents(students, fullImport);
+	}
+	
+	private void importThreeStudents(){
+		Grade grade = new Grade.Builder(7, "").build();
+		List<Student> students = new ArrayList<Student>();
+		Student student1 = new Student.Builder(1, "Tim", "Tintin", null, grade).build();
+		Student student2 = new Student.Builder(2, "Struppi", "Milou", null, grade).build();
+		Student student3 = new Student.Builder(3, "Archibald", "Haddock", null, grade).build();
+		students.add(student1);
+		students.add(student2);
+		students.add(student3);
+		vm.persistStudents(students, true);
 	}
 
 	@Before
@@ -68,11 +76,21 @@ public class StudentInformationViewModelTest extends BaseTest {
 
 	@Test
 	public void testFullImport() {
-		LOG.info("" + daoStudent.findAll().size());
-		System.out.println("" + daoStudent.findAll().size());
+		importThreeStudents();
+		refreshViewModel();
 		importTwoStudents(true);
 		refreshViewModel();
 		assertEquals(2, daoStudent.findAll().size());
-		assertEquals("Claude", daoStudent.find(1).getFirstname());
+		assertEquals("Claude", daoStudent.find(5).getFirstname());
+	}
+	
+	@Test
+	public void testDeltaImport() {
+		importThreeStudents();
+		refreshViewModel();
+		importTwoStudents(false);
+		refreshViewModel();
+		assertEquals(5, daoStudent.findAll().size());
+		assertEquals("Milou", daoStudent.find(2).getLastname());
 	}
 }
