@@ -26,11 +26,10 @@ import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.User;
 import de.dhbw.humbuch.util.PasswordHash;
-import de.dhbw.humbuch.view.MainUI;
 
 public class SettingsViewModel {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(MainUI.class);
+	private final static Logger LOG = LoggerFactory.getLogger(SettingsViewModel.class);
 
 	public interface DoUpdateUser extends ActionHandler {}
 	public interface DoPasswordChange extends ActionHandler {}
