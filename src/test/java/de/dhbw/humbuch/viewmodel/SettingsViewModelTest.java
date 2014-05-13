@@ -24,6 +24,7 @@ import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
+import de.dhbw.humbuch.model.entity.User;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
@@ -35,6 +36,7 @@ public class SettingsViewModelTest extends BaseTest {
 	private DAO<SchoolYear> daoSchoolYear;
 	private DAO<SettingsEntry> daoSettingsEntry;
 	private DAO<TeachingMaterial> daoTeachingMaterial;
+	private DAO<User> daoUser;
 
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
@@ -42,12 +44,14 @@ public class SettingsViewModelTest extends BaseTest {
 			SettingsViewModel settingsViewModel, Properties properties,
 			DAO<Category> daoCategory, DAO<SchoolYear> daoSchoolYear,
 			DAO<SettingsEntry> daoSettingsEntry,
-			DAO<TeachingMaterial> daoTeachingMaterial) {
+			DAO<TeachingMaterial> daoTeachingMaterial,
+			DAO<User> daoUser) {
 		this.properties = properties;
 		this.daoCategory = daoCategory;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoSettingsEntry = daoSettingsEntry;
 		this.daoTeachingMaterial = daoTeachingMaterial;
+		this.daoUser = daoUser;
 		super.setInjected(persistenceInitialiser, emProvider);
 
 		this.vm = settingsViewModel;
@@ -55,7 +59,7 @@ public class SettingsViewModelTest extends BaseTest {
 
 	@Before
 	public void refreshViewModel() {
-		properties.currentUser.set(randomUser());
+		properties.currentUser.set(daoUser.insert(randomUser()));
 		vm.refresh();
 	}
 
@@ -260,6 +264,69 @@ public class SettingsViewModelTest extends BaseTest {
 		assertThat(
 				vm.settingsEntries.get().iterator().next().getSettingValue(),
 				is(referenceSettingsEntry.getSettingValue()));
+	}
+	
+	@Test
+	public void testDoUpdateUserAllowedWithChangeOfEmailandUsername() {
+		final String NEW_USERNAME = "NEW_USERNAME";
+		final String NEW_USEREMAIL = "NEW_USEREMAIL@EMAIL.DE";
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), is(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), is(NEW_USEREMAIL));
+	}
+	
+	@Test
+	public void testDoUpdateUserAllowedWithChangeOfEmail() {
+		final String NEW_USERNAME = vm.userName.get();
+		final String NEW_USEREMAIL = "NEW_USEREMAIL@EMAIL.DE";
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), is(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), is(NEW_USEREMAIL));
+	}
+	
+	@Test
+	public void testDoUpdateUserAllowedWithChangeOfUsername() {
+		final String NEW_USERNAME = "NEW_USERNAME";
+		final String NEW_USEREMAIL = vm.userEmail.get();
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), is(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), is(NEW_USEREMAIL));
+	}
+	
+	@Test
+	public void testDoUpdateUserNotAllowedWithChangeOfUsernameToExistingUsername() {
+		final User secondUser = daoUser.insert(randomUser());
+		final String NEW_USERNAME = secondUser.getUsername();
+		final String NEW_USEREMAIL = vm.userEmail.get();
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), not(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
+	}
+	
+	@Test
+	public void testDoUpdateUserNotAllowedWithChangeOfEmailToExistingEmail() {
+		final User secondUser = daoUser.insert(randomUser());
+		final String NEW_USERNAME = vm.userName.get();
+		final String NEW_USEREMAIL = secondUser.getEmail();
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), not(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
+	}
+	
+	@Test
+	public void testDoUpdateUserNotAllowedWithChangeOfEmailAndUsernameToExistingEmailAndUsername() {
+		final User secondUser = daoUser.insert(randomUser());
+		final String NEW_USERNAME = secondUser.getUsername();
+		final String NEW_USEREMAIL = secondUser.getEmail();
+		
+		vm.doUpdateUser(NEW_USERNAME, NEW_USEREMAIL);
+		assertThat(vm.userName.get(), not(NEW_USERNAME));
+		assertThat(vm.userEmail.get(), not(NEW_USEREMAIL));
 	}
 
 	// assertNotNull(vm.passwordChangeStatus.get());
