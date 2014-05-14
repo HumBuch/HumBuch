@@ -1,6 +1,5 @@
 package de.dhbw.humbuch.util;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -89,8 +88,7 @@ public final class CSVHandler {
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
-
-			csvHeaderProperties.load(new InputStreamReader(new FileInputStream("src/main/resources/csvConfiguration.properties"), "UTF-8"));
+			csvHeaderProperties.load(new InputStreamReader(new ResourceLoader("csvConfiguration.properties").getStream()));
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
