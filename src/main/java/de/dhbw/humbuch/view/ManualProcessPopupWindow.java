@@ -329,6 +329,7 @@ public class ManualProcessPopupWindow extends Window {
 						TEACHING_MATERIAL_HEADER, event.getText(), true, false);
 				containerTableTeachingMaterials.removeAllContainerFilters();
 				containerTableTeachingMaterials.addContainerFilter(filter);
+				tableTeachingMaterials.setValue(null);
 			}
 		});
 	}
