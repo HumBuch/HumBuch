@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
+import de.davherrmann.mvvm.ViewModelComposer;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.DAOImpl;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
@@ -37,5 +38,6 @@ public class TestModule extends AbstractModule {
 		bind(new TypeLiteral<DAO<SettingsEntry>>() {}).to(new TypeLiteral<DAOImpl<SettingsEntry>>() {});
 		
 		bind(Properties.class).in(Singleton.class);
+		bind(ViewModelComposer.class).in(Singleton.class);
 	}
 }

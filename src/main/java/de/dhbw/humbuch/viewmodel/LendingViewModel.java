@@ -1,9 +1,11 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +13,6 @@ import java.util.TreeMap;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -23,7 +23,6 @@ import de.davherrmann.mvvm.annotations.AfterVMBinding;
 import de.davherrmann.mvvm.annotations.HandlesAction;
 import de.davherrmann.mvvm.annotations.ProvidesState;
 import de.dhbw.humbuch.model.DAO;
-import de.dhbw.humbuch.model.DAO.FireUpdateEvent;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
@@ -35,8 +34,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
  *
  */
 public class LendingViewModel {
-	private final static Logger LOG = LoggerFactory.getLogger(LendingViewModel.class);
-	
+
 	public interface GenerateMaterialListGrades extends ActionHandler {};
 	public interface SetBorrowedMaterialsReceived extends ActionHandler {};
 	public interface DoManualLending extends ActionHandler {};
@@ -83,11 +81,9 @@ public class LendingViewModel {
 	
 	@AfterVMBinding
 	public void refresh() {
-		LOG.info("refresh_start");
 		updateSchoolYear();
 		updateTeachingMaterials();
 		updateAllStudentsBorrowedMaterials();
-		LOG.info("refresh_end");
 	}
 	
 	/**
@@ -98,7 +94,6 @@ public class LendingViewModel {
 	 */
 	@HandlesAction(GenerateMaterialListGrades.class)
 	public void generateMaterialListGrades(Set<Grade> selectedGrades) {
-		LOG.info("generateMaterialListGrades()_start");
 		Map<Grade, Map<TeachingMaterial, Integer>> materialList = new TreeMap<Grade, Map<TeachingMaterial, Integer>>();
 		
 		for (Grade grade : selectedGrades) {
@@ -119,7 +114,6 @@ public class LendingViewModel {
 		}
 		
 		materialListGrades.set(materialList);
-		LOG.info("generateMaterialListGrades()_end");
 	}
 	
 	/**
@@ -129,14 +123,12 @@ public class LendingViewModel {
 	 */
 	@HandlesAction(SetBorrowedMaterialsReceived.class)
 	public void setBorrowedMaterialsReceived(Collection<BorrowedMaterial> borrowedMaterials) {
-		LOG.info("setBorrowedMaterialsReceived()_start");
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
 			borrowedMaterial.setReceived(true);
-			daoBorrowedMaterial.update(borrowedMaterial, FireUpdateEvent.NO);
 		}
-//		daoBorrowedMaterial.fireUpdateEvent();
+		daoBorrowedMaterial.update(borrowedMaterials);
+		
 		updateAllStudentsBorrowedMaterials();
-		LOG.info("setBorrowedMaterialsReceived()_end");
 	}
 	
 	/**
@@ -156,13 +148,12 @@ public class LendingViewModel {
 	 * Updates the list of {@link BorrowedMaterial}s for all {@link Student}s
 	 */
 	private void updateAllStudentsBorrowedMaterials() {
-		LOG.info("updateAllStudentsBorrowedMaterials()_start");
-		for(Student student : daoStudent.findAllWithCriteria(Restrictions.eq("leavingSchool", false))) {
-			persistBorrowedMaterials(student, getNewTeachingMaterials(student));
+		Map<Student, List<TeachingMaterial>> newTeachingMaterials = getNewTeachingMaterials(daoGrade.findAll());
+		for(Student student : newTeachingMaterials.keySet()) {
+			persistBorrowedMaterials(student, newTeachingMaterials.get(student));
 		}
-
+		
 		updateUnreceivedBorrowedMaterialsState();
-		LOG.info("updateAllStudentsBorrowedMaterials()_end");
 	}
 
 	/**
@@ -179,6 +170,26 @@ public class LendingViewModel {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
 				Restrictions.le("fromDate", new Date()));
+		if(recentlyActiveSchoolYear == null) {
+			recentlyActiveSchoolYear = new SchoolYear.Builder(
+					"now", getDate(Calendar.AUGUST, 1), getDate(Calendar.JUNE, 31))
+			.endFirstTerm(getDate(Calendar.JANUARY, 31))
+			.beginSecondTerm(getDate(Calendar.FEBRUARY, 1))
+			.build();
+		}
+	}
+	
+	/**
+	 * Returns {@link Date} object with the current year and the given month and day.
+	 * 
+	 * @param month
+	 * @param day
+	 * @return {@link Date} object with given information
+	 */
+	private Date getDate(int month, int day) {
+		Calendar  calendar = Calendar.getInstance();
+		calendar.set(calendar.get(Calendar.YEAR), month, day);
+		return calendar.getTime();
 	}
 	
 	/**
@@ -187,14 +198,12 @@ public class LendingViewModel {
 	 * 
 	 */
 	private void updateUnreceivedBorrowedMaterialsState() {
-		LOG.info("updateUnreceivedBorrowedMaterialsState()_start");
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> unreceivedMap = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
 		
 		for (Grade grade : daoGrade.findAll()) {
-
 			Map<Student, List<BorrowedMaterial>> studentsWithUnreceivedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
 			for (Student student : grade.getStudents()) {
-				if(student.hasUnreceivedBorrowedMaterials()) {
+				if (student.hasUnreceivedBorrowedMaterials()) {
 					List<BorrowedMaterial> unreceivedBorrowedList = student.getUnreceivedBorrowedList();
 					Collections.sort(unreceivedBorrowedList);
 					studentsWithUnreceivedBorrowedMaterials.put(student, unreceivedBorrowedList);
@@ -207,7 +216,6 @@ public class LendingViewModel {
 		}
 
 		studentsWithUnreceivedBorrowedMaterials.set(unreceivedMap);
-		LOG.info("updateUnreceivedBorrowedMaterialsState()_end");
 	}
 	
 	/**
@@ -216,33 +224,77 @@ public class LendingViewModel {
 	 * @param student
 	 * @return {@link Collection} of {@link TeachingMaterial}s that have to be lended
 	 */
-	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
+//	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
+//		Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
+//				Restrictions.and(
+//						Restrictions.le("fromGrade", student.getGrade().getGrade())
+//						, Restrictions.ge("toGrade", student.getGrade().getGrade())
+//						, Restrictions.le("validFrom", new Date())
+//						, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
+//						, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
+//						, Restrictions.or(
+//								Restrictions.ge("validUntil", new Date())
+//								, Restrictions.isNull("validUntil"))
+//				));
+//
+//		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
+//		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
+//
+//		for(TeachingMaterial teachingMaterial : teachingMaterials) {
+//			if(student.getProfile().containsAll(teachingMaterial.getProfile())
+//					&& !owningTeachingMaterials.contains(teachingMaterial)
+//					&& !recentlyActiveSchoolYear.getToDate().before(new Date())) {
+//				toLend.add(teachingMaterial);
+//			}
+//		}
+//
+//		return toLend;
+//	}
+	
+	/**
+	 * Returns map of {@link TeachingMaterial}s that have to be lended by the {@link Student}s of the given {@link Grade}s.
+	 * 
+	 * @param grades
+	 * @return {@link Map} of {@link Student}s and their {@link TeachingMaterial}s that have to be lended
+	 */
+	private Map<Student, List<TeachingMaterial>> getNewTeachingMaterials(List<Grade> grades) {
 //		LOG.info("getNewTeachingMaterials()_start");
-		Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
-				Restrictions.and(
-						Restrictions.le("fromGrade", student.getGrade().getGrade())
-						, Restrictions.ge("toGrade", student.getGrade().getGrade())
-						, Restrictions.le("validFrom", new Date())
-						, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-						, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-						, Restrictions.or(
-								Restrictions.ge("validUntil", new Date())
-								, Restrictions.isNull("validUntil"))
-				));
+		Map<Student, List<TeachingMaterial>> studentsNewTeachingMaterialMap = new HashMap<Student, List<TeachingMaterial>>();
+		
+		for (Grade grade : grades) {
+//			LOG.info("   grade: " + grade.toString());
+			Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
+					Restrictions.and(
+							Restrictions.le("fromGrade", grade.getGrade())
+							, Restrictions.ge("toGrade", grade.getGrade())
+							, Restrictions.le("validFrom", new Date())
+							, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
+							, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
+							, Restrictions.or(
+									Restrictions.ge("validUntil", new Date())
+									, Restrictions.isNull("validUntil"))
+					));
+			
+			Date today = new Date();
+			for (Student student : grade.getStudents()) {
+				if (!student.isLeavingSchool()) {
+					List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 
-		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
-		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
-
-		for(TeachingMaterial teachingMaterial : teachingMaterials) {
-			if(student.getProfile().containsAll(teachingMaterial.getProfile())
-					&& !owningTeachingMaterials.contains(teachingMaterial)
-					&& !recentlyActiveSchoolYear.getToDate().before(new Date())) {
-				toLend.add(teachingMaterial);
+					for (TeachingMaterial teachingMaterial : teachingMaterials) {
+						if (student.getProfile().containsAll(teachingMaterial.getProfile())
+								&& !getOwningTeachingMaterials(student).contains(teachingMaterial)
+								&& !recentlyActiveSchoolYear.getToDate().before(today)) {
+							toLend.add(teachingMaterial);
+						}
+					}
+					
+					studentsNewTeachingMaterialMap.put(student, toLend);
+				}
 			}
 		}
-
+		
 //		LOG.info("getNewTeachingMaterials()_end");
-		return toLend;
+		return studentsNewTeachingMaterialMap;
 	}
 	
 	/**
@@ -252,14 +304,12 @@ public class LendingViewModel {
 	 * @param teachingMaterials
 	 */
 	private void persistBorrowedMaterials(Student student, List<TeachingMaterial> teachingMaterials) {
+		Collection<BorrowedMaterial> borrowedMaterials = new ArrayList<>();
 		for (TeachingMaterial teachingMaterial : teachingMaterials) {
-			BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build();
-			daoBorrowedMaterial.insert(borrowedMaterial, FireUpdateEvent.NO);
+			borrowedMaterials.add(new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).build());
 		}
 		
-		if(!teachingMaterials.isEmpty()) {
-			daoBorrowedMaterial.fireUpdateEvent();
-		}
+		daoBorrowedMaterial.insert(borrowedMaterials);
 	}
 	
 	/**
@@ -271,8 +321,7 @@ public class LendingViewModel {
 	 * @param borrowUntil
 	 */
 	private void persistBorrowedMaterial(Student student, TeachingMaterial teachingMaterial, Date borrowUntil) {
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).received(true).build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		daoBorrowedMaterial.insert(new BorrowedMaterial.Builder(student, teachingMaterial, new Date()).borrowUntil(borrowUntil).build());
 	}
 	
 	/**

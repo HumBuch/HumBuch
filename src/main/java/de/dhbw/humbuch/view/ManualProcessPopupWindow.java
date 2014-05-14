@@ -38,12 +38,12 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import elemental.events.KeyboardEvent.KeyCode;
 
-
 public class ManualProcessPopupWindow extends Window {
 
 	private static final long serialVersionUID = -6517435259424504689L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(ManualProcessPopupWindow.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ManualProcessPopupWindow.class);
 
 	private static final String SEARCH_MATERIALS = "Materialien durchsuchen";
 	private static final String SAVE_LEND = "Ausleihen";
@@ -80,8 +80,10 @@ public class ManualProcessPopupWindow extends Window {
 	 * @param selectedStudent
 	 *            student for whom the process is triggered
 	 * */
-	public ManualProcessPopupWindow(LendingView lendingView, Student selectedStudent) {
-		super("Manuelle Ausleihe für " + selectedStudent.getFirstname() + " " + selectedStudent.getLastname());
+	public ManualProcessPopupWindow(LendingView lendingView,
+			Student selectedStudent) {
+		super("Manuelle Ausleihe für " + selectedStudent.getFirstname() + " "
+				+ selectedStudent.getLastname());
 
 		this.lendingView = lendingView;
 		this.selectedStudent = selectedStudent;
@@ -99,8 +101,10 @@ public class ManualProcessPopupWindow extends Window {
 	 * @param selectedStudent
 	 *            student for whom the process is triggered
 	 * */
-	public ManualProcessPopupWindow(ReturnView returnView, Student selectedStudent) {
-		super("Manuelle Rückgabe für " + selectedStudent.getFirstname() + " " + selectedStudent.getLastname());
+	public ManualProcessPopupWindow(ReturnView returnView,
+			Student selectedStudent) {
+		super("Manuelle Rückgabe für " + selectedStudent.getFirstname() + " "
+				+ selectedStudent.getLastname());
 
 		this.returnView = returnView;
 		this.selectedStudent = selectedStudent;
@@ -111,7 +115,7 @@ public class ManualProcessPopupWindow extends Window {
 
 	/*
 	 * Initializes all member variables and configures them.
-	 * */
+	 */
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutHeaderBar = new HorizontalLayout();
@@ -126,12 +130,15 @@ public class ManualProcessPopupWindow extends Window {
 		textFieldSearchBar.focus();
 		adaptButton();
 
-		containerTableTeachingMaterials.addContainerProperty(TEACHING_MATERIAL_HEADER, String.class, null);
+		containerTableTeachingMaterials.addContainerProperty(
+				TEACHING_MATERIAL_HEADER, String.class, null);
 		if (lendingView != null) {
-			containerTableTeachingMaterials.addContainerProperty(BORROW_UNTIL_HEADER, PopupDateField.class, null);
+			containerTableTeachingMaterials.addContainerProperty(
+					BORROW_UNTIL_HEADER, PopupDateField.class, null);
 		}
 
-		tableTeachingMaterials.setContainerDataSource(containerTableTeachingMaterials);
+		tableTeachingMaterials
+				.setContainerDataSource(containerTableTeachingMaterials);
 		tableTeachingMaterials.setWidth("100%");
 		tableTeachingMaterials.setSelectable(true);
 		tableTeachingMaterials.setMultiSelect(true);
@@ -156,48 +163,48 @@ public class ManualProcessPopupWindow extends Window {
 	private void buildLayout() {
 		horizontalLayoutHeaderBar.addComponent(textFieldSearchBar);
 		horizontalLayoutHeaderBar.addComponent(buttonSave);
-		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave, Alignment.BOTTOM_CENTER);
+		horizontalLayoutHeaderBar.setComponentAlignment(buttonSave,
+				Alignment.BOTTOM_CENTER);
 
 		verticalLayoutContent.addComponent(horizontalLayoutHeaderBar);
 		verticalLayoutContent.addComponent(tableTeachingMaterials);
 		verticalLayoutContent.addComponent(labelMultiChoiceExplanation);
-		
+
 		setContent(verticalLayoutContent);
 	}
-	
+
 	/*
 	 * Adapts the button label to the given process (return / lend)
-	 * */
+	 */
 	private void adaptButton() {
 		if (lendingView != null) {
 			buttonSave = new Button(SAVE_LEND);
-		}
-		else {
+		} else {
 			buttonSave = new Button(SAVE_RETURN);
-		}	
-		
+		}
+
 		buttonSave.setEnabled(false);
 		buttonSave.addStyleName("default");
 		buttonSave.setClickShortcut(KeyCode.ENTER, null);
 	}
-	
+
 	/*
 	 * Updates the content of the table depending on the process.
-	 * */
+	 */
 	private void updateTableContent() {
 		if (lendingView != null) {
 			updateTableManualLending();
-		}
-		else if (returnView != null) {
+		} else if (returnView != null) {
 			updateTableManualReturn();
 		}
 	}
 
 	/*
-	 * Updates the table for manual lending. Adding all teaching materials provided from the LendingView and Datefields.
-	 * When adding the date fields a value change listener for validation is added. The default date in the table is one
-	 * month in the future.
-	 * */
+	 * Updates the table for manual lending. Adding all teaching materials
+	 * provided from the LendingView and Datefields. When adding the date fields
+	 * a value change listener for validation is added. The default date in the
+	 * table is one month in the future.
+	 */
 	private void updateTableManualLending() {
 		teachingMaterials = lendingView.getTeachingMaterials();
 		if (teachingMaterials == null) {
@@ -216,7 +223,8 @@ public class ManualProcessPopupWindow extends Window {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				boolean isValid = validateDate((Date) event.getProperty().getValue());
+				boolean isValid = validateDate((Date) event.getProperty()
+						.getValue());
 				if (!isValid) {
 					event.getProperty().setValue(comingMonth);
 				}
@@ -231,58 +239,64 @@ public class ManualProcessPopupWindow extends Window {
 
 			HashMap<TeachingMaterial, PopupDateField> materialWithDate = new HashMap<TeachingMaterial, PopupDateField>();
 			materialWithDate.put(teachingMaterial, dateField);
-			Object itemId = tableTeachingMaterials.addItem(new Object[] { teachingMaterial.getName(), dateField }, null);
+			Object itemId = tableTeachingMaterials.addItem(new Object[] {
+					teachingMaterial.getName(), dateField }, null);
 
 			idForMaterialsWithDates.put(itemId, materialWithDate);
 		}
 	}
 
 	/*
-	 * Updates the table for manual return. It adds just the borrowed materials for the student in the table.
-	 * */
+	 * Updates the table for manual return. It adds just the borrowed materials
+	 * for the student in the table.
+	 */
 	private void updateTableManualReturn() {
-		List<BorrowedMaterial> materials = selectedStudent.getUnreturnedBorrowedMaterials();
+		List<BorrowedMaterial> materials = selectedStudent
+				.getUnreturnedBorrowedMaterials();
 		for (BorrowedMaterial material : materials) {
-			Object itemId = tableTeachingMaterials.addItem(new Object[] { material.getTeachingMaterial().getName() }, null);
+			Object itemId = tableTeachingMaterials.addItem(
+					new Object[] { material.getTeachingMaterial().getName() },
+					null);
 			idForMaterials.put(itemId, material);
 		}
 	}
 
 	/*
-	 * When an item in the table gets selected the save button is enabled.
-	 * When no item is selected the save button is disabled.
-	 * */
+	 * When an item in the table gets selected the save button is enabled. When
+	 * no item is selected the save button is disabled.
+	 */
 	private void setTableListener() {
-		tableTeachingMaterials.addValueChangeListener(new ValueChangeListener() {
+		tableTeachingMaterials
+				.addValueChangeListener(new ValueChangeListener() {
 
-			private static final long serialVersionUID = -8774191239600142741L;
+					private static final long serialVersionUID = -8774191239600142741L;
 
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Object selectedIds = tableTeachingMaterials.getValue();
-				if (selectedIds instanceof Set<?>) {
-					Set<?> ids = (Set<?>) selectedIds;
-					if (ids.size() == 0) {
-						buttonSave.setEnabled(false);
-						return;
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						Object selectedIds = tableTeachingMaterials.getValue();
+						if (selectedIds instanceof Set<?>) {
+							Set<?> ids = (Set<?>) selectedIds;
+							if (ids.size() == 0) {
+								buttonSave.setEnabled(false);
+								return;
+							}
+
+							buttonSave.setEnabled(true);
+						} else {
+							LOG.warn("Table selection is not an instance of Set<?>");
+						}
 					}
-
-					buttonSave.setEnabled(true);
-				}
-				else {
-					LOG.warn("Table selection is not an instance of Set<?>");
-				}
-			}
-		});
+				});
 	}
 
 	/*
-	 * Adds a listener to the save button and one responsible for filtering the table.
-	 * */
+	 * Adds a listener to the save button and one responsible for filtering the
+	 * table.
+	 */
 	private void addListeners() {
 		/*
 		 * Decides whether the manual lending or the manual return is saved.
-		 * */
+		 */
 		buttonSave.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 4375804067002022079L;
@@ -291,11 +305,9 @@ public class ManualProcessPopupWindow extends Window {
 			public void buttonClick(ClickEvent event) {
 				if (lendingView != null) {
 					finishManualLendingProcess();
-				}
-				else if (returnView != null) {
+				} else if (returnView != null) {
 					finishManualReturnProcess();
-				}
-				else {
+				} else {
 					LOG.warn("Could not determine which process should be finished. Both views are null.");
 				}
 				closeMe();
@@ -303,26 +315,30 @@ public class ManualProcessPopupWindow extends Window {
 		});
 
 		/*
-		 * Puts a string filter on the table content. The filter is case-insensitive and matches anywhere
-		 * in the teaching material (not only prefix matching).
-		 * */
+		 * Puts a string filter on the table content. The filter is
+		 * case-insensitive and matches anywhere in the teaching material (not
+		 * only prefix matching).
+		 */
 		textFieldSearchBar.addTextChangeListener(new TextChangeListener() {
 
 			private static final long serialVersionUID = -6281243106168356850L;
 
 			@Override
 			public void textChange(TextChangeEvent event) {
-				Filter filter = new SimpleStringFilter(TEACHING_MATERIAL_HEADER, event.getText(), true, false);
+				Filter filter = new SimpleStringFilter(
+						TEACHING_MATERIAL_HEADER, event.getText(), true, false);
 				containerTableTeachingMaterials.removeAllContainerFilters();
 				containerTableTeachingMaterials.addContainerFilter(filter);
+				tableTeachingMaterials.setValue(null);
 			}
 		});
 	}
 
 	/*
-	 * Save all selected materials for the student object using LendingView.saveTeachingMaterialsForStudents.
-	 * Afterwards the window is closed.
-	 * */
+	 * Save all selected materials for the student object using
+	 * LendingView.saveTeachingMaterialsForStudents. Afterwards the window is
+	 * closed.
+	 */
 	@SuppressWarnings("unchecked")
 	private void finishManualLendingProcess() {
 
@@ -336,15 +352,16 @@ public class ManualProcessPopupWindow extends Window {
 			}
 
 			for (Object selectedId : ids) {
-				HashMap<TeachingMaterial, PopupDateField> tableRow = idForMaterialsWithDates.get(selectedId);
+				HashMap<TeachingMaterial, PopupDateField> tableRow = idForMaterialsWithDates
+						.get(selectedId);
 				// this loop runs only once
 				for (TeachingMaterial material : tableRow.keySet()) {
 					PopupDateField dateField = tableRow.get(material);
-					teachingMaterialsWithDates.put(material, dateField.getValue());
+					teachingMaterialsWithDates.put(material,
+							dateField.getValue());
 				}
 			}
-		}
-		else {
+		} else {
 			LOG.warn("Table selection is not an instance of Set<?>");
 		}
 
@@ -357,9 +374,10 @@ public class ManualProcessPopupWindow extends Window {
 	}
 
 	/*
-	 * Return all selected materials for the student object using ReturnView.returnTeachingMaterialsForStudents.
-	 * Afterwards the window is closed.
-	 * */
+	 * Return all selected materials for the student object using
+	 * ReturnView.returnTeachingMaterialsForStudents. Afterwards the window is
+	 * closed.
+	 */
 	@SuppressWarnings("unchecked")
 	private void finishManualReturnProcess() {
 		Set<BorrowedMaterial> selectedMaterials = new HashSet<BorrowedMaterial>();
@@ -374,8 +392,7 @@ public class ManualProcessPopupWindow extends Window {
 			for (Object selectedId : ids) {
 				selectedMaterials.add(idForMaterials.get(selectedId));
 			}
-		}
-		else {
+		} else {
 			LOG.warn("Table selection is not an instance of Set<?>");
 		}
 
@@ -385,27 +402,51 @@ public class ManualProcessPopupWindow extends Window {
 	/*
 	 * Method for validating a date object.
 	 * 
-	 * @return
-	 * 		returns false when passing null or a date in the past
-	 *		returns true otherwise
-	 * */
+	 * @return returns false when passing null or a date in the past returns
+	 * true otherwise
+	 */
 	private boolean validateDate(Date date) {
+		
 		if (date == null) {
-			Notification.show(NOTIFICATION_CAPTION_INVALID_DATE, NOTIFICATION_DESCR_INVALID_DATE, Type.WARNING_MESSAGE);
+			Notification.show(NOTIFICATION_CAPTION_INVALID_DATE,
+					NOTIFICATION_DESCR_INVALID_DATE, Type.WARNING_MESSAGE);
 			return false;
-		}
-		else if (date.before(new Date())) {
-			Notification.show(NOTIFICATION_CAPTION_DATE_IN_PAST, NOTIFICATION_DESCR_DATE_IN_PAST, Type.WARNING_MESSAGE);
+		} 
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		
+		if (isToday(calendar)) {
+			return true;
+		} else if (date.before(new Date())) {
+			Notification.show(NOTIFICATION_CAPTION_DATE_IN_PAST,
+					NOTIFICATION_DESCR_DATE_IN_PAST, Type.WARNING_MESSAGE);
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	}
+	
+	/*
+	 * Checks whether a given calendar object represents today or not.
+	 * 
+	 * @return true when then is today
+	 * */
+	private boolean isToday(Calendar then) {
+		Calendar when = Calendar.getInstance();
+		when.setTime(new Date());
+		
+		if(when.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR)) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	/*
-	 * Closes this window. Removing it from the UI and calling the Window.close method
-	 * */
+	 * Closes this window. Removing it from the UI and calling the Window.close
+	 * method
+	 */
 	private void closeMe() {
 		UI.getCurrent().removeWindow(this);
 		close();

@@ -17,7 +17,7 @@ import com.google.inject.Provider;
 
 import de.dhbw.humbuch.guice.GuiceJUnitRunner;
 import de.dhbw.humbuch.guice.GuiceJUnitRunner.GuiceModules;
-import de.dhbw.humbuch.guice.TestModule;
+import de.dhbw.humbuch.guice.TestModuleWithoutSingletons;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
@@ -25,7 +25,7 @@ import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
 
 @RunWith(GuiceJUnitRunner.class)
-@GuiceModules({ TestModule.class })
+@GuiceModules({ TestModuleWithoutSingletons.class })
 public class StudentInformationViewModelTest extends BaseTest {
 
 	private StudentInformationViewModel vm;

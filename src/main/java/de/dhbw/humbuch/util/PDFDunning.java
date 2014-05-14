@@ -77,12 +77,12 @@ public class PDFDunning extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		String dunningText = "";
 		if (!this.secondDunning) {
-			dunningText = "Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen:";
+			dunningText = "Wir bitten darum, folgende Lehrmittel innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen:";
 		}
 		else {
 			dunningText = "Sehr geehrte/r " + student.getParent().getTitle() + " " + student.getParent().getLastname() + ",\n\n"
 					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
-					+ " Bücher nicht zurückgegeben hat. Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
+					+ " Lehrmittel nicht zurückgegeben hat. Wir bitten darum, folgende Lehrmittel innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
 					+ "Mit freundlichen Grüßen \n"
 					+ "Ihre Schulverwaltung";
 		}
@@ -126,7 +126,8 @@ public class PDFDunning extends PDFHandler {
 	 */
 	private void addStudentInformation(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
-
+		table.setSpacingBefore(20f);
+		
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
 									"Klasse: ", "" + this.student.getGrade().toString() };
 		
@@ -142,9 +143,10 @@ public class PDFDunning extends PDFHandler {
 		}
 	}
 
-	private void addParentInformation(Document document) {
+	private void addParentInformation(Document document) {				
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
-
+		table.setSpacingBefore(23f);
+		
 		String[] contentArray = { this.student.getParent().getTitle(),
 									this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
 									this.student.getParent().getStreet(),

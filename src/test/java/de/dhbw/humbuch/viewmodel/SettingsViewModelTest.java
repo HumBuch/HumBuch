@@ -1,10 +1,19 @@
 package de.dhbw.humbuch.viewmodel;
 
+import static de.dhbw.humbuch.test.TestUtils.category;
+import static de.dhbw.humbuch.test.TestUtils.randomUser;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearFirstTermEnded;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearFirstTermNotStarted;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearFirstTermStarted;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearSecondTermEnded;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearSecondTermStarted;
+import static de.dhbw.humbuch.test.TestUtils.settingsEntry;
+import static de.dhbw.humbuch.test.TestUtils.teachingMaterialInBothTermsOfGrade;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static de.dhbw.humbuch.test.TestUtils.*;
 
 import javax.persistence.EntityManager;
 
@@ -16,8 +25,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.dhbw.humbuch.guice.GuiceJUnitRunner;
-import de.dhbw.humbuch.guice.TestModule;
 import de.dhbw.humbuch.guice.GuiceJUnitRunner.GuiceModules;
+import de.dhbw.humbuch.guice.TestModule;
 import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.SchoolYear;
