@@ -70,7 +70,7 @@ public class TestUtils {
 
 	public static SchoolYear schoolYear(int fromDays, int endFirstTermDays,
 			int beginSecondTermDays, int toDays) {
-		SchoolYear schoolYear = new SchoolYear.Builder("now",
+		SchoolYear schoolYear = new SchoolYear.Builder(rStr(),
 				todayPlusDays(fromDays), todayPlusDays(toDays))
 				.endFirstTerm(todayPlusDays(endFirstTermDays))
 				.beginSecondTerm(todayPlusDays(beginSecondTermDays)).build();
@@ -100,14 +100,14 @@ public class TestUtils {
 	public static Student studentInGrade(int grade) {
 		Grade gradeEntity = new Grade.Builder(grade, "").build();
 		gradeEntity.setId(grade);
-		Student student = new Student.Builder(rInt(), "John", "Doe", null,
+		Student student = new Student.Builder(rInt(), rStr(), rStr(), null,
 				gradeEntity).build();
 		return student;
 	}
 
 	public static TeachingMaterial teachingMaterialInBothTermsOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), "FooBook1", null, todayPlusDays(-20))
+				category(), rStr(), null, todayPlusDays(-20))
 				.fromGrade(grade).fromTerm(Term.FIRST).toGrade(grade)
 				.toTerm(Term.SECOND).build();
 		return teachingMaterial;
@@ -115,7 +115,7 @@ public class TestUtils {
 
 	public static TeachingMaterial teachingMaterialInFirstTermOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), "FooBook1", null, todayPlusDays(-20))
+				category(), rStr(), null, todayPlusDays(-20))
 				.fromGrade(grade).fromTerm(Term.FIRST).toGrade(grade)
 				.toTerm(Term.FIRST).build();
 		return teachingMaterial;
@@ -123,7 +123,7 @@ public class TestUtils {
 
 	public static TeachingMaterial teachingMaterialInSecondTermOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), "FooBook1", null, todayPlusDays(-20))
+				category(), rStr(), null, todayPlusDays(-20))
 				.fromGrade(grade).fromTerm(Term.SECOND).toGrade(grade)
 				.toTerm(Term.SECOND).build();
 		return teachingMaterial;
