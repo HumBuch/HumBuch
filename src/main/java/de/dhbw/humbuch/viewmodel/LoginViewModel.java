@@ -66,6 +66,8 @@ public class LoginViewModel {
 	 */
 	@HandlesAction(DoLogin.class)
 	public void doLogin(String username, String password) {
+		properties.currentUser.set(null);
+		updateLoginStatus();
 		try {
 			if (username.equals("") || password.equals("")) {
 				eventBus.post(new LoginEvent("Bitte geben Sie einen Nutzernamen und Passwort an."));

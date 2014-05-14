@@ -39,6 +39,7 @@ import de.dhbw.humbuch.util.CSVHandler;
 import de.dhbw.humbuch.view.StudentInformationView;
 
 /**
+ * @author David Vitt
  * @author Johannes Idelhauser
  * @author Benjamin Räthlein
  *

@@ -2,7 +2,6 @@ package de.dhbw.humbuch.view.components;
 
 import java.util.Iterator;
 
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -63,6 +62,7 @@ public class Sidebar extends VerticalLayout {
 			Button b = new NativeButton(view[0]);
 
 			b.addStyleName("icon-" + view[1]);
+			b.setData(view[1]);
 			b.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -76,10 +76,6 @@ public class Sidebar extends VerticalLayout {
 
 				}
 			});
-			String f = Page.getCurrent().getUriFragment();
-			if (f != null && f.substring(1).equals(view[1])) {
-				b.addStyleName("selected");
-			}
 
 			menu.addComponent(b);
 		}
@@ -130,8 +126,31 @@ public class Sidebar extends VerticalLayout {
 		}
 		btnSettings.removeStyleName("selected");
 	}
-	
+	/**
+	 * Returns the logout button
+	 * @return The {@link Button} to logout
+	 */
 	public Button getLogoutButton() {
 		return btnLogout;
+	}
+
+	/**
+	 * Changes the selected navigation button in the sidebar
+	 * @param newView
+	 */
+	public void changeMenuBarSelection(String view) {
+		clearMenuBar();
+		if(view.equals(MainUI.SETTINGS_VIEW)) {
+			btnSettings.addStyleName("selected");
+		} else {
+			for (Iterator<Component> it = menu.iterator(); it.hasNext();) {
+				Component next = it.next();
+				if (next instanceof NativeButton) {
+					if (view.equals(((NativeButton) next).getData())) {
+						next.addStyleName("selected");
+					}
+				}
+			}
+		}
 	}
 }
