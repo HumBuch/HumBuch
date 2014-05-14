@@ -66,7 +66,6 @@ public class LendingViewModelTest extends BaseTest {
 	
 	private int amountOfTeachingMaterialsInMaterialListGrades() {
 		int amount = 0;
-		vm.materialListGrades.get().values().iterator().next().values().iterator().next();
 		Map<Grade, Map<TeachingMaterial, Integer>> gradeList = vm.materialListGrades.get();
 		for (Grade grade : gradeList.keySet()) {
 			Map<TeachingMaterial, Integer> materialList = gradeList.get(grade);
@@ -213,7 +212,6 @@ public class LendingViewModelTest extends BaseTest {
 		daoStudent.insert(studentInGrade(6));
 		daoStudent.insert(studentInGrade(6));
 		vm.refresh();
-		System.out.println(daoGrade.findAll());
 		vm.generateMaterialListGrades(new HashSet<>(daoGrade.findAll()));
 		assertEquals(2, amountOfTeachingMaterialsInMaterialListGrades());
 	}
@@ -227,7 +225,6 @@ public class LendingViewModelTest extends BaseTest {
 		daoTeachingMaterial.insert(teachingMaterialInBothTermsOfGrade(7));
 		daoStudent.insert(studentInGrade(7));
 		vm.refresh();
-		System.out.println(daoGrade.findAll());
 		vm.generateMaterialListGrades(new HashSet<>(daoGrade.findAll()));
 		assertEquals(3, amountOfTeachingMaterialsInMaterialListGrades());
 	}
@@ -242,7 +239,6 @@ public class LendingViewModelTest extends BaseTest {
 		daoStudent.insert(studentInGrade(7));
 		daoStudent.insert(studentInGrade(8));
 		vm.refresh();
-		System.out.println(daoGrade.findAll());
 		vm.generateMaterialListGrades(new HashSet<>(daoGrade.findAll()));
 		assertEquals(3, amountOfTeachingMaterialsInMaterialListGrades());
 	}
