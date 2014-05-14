@@ -175,7 +175,6 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 		// Edit
 		btnEdit = new Button("Bearbeiten");
 		btnEdit.setEnabled(false);
-		btnEdit.addStyleName("default");
 		btnEdit.setClickShortcut(KeyCode.ENTER);
 		buttons.addComponent(btnEdit);
 

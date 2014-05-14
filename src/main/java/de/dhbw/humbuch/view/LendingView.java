@@ -155,7 +155,6 @@ public class LendingView extends VerticalLayout implements View,
 		buttonManualLending = new Button(MANUAL_LENDING);
 		menuBarPrinting = new MenuBar();
 
-		buttonSaveSelectedData.addStyleName("default");
 		buttonSaveSelectedData.setEnabled(false);
 
 		textFieldStudentFilter.setInputPrompt(FILTER_STUDENT);
