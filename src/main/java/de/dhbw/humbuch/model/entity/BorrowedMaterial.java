@@ -13,6 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="borrowedMaterial")
 public class BorrowedMaterial implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<BorrowedMaterial> {

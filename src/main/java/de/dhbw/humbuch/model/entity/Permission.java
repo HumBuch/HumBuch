@@ -8,6 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="permission")
 public class Permission implements de.dhbw.humbuch.model.entity.Entity, Serializable {

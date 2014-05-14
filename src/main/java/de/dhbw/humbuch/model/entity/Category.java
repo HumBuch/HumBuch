@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,6 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="category")
 public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Category> {
@@ -23,7 +28,7 @@ public class Category implements de.dhbw.humbuch.model.entity.Entity, Serializab
 	private String name;
 	private String description;
 	
-	@OneToMany(mappedBy="category", fetch=FetchType.LAZY)
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy="category", fetch=FetchType.LAZY)
 	private List<TeachingMaterial> teachingMaterials = new ArrayList<>();
 	
 	/**

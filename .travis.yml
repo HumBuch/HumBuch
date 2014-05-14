@@ -1,5 +1,8 @@
 language: java
 
+env:
+  - COVERALLS_SERVICE_NAME=travis-ci
+
 before_install:
   - sudo rm /etc/apt/sources.list.d/git-ppa-source.list
   - sudo apt-get remove git && sudo apt-get remove git-man && sudo apt-get install git-man && sudo apt-get install git
@@ -14,3 +17,6 @@ deploy:
   on:
     repo: HumBuch/HumBuch
     branch: master
+
+after_success:
+  - mvn clean test jacoco:report coveralls:jacoco

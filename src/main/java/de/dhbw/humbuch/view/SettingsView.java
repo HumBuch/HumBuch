@@ -754,7 +754,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 		//Warning that is displayed when settings tab is accessed
 		tabs.addSelectedTabChangeListener(new SelectedTabChangeListener() {
 			
-            boolean   preventEvent = false;
+            boolean preventEvent = false;
             
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
@@ -766,12 +766,13 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 				final TabSheet source = (TabSheet) event.getSource();
 				
 				if(source.getSelectedTab() == tab) {
-					preventEvent = true;
+					source.setSelectedTab(0);
 					
 					Runnable runnable = new Runnable() {
 						@Override
 						public void run() {
-							source.setSelectedTab(0);
+							preventEvent = true;
+							source.setSelectedTab(tab);
 						}
 					};
 					eventBus.post(new ConfirmEvent.Builder(
@@ -779,10 +780,9 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 							+ "nicht mehr wie erwartet funktioniert. Sie sollten nur fortfahren, wenn Sie genau wissen,<br>"
 							+ "was Sie tun.")
 							.caption("Achtung, hier endet möglicherweise die Gewährleistung!")
-							.cancelCaption("Ich werde vorsichtig sein, versprochen!")
-							.confirmCaption("Abbrechen").confirmRunnable(runnable)
+							.cancelCaption("Abbrechen")
+							.confirmCaption("Ich werde vorsichtig sein, versprochen!").confirmRunnable(runnable)
 							.build());
-					
 				}
 			}
 		});

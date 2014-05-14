@@ -26,6 +26,10 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="dunning")
 public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializable {

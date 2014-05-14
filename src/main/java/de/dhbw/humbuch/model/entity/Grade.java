@@ -12,6 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ * @author David Vitt
+ *
+ */
 @Entity
 @Table(name="grade")
 public class Grade implements de.dhbw.humbuch.model.entity.Entity, Serializable, Comparable<Grade> {
