@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
  * 
  * Base class for Tests using persistence and {@link DAO}s
  */
+@Ignore("Base test")
 public class BaseTest {
 	private final static Logger LOG = LoggerFactory.getLogger(BaseTest.class);
 
