@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
+
 import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
@@ -26,6 +28,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
  * them manually!
  */
 
+@Ignore("Manual test")
 public class PDFTest {
 
 	public static void main(String[] args) {
