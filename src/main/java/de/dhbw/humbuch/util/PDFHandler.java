@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,9 @@ import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
@@ -159,31 +163,21 @@ public abstract class PDFHandler {
 	 * 
 	 * @param document
 	 *            reference of the pdfDocument object
+	 * @throws IOException 
+	 * @throws BadElementException 
 	 */
 	protected void addHeading(Document document) {
 		Paragraph paragraph = new Paragraph();
 		PdfPTable table = createMyStandardTable(2);
 
 		table.setTotalWidth(TABLEWIDTH);
-		PdfPCell cell;
 
-		try {
-			Image img = Image.getInstance("./res/Logo_Humboldt_Gym_70_klein_3.png");
-			img.setAlignment(Element.ALIGN_BOTTOM);
-			cell = new PdfPCell(img);
+		Image img = new ResourceLoader("pdf/Logo_Humboldt.png").getImage();
+		img.setAlignment(Element.ALIGN_BOTTOM);
+		PdfPCell cell = new PdfPCell(img);
 
-			cell.setBorder(0);
-			table.addCell(cell);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		catch (BadElementException e) {
-			e.printStackTrace();
-		}
+		cell.setBorder(0);
+		table.addCell(cell);
 
 		String date = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN).format(Calendar.getInstance().getTime());
 
