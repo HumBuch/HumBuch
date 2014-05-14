@@ -49,7 +49,7 @@ public final class PDFClassList extends PDFHandler {
 
 		for (TeachingMaterial teachingMaterial : map.keySet()) {
 			String[] contentArray = { teachingMaterial.getName(), "" + map.get(teachingMaterial) };
-			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
+			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 		}
 
 		try {
