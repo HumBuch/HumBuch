@@ -43,7 +43,7 @@ public abstract class PDFHandler {
 	}
 
 	public PDFHandler() {
-		this.document = new Document(new RectangleReadOnly(595,842), 10, 10, 25, 35);
+		this.document = new Document(new RectangleReadOnly(595,842), -30f, 10f, 25f, 35f);
 	}
 
 	/**
@@ -164,8 +164,9 @@ public abstract class PDFHandler {
 		table.setTotalWidth(TABLEWIDTH);
 		PdfPCell cell;
 
-		Image img = new ResourceLoader("pdf/Logo_Humboldt.png").getImage();
+		Image img = new ResourceLoader("pdf/humboldt_logo.png").getImage();
 		img.setAlignment(Element.ALIGN_BOTTOM);
+		img.scaleToFit(205f, 65f);
 		cell = new PdfPCell(img);
 
 		cell.setBorder(0);
