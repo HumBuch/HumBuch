@@ -176,9 +176,9 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	}
 
 	public enum Status {
-		OPENED("zu senden"),
-		SENT("gesendet"),
-		CLOSED("erledigt");
+		OPENED("Offen"),
+		SENT("Versendet"),
+		CLOSED("Erledigt");
 
 		private String value;
 		
