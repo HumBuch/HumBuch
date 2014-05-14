@@ -11,7 +11,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public class PDFDunning extends PDFHandler {
 
 	Student student;

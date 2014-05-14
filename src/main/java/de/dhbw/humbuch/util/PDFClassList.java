@@ -9,7 +9,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public final class PDFClassList extends PDFHandler {
 
 	private Grade grade;

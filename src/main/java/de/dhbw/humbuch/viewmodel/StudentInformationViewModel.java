@@ -38,17 +38,22 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
 import de.dhbw.humbuch.view.StudentInformationView;
 
-
 /**
  * @author David Vitt
+ * @author Johannes Idelhauser
+ * @author Benjamin Räthlein
  *
  */
 public class StudentInformationViewModel {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(StudentInformationView.class);
+	private final static Logger LOG = LoggerFactory
+			.getLogger(StudentInformationView.class);
 
-	public interface Students extends State<Collection<Student>> {}
-	public interface PersistStudents extends ActionHandler {}
+	public interface Students extends State<Collection<Student>> {
+	}
+
+	public interface PersistStudents extends ActionHandler {
+	}
 
 	@ProvidesState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
@@ -66,7 +71,8 @@ public class StudentInformationViewModel {
 	 *            DAO implementation to access TeachingMaterial entities
 	 */
 	@Inject
-	public StudentInformationViewModel(DAO<Student> daoStudent,	DAO<Grade> daoGrade, DAO<Parent> daoParent,
+	public StudentInformationViewModel(DAO<Student> daoStudent,
+			DAO<Grade> daoGrade, DAO<Parent> daoParent,
 			DAO<BorrowedMaterial> daoBorrowedMaterial, EventBus eventBus) {
 		this.daoStudent = daoStudent;
 		this.daoGrade = daoGrade;

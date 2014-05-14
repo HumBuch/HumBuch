@@ -23,7 +23,11 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
 public class StudentInformationViewModelTest extends BaseTest {
