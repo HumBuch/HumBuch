@@ -28,10 +28,14 @@ import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
+/**
+ * 
+ * @author Martin Wentzel
+ *
+ */
 public class DunningViewModel {
 
 	public interface Dunnings extends State<Collection<Dunning>> {}
-
 	public interface doUpdateDunning extends ActionHandler {}
 
 	@ProvidesState(Dunnings.class)
@@ -40,14 +44,16 @@ public class DunningViewModel {
 	private DAO<Dunning> daoDunning;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
-
+	
 	private SchoolYear recentlyActiveSchoolYear;
+	private Properties properties;
 
 	@Inject
-	public DunningViewModel(DAO<Dunning> daoDunning, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public DunningViewModel(DAO<Dunning> daoDunning, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, Properties properties) {
 		this.daoDunning = daoDunning;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
+		this.properties = properties;
 	}
 
 	@AfterVMBinding
@@ -56,44 +62,38 @@ public class DunningViewModel {
 		checkIfDunningShouldBeClosed();
 		createFirstDunnings();
 		createSecondDunnings();
-		updateStates();
+		updateState();
 	}
 
 	/**
-	 * Creates the first dunning for a student with borrowed materials which are
-	 * overdue.
+	 * Creates a dunning for an overdue borrowed material.
 	 */
 	private void createFirstDunnings() {
 		List<BorrowedMaterial> listBorrowedMaterial = daoBorrowedMaterial.findAll();
-		Map<Integer, List<BorrowedMaterial>> map = new HashMap<Integer, List<BorrowedMaterial>>();
+		Map<Integer, List<BorrowedMaterial>> overdueMaterials = new HashMap<Integer, List<BorrowedMaterial>>();
 		for (BorrowedMaterial borrowedMaterial : listBorrowedMaterial) {
 			if (borrowedMaterial.getBorrowUntil() == null) {
 				if (!isNeededNextTerm(borrowedMaterial)
 						&& borrowedMaterial.isReceived()) {
 					if (Calendar
 							.getInstance()
-							.after(addDeadlineToDate(recentlyActiveSchoolYear
+							.after(addDeadlineToDateOfFirstDunning(recentlyActiveSchoolYear
 									.getEndOf(borrowedMaterial.getTeachingMaterial().getToTerm())))
 							|| !(borrowedMaterial.getTeachingMaterial()
 									.getToGrade() == borrowedMaterial
 									.getStudent().getGrade().getGrade())) {
-						addBorrowedMaterialsFromStudentToMap(map,
+						addBorrowedMaterialFromStudentToMap(overdueMaterials,
 								borrowedMaterial);
 					}
 				}
-			} else if (Calendar.getInstance().after(addDeadlineToDate(borrowedMaterial.getBorrowUntil()))) { { // manually borrowed
-					addBorrowedMaterialsFromStudentToMap(map, borrowedMaterial);
-				}
+			} else if (Calendar.getInstance().after(addDeadlineToDateOfFirstDunning(borrowedMaterial.getBorrowUntil()))) {// manually borrowed
+					addBorrowedMaterialFromStudentToMap(overdueMaterials, borrowedMaterial);
 			}
 		}
 
-		for (Integer key : map.keySet()) {
-			List<BorrowedMaterial> entry = map.get(key);
+		for (Integer key : overdueMaterials.keySet()) {
+			List<BorrowedMaterial> entry = overdueMaterials.get(key);
 			List<Dunning> existingFirstDunningsForStudent = daoDunning.findAllWithCriteria(
-					Restrictions.or(
-							Restrictions.eq("status", Dunning.Status.OPENED),
-							Restrictions.eq("status", Dunning.Status.SENT),
-							Restrictions.eq("status", Dunning.Status.CLOSED)),
 							Restrictions.eq("type", Dunning.Type.TYPE1),
 							Restrictions.eq("student", entry.get(0).getStudent()
 					));
@@ -114,27 +114,40 @@ public class DunningViewModel {
 		}
 	}
 
-	private void addBorrowedMaterialsFromStudentToMap(Map<Integer, List<BorrowedMaterial>> map,	BorrowedMaterial borrowedMaterial) {
+	/**
+	 * Adds a deadline to a date. The deadlines value is stored in the settings property.
+	 * 
+	 * @param endOf the date to be modified
+	 * @return a calendar object with the modified endOf parameter
+	 */
+	private Calendar addDeadlineToDateOfFirstDunning(Date endOf) {
+		String deadline = properties.settings.get().get("dun_firstDunningDeadline");		
+		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
+	}
+
+	/**
+	 * Adds a borrowed material to the map. The key of the map is the student id.
+	 * When a key is not existent in the map, a new entry is created. 
+	 * The borrowed material is added to the corresponding list of its student id.  
+	 * 
+	 * @param map a map of <code><Integer, List<BorrowedMaterial>></code> 
+	 * @param borrowedMaterial a borrowed material to be added to the map
+	 */
+	private void addBorrowedMaterialFromStudentToMap(Map<Integer, List<BorrowedMaterial>> map,	BorrowedMaterial borrowedMaterial) {
 		if (!map.containsKey(borrowedMaterial.getStudent().getId())) {
 			map.put(borrowedMaterial.getStudent().getId(),
 					new ArrayList<BorrowedMaterial>());
 		}
-		
 		map.get(borrowedMaterial.getStudent().getId()).add(borrowedMaterial);
 	}
 
-	private Calendar addDeadlineToDate(Date date) {
-		Calendar returnDate = Calendar.getInstance();
-		returnDate.setTime(date);
-		returnDate.add(Calendar.DATE, 15);
-		return returnDate;
-	}
 
 	/**
-	 * Creates the second dunning for overdue first dunnings. Retrieves all
-	 * first dunnings which have been sent to the student. If the sent date is
-	 * more than 15 days ago create the second dunning which is sent to the
-	 * parents. First make sure that there is no second dunning created yet.
+	 * Creates the second dunning for overdue first dunnings. 
+	 * A first dunning is overdue, when the dunning is not resolved within a specific time frame.
+	 * This function gets all first dunnings which are in an SENT state. 
+	 * Then it checks for each dunning whether it is overdue. If so, a second dunning is created and the first dunning is closed
+	 * 
 	 */
 	private void createSecondDunnings() {
 		List<Dunning> sentFirstDunnings = daoDunning.findAllWithCriteria(
@@ -142,16 +155,8 @@ public class DunningViewModel {
 				Restrictions.eq("type", Dunning.Type.TYPE1));
 		for (Dunning dunning : sentFirstDunnings) {
 			if (Calendar.getInstance().after(
-					addDeadlineToDate(dunning
+					addDeadlineToDateOfSecondDunning(dunning
 							.getStatusDate(Dunning.Status.SENT)))) {
-				if (daoDunning.findAllWithCriteria(
-						Restrictions.or(
-								Restrictions.eq("status", Dunning.Status.OPENED), 
-								Restrictions.eq("status", Dunning.Status.SENT),
-								Restrictions.eq("status", Dunning.Status.CLOSED)),
-								Restrictions.eq("type", Dunning.Type.TYPE2),
-								Restrictions.eq("student", dunning.getStudent()
-						)).size() == 0) {
 					Dunning newDunning = new Dunning.Builder(
 							dunning.getStudent()).type(Dunning.Type.TYPE2)
 							.status(Dunning.Status.OPENED)
@@ -160,11 +165,42 @@ public class DunningViewModel {
 					daoDunning.insert(newDunning);
 					dunning.setStatus(Dunning.Status.CLOSED);
 					daoDunning.update(dunning);
-				}
 			}
 		}
 	}
 
+	/**
+	 * Adds a deadline to a date. The deadline's value is stored in the settings property.
+	 * 
+	 * @param endOf the date to be modified
+	 * @return a calendar object with the modified endOf parameter
+	 */
+	private Calendar addDeadlineToDateOfSecondDunning(Date endOf) {
+		String deadline = properties.settings.get().get("dun_secondDunningDeadline");		
+		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
+	}
+	
+	/**
+	 * Adds a specific number of days to a date
+	 * 
+	 * @param deadline number of days
+	 * @param date the date to be modified 
+	 * @return a calendar object with the modified date 
+	 */
+	private Calendar addDeadlineToDate(int deadline, Date date) {
+		Calendar returnDate = Calendar.getInstance();
+		returnDate.setTime(date);
+		returnDate.add(Calendar.DATE, deadline);
+		return returnDate;
+	}
+
+	/**
+	 * Checks whether a specific borrowed material is needed next term. 
+	 * Thereto the according teaching material with its grade and term information is retrieved.
+	 * 
+	 * @param borrowedMaterial the borrowed material which is checked
+	 * @return <code>true</code> if the borrowed materials is needed next term; <code>false</code> otherwise
+	 */
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
 		TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
 
@@ -178,7 +214,10 @@ public class DunningViewModel {
 
 		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm.compareTo(currentTerm) > 0)));
 	}
-
+	
+	/**
+	 * Sets the value of the recentlyActiveSchoolYear variable.
+	 */
 	private void updateSchoolYear() {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
@@ -186,8 +225,8 @@ public class DunningViewModel {
 	}
 	
 	/**
-	 * Checks for every open dunning whether the contained borrowedMaterials have been returned.
-	 * If so, close the dunning.
+	 * Checks for every open dunning whether all contained borrowed materials have been returned.
+	 * When all borrowed materials are returned, close the dunning.
 	 */
 	private void checkIfDunningShouldBeClosed() {
 		List<Dunning> openDunnings = daoDunning.findAllWithCriteria(
@@ -210,7 +249,10 @@ public class DunningViewModel {
 		}
 	}
 
-	private void updateStates() {
+	/**
+	 * Updates the dunnings state
+	 */
+	private void updateState() {
 		Collection<Dunning> dunnings = daoDunning.findAll();
 		this.dunnings.set(dunnings);
 	}
@@ -224,6 +266,6 @@ public class DunningViewModel {
 	@HandlesAction(doUpdateDunning.class)
 	public void doUpdateDunning(Dunning dunning) {
 		daoDunning.update(dunning);
-		updateStates();
+		updateState();
 	}
 }
