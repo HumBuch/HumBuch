@@ -278,10 +278,61 @@ public abstract class PDFHandler {
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader() {
-		PdfPTable table = createMyStandardTable(3, new float[] { 2.25f, 1f, 1f });
+//		PdfPTable table = createMyStandardTable(3, new float[] { 2.25f, 1f, 1f });
+//		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
+//		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Zurückgegeben" }).withBorder(true)
+//				.isCenterAligned(true).font(font).fillTable();
+		
+		PdfPTable table = createMyStandardTable(4, new float[] { 2.25f, 1f, 0.5f, 0.5f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Zurückgegeben" }).withBorder(true)
-				.isCenterAligned(true).font(font).fillTable();
+		
+		PdfPCell cell = null;
+		cell = new PdfPCell(new Phrase("Bezeichnung Lehrmittel", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthBottom(0);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("bis Klasse", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthBottom(0);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Zurückgegeben", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setColspan(2);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(""));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthTop(0);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(""));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthTop(0);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Ja", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setPadding(7f);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Nein", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setPadding(7f);
+		table.addCell(cell);
 
 		return table;
 	}

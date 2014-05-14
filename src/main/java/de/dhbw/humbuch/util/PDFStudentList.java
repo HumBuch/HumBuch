@@ -188,9 +188,9 @@ public final class PDFStudentList extends PDFHandler {
 			for (BorrowedMaterial borrowedMaterial : this.returnList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
-											"" };
+											"", "" };
 
-				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(7.5f).fillTable();
 			}
 
 			try {
