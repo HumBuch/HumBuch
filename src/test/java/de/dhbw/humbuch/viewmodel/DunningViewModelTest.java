@@ -25,6 +25,7 @@ import de.dhbw.humbuch.model.entity.Dunning.Status;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
+import de.dhbw.humbuch.model.entity.SettingsEntry;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
@@ -36,19 +37,22 @@ public class DunningViewModelTest extends BaseTest {
 	private DAO<Dunning> daoDunning;
 	private DAO<SchoolYear> daoSchoolYear;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
+	private DAO<SettingsEntry> daoSettingsEntry;
 
 	@Inject
 	public void setInjected(TestPersistenceInitialiser persistenceInitialiser,
 			Provider<EntityManager> emProvider,
 			DunningViewModel dunningViewModel, DAO<Dunning> daoDunning,
 			DAO<SchoolYear> daoSchoolYear,
-			DAO<BorrowedMaterial> daoBorrowedMaterial) {
+			DAO<BorrowedMaterial> daoBorrowedMaterial,
+			DAO<SettingsEntry> daoSettingsEntry) {
 		super.setInjected(persistenceInitialiser, emProvider);
 		
 		this.dunningViewModel = dunningViewModel;
 		this.daoDunning = daoDunning;
 		this.daoSchoolYear = daoSchoolYear;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
+		this.daoSettingsEntry = daoSettingsEntry;
 	}
 
 	private void persistSomeEmptyDunnings(int amount, Status status) {
@@ -150,6 +154,8 @@ public class DunningViewModelTest extends BaseTest {
 	
 	@Before
 	public void refreshDunningViewModel() {
+		daoSettingsEntry.insert(new SettingsEntry.Builder("dun_firstDunningDeadline", "14", "14").build());
+		daoSettingsEntry.insert(new SettingsEntry.Builder("dun_secondDunningDeadline", "14", "14").build());
 		dunningViewModel.refresh();
 	}
 	
