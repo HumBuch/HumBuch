@@ -1,5 +1,7 @@
 package de.dhbw.humbuch.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -37,7 +39,7 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	@Override
 	@Transactional
 	public EntityType insert(EntityType entity) {
-		return insert(entity, FireUpdateEvent.YES);
+		return insert(entity, FireUpdateEvent.NO);
 	}
 	
 	@Override
@@ -50,6 +52,27 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 		}
 		
 		return mergedEntity;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<EntityType> insert(Collection<EntityType> entities) {
+		return insert(entities, FireUpdateEvent.NO);
+	}
+
+	@Override
+	@Transactional
+	public Collection<EntityType> insert(Collection<EntityType> entities, FireUpdateEvent fireUpdateEvent) {
+		getEntityManager().clear();
+		Collection<EntityType> mergedEntities = new ArrayList<>();
+		for (EntityType entity : entities) {
+			mergedEntities.add(getEntityManager().merge(entity));
+		}
+		if(fireUpdateEvent == FireUpdateEvent.YES) {
+			fireUpdateEvent();
+		}
+		
+		return mergedEntities;
 	}
 
 	@Override
@@ -88,48 +111,6 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	}
 
 	@Override
-	@Transactional
-	public void update(EntityType entity) {
-		update(entity, FireUpdateEvent.YES);
-	}
-
-	@Override
-	@Transactional
-	public void update(EntityType entity, FireUpdateEvent fireUpdateEvent) {
-		getEntityManager().clear();
-		getEntityManager().merge(entity);
-		if(fireUpdateEvent == FireUpdateEvent.YES) {
-			fireUpdateEvent();
-		}
-	}
-
-	@Override
-	@Transactional
-	public void delete(EntityType entity) {
-		delete(entity, FireUpdateEvent.YES);
-	}
-
-	@Override
-	@Transactional
-	public void delete(EntityType entity, FireUpdateEvent fireUpdateEvent) {
-		getEntityManager().clear();
-		getEntityManager().remove(getEntityManager().merge(entity));
-		if(fireUpdateEvent == FireUpdateEvent.YES) {
-			fireUpdateEvent();
-		}
-	}
-	
-	@Override
-	public EntityManager getEntityManager() {
-		return emProvider.get();
-	}
-	
-	@Override
-	public Class<EntityType> getEntityClass() {
-		return entityClass;
-	}
-
-	@Override
 	public List<EntityType> findAll() {
 		getEntityManager().clear();
 		return getEntityManager().createQuery(
@@ -159,7 +140,85 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 			return null;
 		}
 	}
+
+	@Override
+	@Transactional
+	public void update(EntityType entity) {
+		update(entity, FireUpdateEvent.NO);
+	}
+
+	@Override
+	@Transactional
+	public void update(EntityType entity, FireUpdateEvent fireUpdateEvent) {
+		getEntityManager().clear();
+		getEntityManager().merge(entity);
+		if(fireUpdateEvent == FireUpdateEvent.YES) {
+			fireUpdateEvent();
+		}
+	}
+
+	@Override
+	@Transactional
+	public void update(Collection<EntityType> entities) {
+		update(entities, FireUpdateEvent.NO);
+	}
+
+	@Override
+	@Transactional
+	public void update(Collection<EntityType> entities, FireUpdateEvent fireUpdateEvent) {
+		getEntityManager().clear();
+		for (EntityType entity : entities) {
+			getEntityManager().merge(entity);
+		}
+		if(fireUpdateEvent == FireUpdateEvent.YES) {
+			fireUpdateEvent();
+		}
+	}
+
+	@Override
+	@Transactional
+	public void delete(EntityType entity) {
+		delete(entity, FireUpdateEvent.NO);
+	}
+
+	@Override
+	@Transactional
+	public void delete(EntityType entity, FireUpdateEvent fireUpdateEvent) {
+		getEntityManager().clear();
+		getEntityManager().remove(getEntityManager().merge(entity));
+		if(fireUpdateEvent == FireUpdateEvent.YES) {
+			fireUpdateEvent();
+		}
+	}
 	
+	@Override
+	@Transactional
+	public void delete(Collection<EntityType> entities) {
+		delete(entities, FireUpdateEvent.NO);
+	}
+
+	@Override
+	@Transactional
+	public void delete(Collection<EntityType> entities, FireUpdateEvent fireUpdateEvent) {
+		getEntityManager().clear();
+		for (EntityType entity : entities) {
+			getEntityManager().remove(getEntityManager().merge(entity));
+		}
+		if(fireUpdateEvent == FireUpdateEvent.YES) {
+			fireUpdateEvent();
+		}
+	}
+
+	@Override
+	public EntityManager getEntityManager() {
+		return emProvider.get();
+	}
+	
+	@Override
+	public Class<EntityType> getEntityClass() {
+		return entityClass;
+	}
+
 	@Override
 	public void fireUpdateEvent() {
 		eventBus.post(new EntityUpdateEvent(getEntityClass()));
