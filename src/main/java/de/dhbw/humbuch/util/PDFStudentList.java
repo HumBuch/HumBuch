@@ -197,7 +197,7 @@ public final class PDFStudentList extends PDFHandler {
 				document.add(table);
 				PDFHandler.addEmptyLineToDocument(document, 1);
 				this.addRentalDisclosure(document);
-				this.addSignatureField(document, "Lehrer");
+				this.addSignatureField(document, "");
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
