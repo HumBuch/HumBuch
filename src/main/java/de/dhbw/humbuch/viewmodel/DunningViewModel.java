@@ -40,14 +40,15 @@ public class DunningViewModel {
 	private DAO<Dunning> daoDunning;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
 	private DAO<SchoolYear> daoSchoolYear;
-
 	private SchoolYear recentlyActiveSchoolYear;
+	private Properties properties;
 
 	@Inject
-	public DunningViewModel(DAO<Dunning> daoDunning, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear) {
+	public DunningViewModel(DAO<Dunning> daoDunning, DAO<BorrowedMaterial> daoBorrowedMaterial, DAO<SchoolYear> daoSchoolYear, Properties properties) {
 		this.daoDunning = daoDunning;
 		this.daoBorrowedMaterial = daoBorrowedMaterial;
 		this.daoSchoolYear = daoSchoolYear;
+		this.properties = properties;
 	}
 
 	@AfterVMBinding
@@ -72,7 +73,7 @@ public class DunningViewModel {
 						&& borrowedMaterial.isReceived()) {
 					if (Calendar
 							.getInstance()
-							.after(addDeadlineToDate(recentlyActiveSchoolYear
+							.after(addDeadlineToDateOfFirstDunning(recentlyActiveSchoolYear
 									.getEndOf(borrowedMaterial.getTeachingMaterial().getToTerm())))
 							|| !(borrowedMaterial.getTeachingMaterial()
 									.getToGrade() == borrowedMaterial
@@ -81,7 +82,7 @@ public class DunningViewModel {
 								borrowedMaterial);
 					}
 				}
-			} else if (Calendar.getInstance().after(addDeadlineToDate(borrowedMaterial.getBorrowUntil()))) { { // manually borrowed
+			} else if (Calendar.getInstance().after(addDeadlineToDateOfFirstDunning(borrowedMaterial.getBorrowUntil()))) { { // manually borrowed
 					addBorrowedMaterialsFromStudentToMap(map, borrowedMaterial);
 				}
 			}
@@ -114,21 +115,19 @@ public class DunningViewModel {
 		}
 	}
 
+	private Calendar addDeadlineToDateOfFirstDunning(Date endOf) {
+		String deadline = properties.settings.get().get("firstDunningDeadline");		
+		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
+	}
+
 	private void addBorrowedMaterialsFromStudentToMap(Map<Integer, List<BorrowedMaterial>> map,	BorrowedMaterial borrowedMaterial) {
 		if (!map.containsKey(borrowedMaterial.getStudent().getId())) {
 			map.put(borrowedMaterial.getStudent().getId(),
 					new ArrayList<BorrowedMaterial>());
 		}
-		
 		map.get(borrowedMaterial.getStudent().getId()).add(borrowedMaterial);
 	}
 
-	private Calendar addDeadlineToDate(Date date) {
-		Calendar returnDate = Calendar.getInstance();
-		returnDate.setTime(date);
-		returnDate.add(Calendar.DATE, 15);
-		return returnDate;
-	}
 
 	/**
 	 * Creates the second dunning for overdue first dunnings. Retrieves all
@@ -142,7 +141,7 @@ public class DunningViewModel {
 				Restrictions.eq("type", Dunning.Type.TYPE1));
 		for (Dunning dunning : sentFirstDunnings) {
 			if (Calendar.getInstance().after(
-					addDeadlineToDate(dunning
+					addDeadlineToDateOfSecondDunning(dunning
 							.getStatusDate(Dunning.Status.SENT)))) {
 				if (daoDunning.findAllWithCriteria(
 						Restrictions.or(
@@ -163,6 +162,18 @@ public class DunningViewModel {
 				}
 			}
 		}
+	}
+
+	private Calendar addDeadlineToDateOfSecondDunning(Date endOf) {
+		String deadline = properties.settings.get().get("secondDunningDeadline");		
+		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
+	}
+	
+	private Calendar addDeadlineToDate(int deadline, Date endOf) {
+		Calendar returnDate = Calendar.getInstance();
+		returnDate.setTime(endOf);
+		returnDate.add(Calendar.DATE, deadline);
+		return returnDate;
 	}
 
 	private boolean isNeededNextTerm(BorrowedMaterial borrowedMaterial) {
