@@ -6,8 +6,11 @@ import java.util.Set;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 import de.dhbw.humbuch.model.SubjectHandler;
@@ -123,7 +126,7 @@ public final class PDFStudentList extends PDFHandler {
 			for (BorrowedMaterial borrowedMaterial : this.borrowedMaterialList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade()};
-				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 			try {
 				document.add(table);
@@ -154,7 +157,7 @@ public final class PDFStudentList extends PDFHandler {
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
 											"" };
 
-				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 
 			try {
@@ -183,21 +186,21 @@ public final class PDFStudentList extends PDFHandler {
 				e.printStackTrace();
 			}
 
-			table = this.createTableWithRentalInformationHeader();
+			table = this.createTableForReturnPDF();
 
 			for (BorrowedMaterial borrowedMaterial : this.returnList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
-											"" };
+											"", "" };
 
-				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 
 			try {
 				document.add(table);
 				PDFHandler.addEmptyLineToDocument(document, 1);
 				this.addRentalDisclosure(document);
-				this.addSignatureField(document, "Lehrer");
+				this.addSignatureField(document, "");
 			}
 			catch (DocumentException e) {
 				e.printStackTrace();
@@ -241,7 +244,7 @@ public final class PDFStudentList extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		
 		new PDFHandler.TableBuilder(table, 
-				new String[] { "\nDie oben angeführten Lehrmittel hat der Schüler zurückgegeben.\n" +
+				new String[] { "\nDie oben markierten Lehrmittel hat der Schüler/die Schülerin zurückgegeben.\n" +
 						"Die ausgeliehenen Lehrmittel wurden auf Vollständigkeit und Beschädigung überprüft. " +
 						"Beschädigte oder verlorengegangene Lehrmittel wurden ersetzt." }).leading(1.25f).fillTable();
 
@@ -252,6 +255,66 @@ public final class PDFStudentList extends PDFHandler {
 		catch (DocumentException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel, Zurückgegeben (Ja, Nein)
+	 * 
+	 * @return PdfPTable
+	 */
+	protected PdfPTable createTableForReturnPDF() {		
+		PdfPTable table = createMyStandardTable(4, new float[] { 2.25f, 1f, 0.5f, 0.5f });
+		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
+		
+		PdfPCell cell = null;
+		cell = new PdfPCell(new Phrase("Bezeichnung Lehrmittel", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthBottom(0);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("bis Klasse", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthBottom(0);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Zurückgegeben", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setColspan(2);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(""));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthTop(0);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase(""));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setBorderWidthTop(0);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Ja", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+		
+		cell = new PdfPCell(new Phrase("Nein", font));
+		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		cell.setPadding(CELL_PADDING);
+		table.addCell(cell);
+
+		return table;
 	}
 
 

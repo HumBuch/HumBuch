@@ -31,7 +31,8 @@ public abstract class PDFHandler {
 
 	private Document document;
 	private HeaderFooter event;
-	protected static float TABLEWIDTH = 418f;
+	protected final static float TABLEWIDTH = 460f;
+	protected final static float CELL_PADDING = 7f;
 
 	/**
 	 * 
@@ -43,7 +44,7 @@ public abstract class PDFHandler {
 	}
 
 	public PDFHandler() {
-		this.document = new Document(new RectangleReadOnly(595,842), -30f, 10f, 25f, 35f);
+		this.document = new Document(new RectangleReadOnly(595,842), 30f, 30f, 25f, 35f);
 	}
 
 	/**
@@ -271,17 +272,17 @@ public abstract class PDFHandler {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * A table is generated with the header: Klasse, Bezeichnung Lehrmittel, Unterschrift
 	 * 
 	 * @return PdfPTable
 	 */
 	protected PdfPTable createTableWithRentalInformationHeader() {
-		PdfPTable table = createMyStandardTable(3, new float[] { 3f, 1f, 1f });
+		PdfPTable table = createMyStandardTable(3, new float[] { 2.25f, 1f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse", "Unterschrift" }).withBorder(true)
-				.isCenterAligned(true).font(font).fillTable();
+				.isCenterAligned(true).font(font).padding(CELL_PADDING).fillTable();
 
 		return table;
 	}
@@ -295,7 +296,7 @@ public abstract class PDFHandler {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f});
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse"}).withBorder(true)
-				.isCenterAligned(true).font(font).padding(5f).fillTable();
+				.isCenterAligned(true).font(font).padding(CELL_PADDING).fillTable();
 
 		return table;
 	}
@@ -308,7 +309,7 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(5f).fillTable();
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(CELL_PADDING).fillTable();
 
 		return table;
 	}
