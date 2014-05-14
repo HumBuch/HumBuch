@@ -81,7 +81,7 @@ public class PDFDunning extends PDFHandler {
 		}
 		else {
 			dunningText = "Sehr geehrte/r " + student.getParent().getTitle() + " " + student.getParent().getLastname() + ",\n\n"
-					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
+					+ "leider müssen wir Ihnen mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
 					+ " Lehrmittel nicht zurückgegeben hat. Wir bitten darum, folgende Lehrmittel innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
 					+ "Mit freundlichen Grüßen \n"
 					+ "Ihre Schulverwaltung";
@@ -96,15 +96,14 @@ public class PDFDunning extends PDFHandler {
 			e.printStackTrace();
 		}
 
-		table = this.createTableWithRentalInformationHeader();
+		table = this.createTableWithRentalInformationHeaderWithoutSignColumn();
 
 		Iterator<BorrowedMaterial> iterator = this.borrowedMaterials.iterator();
 		BorrowedMaterial borrowedMaterial;
 		while (iterator.hasNext()) {
 			borrowedMaterial = (BorrowedMaterial) iterator.next();
 			String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
-										"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
-										"" };
+										"" + borrowedMaterial.getTeachingMaterial().getToGrade()};
 
 			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).
 					isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
