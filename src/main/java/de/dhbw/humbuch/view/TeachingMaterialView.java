@@ -19,6 +19,7 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
@@ -402,6 +403,17 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 						.getValue();
 				btnEdit.setEnabled(item != null);
 				btnDelete.setEnabled(item != null);
+			}
+		});
+		
+		// Double click on a row: make it editable
+		materialsTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+				if (itemClickEvent.isDoubleClick() && !materialsTable.isEditable()) {
+					materialsTable.setValue(itemClickEvent.getItemId());
+					btnEdit.click();
+				}
 			}
 		});
 
