@@ -107,7 +107,7 @@ public class PDFDunning extends PDFHandler {
 										"" };
 
 			new PDFHandler.TableBuilder(table, contentArray).withBorder(true).
-					isCenterAligned(true).padding(5f).fillTable();
+					isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 		}
 
 		try {

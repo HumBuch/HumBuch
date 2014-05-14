@@ -31,7 +31,8 @@ public abstract class PDFHandler {
 
 	private Document document;
 	private HeaderFooter event;
-	protected static float TABLEWIDTH = 460f;
+	protected final static float TABLEWIDTH = 460f;
+	protected final static float CELL_PADDING = 7f;
 
 	/**
 	 * 
@@ -291,47 +292,47 @@ public abstract class PDFHandler {
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 		cell.setBorderWidthBottom(0);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("bis Klasse", font));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 		cell.setBorderWidthBottom(0);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Zurückgegeben", font));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 		cell.setColspan(2);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase(""));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 		cell.setBorderWidthTop(0);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase(""));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 		cell.setBorderWidthTop(0);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Ja", font));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 		
 		cell = new PdfPCell(new Phrase("Nein", font));
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-		cell.setPadding(7f);
+		cell.setPadding(CELL_PADDING);
 		table.addCell(cell);
 
 		return table;
@@ -346,7 +347,7 @@ public abstract class PDFHandler {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f});
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
 		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "bis Klasse"}).withBorder(true)
-				.isCenterAligned(true).font(font).padding(5f).fillTable();
+				.isCenterAligned(true).font(font).padding(CELL_PADDING).fillTable();
 
 		return table;
 	}
@@ -359,7 +360,7 @@ public abstract class PDFHandler {
 	protected PdfPTable createTableWithRentalInformationHeaderForClass() {
 		PdfPTable table = createMyStandardTable(2, new float[] { 3f, 1f });
 		Font font = FontFactory.getFont("Helvetica", 12, Font.BOLD);
-		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(5f).fillTable();
+		new PDFHandler.TableBuilder(table, new String[] { "Bezeichnung Lehrmittel", "Anzahl" }).withBorder(true).font(font).isCenterAligned(true).padding(CELL_PADDING).fillTable();
 
 		return table;
 	}

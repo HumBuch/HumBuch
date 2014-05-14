@@ -123,7 +123,7 @@ public final class PDFStudentList extends PDFHandler {
 			for (BorrowedMaterial borrowedMaterial : this.borrowedMaterialList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade()};
-				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 			try {
 				document.add(table);
@@ -154,7 +154,7 @@ public final class PDFStudentList extends PDFHandler {
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
 											"" };
 
-				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).isCenterAligned(true).withBorder(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 
 			try {
@@ -190,7 +190,7 @@ public final class PDFStudentList extends PDFHandler {
 											"" + borrowedMaterial.getTeachingMaterial().getToGrade(),
 											"", "" };
 
-				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(7.5f).fillTable();
+				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(PDFHandler.CELL_PADDING).fillTable();
 			}
 
 			try {
