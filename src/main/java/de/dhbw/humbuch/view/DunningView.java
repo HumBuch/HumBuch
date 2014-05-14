@@ -1,8 +1,6 @@
 package de.dhbw.humbuch.view;
 
 import java.io.ByteArrayOutputStream;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,15 +9,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.h2.value.CompareMode;
-import org.h2.value.Value;
-
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.Compare.Equal;
+import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -27,11 +24,11 @@ import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -66,11 +63,11 @@ public class DunningView extends VerticalLayout implements View,
 	private static final String TABLE_TYPE = "type";
 	private static final String TABLE_STATUS = "status";
 	
-//	private CheckBox cbOpenDunnings = new CheckBox("Nur offene Mahnungen anzeigen");
+	private CheckBox cbOpenDunnings = new CheckBox("Nur offene Mahnungen anzeigen");
 	private Button btnDunningSent = new Button("Als versendet markieren");
 	private Button btnShowDunning = new Button("Mahnung anzeigen");
 	private Table tblDunnings;
-//	private TextField txtFilter;
+	private TextField txtFilter;
 
 	private DunningViewModel dunningViewModel;
 	
@@ -93,21 +90,21 @@ public class DunningView extends VerticalLayout implements View,
 		head.setWidth("100%");
 		head.setSpacing(true);
 		
-//		//Filter
-//		VerticalLayout filterLayout = new VerticalLayout();
-//		
-//		txtFilter = new TextField();
-//		txtFilter.setImmediate(true);
-//		txtFilter.setInputPrompt("Nach Name, Vorname oder Klasse filtern...");
-//		txtFilter.setWidth("50%");
-//		txtFilter.setTextChangeEventMode(TextChangeEventMode.EAGER);
-//		
-//		filterLayout.addComponent(txtFilter);
-//		filterLayout.addComponent(cbOpenDunnings);
+		//Filter
+		VerticalLayout filterLayout = new VerticalLayout();
 		
-//		head.addComponent(filterLayout);
-//		head.setExpandRatio(filterLayout, 1);
-//		head.setComponentAlignment(filterLayout, Alignment.MIDDLE_LEFT);
+		txtFilter = new TextField();
+		txtFilter.setImmediate(true);
+		txtFilter.setInputPrompt("Nach Name, Vorname oder Klasse filtern...");
+		txtFilter.setWidth("50%");
+		txtFilter.setTextChangeEventMode(TextChangeEventMode.EAGER);
+		
+		filterLayout.addComponent(txtFilter);
+		filterLayout.addComponent(cbOpenDunnings);
+		
+		head.addComponent(filterLayout);
+		head.setExpandRatio(filterLayout, 1);
+		head.setComponentAlignment(filterLayout, Alignment.MIDDLE_LEFT);
 		
 		//Buttons
 		HorizontalLayout buttons = new HorizontalLayout();
@@ -117,7 +114,6 @@ public class DunningView extends VerticalLayout implements View,
 		
 		btnDunningSent.setEnabled(false);
 		btnShowDunning.setEnabled(false);
-//		cbOpenDunnings.setValue(true);
 		
 		head.addComponent(buttons);
 		head.setComponentAlignment(buttons, Alignment.TOP_RIGHT);
@@ -239,34 +235,43 @@ public class DunningView extends VerticalLayout implements View,
 		 * Provides the live search of the table by adding a filter after every
 		 * keypress in the search field.
 		 */
-//		txtFilter.addTextChangeListener(new TextChangeListener() {
-//			private static final long serialVersionUID = -1684545652234105334L;
-//
-//			@Override
-//			public void textChange(TextChangeEvent event) {
-//				SimpleStringFilter cond1 = new SimpleStringFilter(TABLE_LASTNAME, event.getText(), true, false);
-//				SimpleStringFilter cond2 = new SimpleStringFilter(TABLE_FIRSTNAME, event.getText(), true, false);
-//				SimpleStringFilter cond3 = new SimpleStringFilter(TABLE_GRADE, event.getText(), true, false);
-//				Filter filter = new Or(cond1, cond2, cond3);
-//				tableData.removeAllContainerFilters();
-//				tableData.addContainerFilter(filter);
-//			}
-//		});
+		txtFilter.addTextChangeListener(new TextChangeListener() {
+			private static final long serialVersionUID = -1684545652234105334L;
+
+			Filter filter = null;
+			
+			@Override
+			public void textChange(TextChangeEvent event) {
+				if (filter != null) {
+					tableData.removeContainerFilter(filter);
+				}
+				SimpleStringFilter cond1 = new SimpleStringFilter(TABLE_LASTNAME, event.getText(), true, false);
+				SimpleStringFilter cond2 = new SimpleStringFilter(TABLE_FIRSTNAME, event.getText(), true, false);
+				SimpleStringFilter cond3 = new SimpleStringFilter(TABLE_GRADE, event.getText(), true, false);
+				filter = new Or(cond1, cond2, cond3);
+                tableData.addContainerFilter(filter);
+			}
+		});
 		
-//		cbOpenDunnings.addValueChangeListener(new ValueChangeListener() {
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void valueChange(ValueChangeEvent event) {
-//				Filter filter = new Not();
-//				tableData.addContainerFilter(filter);
-//			}
-//		});
+		cbOpenDunnings.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Filter filter = new Not(new Equal(TABLE_STATUS, Dunning.Status.CLOSED));
+				if(cbOpenDunnings.getValue() == true) {
+					tableData.addContainerFilter(filter);
+				} else {
+					tableData.removeContainerFilter(filter);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		dunningViewModel.refresh();
+		cbOpenDunnings.setValue(true);
 	}
 
 	private void bindViewModel(ViewModelComposer viewModelComposer,
