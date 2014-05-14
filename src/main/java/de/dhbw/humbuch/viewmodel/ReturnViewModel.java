@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.viewmodel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -10,8 +11,6 @@ import java.util.TreeMap;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -34,7 +33,6 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
  *
  */
 public class ReturnViewModel {
-	private final static Logger LOG = LoggerFactory.getLogger(ReturnViewModel.class);
 
 	public interface GenerateStudentReturnList extends ActionHandler {}
 	public interface SetBorrowedMaterialsReturned extends ActionHandler {}
@@ -70,10 +68,8 @@ public class ReturnViewModel {
 	
 	@AfterVMBinding
 	public void refresh() {
-		LOG.info("refresh_start");
 		updateSchoolYear();
-		updateReturnList();
-		LOG.info("refresh_end");
+		generateStudentReturnList();
 	}
 	
 	/**
@@ -83,24 +79,23 @@ public class ReturnViewModel {
 	 */
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
-		LOG.info("generateStudentReturnList()_start");
-		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		Date today = new Date();
+		boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm()).before(today);
 
+		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<>();
 		for(Grade grade : daoGrade.findAll()) {
-			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<Student, List<BorrowedMaterial>>();
+			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<>();
 
 			for(Student student : grade.getStudents()) {
-				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<BorrowedMaterial>();
+				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<>();
 				for(BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
-					Term recentlyActiveTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
 					Date borrowUntilDate = borrowedMaterial.getBorrowUntil();
 
-					boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveTerm).before(new Date());
 					boolean notNeededNextTerm = borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
-					boolean borrowUntilExceeded = borrowUntilDate == null ? false : borrowUntilDate.before(new Date());
+					boolean borrowUntilExceeded = borrowUntilDate == null ? false : borrowUntilDate.before(today);
 					boolean isManualLended = borrowUntilDate == null ? false : true;
-					boolean toTermEqualsRecentlyActiceTerm = teachingMaterial.getToGrade() == student.getGrade().getGrade()	&& teachingMaterial.getToTerm() == recentlyActiveTerm;
+					boolean toTermEqualsRecentlyActiceTerm = teachingMaterial.getToGrade() == student.getGrade().getGrade()	&& teachingMaterial.getToTerm() == recentlyActiveSchoolYear.getRecentlyActiveTerm();
 
 					if(!isManualLended	&& notNeededNextTerm && (toTermEqualsRecentlyActiceTerm ? isAfterCurrentTerm : true)) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
@@ -121,7 +116,6 @@ public class ReturnViewModel {
 		}
 
 		returnListStudent.set(toReturn);
-		LOG.info("generateStudentReturnList()_end");
 	}
 	
 	/**
@@ -131,14 +125,13 @@ public class ReturnViewModel {
 	 */
 	@HandlesAction(SetBorrowedMaterialsReturned.class)
 	public void setBorrowedMaterialsReturned(Collection<BorrowedMaterial> borrowedMaterials) {
-		LOG.info("setBorrowedMaterialsReturned()_start");
+		Date today = new Date();
 		for (BorrowedMaterial borrowedMaterial : borrowedMaterials) {
-			borrowedMaterial.setReturnDate(new Date());
-			daoBorrowedMaterial.update(borrowedMaterial);
+			borrowedMaterial.setReturnDate(today);
 		}
 		
-		updateReturnList();
-		LOG.info("setBorrowedMaterialsReturned()_end");
+		daoBorrowedMaterial.update(borrowedMaterials);
+		generateStudentReturnList();
 	}
 	
 	@HandlesAction(RefreshStudents.class)
@@ -166,10 +159,6 @@ public class ReturnViewModel {
 		return (toGrade > currentGrade || (toGrade == currentGrade && (toTerm.compareTo(currentTerm) > 0)));
 	}
 
-	private void updateReturnList() {
-		generateStudentReturnList();
-	}
-	
 	/**
 	 * Updates the recently actice {@link SchoolYear}
 	 */
@@ -177,5 +166,25 @@ public class ReturnViewModel {
 		recentlyActiveSchoolYear = daoSchoolYear.findSingleWithCriteria(
 				Order.desc("toDate"),
 				Restrictions.le("fromDate", new Date()));
+		if(recentlyActiveSchoolYear == null) {
+			recentlyActiveSchoolYear = new SchoolYear.Builder(
+					"now", getDate(Calendar.AUGUST, 1), getDate(Calendar.JUNE, 31))
+			.endFirstTerm(getDate(Calendar.JANUARY, 31))
+			.beginSecondTerm(getDate(Calendar.FEBRUARY, 1))
+			.build();
+		}
+	}
+	
+	/**
+	 * Returns {@link Date} object with the current year and the given month and day.
+	 * 
+	 * @param month
+	 * @param day
+	 * @return {@link Date} object with given information
+	 */
+	private Date getDate(int month, int day) {
+		Calendar  calendar = Calendar.getInstance();
+		calendar.set(calendar.get(Calendar.YEAR), month, day);
+		return calendar.getTime();
 	}
 }
