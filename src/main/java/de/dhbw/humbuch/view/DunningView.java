@@ -50,6 +50,11 @@ import de.dhbw.humbuch.view.components.PrintingComponent;
 import de.dhbw.humbuch.viewmodel.DunningViewModel;
 import de.dhbw.humbuch.viewmodel.DunningViewModel.Dunnings;
 
+/**
+ * Provides the {@link View} to display and manage {@link Dunning}s
+ * @author Johannes Idelhauser
+ * @author Martin Wentzel
+ */
 public class DunningView extends VerticalLayout implements View,
 		ViewInformation {
 
@@ -85,7 +90,6 @@ public class DunningView extends VerticalLayout implements View,
 	}
 	
 	private void init() {
-		
 		HorizontalLayout head = new HorizontalLayout();
 		head.setWidth("100%");
 		head.setSpacing(true);
