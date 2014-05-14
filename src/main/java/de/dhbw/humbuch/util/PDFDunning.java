@@ -126,7 +126,8 @@ public class PDFDunning extends PDFHandler {
 	 */
 	private void addStudentInformation(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(2, new float[] { 1f, 6f });
-
+		table.setSpacingBefore(20f);
+		
 		String[] contentArray = { "Schüler: ", this.student.getFirstname() + " " + this.student.getLastname(),
 									"Klasse: ", "" + this.student.getGrade().toString() };
 		
@@ -142,9 +143,10 @@ public class PDFDunning extends PDFHandler {
 		}
 	}
 
-	private void addParentInformation(Document document) {
+	private void addParentInformation(Document document) {				
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
-
+		table.setSpacingBefore(23f);
+		
 		String[] contentArray = { this.student.getParent().getTitle(),
 									this.student.getParent().getFirstname() + " " + this.student.getParent().getLastname(),
 									this.student.getParent().getStreet(),
