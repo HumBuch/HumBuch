@@ -19,6 +19,7 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
@@ -56,6 +57,7 @@ import de.dhbw.humbuch.util.BookLookup.Book;
 import de.dhbw.humbuch.util.BookLookup.BookNotFoundException;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.Categories;
+import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.StandardCategory;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
 
 /**
@@ -103,6 +105,9 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 	
 	@BindState(Categories.class)
 	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
+	
+	@BindState(StandardCategory.class)
+	public final State<Category> standardCategory = new BasicState<>(Category.class);
 
 	/**
 	 * All popup-window components and the corresponding binded states. The
@@ -404,6 +409,17 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 				btnDelete.setEnabled(item != null);
 			}
 		});
+		
+		// Double click on a row: make it editable
+		materialsTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent itemClickEvent) {
+				if (itemClickEvent.isDoubleClick() && !materialsTable.isEditable()) {
+					materialsTable.setValue(itemClickEvent.getItemId());
+					btnEdit.click();
+				}
+			}
+		});
 
 		/**
 		 * Opens the popup-window for editing a book and inserts the data from
@@ -426,8 +442,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 		btnNew.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				TeachingMaterial item = new TeachingMaterial.Builder(null,
-						null, null, new Date()).build();
+				TeachingMaterial item = new TeachingMaterial.Builder(standardCategory.get(), null, null, new Date()).build();
 				binder.setItemDataSource(item);
 				UI.getCurrent().addWindow(windowEditTeachingMaterial);
 				txtTmName.focus();
@@ -542,6 +557,7 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 					cbCategory.addItem(cat);
 					cbCategory.setItemCaption(cat, cat.getName());
 				}
+
 			}
 		});
 
