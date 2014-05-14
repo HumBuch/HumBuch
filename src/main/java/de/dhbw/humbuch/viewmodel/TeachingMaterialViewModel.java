@@ -29,6 +29,7 @@ public class TeachingMaterialViewModel {
 
 	public interface TeachingMaterials extends State<Collection<TeachingMaterial>> {}
 	public interface Categories extends State<Collection<Category>> {}
+	public interface StandardCategory extends State<Category> {}
 
 	public interface DoUpdateTeachingMaterial extends ActionHandler {}
 	public interface DoFetchTeachingMaterial extends ActionHandler {}
@@ -39,7 +40,10 @@ public class TeachingMaterialViewModel {
 	public final State<Collection<TeachingMaterial>> teachingMaterials = new BasicState<>(Collection.class);
 
 	@ProvidesState(Categories.class)
-	public final State<Collection<Category>> categories = new BasicState<>(	Collection.class);
+	public final State<Collection<Category>> categories = new BasicState<>(Collection.class);
+	
+	@ProvidesState(StandardCategory.class)
+	public final State<Category> standardCategory = new BasicState<>(Category.class);
 
 	private DAO<TeachingMaterial> daoTeachingMaterial;
 	private DAO<Category> daoCategory;
@@ -74,6 +78,7 @@ public class TeachingMaterialViewModel {
 
 	private void updateCategories() {
 		categories.set(daoCategory.findAll());
+		standardCategory.set(daoCategory.findSingleWithCriteria(Restrictions.ilike("name", "B%ch%")));
 	}
 
 	/**
