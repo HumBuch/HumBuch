@@ -19,12 +19,12 @@ import com.vaadin.ui.Window;
 import de.dhbw.humbuch.model.entity.Student;
 import elemental.events.KeyboardEvent.KeyCode;
 
-
 public class SelectStudentPopupWindow extends Window {
 
 	private static final long serialVersionUID = 4748807796813638121L;
 
-	private static final Logger LOG = LoggerFactory.getLogger(SelectStudentPopupWindow.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SelectStudentPopupWindow.class);
 
 	private static final String CHOOSE_STUDENT = "Schüler auswählen";
 	private static final String CANCEL = "Abbrechen";
@@ -52,7 +52,8 @@ public class SelectStudentPopupWindow extends Window {
 	 *            Collection of students which can be selected and qualify for
 	 *            the process
 	 * */
-	public SelectStudentPopupWindow(String title, LendingView lendingView, Collection<Student> allStudents) {
+	public SelectStudentPopupWindow(String title, LendingView lendingView,
+			Collection<Student> allStudents) {
 		super(title);
 
 		this.lendingView = lendingView;
@@ -75,7 +76,8 @@ public class SelectStudentPopupWindow extends Window {
 	 *            Collection of students which can be selected and qualify for
 	 *            the process
 	 * */
-	public SelectStudentPopupWindow(String title, ReturnView returnView, Collection<Student> allStudents) {
+	public SelectStudentPopupWindow(String title, ReturnView returnView,
+			Collection<Student> allStudents) {
 		super(title);
 
 		this.returnView = returnView;
@@ -87,7 +89,7 @@ public class SelectStudentPopupWindow extends Window {
 
 	/*
 	 * Initializes and configures all member variables.
-	 * */
+	 */
 	private void init() {
 		verticalLayoutContent = new VerticalLayout();
 		horizontalLayoutButtonBar = new HorizontalLayout();
@@ -128,22 +130,22 @@ public class SelectStudentPopupWindow extends Window {
 
 	/*
 	 * Add listeners to combo box and buttons.
-	 * */
+	 */
 	private void addListeners() {
 		/*
-		 * When a student gets selected in the ComboBox enable the continue button.
-		 * If no student is selected the button gets disabled.
-		 * */
+		 * When a student gets selected in the ComboBox enable the continue
+		 * button. If no student is selected the button gets disabled.
+		 */
 		comboBoxStudents.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 5865059270341130362L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (comboBoxStudents.getValue() == null || comboBoxStudents.getValue() == "") {
+				if (comboBoxStudents.getValue() == null
+						|| comboBoxStudents.getValue() == "") {
 					buttonContinue.setEnabled(false);
-				}
-				else {
+				} else {
 					buttonContinue.setEnabled(true);
 				}
 			}
@@ -151,8 +153,9 @@ public class SelectStudentPopupWindow extends Window {
 		});
 
 		/*
-		 * When clicking the cancel button the window closes. Nothing else happens.
-		 * */
+		 * When clicking the cancel button the window closes. Nothing else
+		 * happens.
+		 */
 		buttonCancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 481430670731285908L;
@@ -164,9 +167,11 @@ public class SelectStudentPopupWindow extends Window {
 		});
 
 		/*
-		 * When clicking the continue button a process, determined by the constructor, is triggered.
+		 * When clicking the continue button a process, determined by the
+		 * constructor, is triggered.
+		 * 
 		 * @see SelectStudentPopupWindow.continueWithProcess
-		 * */
+		 */
 		buttonContinue.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = -6743301861593920408L;
@@ -179,9 +184,10 @@ public class SelectStudentPopupWindow extends Window {
 	}
 
 	/*
-	 * Fills the ComboBox with all students. It is using CustomStudents to display the firstname and lastname of a student
-	 * and additionally be able to access the Student object later.
-	 * */
+	 * Fills the ComboBox with all students. It is using CustomStudents to
+	 * display the firstname and lastname of a student and additionally be able
+	 * to access the Student object later.
+	 */
 	private void fillComboBox() {
 		comboBoxStudents.removeAllItems();
 
@@ -192,49 +198,51 @@ public class SelectStudentPopupWindow extends Window {
 	}
 
 	/*
-	 * This methods decides with which process to continue. When the SelectStudentPopupWindow was constructed with a
-	 * LendingView the ManualLendingPopupWindow is opened.
-	 * When it was created with a ReturnView a ManualReturnPopupWindow is opened.
-	 * After opening the corresponding window. This window is closed.
-	 * */
+	 * This methods decides with which process to continue. When the
+	 * SelectStudentPopupWindow was constructed with a LendingView the
+	 * ManualLendingPopupWindow is opened. When it was created with a ReturnView
+	 * a ManualReturnPopupWindow is opened. After opening the corresponding
+	 * window. This window is closed.
+	 */
 	private void continueWithProcess() {
-		StudentWrapper studentWrapper = (StudentWrapper) comboBoxStudents.getValue();
+		StudentWrapper studentWrapper = (StudentWrapper) comboBoxStudents
+				.getValue();
 
 		if (studentWrapper != null) {
 			ManualProcessPopupWindow mppw = null;
 			if (lendingView != null) {
-				mppw = new ManualProcessPopupWindow(lendingView, studentWrapper.getStudent());
+				mppw = new ManualProcessPopupWindow(lendingView,
+						studentWrapper.getStudent());
 
-			}
-			else if (returnView != null) {
-				mppw = new ManualProcessPopupWindow(returnView, studentWrapper.getStudent());
+			} else if (returnView != null) {
+				mppw = new ManualProcessPopupWindow(returnView,
+						studentWrapper.getStudent());
 			}
 
 			if (mppw != null) {
 				getUI().addWindow(mppw);
 				closeMe();
-			}
-			else {
+			} else {
 				LOG.error("Error occured while trying to start a new process. ManualProcessPopupWindow could not be created.");
 			}
-		}
-		else {
+		} else {
 			// TODO: UI Notification
 		}
 	}
 
 	/*
-	 * Closes this window. Removing it from the UI and calling the Window.close method
-	 * */
+	 * Closes this window. Removing it from the UI and calling the Window.close
+	 * method
+	 */
 	private void closeMe() {
 		getUI().removeWindow(this);
 		close();
 	}
 
-
 	/*
-	 * Wrapper class for a Student object. Holding a Student object and redefining the toString method.
-	 * */
+	 * Wrapper class for a Student object. Holding a Student object and
+	 * redefining the toString method.
+	 */
 	private class StudentWrapper {
 
 		private Student student;
@@ -251,7 +259,8 @@ public class SelectStudentPopupWindow extends Window {
 		 * wrapped student object
 		 * */
 		public String toString() {
-			return "" + student.getFirstname() + " " + student.getLastname();
+			return "" + student.getFirstname() + " " + student.getLastname()
+					+ " (" + student.getGrade() + ")";
 		}
 
 		/**

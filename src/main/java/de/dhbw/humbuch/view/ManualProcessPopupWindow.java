@@ -83,7 +83,8 @@ public class ManualProcessPopupWindow extends Window {
 	public ManualProcessPopupWindow(LendingView lendingView,
 			Student selectedStudent) {
 		super("Manuelle Ausleihe für " + selectedStudent.getFirstname() + " "
-				+ selectedStudent.getLastname());
+				+ selectedStudent.getLastname() + " ("
+				+ selectedStudent.getGrade() + ")");
 
 		this.lendingView = lendingView;
 		this.selectedStudent = selectedStudent;
@@ -104,7 +105,8 @@ public class ManualProcessPopupWindow extends Window {
 	public ManualProcessPopupWindow(ReturnView returnView,
 			Student selectedStudent) {
 		super("Manuelle Rückgabe für " + selectedStudent.getFirstname() + " "
-				+ selectedStudent.getLastname());
+				+ selectedStudent.getLastname() + " ("
+				+ selectedStudent.getGrade() + ")");
 
 		this.returnView = returnView;
 		this.selectedStudent = selectedStudent;
@@ -406,16 +408,16 @@ public class ManualProcessPopupWindow extends Window {
 	 * true otherwise
 	 */
 	private boolean validateDate(Date date) {
-		
+
 		if (date == null) {
 			Notification.show(NOTIFICATION_CAPTION_INVALID_DATE,
 					NOTIFICATION_DESCR_INVALID_DATE, Type.WARNING_MESSAGE);
 			return false;
-		} 
-		
+		}
+
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		
+
 		if (isToday(calendar)) {
 			return true;
 		} else if (date.before(new Date())) {
@@ -426,20 +428,20 @@ public class ManualProcessPopupWindow extends Window {
 			return true;
 		}
 	}
-	
+
 	/*
 	 * Checks whether a given calendar object represents today or not.
 	 * 
 	 * @return true when then is today
-	 * */
+	 */
 	private boolean isToday(Calendar then) {
 		Calendar when = Calendar.getInstance();
 		when.setTime(new Date());
-		
-		if(when.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR)) {
+
+		if (when.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR)) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
