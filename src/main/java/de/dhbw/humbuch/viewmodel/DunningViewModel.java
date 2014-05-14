@@ -121,7 +121,7 @@ public class DunningViewModel {
 	 * @return a calendar object with the modified endOf parameter
 	 */
 	private Calendar addDeadlineToDateOfFirstDunning(Date endOf) {
-		String deadline = properties.settings.get().get("firstDunningDeadline");		
+		String deadline = properties.settings.get().get("dun_firstDunningDeadline");		
 		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
 	}
 
@@ -176,7 +176,7 @@ public class DunningViewModel {
 	 * @return a calendar object with the modified endOf parameter
 	 */
 	private Calendar addDeadlineToDateOfSecondDunning(Date endOf) {
-		String deadline = properties.settings.get().get("secondDunningDeadline");		
+		String deadline = properties.settings.get().get("dun_secondDunningDeadline");		
 		return addDeadlineToDate(Integer.parseInt(deadline), endOf);
 	}
 	
