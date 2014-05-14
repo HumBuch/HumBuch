@@ -61,7 +61,9 @@ public class TestUtils {
 	}
 
 	public static Grade grade(int grade) {
-		return new Grade.Builder(grade, "").build();
+		Grade gradeEntity = new Grade.Builder(grade, "").build();
+		gradeEntity.setId(grade);
+		return gradeEntity;
 	}
 
 	public static SettingsEntry settingsEntry() {
