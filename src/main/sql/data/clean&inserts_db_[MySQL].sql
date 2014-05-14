@@ -223,5 +223,7 @@ USE `humbuch`;
 INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (1, 'feld1', 'Hallo1', 'Hallo1');
 INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (2, 'feld2', 'Hallo2', 'a');
 INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (3, 'feld3', 'Hallo3', 'Test');
+INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (4, 'dun_firstDunningDeadline', '14', '14');
+INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (5, 'dun_secondDunningDeadline', '14', '14');
 
 COMMIT;
