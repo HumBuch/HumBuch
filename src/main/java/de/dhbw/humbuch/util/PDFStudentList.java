@@ -107,7 +107,7 @@ public final class PDFStudentList extends PDFHandler {
 		if (this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			new PDFHandler.TableBuilder(table,
-					new String[] { "\nDie folgenden Bücher befinden sich im Besitz des Schülers/der Schülerin:" })
+					new String[] { "\nDie folgenden Lehrmittel befinden sich im Besitz des Schülers/der Schülerin:" })
 					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
 
 			try {
@@ -136,7 +136,7 @@ public final class PDFStudentList extends PDFHandler {
 		if (this.lendingList != null && !this.lendingList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 
-			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher sollen ausgeliehen werden:" })
+			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Lehrmittel sollen ausgeliehen werden:" })
 					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
 
 			try {
@@ -172,7 +172,7 @@ public final class PDFStudentList extends PDFHandler {
 			}
 			
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
-			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher müssen zurückgegeben werden:" })
+			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Lehrmittel müssen zurückgegeben werden:" })
 					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
 
 			try {
@@ -241,9 +241,9 @@ public final class PDFStudentList extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		
 		new PDFHandler.TableBuilder(table, 
-				new String[] { "\nDie oben angeführten Schulbücher hat der Schüler zurückgegeben.\n" +
-						"Die ausgeliehenen Bücher wurden auf Vollständigkeit und Beschädigung überprüft. " +
-						"Beschädigte oder verlorengegangene Bücher wurden ersetzt." }).leading(1.25f).fillTable();
+				new String[] { "\nDie oben angeführten Lehrmittel hat der Schüler zurückgegeben.\n" +
+						"Die ausgeliehenen Lehrmittel wurden auf Vollständigkeit und Beschädigung überprüft. " +
+						"Beschädigte oder verlorengegangene Lehrmittel wurden ersetzt." }).leading(1.25f).fillTable();
 
 		try {
 			document.add(table);
