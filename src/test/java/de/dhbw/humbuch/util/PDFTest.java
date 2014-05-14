@@ -24,6 +24,8 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
  * This class contains test data to generate PDFs. It does NOT contain any JUnit
  * tests. Use this class to create PDFs. After the creation one has to check
  * them manually!
+ * 
+ * @author Benjamin Räthlein
  */
 
 public class PDFTest {

@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 
-
+/**
+ * @author David Herrmann
+ * @author Benjamin Räthlein
+ *
+ */
 public class ResourceLoader {
 
 	private final static Logger LOG = LoggerFactory

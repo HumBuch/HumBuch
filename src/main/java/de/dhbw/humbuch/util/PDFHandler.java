@@ -28,7 +28,11 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource.StreamSource;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public abstract class PDFHandler {
 
 	private Document document;

@@ -23,7 +23,11 @@ import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public final class CSVHandler {
 
 	/**

@@ -38,7 +38,11 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.util.CSVHandler;
 import de.dhbw.humbuch.view.StudentInformationView;
 
-
+/**
+ * @author Johannes Idelhauser
+ * @author Benjamin Räthlein
+ *
+ */
 public class StudentInformationViewModel {
 	
 	private final static Logger LOG = LoggerFactory

@@ -17,6 +17,11 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public class CSVTest {
 	
 	@Test

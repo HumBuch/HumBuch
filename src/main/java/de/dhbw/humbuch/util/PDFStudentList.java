@@ -14,7 +14,11 @@ import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 
-
+/**
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public final class PDFStudentList extends PDFHandler {
 
 	private Student student;
@@ -74,7 +78,7 @@ public final class PDFStudentList extends PDFHandler {
 
 			this.addHeading(document);
 			this.addStudentInformation(document);
-			
+
 			this.addInformationAboutDocument(document, this.getDocumentTitle());
 			this.addContent(document);
 			document.newPage();
@@ -83,22 +87,22 @@ public final class PDFStudentList extends PDFHandler {
 	}
 
 	private String getDocumentTitle() {
-		if(this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()
-				&& (this.lendingList == null || this.lendingList.isEmpty()) 
-				&& (this.returnList == null || this.returnList.isEmpty())){
+		if (this.borrowedMaterialList != null && !this.borrowedMaterialList.isEmpty()
+				&& (this.lendingList == null || this.lendingList.isEmpty())
+				&& (this.returnList == null || this.returnList.isEmpty())) {
 			return "Ausgeliehene Materialien";
 		}
-		if(this.lendingList != null && !this.lendingList.isEmpty()
-				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty()) 
-				&& (this.returnList == null || this.returnList.isEmpty())){
+		if (this.lendingList != null && !this.lendingList.isEmpty()
+				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty())
+				&& (this.returnList == null || this.returnList.isEmpty())) {
 			return "Auszuleihende Materialien";
 		}
-		if(this.returnList != null && !this.returnList.isEmpty()
-				&& (this.lendingList == null || this.lendingList.isEmpty()) 
-				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty())){
+		if (this.returnList != null && !this.returnList.isEmpty()
+				&& (this.lendingList == null || this.lendingList.isEmpty())
+				&& (this.borrowedMaterialList == null || this.borrowedMaterialList.isEmpty())) {
 			return "Zurückzugebende Materialien";
 		}
-		else{
+		else {
 			return "Material-Informationen";
 		}
 	}
@@ -122,7 +126,7 @@ public final class PDFStudentList extends PDFHandler {
 
 			for (BorrowedMaterial borrowedMaterial : this.borrowedMaterialList) {
 				String[] contentArray = { borrowedMaterial.getTeachingMaterial().getName(),
-											"" + borrowedMaterial.getTeachingMaterial().getToGrade()};
+											"" + borrowedMaterial.getTeachingMaterial().getToGrade() };
 				new PDFHandler.TableBuilder(table, contentArray).withBorder(true).isCenterAligned(true).padding(5f).fillTable();
 			}
 			try {
@@ -132,7 +136,7 @@ public final class PDFStudentList extends PDFHandler {
 			catch (DocumentException e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 		if (this.lendingList != null && !this.lendingList.isEmpty()) {
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 
@@ -166,11 +170,11 @@ public final class PDFStudentList extends PDFHandler {
 			}
 		}
 		if (this.returnList != null && !this.returnList.isEmpty()) {
-			if(this.needEmpyLine){
+			if (this.needEmpyLine) {
 				addEmptyLineToDocument(document, 1);
 				this.needEmpyLine = false;
 			}
-			
+
 			PdfPTable table = PDFHandler.createMyStandardTable(1);
 			new PDFHandler.TableBuilder(table, new String[] { "\nDie folgenden Bücher müssen zurückgegeben werden:" })
 					.font(FontFactory.getFont("Helvetica", 10, Font.BOLD)).fillTable();
@@ -239,8 +243,8 @@ public final class PDFStudentList extends PDFHandler {
 	 */
 	private void addRentalDisclosure(Document document) {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
-		
-		new PDFHandler.TableBuilder(table, 
+
+		new PDFHandler.TableBuilder(table,
 				new String[] { "\nDie oben angeführten Schulbücher hat der Schüler zurückgegeben.\n" +
 						"Die ausgeliehenen Bücher wurden auf Vollständigkeit und Beschädigung überprüft. " +
 						"Beschädigte oder verlorengegangene Bücher wurden ersetzt." }).leading(1.25f).fillTable();
