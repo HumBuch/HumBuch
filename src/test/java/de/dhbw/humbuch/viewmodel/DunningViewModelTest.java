@@ -167,16 +167,12 @@ public class DunningViewModelTest extends BaseTest {
 	@Test
 	public void testStateInitialisation() {
 		// states should be initialised (not null)
-//		assertNotNull(dunningViewModel.studentsDunned.get());
-//		assertNotNull(dunningViewModel.studentsToDun.get());
 		assertNotNull(dunningViewModel.dunnings.get());
 	}
 	
 	@Test
 	public void testInitialDunningAmount() {
 		// amount of dunnings should be 0 with an empty database
-//		assertEquals(0, dunningViewModel.studentsDunned.get().size());
-//		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 		assertEquals(0, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -185,8 +181,6 @@ public class DunningViewModelTest extends BaseTest {
 		// add two sent dunnings, check amount
 		persistSomeEmptyDunnings(2, Status.SENT);
 		dunningViewModel.refresh();
-//		assertEquals(2, dunningViewModel.studentsDunned.get().size());
-//		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 		assertEquals(2, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -196,8 +190,6 @@ public class DunningViewModelTest extends BaseTest {
 		// add three closed dunnings, check amount
 		persistSomeEmptyDunnings(3, Status.CLOSED);
 		dunningViewModel.refresh();
-//		assertEquals(5, dunningViewModel.studentsDunned.get().size());
-//		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 		assertEquals(5, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -206,8 +198,6 @@ public class DunningViewModelTest extends BaseTest {
 		// add four opened dunnings, check amount
 		persistSomeEmptyDunnings(4, Status.OPENED);
 		dunningViewModel.refresh();
-//		assertEquals(0, dunningViewModel.studentsDunned.get().size());
-//		assertEquals(4, dunningViewModel.studentsToDun.get().size());
 		assertEquals(4, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -217,7 +207,6 @@ public class DunningViewModelTest extends BaseTest {
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterTermEndDate();
 		dunningViewModel.refresh();
-//		assertEquals(1, dunningViewModel.studentsToDun.get().size());
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -227,7 +216,6 @@ public class DunningViewModelTest extends BaseTest {
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterManualEndDate();
 		dunningViewModel.refresh();
-//		assertEquals(1, dunningViewModel.studentsToDun.get().size());
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -237,7 +225,6 @@ public class DunningViewModelTest extends BaseTest {
 		persistSchoolYear();
 		persistBorrowedMaterialManualEndDateInFuture();
 		dunningViewModel.refresh();
-//		assertEquals(0, dunningViewModel.studentsToDun.get().size());
 		assertEquals(0, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -247,7 +234,6 @@ public class DunningViewModelTest extends BaseTest {
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterFirstTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
-//		assertEquals(1, dunningViewModel.studentsToDun.get().size());
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
 	
@@ -257,7 +243,6 @@ public class DunningViewModelTest extends BaseTest {
 		persistSchoolYear();
 		persistBorrowedMaterialDueAfterSecondTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
-//		assertEquals(1, dunningViewModel.studentsToDun.get().size());
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
 	
