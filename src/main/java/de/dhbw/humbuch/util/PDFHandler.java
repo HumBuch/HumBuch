@@ -1,19 +1,14 @@
 package de.dhbw.humbuch.util;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Document;
