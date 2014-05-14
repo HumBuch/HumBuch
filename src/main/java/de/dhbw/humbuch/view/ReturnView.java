@@ -123,7 +123,6 @@ public class ReturnView extends VerticalLayout implements View,
 		buttonManualReturn = new Button(MANUAL_RETURN);
 		textFieldStudentFilter = new TextField();
 
-		buttonSaveSelectedData.addStyleName("default");
 		buttonSaveSelectedData.setEnabled(false);
 		buttonStudentList.setEnabled(false);
 

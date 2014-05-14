@@ -132,7 +132,6 @@ public class StudentInformationView extends VerticalLayout implements View,
 
 		showMaterials = new Button("Materialien anzeigen");
 		showMaterials.setEnabled(false);
-		showMaterials.addStyleName("default");
 		buttons.addComponent(showMaterials);
 		buttons.setSpacing(true);
 
