@@ -77,12 +77,12 @@ public class PDFDunning extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		String dunningText = "";
 		if (!this.secondDunning) {
-			dunningText = "Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen:";
+			dunningText = "Wir bitten darum, folgende Lehrmittel innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen:";
 		}
 		else {
 			dunningText = "Sehr geehrte/r " + student.getParent().getTitle() + " " + student.getParent().getLastname() + ",\n\n"
 					+ "leider müssen wir mitteilen, dass " + student.getFirstname() + " trotz bereits erfolgter Mahnung die unten aufgelisteten"
-					+ " Bücher nicht zurückgegeben hat. Wir bitten darum, folgende Bücher innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
+					+ " Lehrmittel nicht zurückgegeben hat. Wir bitten darum, folgende Lehrmittel innerhalb von 2 Wochen zurückzugeben oder Ersatz zu beschaffen. \n\n"
 					+ "Mit freundlichen Grüßen \n"
 					+ "Ihre Schulverwaltung";
 		}
