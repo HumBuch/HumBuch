@@ -244,7 +244,7 @@ public final class PDFStudentList extends PDFHandler {
 		PdfPTable table = PDFHandler.createMyStandardTable(1);
 		
 		new PDFHandler.TableBuilder(table, 
-				new String[] { "\nDie oben angeführten Lehrmittel hat der Schüler zurückgegeben.\n" +
+				new String[] { "\nDie oben markierten Lehrmittel hat der Schüler/die Schülerin zurückgegeben.\n" +
 						"Die ausgeliehenen Lehrmittel wurden auf Vollständigkeit und Beschädigung überprüft. " +
 						"Beschädigte oder verlorengegangene Lehrmittel wurden ersetzt." }).leading(1.25f).fillTable();
 
