@@ -78,7 +78,7 @@ public class TestUtils {
 				.beginSecondTerm(todayPlusDays(beginSecondTermDays)).build();
 		return schoolYear;
 	}
-	
+
 	public static SchoolYear schoolYearFirstTermNotStarted() {
 		return schoolYear(1, 2, 3, 4);
 	}
@@ -99,6 +99,18 @@ public class TestUtils {
 		return schoolYear(-9, -8, -7, -6);
 	}
 
+	public static SchoolYear schoolYearFirstTermEndedPlusDays(int days) {
+		return schoolYear(-days - 1, -days, 1, 2);
+	}
+
+	public static SchoolYear schoolYearSecondTermStartedPlusDays(int days) {
+		return schoolYear(-days - 2, -days - 1, -days, 1);
+	}
+
+	public static SchoolYear schoolYearSecondTermEndedPlusDays(int days) {
+		return schoolYear(-days - 3, -days - 2, -days - 1, -days);
+	}
+
 	public static Student studentInGrade(int grade) {
 		Grade gradeEntity = new Grade.Builder(grade, "").build();
 		gradeEntity.setId(grade);
@@ -109,25 +121,30 @@ public class TestUtils {
 
 	public static TeachingMaterial teachingMaterialInBothTermsOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), rStr(), null, todayPlusDays(-20))
-				.fromGrade(grade).fromTerm(Term.FIRST).toGrade(grade)
-				.toTerm(Term.SECOND).build();
+				category(), rStr(), null, todayPlusDays(-20)).fromGrade(grade)
+				.fromTerm(Term.FIRST).toGrade(grade).toTerm(Term.SECOND)
+				.build();
 		return teachingMaterial;
 	}
 
 	public static TeachingMaterial teachingMaterialInFirstTermOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), rStr(), null, todayPlusDays(-20))
-				.fromGrade(grade).fromTerm(Term.FIRST).toGrade(grade)
-				.toTerm(Term.FIRST).build();
+				category(), rStr(), null, todayPlusDays(-20)).fromGrade(grade)
+				.fromTerm(Term.FIRST).toGrade(grade).toTerm(Term.FIRST).build();
 		return teachingMaterial;
 	}
 
 	public static TeachingMaterial teachingMaterialInSecondTermOfGrade(int grade) {
 		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
-				category(), rStr(), null, todayPlusDays(-20))
-				.fromGrade(grade).fromTerm(Term.SECOND).toGrade(grade)
-				.toTerm(Term.SECOND).build();
+				category(), rStr(), null, todayPlusDays(-20)).fromGrade(grade)
+				.fromTerm(Term.SECOND).toGrade(grade).toTerm(Term.SECOND)
+				.build();
+		return teachingMaterial;
+	}
+
+	public static TeachingMaterial teachingMaterialInNoTerm(int grade) {
+		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(
+				category(), rStr(), null, todayPlusDays(-20)).build();
 		return teachingMaterial;
 	}
 
@@ -136,6 +153,14 @@ public class TestUtils {
 		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
 				student, teachingMaterial, todayPlusDays(-25)).received(true)
 				.build();
+		return borrowedMaterial;
+	}
+
+	public static BorrowedMaterial borrowedMaterialReceivedInPastBorrowUntil(
+			Student student, TeachingMaterial teachingMaterial, Date borrowUntil) {
+		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
+				student, teachingMaterial, todayPlusDays(-25))
+				.borrowUntil(borrowUntil).received(true).build();
 		return borrowedMaterial;
 	}
 }
