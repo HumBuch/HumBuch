@@ -1,10 +1,17 @@
 package de.dhbw.humbuch.viewmodel;
 
+import static de.dhbw.humbuch.test.TestUtils.borrowedMaterialReceivedInPast;
+import static de.dhbw.humbuch.test.TestUtils.borrowedMaterialReceivedInPastBorrowUntil;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearFirstTermEnded;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearFirstTermEndedPlusDays;
+import static de.dhbw.humbuch.test.TestUtils.schoolYearSecondTermEndedPlusDays;
+import static de.dhbw.humbuch.test.TestUtils.studentInGrade;
+import static de.dhbw.humbuch.test.TestUtils.teachingMaterialInFirstTermOfGrade;
+import static de.dhbw.humbuch.test.TestUtils.teachingMaterialInSecondTermOfGrade;
+import static de.dhbw.humbuch.test.TestUtils.todayPlusDays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.persistence.EntityManager;
@@ -23,22 +30,20 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Dunning;
 import de.dhbw.humbuch.model.entity.Dunning.Status;
-import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
-import de.dhbw.humbuch.model.entity.SchoolYear.Term;
-import de.dhbw.humbuch.model.entity.SettingsEntry;
-import de.dhbw.humbuch.model.entity.Student;
-import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
 public class DunningViewModelTest extends BaseTest {
+
+	private final int DEADLINE_FIRST_DUNNING = 15;
+	private final int DEADLINE_SECOND_DUNNING = 15;
+
 	private DunningViewModel dunningViewModel;
 	private DAO<Dunning> daoDunning;
 	private DAO<SchoolYear> daoSchoolYear;
 	private DAO<BorrowedMaterial> daoBorrowedMaterial;
-	private DAO<SettingsEntry> daoSettingsEntry;
 	private Properties properties;
 
 	@Inject
@@ -46,8 +51,7 @@ public class DunningViewModelTest extends BaseTest {
 			Provider<EntityManager> emProvider,
 			DunningViewModel dunningViewModel, DAO<Dunning> daoDunning,
 			DAO<SchoolYear> daoSchoolYear,
-			DAO<BorrowedMaterial> daoBorrowedMaterial,
-			Properties properties) {		
+			DAO<BorrowedMaterial> daoBorrowedMaterial, Properties properties) {
 		super.setInjected(persistenceInitialiser, emProvider);
 
 		this.dunningViewModel = dunningViewModel;
@@ -64,40 +68,12 @@ public class DunningViewModelTest extends BaseTest {
 		}
 	}
 
-	private Date todayPlusDays(int days) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.add(Calendar.DATE, days);
-		return calendar.getTime();
-	}
-
-	/**
-	 * Persist the current {@link SchoolYear} - end of first and beginning of
-	 * second term is yesterday, beginning of school year 10 days in the past,
-	 * end of school year 10 days in the future
-	 */
-	private void persistSchoolYear() {
-		SchoolYear schoolYear = new SchoolYear.Builder("now",
-				todayPlusDays(-40), todayPlusDays(10))
-				.endFirstTerm(todayPlusDays(-20))
-				.beginSecondTerm(todayPlusDays(-20)).build();
-		daoSchoolYear.insert(schoolYear);
-	}
-
 	/**
 	 * Persist a {@link BorrowedMaterial} which is due after the term end
 	 */
-	private void persistBorrowedMaterialDueAfterTermEndDate() {
-		Grade grade = new Grade.Builder(5, "").build();
-		Student student = new Student.Builder(0, "John", "Doe", null, grade)
-				.build();
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
-				"FooBook1", null, todayPlusDays(-20)).fromGrade(5)
-				.fromTerm(Term.FIRST).toGrade(5).toTerm(Term.FIRST).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-25)).received(true)
-				.build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+	private void persistBorrowedMaterialDueAfterFirstTerm() {
+		daoBorrowedMaterial.insert(borrowedMaterialReceivedInPast(
+				studentInGrade(6), teachingMaterialInFirstTermOfGrade(6)));
 	}
 
 	/**
@@ -105,77 +81,49 @@ public class DunningViewModelTest extends BaseTest {
 	 * date
 	 */
 	private void persistBorrowedMaterialDueAfterManualEndDate() {
-		Grade grade = new Grade.Builder(5, "").build();
-		Student student = new Student.Builder(1, "John", "Foo", null, grade)
-				.build();
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
-				"FooBook1", null, todayPlusDays(-20)).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-5))
-				.borrowUntil(todayPlusDays(-20)).received(true).build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		daoBorrowedMaterial.insert(borrowedMaterialReceivedInPastBorrowUntil(
+				studentInGrade(6), teachingMaterialInFirstTermOfGrade(6),
+				todayPlusDays(-DEADLINE_FIRST_DUNNING)));
 	}
 
 	private void persistBorrowedMaterialManualEndDateInFuture() {
-		Grade grade = new Grade.Builder(5, "").build();
-		Student student = new Student.Builder(2, "Peter", "Doe", null, grade)
-				.build();
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
-				"FooBook1", null, todayPlusDays(-20)).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-5))
-				.borrowUntil(todayPlusDays(10)).received(true).build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		daoBorrowedMaterial.insert(borrowedMaterialReceivedInPastBorrowUntil(
+				studentInGrade(6), teachingMaterialInFirstTermOfGrade(6),
+				todayPlusDays(1)));
 	}
-	
+
 	private void persistBorrowedMaterialDueAfterFirstTermEndInLastSchoolYear() {
-		Grade grade = new Grade.Builder(5, "").build();
-		Student student = new Student.Builder(2, "Peter", "Doe", null, grade)
-				.build();
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
-				"FooBook1", null, todayPlusDays(-20)).fromGrade(4)
-				.fromTerm(Term.FIRST).toGrade(4).toTerm(Term.FIRST).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-5)).received(true)
-				.build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		daoBorrowedMaterial.insert(borrowedMaterialReceivedInPast(
+				studentInGrade(7), teachingMaterialInFirstTermOfGrade(6)));
 	}
 
 	private void persistBorrowedMaterialDueAfterSecondTermEndInLastSchoolYear() {
-		Grade grade = new Grade.Builder(5, "").build();
-		Student student = new Student.Builder(2, "Peter", "Doe", null, grade)
-				.build();
-		TeachingMaterial teachingMaterial = new TeachingMaterial.Builder(null,
-				"FooBook1", null, todayPlusDays(-20)).fromGrade(4)
-				.fromTerm(Term.FIRST).toGrade(4).toTerm(Term.SECOND).build();
-		BorrowedMaterial borrowedMaterial = new BorrowedMaterial.Builder(
-				student, teachingMaterial, todayPlusDays(-5)).received(true)
-				.build();
-		daoBorrowedMaterial.insert(borrowedMaterial);
+		daoBorrowedMaterial.insert(borrowedMaterialReceivedInPast(
+				studentInGrade(7), teachingMaterialInSecondTermOfGrade(6)));
 	}
-	
+
 	@Before
 	public void refreshDunningViewModel() {
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("dun_firstDunningDeadline", "15");
+		map.put("dun_firstDunningDeadline", "" + DEADLINE_FIRST_DUNNING);
 		properties.settings.set(map);
-		map.put("dun_secondDunningDeadline", "15");
+		map.put("dun_secondDunningDeadline", "" + DEADLINE_SECOND_DUNNING);
 		properties.settings.set(map);
 		dunningViewModel.refresh();
 	}
-	
+
 	@Test
 	public void testStateInitialisation() {
 		// states should be initialised (not null)
 		assertNotNull(dunningViewModel.dunnings.get());
 	}
-	
+
 	@Test
 	public void testInitialDunningAmount() {
 		// amount of dunnings should be 0 with an empty database
 		assertEquals(0, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testAddTwoSentDunnings() {
 		// add two sent dunnings, check amount
@@ -183,7 +131,7 @@ public class DunningViewModelTest extends BaseTest {
 		dunningViewModel.refresh();
 		assertEquals(2, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	public void testAddTwoSentThreeClosedDunnings() {
 		// add two sent dunnings
 		persistSomeEmptyDunnings(2, Status.SENT);
@@ -192,7 +140,7 @@ public class DunningViewModelTest extends BaseTest {
 		dunningViewModel.refresh();
 		assertEquals(5, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testAddFourOpenedDunnings() {
 		// add four opened dunnings, check amount
@@ -200,50 +148,51 @@ public class DunningViewModelTest extends BaseTest {
 		dunningViewModel.refresh();
 		assertEquals(4, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
-	public void testAutoDunningAfterEndOfTerm() {
+	public void testAutoDunningAfterFirstTerm() {
 		// BorrowedMaterial due after end of term
-		persistSchoolYear();
-		persistBorrowedMaterialDueAfterTermEndDate();
+		daoSchoolYear
+				.insert(schoolYearFirstTermEndedPlusDays(DEADLINE_FIRST_DUNNING));
+		persistBorrowedMaterialDueAfterFirstTerm();
 		dunningViewModel.refresh();
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testAutoDunningAfterManualLendingDate() {
 		// BorrowedMaterial due after manual lending date
-		persistSchoolYear();
+		daoSchoolYear.insert(schoolYearFirstTermEnded());
 		persistBorrowedMaterialDueAfterManualEndDate();
 		dunningViewModel.refresh();
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testNoActionBeforeManualLendingDate() {
 		// BorrowedMaterial due in future (manual lending date)
-		persistSchoolYear();
+		daoSchoolYear.insert(schoolYearFirstTermEnded());
 		persistBorrowedMaterialManualEndDateInFuture();
 		dunningViewModel.refresh();
 		assertEquals(0, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testAutoDunningAfterFirstTermEndOfLastSchoolYear() {
 		// BorrowedMaterial due after term end of last school year
-		persistSchoolYear();
+		daoSchoolYear.insert(schoolYearSecondTermEndedPlusDays(DEADLINE_FIRST_DUNNING));
 		persistBorrowedMaterialDueAfterFirstTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
-	
+
 	@Test
 	public void testAutoDunningAfterSecondTermInLastSchoolYear() {
 		// BorrowedMaterial due after term end of last school year
-		persistSchoolYear();
+		daoSchoolYear.insert(schoolYearSecondTermEndedPlusDays(DEADLINE_FIRST_DUNNING));
 		persistBorrowedMaterialDueAfterSecondTermEndInLastSchoolYear();
 		dunningViewModel.refresh();
 		assertEquals(1, dunningViewModel.dunnings.get().size());
 	}
-	
+
 }
