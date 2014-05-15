@@ -28,10 +28,14 @@ public class StudentMaterialSelector extends CustomComponent {
 	private static final String TREE_TABLE_HEADER_DATA = "Daten auswählen";
 	private static final String TREE_TABLE_HEADER_DATE = "Ausgeliehen bis";
 	private static final String GRADE = "Klasse ";
+	private static final String EVERYTHING_SELECT = "Alle Klassen auswählen";
+	private static final String EVERYTHING_DESELECT = "Auswahl aufheben";
 
 	private TreeTable treeTableContent;
 	private Map<Grade, Map<Student, List<BorrowedMaterial>>> gradeAndStudentsWithMaterials;
 	private ArrayList<StudentMaterialSelectorObserver> registeredObservers;
+	private CheckBox checkBoxEverything;
+	private Object checkBoxEverythingId;
 	private LinkedHashMap<CheckBox, Object> allGradeCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allStudentCheckBoxes;
 	private LinkedHashMap<CheckBox, Object> allMaterialCheckBoxes;
@@ -53,6 +57,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	private void init() {
 		treeTableContent = new TreeTable();
 		gradeAndStudentsWithMaterials = new LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>>();
+		checkBoxEverything = new CheckBox(EVERYTHING_SELECT);
 		allGradeCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allStudentCheckBoxes = new LinkedHashMap<CheckBox, Object>();
 		allMaterialCheckBoxes = new LinkedHashMap<CheckBox, Object>();
@@ -77,6 +82,30 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * Whenever a CheckBox changes its value (gets selected / deselected) all registered observers get notified.
 	 * */
 	private void implementListeners() {
+		/*
+		 * The everything listener is above the top level elements to select / deselect all elements at once
+		 * */
+		checkBoxEverything.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -7395293342050339912L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				boolean state = checkBoxEverything.getValue();
+				
+				if(state == true) {
+					checkBoxEverything.setCaption(EVERYTHING_DESELECT);
+				} else {
+					checkBoxEverything.setCaption(EVERYTHING_SELECT);
+				}
+				
+				for(CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
+					checkBoxGrade.setValue(state);
+				}
+				notifyObserver();
+			}
+		});
+		
 		/*
 		 * The grade listener is added to all top level elements (grades) in the tree.
 		 * Whenever a grade is selected / deselected all Students belonging to that grade are selected / deselected, too.
@@ -287,6 +316,8 @@ public class StudentMaterialSelector extends CustomComponent {
 				}
 			}
 		}
+		
+		validateTableContent();
 	}
 
 	/*
@@ -315,6 +346,7 @@ public class StudentMaterialSelector extends CustomComponent {
 		updateStudentNodes(oldStudents, newStudents);
 		updateMaterialNodes(oldMaterials, newMaterials);
 
+		validateTableContent();
 		notifyObserver();
 	}
 
@@ -425,12 +457,19 @@ public class StudentMaterialSelector extends CustomComponent {
 		if (grade == null) {
 			return null;
 		}
+		if(checkBoxEverythingId == null && !treeTableContent.containsId(checkBoxEverythingId)) {
+			checkBoxEverythingId = treeTableContent.addItem(new Object[]{checkBoxEverything, ""}, null);
+			treeTableContent.setCollapsed(checkBoxEverythingId, false);
+		}
+		
 		CheckBox checkBoxGrade = new CheckBox(GRADE + grade.getGrade() + grade.getSuffix());
 		checkBoxGrade.setData(grade);
 		checkBoxGrade.addValueChangeListener(gradeListener);
 		Object gradeItemId = treeTableContent.addItem(new Object[] { checkBoxGrade, "" }, null);
 		treeTableContent.setCollapsed(gradeItemId, collapseGrades);
 
+		treeTableContent.setParent(gradeItemId, checkBoxEverythingId);
+		
 		allGradeCheckBoxes.put(checkBoxGrade, gradeItemId);
 
 		return gradeItemId;
@@ -526,6 +565,36 @@ public class StudentMaterialSelector extends CustomComponent {
 		return materialItemId;
 	}
 
+	/*
+	 * Validates the tree table so that empty grades / students etc. are not displayed.
+	 * */
+	private void validateTableContent() {
+		if(allGradeCheckBoxes.isEmpty()) {
+			treeTableContent.removeItem(checkBoxEverythingId);
+		}
+		
+		removeEmptyGrades();
+		removeEmptyStudents();
+	}
+	
+	private void removeEmptyGrades() {
+		for(CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
+			Object gradeItemId = allGradeCheckBoxes.get(checkBoxGrade);
+			if(treeTableContent.getChildren(gradeItemId) == null) {
+				treeTableContent.removeItem(gradeItemId);
+			}
+		}
+	}
+	
+	private void removeEmptyStudents() {
+		for(CheckBox checkBoxStudent : allStudentCheckBoxes.keySet()) {
+			Object studentItemId = allStudentCheckBoxes.get(checkBoxStudent);
+			if(treeTableContent.getChildren(studentItemId) == null) {
+				treeTableContent.removeItem(studentItemId);
+			}
+		}
+	}
+	
 	/*
 	 * Helper method which extracts all student objects from a data structure
 	 * @param structure

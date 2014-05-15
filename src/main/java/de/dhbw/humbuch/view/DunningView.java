@@ -183,7 +183,7 @@ public class DunningView extends VerticalLayout implements View,
 				btnShowDunning.setEnabled(item != null);
 				
 				//Check if the selected dunning can be marked as sent
-				if (item.getStatus() == Dunning.Status.OPENED) {
+				if (item != null && item.getStatus() == Dunning.Status.OPENED) {
 					btnDunningSent.setEnabled(item != null);
 				} else {
 					btnDunningSent.setEnabled(false);
@@ -268,12 +268,14 @@ public class DunningView extends VerticalLayout implements View,
 				} else {
 					tableData.removeContainerFilter(filter);
 				}
+				tblDunnings.setValue(null);
 			}
 		});
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		tblDunnings.setValue(null);
 		dunningViewModel.refresh();
 		cbOpenDunnings.setValue(true);
 	}

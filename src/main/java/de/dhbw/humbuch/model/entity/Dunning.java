@@ -116,6 +116,7 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	}
 
 	public static class Builder {
+		private int id;
 		private Student student;
 		private Type type;
 		private Status status;
@@ -140,12 +141,18 @@ public class Dunning implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 			return this;
 		}
 		
+		public Builder id(int id) {
+			this.id = id;
+			return this;
+		}
+		
 		public Dunning build() {
 			return new Dunning(this);
 		}
 	}
 	
 	private Dunning(Builder builder) {
+		id = builder.id;
 		student = builder.student;
 		type = builder.type;
 		setStatus(Status.OPENED);
