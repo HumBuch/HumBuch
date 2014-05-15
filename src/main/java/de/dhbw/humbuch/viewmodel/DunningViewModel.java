@@ -183,9 +183,9 @@ public class DunningViewModel {
         int deadline = getDeadlineFirstDunning();
         
 		// Generate temporary key to be able to fill the vaadin table. If no
-		// temporary key is used, the vaadin table will have problems because of
-		// duplicate IDs.
-		int i = generateSurrogateId();
+		// temporary id is used, the vaadin table will cause problems because of
+		// the duplicate IDs.
+		int id = generateTemporaryId();
 		
         for (Student student : allStudents) {
         	List<BorrowedMaterial> borrowedMaterials = student.getBorrowedList();
@@ -228,7 +228,7 @@ public class DunningViewModel {
 						.type(Dunning.Type.TYPE1)
 						.status(Dunning.Status.OPENED)
 						.borrowedMaterials(overdueMaterials)
-						.id(i++)
+						.id(id++)
 						.build();
 				dunnings.add(newDunning);
         	}
@@ -243,17 +243,17 @@ public class DunningViewModel {
 	 * 
 	 * @return Key, that is one greater than the biggest value in the id column
 	 */
-    private int generateSurrogateId() {
+    private int generateTemporaryId() {
 		Dunning a = daoDunning.findSingleWithCriteria(Order.desc("id"),
 				Restrictions.or(Restrictions.eq("type", Dunning.Type.TYPE1),
 						Restrictions.eq("type", Dunning.Type.TYPE2)));
-		int i;
+		int id;
         if (a==null) {
-        	i = 0;
+        	id = 0;
         } else {
-        	i = a.getId();
+        	id = a.getId();
         }
-        return ++i;
+        return ++id;
 	}
 
     /**
