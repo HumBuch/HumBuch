@@ -98,7 +98,7 @@ public class DunningViewModel {
 	 * dunning is created and the first dunning is closed
 	 */
     private void createSecondDunnings() {
-    	int deadline = Integer.parseInt(properties.settings.get().get("dun_secondDunningDeadline"));
+    	int deadline = getDeadlineSecondDunning();
         List<Dunning> sentFirstDunnings = daoDunning.findAllWithCriteria(Restrictions.and(
                 Restrictions.eq("status", Dunning.Status.SENT),
                 Restrictions.eq("type", Dunning.Type.TYPE1)));
@@ -118,6 +118,24 @@ public class DunningViewModel {
             }
         }
     }
+
+	private int getDeadlineSecondDunning() {
+		int deadline = 0;
+		String deadlineSecondDunning = properties.settings.get().get("dun_secondDunningDeadline");
+    	if (deadlineSecondDunning != null) {
+    		deadline = Integer.parseInt(deadlineSecondDunning);
+    	}
+		return deadline;
+	}
+	
+	private int getDeadlineFirstDunning() {
+		int deadline = 0;
+		String deadlineFirstDunning = properties.settings.get().get("dun_firstDunningDeadline");
+    	if (deadlineFirstDunning != null) {
+    		deadline = Integer.parseInt(deadlineFirstDunning);
+    	}
+		return deadline;
+	}
     
     /**
 	 * Check if the current date is after the given date plus the given period
@@ -162,7 +180,7 @@ public class DunningViewModel {
     	
         List<Student> allStudents = daoStudent.findAll();
         Collection<Dunning> dunnings = new ArrayList<Dunning>();
-        int deadline = Integer.parseInt(properties.settings.get().get("dun_firstDunningDeadline"));
+        int deadline = getDeadlineFirstDunning();
         
 		// Generate temporary key to be able to fill the vaadin table. If no
 		// temporary key is used, the vaadin table will have problems because of
