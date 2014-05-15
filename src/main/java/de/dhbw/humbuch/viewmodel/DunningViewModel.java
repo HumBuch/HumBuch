@@ -278,13 +278,34 @@ public class DunningViewModel {
     }
     
     /**
-     * Sets the value of the activeSchoolYear variable.
+     * Updates the recently active {@link SchoolYear}
      */
     private void updateSchoolYear() {
         activeSchoolYear = daoSchoolYear.findSingleWithCriteria(
                 Order.desc("toDate"),
                 Restrictions.le("fromDate", new Date()));
+		if (activeSchoolYear == null) {
+			activeSchoolYear = new SchoolYear.Builder("now", getDate(
+					Calendar.AUGUST, 1), getDate(Calendar.JUNE, 31))
+					.endFirstTerm(getDate(Calendar.JANUARY, 31))
+					.beginSecondTerm(getDate(Calendar.FEBRUARY, 1)).build();
+		}
     }
+    
+	/**
+	 * Returns {@link Date} object with the current year and the given month and
+	 * day.
+	 * 
+	 * @param month
+	 * @param day
+	 * 
+	 * @return {@link Date} object with given information
+	 */
+	private Date getDate(int month, int day) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(calendar.get(Calendar.YEAR), month, day);
+		return calendar.getTime();
+	}
     
     /**
      * Updates a dunning by saving it to the database
