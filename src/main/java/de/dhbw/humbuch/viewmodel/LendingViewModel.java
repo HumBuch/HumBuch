@@ -11,8 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 
 import com.google.inject.Inject;
 
@@ -26,6 +28,7 @@ import de.dhbw.humbuch.model.DAO;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
+import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
@@ -80,9 +83,15 @@ public class LendingViewModel {
 	}
 	
 	@AfterVMBinding
+	public void initialiseStates() {
+		studentsWithUnreceivedBorrowedMaterials.set(new HashMap<Grade, Map<Student, List<BorrowedMaterial>>>());
+		materialListGrades.set(new HashMap<Grade, Map<TeachingMaterial, Integer>>());
+		teachingMaterials.set(new ArrayList<TeachingMaterial>());
+	}
+	
 	public void refresh() {
 		updateSchoolYear();
-		updateTeachingMaterials();
+		updateTeachingMaterials();	
 		updateAllStudentsBorrowedMaterials();
 	}
 	
@@ -219,71 +228,50 @@ public class LendingViewModel {
 	}
 	
 	/**
-	 * Returns list of {@link TeachingMaterial}s that have to be lended by the given {@link Student}
-	 * 
-	 * @param student
-	 * @return {@link Collection} of {@link TeachingMaterial}s that have to be lended
-	 */
-//	private List<TeachingMaterial> getNewTeachingMaterials(Student student) {
-//		Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
-//				Restrictions.and(
-//						Restrictions.le("fromGrade", student.getGrade().getGrade())
-//						, Restrictions.ge("toGrade", student.getGrade().getGrade())
-//						, Restrictions.le("validFrom", new Date())
-//						, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-//						, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-//						, Restrictions.or(
-//								Restrictions.ge("validUntil", new Date())
-//								, Restrictions.isNull("validUntil"))
-//				));
-//
-//		List<TeachingMaterial> owningTeachingMaterials = getOwningTeachingMaterials(student);
-//		List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
-//
-//		for(TeachingMaterial teachingMaterial : teachingMaterials) {
-//			if(student.getProfile().containsAll(teachingMaterial.getProfile())
-//					&& !owningTeachingMaterials.contains(teachingMaterial)
-//					&& !recentlyActiveSchoolYear.getToDate().before(new Date())) {
-//				toLend.add(teachingMaterial);
-//			}
-//		}
-//
-//		return toLend;
-//	}
-	
-	/**
 	 * Returns map of {@link TeachingMaterial}s that have to be lended by the {@link Student}s of the given {@link Grade}s.
 	 * 
 	 * @param grades
 	 * @return {@link Map} of {@link Student}s and their {@link TeachingMaterial}s that have to be lended
 	 */
 	private Map<Student, List<TeachingMaterial>> getNewTeachingMaterials(List<Grade> grades) {
-//		LOG.info("getNewTeachingMaterials()_start");
 		Map<Student, List<TeachingMaterial>> studentsNewTeachingMaterialMap = new HashMap<Student, List<TeachingMaterial>>();
+
+		Date today = new Date();
 		
-		for (Grade grade : grades) {
-//			LOG.info("   grade: " + grade.toString());
+		//No TeachingMaterials to lend when not in an active SchoolYear
+		if(recentlyActiveSchoolYear.getToDate().before(today)) {
+			return studentsNewTeachingMaterialMap;
+		}
+		
+		Term recentlyActiveTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
+		
+		SimpleExpression restrictionValidFrom = Restrictions.le("validFrom", today);
+		SimpleExpression restrictionFromTerm = Restrictions.le("fromTerm", recentlyActiveTerm);
+		SimpleExpression restrictionToTerm = Restrictions.ge("toTerm", recentlyActiveTerm);
+		LogicalExpression restrictionValidUntil = Restrictions.or(
+				Restrictions.ge("validUntil", today), 
+				Restrictions.isNull("validUntil"));
+		
+		for (Grade gradeEntity : grades) {
+			int grade = gradeEntity.getGrade();
 			Collection<TeachingMaterial> teachingMaterials = daoTeachingMaterial.findAllWithCriteria(
 					Restrictions.and(
-							Restrictions.le("fromGrade", grade.getGrade())
-							, Restrictions.ge("toGrade", grade.getGrade())
-							, Restrictions.le("validFrom", new Date())
-							, Restrictions.le("fromTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-							, Restrictions.ge("toTerm", recentlyActiveSchoolYear.getRecentlyActiveTerm())
-							, Restrictions.or(
-									Restrictions.ge("validUntil", new Date())
-									, Restrictions.isNull("validUntil"))
+							Restrictions.le("fromGrade", grade)
+							, Restrictions.ge("toGrade", grade)
+							, restrictionValidFrom
+							, restrictionFromTerm
+							, restrictionToTerm
+							, restrictionValidUntil
 					));
 			
-			Date today = new Date();
-			for (Student student : grade.getStudents()) {
+			for (Student student : gradeEntity.getStudents()) {
 				if (!student.isLeavingSchool()) {
+					List<TeachingMaterial> teachingMaterialsOfStudent = getOwningTeachingMaterials(student);
 					List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 
 					for (TeachingMaterial teachingMaterial : teachingMaterials) {
 						if (student.getProfile().containsAll(teachingMaterial.getProfile())
-								&& !getOwningTeachingMaterials(student).contains(teachingMaterial)
-								&& !recentlyActiveSchoolYear.getToDate().before(today)) {
+								&& !teachingMaterialsOfStudent.contains(teachingMaterial)) {
 							toLend.add(teachingMaterial);
 						}
 					}
@@ -293,7 +281,6 @@ public class LendingViewModel {
 			}
 		}
 		
-//		LOG.info("getNewTeachingMaterials()_end");
 		return studentsNewTeachingMaterialMap;
 	}
 	

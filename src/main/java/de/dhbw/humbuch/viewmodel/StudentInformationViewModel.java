@@ -70,6 +70,10 @@ public class StudentInformationViewModel {
 	}
 
 	@AfterVMBinding
+	public void initialiseStates() {
+		students.set(new ArrayList<Student>());
+	}
+	
 	public void refresh() {
 		updateStudents();
 	}

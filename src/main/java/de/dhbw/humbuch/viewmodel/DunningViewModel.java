@@ -56,6 +56,10 @@ public class DunningViewModel {
     }
 
     @AfterVMBinding
+    public void initialiseStates() {
+    	dunnings.set(new ArrayList<Dunning>());
+    }
+    
     public void refresh() {
         updateSchoolYear();
         checkIfDunningCanBeClosed();

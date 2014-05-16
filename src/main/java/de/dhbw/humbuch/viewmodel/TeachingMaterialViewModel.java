@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.viewmodel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -67,6 +68,12 @@ public class TeachingMaterialViewModel {
 	}
 
 	@AfterVMBinding
+	public void initialiseStates() {
+		teachingMaterials.set(new ArrayList<TeachingMaterial>());
+		categories.set(new ArrayList<Category>());
+		standardCategory.set(null);
+	}
+	
 	public void refresh() {
 		updateTeachingMaterials();
 		updateCategories();
