@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -45,6 +48,13 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 	@OneToMany(mappedBy="student", fetch=FetchType.LAZY)
 	private List<BorrowedMaterial> borrowedList = new ArrayList<BorrowedMaterial>();
 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			name="borrowedmaterial",
+			joinColumns={@JoinColumn(name="studentId", referencedColumnName="id")},
+			inverseJoinColumns={@JoinColumn(name="teachingMaterialId", referencedColumnName="id")})
+	private Set<TeachingMaterial> teachingMaterials = new HashSet<>();
+	
 	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name="studentSubject", joinColumns = @JoinColumn(name="studentId"))
@@ -131,6 +141,10 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		this.borrowedList = borrowedList;
 	}
 	
+	public Set<TeachingMaterial> getTeachingMaterials() {
+		return teachingMaterials;
+	}
+
 	public Set<Subject> getProfile() {
 		return profile;
 	}
