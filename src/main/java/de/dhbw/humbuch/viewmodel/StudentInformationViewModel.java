@@ -201,7 +201,7 @@ public class StudentInformationViewModel {
 			
 			Student existingStudent = daoStudent.find(student.getId());
 			if(existingStudent != null) {
-				student.setBorrowedList(existingStudent.getBorrowedList());
+				student.setBorrowedMaterials(existingStudent.getBorrowedMaterials());
 				student.setParent(existingStudent.getParent());
 			}
 

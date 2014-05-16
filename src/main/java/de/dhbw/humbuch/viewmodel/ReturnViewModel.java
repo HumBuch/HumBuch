@@ -85,13 +85,15 @@ public class ReturnViewModel {
 	@HandlesAction(GenerateStudentReturnList.class)
 	public void generateStudentReturnList() {
 		Date today = new Date();
-		boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveSchoolYear.getRecentlyActiveTerm()).before(today);
+		Term recentlyActiveTerm = recentlyActiveSchoolYear.getRecentlyActiveTerm();
+		boolean isAfterCurrentTerm = recentlyActiveSchoolYear.getEndOf(recentlyActiveTerm).before(today);
 
 		Map<Grade, Map<Student, List<BorrowedMaterial>>> toReturn = new TreeMap<>();
-		for(Grade grade : daoGrade.findAll()) {
+		for(Grade gradeEntity : daoGrade.findAll()) {
 			Map<Student, List<BorrowedMaterial>> studentWithUnreturnedBorrowedMaterials = new TreeMap<>();
 
-			for(Student student : grade.getStudents()) {
+			for(Student student : gradeEntity.getStudents()) {
+				int studentsGrade = student.getGrade().getGrade();
 				List<BorrowedMaterial> unreturnedBorrowedMaterials = new ArrayList<>();
 				for(BorrowedMaterial borrowedMaterial : student.getReceivedBorrowedMaterials()) {
 					TeachingMaterial teachingMaterial = borrowedMaterial.getTeachingMaterial();
@@ -100,7 +102,8 @@ public class ReturnViewModel {
 					boolean notNeededNextTerm = borrowedMaterial.getReturnDate() == null && !isNeededNextTerm(borrowedMaterial);
 					boolean borrowUntilExceeded = borrowUntilDate == null ? false : borrowUntilDate.before(today);
 					boolean isManualLended = borrowUntilDate == null ? false : true;
-					boolean toTermEqualsRecentlyActiceTerm = teachingMaterial.getToGrade() == student.getGrade().getGrade()	&& teachingMaterial.getToTerm() == recentlyActiveSchoolYear.getRecentlyActiveTerm();
+					boolean toTermEqualsRecentlyActiceTerm = teachingMaterial.getToGrade() == studentsGrade	
+							&& teachingMaterial.getToTerm() == recentlyActiveTerm;
 
 					if(!isManualLended	&& notNeededNextTerm && (toTermEqualsRecentlyActiceTerm ? isAfterCurrentTerm : true)) {
 						unreturnedBorrowedMaterials.add(borrowedMaterial);
@@ -116,7 +119,7 @@ public class ReturnViewModel {
 			}
 
 			if(!studentWithUnreturnedBorrowedMaterials.isEmpty()) {
-				toReturn.put(grade, studentWithUnreturnedBorrowedMaterials);
+				toReturn.put(gradeEntity, studentWithUnreturnedBorrowedMaterials);
 			}
 		}
 

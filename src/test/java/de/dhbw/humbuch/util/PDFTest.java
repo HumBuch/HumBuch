@@ -61,7 +61,7 @@ public class PDFTest {
 				borrowedMaterialList.add(borrowedMaterial);
 			}
 
-			student.setBorrowedList(borrowedMaterialList);
+			student.setBorrowedMaterials(borrowedMaterialList);
 
 			PDFStudentList.Builder builder = new PDFStudentList.Builder().borrowedMaterialList(borrowedMaterialList).
 					lendingList(borrowedMaterialList).returnList(borrowedMaterialList);
@@ -108,9 +108,9 @@ public class PDFTest {
 			borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
 			borrowedMaterialList.add(borrowedMaterial);
 
-			student.setBorrowedList(borrowedMaterialList);
+			student.setBorrowedMaterials(borrowedMaterialList);
 			Set<List<BorrowedMaterial>> borrowedMaterials = new LinkedHashSet<List<BorrowedMaterial>>();
-			borrowedMaterials.add(student.getBorrowedList());
+			borrowedMaterials.add(student.getBorrowedMaterials());
 			PDFDunning.createFirstDunning(borrowedMaterials).savePDF("./testfiles/DunningPdf.pdf");
 		}
 		catch (ParseException e) {
@@ -137,9 +137,9 @@ public class PDFTest {
 			borrowedMaterial = new BorrowedMaterial.Builder(student, teachingMaterial, null).build();
 			borrowedMaterialList.add(borrowedMaterial);
 
-			student.setBorrowedList(borrowedMaterialList);
+			student.setBorrowedMaterials(borrowedMaterialList);
 			Set<List<BorrowedMaterial>> borrowedMaterials = new LinkedHashSet<List<BorrowedMaterial>>();
-			borrowedMaterials.add(student.getBorrowedList());
+			borrowedMaterials.add(student.getBorrowedMaterials());
 			PDFDunning.createSecondDunning(borrowedMaterials).savePDF("./testfiles/secondDunningPdf.pdf");
 		}
 		catch (ParseException e) {
