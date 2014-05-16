@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -67,6 +68,10 @@ public class ReturnViewModel {
 	}
 	
 	@AfterVMBinding
+	public void initialiseStates() {
+		returnListStudent.set(new HashMap<Grade, Map<Student, List<BorrowedMaterial>>>());
+	}
+	
 	public void refresh() {
 		updateSchoolYear();
 		generateStudentReturnList();

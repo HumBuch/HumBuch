@@ -2,6 +2,7 @@ package de.dhbw.humbuch.viewmodel;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
@@ -89,6 +90,15 @@ public class SettingsViewModel {
 	}
 
 	@AfterVMBinding
+	public void initialiseStates() {
+		schoolYears.set(new ArrayList<SchoolYear>());
+		categories.set(new ArrayList<Category>());
+		settingsEntries.set(new ArrayList<SettingsEntry>());
+		passwordChangeStatus.set(null);
+		userName.set(null);
+		userEmail.set(null);
+	}
+	
 	public void refresh() {
 		updateSchoolYears();
 		updateCategories();
