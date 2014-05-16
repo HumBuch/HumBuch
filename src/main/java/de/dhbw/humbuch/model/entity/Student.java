@@ -2,6 +2,7 @@ package de.dhbw.humbuch.model.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -53,7 +54,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 			name="borrowedMaterial",
 			joinColumns={@JoinColumn(name="studentId", referencedColumnName="id")},
 			inverseJoinColumns={@JoinColumn(name="teachingMaterialId", referencedColumnName="id")})
-	private Set<TeachingMaterial> teachingMaterials = new HashSet<>();
+	private Collection<TeachingMaterial> teachingMaterials = new HashSet<>();
 	
 	@ElementCollection(targetClass=Subject.class)
 	@Enumerated(EnumType.STRING)
@@ -141,7 +142,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		this.borrowedMaterials = borrowedMaterials;
 	}
 	
-	public Set<TeachingMaterial> getTeachingMaterials() {
+	public Collection<TeachingMaterial> getTeachingMaterials() {
 		return teachingMaterials;
 	}
 
