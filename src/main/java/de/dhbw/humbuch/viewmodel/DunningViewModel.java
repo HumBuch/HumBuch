@@ -56,6 +56,10 @@ public class DunningViewModel {
     }
 
     @AfterVMBinding
+    public void initialiseStates() {
+    	dunnings.set(new ArrayList<Dunning>());
+    }
+    
     public void refresh() {
         updateSchoolYear();
         checkIfDunningCanBeClosed();
@@ -104,17 +108,28 @@ public class DunningViewModel {
                 Restrictions.eq("type", Dunning.Type.TYPE1)));
         
         for (Dunning dunning : sentFirstDunnings) {
+        
         	Date dateStatusSent = dunning.getStatusDate(Dunning.Status.SENT);
+        	
         	//Check if the current date is after the specific sent-date of the dunning plus period
             if (currentDateAfterPeriod(dateStatusSent, deadline)) {
-                    Dunning newDunning = new Dunning.Builder(
+            	
+            	//Create the new set of overdue materials
+            	Set<BorrowedMaterial> overdueMaterials = new HashSet<BorrowedMaterial>();
+            	for (BorrowedMaterial material : dunning.getBorrowedMaterials()) {
+            		//If material of the dunning is still not returned
+            		if (!material.isReturned()) {
+            			overdueMaterials.add(material);
+            		}
+            	}
+            	Dunning newDunning = new Dunning.Builder(
                             dunning.getStudent()).type(Dunning.Type.TYPE2)
                             .status(Dunning.Status.OPENED)
-                            .borrowedMaterials(new HashSet<BorrowedMaterial>(dunning.getBorrowedMaterials()))
+                            .borrowedMaterials(overdueMaterials)
                             .build();
-                    daoDunning.insert(newDunning);
-                    dunning.setStatus(Dunning.Status.CLOSED);
-                    daoDunning.update(dunning);
+                daoDunning.insert(newDunning);
+                dunning.setStatus(Dunning.Status.CLOSED);
+                daoDunning.update(dunning);
             }
         }
     }
@@ -183,9 +198,9 @@ public class DunningViewModel {
         int deadline = getDeadlineFirstDunning();
         
 		// Generate temporary key to be able to fill the vaadin table. If no
-		// temporary key is used, the vaadin table will have problems because of
-		// duplicate IDs.
-		int i = generateSurrogateId();
+		// temporary id is used, the vaadin table will cause problems because of
+		// the duplicate IDs.
+		int id = generateTemporaryId();
 		
         for (Student student : allStudents) {
         	List<BorrowedMaterial> borrowedMaterials = student.getBorrowedList();
@@ -228,7 +243,7 @@ public class DunningViewModel {
 						.type(Dunning.Type.TYPE1)
 						.status(Dunning.Status.OPENED)
 						.borrowedMaterials(overdueMaterials)
-						.id(i++)
+						.id(id++)
 						.build();
 				dunnings.add(newDunning);
         	}
@@ -243,17 +258,17 @@ public class DunningViewModel {
 	 * 
 	 * @return Key, that is one greater than the biggest value in the id column
 	 */
-    private int generateSurrogateId() {
+    private int generateTemporaryId() {
 		Dunning a = daoDunning.findSingleWithCriteria(Order.desc("id"),
 				Restrictions.or(Restrictions.eq("type", Dunning.Type.TYPE1),
 						Restrictions.eq("type", Dunning.Type.TYPE2)));
-		int i;
+		int id;
         if (a==null) {
-        	i = 0;
+        	id = 0;
         } else {
-        	i = a.getId();
+        	id = a.getId();
         }
-        return ++i;
+        return ++id;
 	}
 
     /**
