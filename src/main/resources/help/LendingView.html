@@ -1,19 +1,60 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title>Ausleihe-Hilfe</title>
-</head>
-<body>
-<h2>Schüler durchsuchen</h2>
-In diesem Feld kann man, indem man einen Schülernamen eingibt, nach einem speziellen Schüler suchen. 
-<h2>Daten auswählen</h2>
-Die Liste „Daten auswählen“ stellt nach der erfolgreichen Suche eines Schülers im Feld „Schüler durchsuchen“ die Bücher bereit, die der Schüler zu erhalten hat.
-<br>
-Wenn keine Suche vor Nutzung dieser Liste stattgefunden hat, werden alle Klassen angezeigt. Durch Klick auf eine Klasse  klappt eine Sub-Liste auf, die alle Schüler dieser Klasse anzeigt. Durch das Klicken auf einen Schüler klappt wiederrum eine Sub-Liste auf, welche alle auszugebenden Bücher für den Schüler enthält.
-<h2>Ausgewählte Bücher erhalten</h2>
-Durch das anklicken dieses Buttons werden die in der Liste „Daten auswählen“ ausgewählte Bücher als erhalten vermerkt. 
-<h2>Klassenliste für Auswahl drucken</h2>
-Durch das anklicken dieses Buttons wird eine Liste mit allen benötigten Büchern für die gewählte/n Klasse/n gedruckt. 
-<h2>Schülerliste für Auswahl drucken</h2>	
-Durch Klick auf diesen Button werden Bücherausgabelisten für die/den gewählten Schüler (bzw. die gewählte Klasse/n) gedruckt.
-</body>
+	<head>
+		<meta charset="utf-8">
+		<title>Ausleihe-Hilfe</title>
+	</head>
+	<body>
+		<h1>Wobei benötigen Sie Hilfe?</h1>
+		
+		<div name=inhalt>
+			<h2>Grundlagen / Seitenaufbau</h2>
+			<a href='#tab'><h3>Wozu dient die Tabelle?</h3></a>
+			<a href='#schFil'><h3>Wie kann ich nach Schülern suchen?</h3></a>
+			<h2>Funktionen</h2>
+			<a href='#matErh'><h3>Wie kann ich, die in der Tabelle aufgeführten, Lehrmittel verleihen?</h3></a>
+			<a href='#listDru'><h3>Wie drucke ich Klassen oder Schülerlisten?</h3></a>
+			<a href='#manAus'><h3>Wie kann ich Lehrmittel manuell verleihen?</h3></a>
+		</div><hr>
+		
+		<h1>Grundlagen / Seitenufbau</h1>
+		<img src="screenshots/Ausleihe.jpg">
+		<br>Abbildung 1
+		
+		<h2><a name=tab>Tabelle (Daten Auswählen / Ausgeliehen bis)</a></h2>
+		Mithilfe dieser Tabelle kann eingesehen werden, welche Bücher wie lange für einen jeweiligen Schüler zu verleihen sind.
+		Durch das Klicken auf ein Dreieck können Sublisten von Klassen sowie von Schülern eingeblendet werden (Abbildung 1 - Punkt 1).
+		Bei ersterem werden die Schüler je Klasse angezeigt und bei zweiterem die Bücher je Schüler. 
+		Durch die Auswahl von  Klasse/n, Schüler/n oder Bücher/n können zudem
+		die Funktionen "Material erhalten" (Abbildung 1 - Punkt 3) und "Listen drucken" (Abbildung 1 - Punkt 5) ausgeführt werden.
+
+		<h2><a name=schFil>Schüler Filtern</a></h2>
+		Dieses Textfeld (Abbildung 1 - Punkt 2) dient zur Erleichterung bei der Auffindung spezieller Schüler in der Tabelle.
+		Durch die Eingabe eines Namens, wird die Auswahlliste der Schüler auf diesen gefiltert. 
+		
+		<h1>Funktionen</h1>
+		
+		<h2><a name=matErh>Material erhalten</a></h2>
+		Mithilfe dieser Funktion bestätigen Sie die Vergabe von Lehrmitteln. Um diese Funktion ausführen zu können, müssen Sie zunächst
+		Lehrmittel oder Schüler in der Spalte "Daten auswählen" (Abbildung 1 - Punkt 1) auswählen. 
+		Nach Ausführung dieser Funktion werden automatisch von Schülern erhaltene Lehrmittel aus der Tabelle entfernt.
+		Wenn ein Schüler alle Lehrmittel erhalten hat wird dieser ebenfalls entfernt.<hr>
+		
+		<h2><a name=listDru>Listen Drucken</a></h2>
+		Durch das Anklicken dieses Buttons (Abbildung 1 - Punkt 5) öffnet sich ein Submenü, mit den Auswahlmöglichkeiten "Klassenliste" und "Schülerliste". Durch die Auswahl einer der beiden Listenarten wird eine durckbare PDF-Datei erstellt.
+		Die Klassenliste soll Sie hierbei bei der Vorbereitung einer Bücherausgabe unterstützen, indem sie Ihnen alle für eine Klasse benötigten Bücher aufzeigt. 
+		Die Schülerliste dient als Bestötigungsliste, auf der der jeweilige Schüler mit seiner Unterschrift den Erhalt eines Lehrmittels bestötigt.<br>
+		Zum drucken von Klassenlisten müssen zuvor, in der Spalte "Daten auswählen", Klassen ausgewählt werden. Eine hieraus resultierende PDF-Datei zeigt die Anzahl der Bücher die pro gewählter Klasse auszugeben sind. 
+		Zum drucken von Schülerlisten können Schüler oder Klassen ausgewählt werden. Eine resultierende PDF-Datei zeigt hier die benötigeten Bücher je Schüler.<hr>
+		
+		<h2><a name=manAus>Manuelle Ausleihe</a></h2>	
+		Die manuelle Ausleihe ermöglicht es Lehrmittel abweichend vom regulären System zu verleihen. 
+		Hierzu muss zunächst ein Schüler ausgewählt werden, dem dann Lehrmittel zu bestimmen Fristen zugewiesen werden können.
+		Das Feld "Materialien durchsuchen", hilft dabei Materialien in der Liste zu finden (Abbildung 2 - Punkt 0).  
+		Um dem ausgewählten Schüler ein Lehrmittel zuzuweisen, muss dieses durch Klick auf dessen Namen markiert werden (Abbildung 2 - Punkt 1).
+		Durch Klick des Kalendersymbols (siehe Abbildung 2 - Punkt 2) kann zusätzlich die jeweilige Verleihdauer eines Lehrmittels festgelegt werden. 
+		Nach einstellen des Datums und der Auswahl der Lehrmittel, können diese mithilfe des Buttons "Ausleihen" verliehen werden (siehe Abbildung 2 - Punkt 3).
+		<br><img src="screenshots/ManuelleAusleihe.jpg">
+		<br>Abbildung 2		
+	</body>
 </html>
