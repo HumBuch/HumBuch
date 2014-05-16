@@ -203,7 +203,7 @@ public class DunningViewModel {
 		int id = generateTemporaryId();
 		
         for (Student student : allStudents) {
-        	List<BorrowedMaterial> borrowedMaterials = student.getBorrowedList();
+        	List<BorrowedMaterial> borrowedMaterials = student.getBorrowedMaterials();
         	Set<BorrowedMaterial> overdueMaterials = new HashSet<BorrowedMaterial>();
         	
         	if (!borrowedMaterials.isEmpty()) {

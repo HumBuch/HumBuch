@@ -292,7 +292,7 @@ public class StudentInformationView extends VerticalLayout implements View,
 			List<BorrowedMaterial> borrowedMaterials = new ArrayList<BorrowedMaterial>();
 			;
 
-			for (BorrowedMaterial bm : item.getBorrowedList()) {
+			for (BorrowedMaterial bm : item.getBorrowedMaterials()) {
 				if (bm.isReceived() && bm.getReturnDate() == null) {
 					borrowedMaterials.add(bm);
 				}
