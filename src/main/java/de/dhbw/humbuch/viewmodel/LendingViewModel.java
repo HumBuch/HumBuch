@@ -319,7 +319,7 @@ public class LendingViewModel {
 	 */
 	private List<TeachingMaterial> getOwningTeachingMaterials(Student student) {
 		List<TeachingMaterial> owning = new ArrayList<TeachingMaterial>();
-		for(BorrowedMaterial borrowedMaterial : student.getBorrowedList()) {
+		for(BorrowedMaterial borrowedMaterial : student.getBorrowedMaterials()) {
 			owning.add(borrowedMaterial.getTeachingMaterial());
 		}
 		
