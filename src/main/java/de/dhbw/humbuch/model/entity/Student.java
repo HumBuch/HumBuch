@@ -50,7 +50,7 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
-			name="borrowedmaterial",
+			name="borrowedMaterial",
 			joinColumns={@JoinColumn(name="studentId", referencedColumnName="id")},
 			inverseJoinColumns={@JoinColumn(name="teachingMaterialId", referencedColumnName="id")})
 	private Set<TeachingMaterial> teachingMaterials = new HashSet<>();
