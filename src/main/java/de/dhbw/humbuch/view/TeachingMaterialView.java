@@ -61,8 +61,10 @@ import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.StandardCategory;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
 
 /**
+ * {@link View} to manage the lendable teaching materials.
  * 
  * @author Martin Wentzel
+ * @author Johannes Idelhauser
  * 
  */
 public class TeachingMaterialView extends VerticalLayout implements View, ViewInformation {
