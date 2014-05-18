@@ -12,6 +12,7 @@ public class HelpView extends VerticalLayout {
 	
 	public HelpView() {
 		setMargin(true);
+		setStyleName("help-view");
 		labelHelpText.setContentMode(ContentMode.HTML);
 		addComponent(labelHelpText);
 	}
