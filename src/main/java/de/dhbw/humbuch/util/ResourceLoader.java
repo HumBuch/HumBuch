@@ -13,8 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
+import com.vaadin.server.StreamResource.StreamSource;
 
-public class ResourceLoader {
+public class ResourceLoader implements StreamSource{
+	private static final long serialVersionUID = 7205541400825272604L;
+
 	private final static Logger LOG = LoggerFactory
 			.getLogger(ResourceLoader.class);
 

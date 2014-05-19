@@ -150,17 +150,20 @@ public class StudentInformationView extends VerticalLayout implements View,
 		studentsTable = new Table() {
 			private static final long serialVersionUID = 1885098955441122118L;
 
+			final SimpleDateFormat df = new SimpleDateFormat();
+			
+			{
+				df.applyPattern("dd.MM.yyyy");
+			}
+
 			@Override
 			protected String formatPropertyValue(Object rowId, Object colId,
 					Property<?> property) {
 				if (colId.equals(TABLE_BIRTHDAY)) {
-					SimpleDateFormat df = new SimpleDateFormat();
-					df.applyPattern("dd.MM.yyyy");
 					if (property.getValue() == null) {
 						return null;
 					} else {
-						return df
-								.format(((Date) property.getValue()).getTime());
+						return df.format(((Date) property.getValue()).getTime());
 					}
 				}
 				return super.formatPropertyValue(rowId, colId, property);

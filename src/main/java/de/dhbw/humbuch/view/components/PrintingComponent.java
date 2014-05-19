@@ -19,11 +19,17 @@ public class PrintingComponent extends CustomComponent {
 
 	private StreamResource streamResource;
 	private String windowTitle;
+	private MIMEType mimeType;
 	private Window window;
 
 	public PrintingComponent(StreamResource streamResource, String windowTitle) {
+		this(streamResource, windowTitle, MIMEType.PDF);
+	}
+
+	public PrintingComponent(StreamResource streamResource, String windowTitle, MIMEType mimeType) {
 		this.streamResource = streamResource;
 		this.windowTitle = windowTitle;
+		this.mimeType = mimeType;
 		showWindow();
 	}
 
@@ -40,11 +46,27 @@ public class PrintingComponent extends CustomComponent {
 		BrowserFrame embedded = new BrowserFrame();
 		embedded.setWidth("100%");
 		embedded.setHeight("99%");
-		// Set the right mime type
-		streamResource.setMIMEType("application/pdf");
+		// Set the right MIME type
+		streamResource.setMIMEType(mimeType.toString());
 
 		embedded.setSource(streamResource);
 		window.setContent(embedded);
 		UI.getCurrent().addWindow(window);
+	}
+	
+	public enum MIMEType {
+		PDF("application/pdf"),
+		HTML("text/html");
+		
+		private String value;
+		
+		private MIMEType(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
 	}
 }
