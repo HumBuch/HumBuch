@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Rückgabe</title>
-	</head>
-	<body>
-		<h1>Wobei benötigen Sie Hilfe?</h1>
-		<div name=inhalt>
-			<h2>Grundlagen / Seitenaufbau</h2>
-			<a href='#tab'><h3>Wozu dient die Tabelle?</h3></a> <a href='#schFil'><h3>Wie kann ich nach Schülern suchen?</h3></a>
-			<h2>Funktionen</h2>
-			<a href='#matErh'><h3>Wie kann ich, die in der Tabelleaufgeführten, Lehrmittel einfordern?</h3></a>
-			<a href='#listDru'><h3>Wie drucke ich Schülerlisten?</h3></a>
-			<a href='#manAus'><h3>Wie kann ich Lehrmittel manuell zurückgeben?</h3></a>
-		</div><hr>
+<head>
+<meta charset="utf-8">
+<title>Rückgabe</title>
+</head>
+<body>
+	<h1>Wobei benötigen Sie Hilfe?</h1>
+	<div>
+		<ul class="help-summary">
+			<li><a href='#tab'>Wozu dient die Tabelle?</a></li>
+			<li><a href='#schFil'>Wie kann ich nach Schülern suchen?</a></li>
+			<li><a href='#matErh'>Wie kann ich zurückgegebene Lehrmittel einpflegen?</a></li>
+			<li><a href='#listDru'>Wie drucke ich Schülerlisten?</a></li>
+			<li><a href='#manAus'>Wie kann ich Lehrmittel manuell zurückgeben?</a></li>
+		</ul>
+	</div>
+
 	
-		<h1>Grundlagen / Seitenaufbau</h1>
-		<img src="./VAADIN/help/screenshots/return.jpg">
-		<br>Abbildung 1
-	
-		<h2><a name=tab>Tabelle (Daten Auswählen / Ausgeliehen bis)</a></h2>
-		Diese Tabelle hilft Ihnen dabei Lehrmittel fristgerecht von Schülern
-		einzufordern. Hierzu stellt diese automatisch alle Klassen sowie
-		Schüler und deren zurückzugebende Bücher bereit. Durch das Klicken auf
-		ein Dreieck können Sie die zu Klassen zugehörigen Schüler, sowie die
-		von Schülern zurückzugebenden Bücher einsehen (siehe Abbildung 1 -
-		Punkt 1). Durch die Auswahl von Klasse/n, Schüler/n oder Bücher/n
-		können die Funktionen "Material zurückgeben" (Abbildung 1 - Punkt 3)
-		und "Schülerlisten drucken" (Abbildung 1 - Punkt 5) ausgeführt werden.
-		<hr>
-	
-		<h2><a name=schFil>Schüler Filtern</a></h2>
-		Dieses Textfeld (abbildung 1 - Punkt 2) dient zur Erleichterung bei der
-		Auffindung spezieller Schüler in der Tabelle. Durch die Eingabe eines
-		Namens, wird die Auswahlliste der Schüler auf diesen gefiltert.
-	
-		<h1>Funktionen</h1>
-		
-		<h2><a name=matErh>Material zurückgeben</a></h2>
-		Mithilfe dieser Funktion (Abbildung 1 - Punkt 3) bestätigen Sie die
-		erfolgreiche Rückgabe von Lehrmitteln. Um diese Funktion ausführen zu
-		können, müssen Sie zunächst Lehrmittel oder Schüler in der Spalte
-		"Daten auswählen" auswählen (Abbildung 1 - Punkt 1). Nach Ausführung
-		dieser Funktion werden automatisch von Schülern zurückerhaltene
-		Lehrmittel aus der Tabelle entfernt. Wenn ein Schüler alle Lehrmittel
-		zurückgegeben hat wird dieser ebenfalls entfernt.
-		<hr>
-	
-		<h2><a name=listDru>Schülerliste Drucken</a></h2>
-		Durch das Anklicken dieser Funktion wird eine druckbare PDF-Datei
-		erstellt. Diese dient als Bestätigungsliste, mit der die jeweilige
-		Lehrkraft die Bücherrückgabe validieren kann.
-	
-		<h2><a name=manAus>Manuelle Rückgabe</a></h2>
-		Die manuelle Rückgabe ermöglicht es Lehrmittel abweichend vom regulären
-		System zurückzugeben. Hierzu muss zunächst ein Schüler ausgewählt
-		werden, dem dann Lehrmittel zu bestimmen Fristen zugewiesen werden
-		können. Das Feld "Materialien durchsuchen" (Abbildung 2 - Punkt 0),
-		hilft dabei Materialien in der Tabelle (Abbildung 2 - Punkt 1) zu
-		finden. Um ein Lehrmittel auszuwählen, muss dieses lediglich in der
-		Tabelle (Abbildung 2 - Punkt 1) angeklickt werden. Nach der Auswahl der
-		Lehrmittel, können diese mithilfe des Buttons (Abbildung 2- Punkt 2)
-		zurückgegeben werden.
-		<br><img src="./VAADIN/help/screenshots/manualreturn.jpg">
-		<br> Abbildung 2
-	</body>
+	<h2>
+		<a id=tab>Wozu dient die Tabelle?</a>
+	</h2>
+	<p>Diese Tabelle hilft Ihnen dabei Lehrmittel fristgerecht von Schülern
+	einzufordern. Hierzu stellt diese automatisch alle Klassen sowie
+	Schüler und deren zurückzugebende Bücher bereit. Durch das Klicken auf
+	ein Dreieck können Sie die zu Klassen zugehörigen Schüler, sowie die
+	von Schülern zurückzugebenden Bücher einsehen (siehe Abbildung 1 -
+	Punkt 1). Durch die Auswahl von Klasse/n, Schüler/n oder Bücher/n
+	können die Funktionen "Material zurückgeben" (Abbildung 1 - Punkt 3)
+	und "Schülerlisten drucken" (Abbildung 1 - Punkt 5) ausgeführt werden.</p>
+	<dl>
+		<dd>Abbildung 1: Rückgabetabelle</dd>
+		<dt><img src="./VAADIN/help/screenshots/return.jpg"></dt>
+	</dl>
+
+	<h2>
+		<a id=schFil>Wie kann ich nach Schülern suchen?</a>
+	</h2>
+	<p>Dieses Textfeld (abbildung 1 - Punkt 2) dient zur Erleichterung bei der
+	Auffindung spezieller Schüler in der Tabelle. Durch die Eingabe eines
+	Namens, wird die Auswahlliste der Schüler auf diesen gefiltert.</p>
+
+
+	<h2>
+		<a id=matErh>Wie kann ich zurückgegebene Lehrmittel einpflegen?</a>
+	</h2>
+	<p>Mithilfe dieser Funktion (Abbildung 1 - Punkt 3) bestätigen Sie die
+	erfolgreiche Rückgabe von Lehrmitteln. Um diese Funktion ausführen zu
+	können, müssen Sie zunächst Lehrmittel oder Schüler in der Spalte
+	"Daten auswählen" auswählen (Abbildung 1 - Punkt 1). Nach Ausführung
+	dieser Funktion werden automatisch von Schülern zurückerhaltene
+	Lehrmittel aus der Tabelle entfernt. Wenn ein Schüler alle Lehrmittel
+	zurückgegeben hat wird dieser ebenfalls entfernt.</p>
+
+	<h2>
+		<a id=listDru>Wie drucke ich Schülerlisten?</a>
+	</h2>
+	<p>Durch das Anklicken dieser Funktion wird eine druckbare PDF-Datei
+	erstellt. Diese dient als Bestätigungsliste, mit der die jeweilige
+	Lehrkraft die Bücherrückgabe validieren kann.</p>
+
+	<h2>
+		<a id=manAus>Wie kann ich Lehrmittel manuell zurückgeben?</a>
+	</h2>
+	<p>Die manuelle Rückgabe ermöglicht es Lehrmittel abweichend vom regulären
+	System zurückzugeben. Hierzu muss zunächst ein Schüler ausgewählt
+	werden, dem dann Lehrmittel zu bestimmen Fristen zugewiesen werden
+	können. Das Feld "Materialien durchsuchen" (Abbildung 2 - Punkt 0),
+	hilft dabei Materialien in der Tabelle (Abbildung 2 - Punkt 1) zu
+	finden. Um ein Lehrmittel auszuwählen, muss dieses lediglich in der
+	Tabelle (Abbildung 2 - Punkt 1) angeklickt werden. Nach der Auswahl der
+	Lehrmittel, können diese mithilfe des Buttons (Abbildung 2- Punkt 2)
+	zurückgegeben werden.</p>
+	<dl>
+		<dd>Abbildung 2: Manuelle Rückgabe</dd>
+		<dt><img src="./VAADIN/help/screenshots/manualreturn.jpg"></dt>
+	</dl>
+</body>
 </html>

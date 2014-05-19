@@ -1,42 +1,82 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Einstellungen</title>
-	</head>
-	<body>
-		<h1>Wobei benötigen Sie Hilfe?</h1>
-		<div name=inhalt>
-			<a href='#ben'><h3>Benutzer</h3></a>
-			<a href='#lehrMit'><h3>Lehrmittelkategorien</h3></a>
-			<a href='#schulJa'><h3>Schuljahre</h3></a>
-			<a href='#weitEinst'><h3>Weitere Einstellungen</h3></a>
-		</div><hr>
-		
-		<h2><a name=ben>Benutzer</a></h2>
-		Mithilfe der Felder (Abbildung 1 - Punkt 1 und 2) und dem anschließenden anklicken des Speichern-Buttons (Abbildung 1 - Punkt 3), können Sie den Nutzernamen und die E-Mail-Adresse des Nutzers festlegen.
-		Außerdem kann in diesem Tab das Kennwort für den Log-In geändert werden (Abbildung 1 - Punkt 4).
-		<br><img src="./VAADIN/help/screenshots/settingsuser.jpg">
-		<br>Abbildung 1
-		
-		<h2><a name=lehrMit>Lehrmittelkategorien</a></h2>
-		In diesem Tab können Sie Lehrmittelkategorien erstellen (Abbildung 2 - Punkt 2), bearbeiten (Abbildung 2 - Punkt 4) und entfernen (Abbildung 2 - Punkt 3). 
-		Zum erstellen und bearbeiten von Lehrmitteln müssen Sie zuvor ein Lehrmittel aus der Tabelle (Abbildung 2 - Punkt 5) markieren. 
-		<br>
-		<img src="./VAADIN/help/screenshots/settingscategories.jpg">
-		<br>Abbildung 2
-		
-		<h2><a name=schulJa>Schuljahre</a></h2>
-		In diesem Tab können Sie Schuljahre erstellen (Abbildung 2 - Punkt 2), bearbeiten (Abbildung 2 - Punkt 4) und entfernen (Abbildung 2 - Punkt 3). 
-		Zum erstellen und bearbeiten von Lehrmitteln müssen Sie zuvor ein Lehrmittel aus der Tabelle (Abbildung 2 - Punkt 5) markieren.<br>
-		Diese Definition der Schuljahre ist notwendig, damit diese Software später automatisiert Listen von Klassen und Schülern erstellen kann, die Lehrmittel benötigen oder Lehrmittel nicht länger benötigen.
-		<br><img src="./VAADIN/help/screenshots/settingsschoolyears.jpg">
-		<br>Abbildung 3
-		
-		<h2><a name=weitEinst>Weitere Einstellungen</a></h2>
-		In diesem Tab können Sie durch markieren des Eintrags <em>dun_firstDunningDeadline</em> (siehe Abbildung 4 - Punkt 3) und darauf folgendes anklicken des Buttons Bearbeiten (siehe Abbildung 4 - Punkt 2)
-		eine eigene erste Mahnfrist festlegen. Die Mahnfrist für die zweite Mahnung definieren Sie auf die gleiche Art und Weise, hier müssen Sie lediglich den Eintrag <em>dun_secondDunningDeadline</em> markieren.
-		<br><img src="./VAADIN/help/screenshots/settingsmisc.jpg">
-		<br>Abbildung 4
-	</body>
+<head>
+<meta charset="utf-8">
+<title>Einstellungen</title>
+</head>
+<body>
+	<h1>Wobei benötigen Sie Hilfe?</h1>
+	<div>
+		<ul class="help-summary">
+			<li><a href='#ben'>Benutzer</a></li>
+			<li><a href='#lehrMit'>Lehrmittelkategorien</a></li>
+			<li><a href='#schulJa'>Schuljahre</a></li>
+			<li><a href='#weitEinst'>Weitere Einstellungen</a></li>
+		</ul>
+	</div>
+
+
+	<h2>
+		<a id=ben>Benutzer</a>
+	</h2>
+	<p>Mithilfe der Felder (Abbildung 1 - Punkt 1 und 2) und dem
+	anschließenden anklicken des Speichern-Buttons (Abbildung 1 - Punkt 3),
+	können Sie den Nutzernamen und die E-Mail-Adresse des Nutzers
+	festlegen. Außerdem kann in diesem Tab das Kennwort für den Log-In
+	geändert werden (Abbildung 1 - Punkt 4).</p>
+	<dl>
+		<dd>Abbildung 1: Nutzereinstellungen</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/settingsuser.jpg">
+		</dt>
+	</dl>
+
+	<h2>
+		<a id=lehrMit>Lehrmittelkategorien</a>
+	</h2>
+	<p>In diesem Tab können Sie Lehrmittelkategorien erstellen (Abbildung 2 -
+	Punkt 2), bearbeiten (Abbildung 2 - Punkt 4) und entfernen (Abbildung 2
+	- Punkt 3). Zum erstellen und bearbeiten von Lehrmitteln müssen Sie
+	zuvor ein Lehrmittel aus der Tabelle (Abbildung 2 - Punkt 5) markieren.</p>
+	<dl>
+		<dd>Abbildung 2: Verwalten von Lehrmittelkategorien</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/settingscategories.jpg">
+		</dt>
+	</dl>
+
+	<h2>
+		<a id=schulJa>Schuljahre</a>
+	</h2>
+	<p>In diesem Tab können Sie Schuljahre erstellen (Abbildung 2 - Punkt 2),
+	bearbeiten (Abbildung 2 - Punkt 4) und entfernen (Abbildung 2 - Punkt
+	3). Zum erstellen und bearbeiten von Lehrmitteln müssen Sie zuvor ein
+	Lehrmittel aus der Tabelle (Abbildung 2 - Punkt 5) markieren.
+	<br> Diese Definition der Schuljahre ist notwendig, damit diese
+	Software später automatisiert Listen von Klassen und Schülern erstellen
+	kann, die Lehrmittel benötigen oder Lehrmittel nicht länger benötigen.</p>
+	<dl>
+		<dd>Abbildung 3: Verwaltung von Schuljahren</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/settingsschoolyears.jpg">
+		</dt>
+	</dl>
+
+	<h2>
+		<a id=weitEinst>Weitere Einstellungen</a>
+	</h2>
+	<p>In diesem Tab können Sie durch markieren des Eintrags
+	<em>dun_firstDunningDeadline</em> (siehe Abbildung 4 - Punkt 3) und
+	darauf folgendes anklicken des Buttons Bearbeiten (siehe Abbildung 4 -
+	Punkt 2) eine eigene erste Mahnfrist festlegen. Die Mahnfrist für die
+	zweite Mahnung definieren Sie auf die gleiche Art und Weise, hier
+	müssen Sie lediglich den Eintrag <em>dun_secondDunningDeadline</em>
+	markieren.</p>
+	<dl>
+		<dd>Abbildung 4: Weitere Einstellungen</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/settingsmisc.jpg">
+		</dt>
+	</dl>
+</body>
 </html>
