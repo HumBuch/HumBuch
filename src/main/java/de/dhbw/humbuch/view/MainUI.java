@@ -12,11 +12,11 @@ import com.google.inject.Inject;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -26,7 +26,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import de.davherrmann.guice.vaadin.ScopedUI;
 import de.davherrmann.mvvm.BasicState;
@@ -38,6 +37,8 @@ import de.dhbw.humbuch.event.MessageEvent;
 import de.dhbw.humbuch.util.ResourceLoader;
 import de.dhbw.humbuch.view.components.ConfirmDialog;
 import de.dhbw.humbuch.view.components.Header;
+import de.dhbw.humbuch.view.components.PrintingComponent;
+import de.dhbw.humbuch.view.components.PrintingComponent.MIMEType;
 import de.dhbw.humbuch.view.components.Sidebar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
@@ -244,37 +245,12 @@ public class MainUI extends ScopedUI {
 		header.getHelpButton().addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Window window = createHelpWindow(new ResourceLoader("help/"
-						+ currentView.getClass().getSimpleName() + ".html")
-						.getContent());
-				getUI().addWindow(window);
-				getUI().setFocusedComponent(window);
+				String name = "help/" + currentView.getClass().getSimpleName() + ".html";
+				ResourceLoader res = new ResourceLoader(name);
+				StreamResource sr = new StreamResource(res, "Hilfe");
+				new PrintingComponent(sr, "Hilfe", MIMEType.HTML);
 			}
 		});
-	}
-
-	/**
-	 * Creates a {@link Window} with a specified help text
-	 * 
-	 * @param helpText
-	 *            {@link String} containing the help text
-	 * @return {@link Window}
-	 */
-	protected Window createHelpWindow(String helpText) {
-		HelpView helpView = new HelpView();
-		if (helpText != null) {
-			helpView.setHelpText(helpText);
-		}
-
-		Window window = new Window("Hilfe", helpView);
-		window.center();
-		window.setWidth("70%");
-		window.setHeight("80%");
-		window.setModal(true);
-		window.setResizable(false);
-		window.setCloseShortcut(KeyCode.ESCAPE, null);
-
-		return window;
 	}
 
 	/**
