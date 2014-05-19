@@ -591,16 +591,16 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 			public void buttonClick(ClickEvent event) {
 				commitFields(yearFields);
 				SchoolYear item = (SchoolYear) yearTable.getValue();
-				if (item.getYear().isEmpty()) {
+				if (item.getYear().isEmpty() || item.getFromDate() == null || item.getToDate() == null || item.getBeginSecondTerm() == null || item.getEndFirstTerm() == null) {
 					eventBus.post(new MessageEvent("Speichern nicht möglich!",
-							"Das Feld 'Schuljahr' darf nicht leer sein.", Type.WARNING));
-				} if (!item.getFromDate().before(item.getEndFirstTerm())) {
+							"Alle Felder müssen ausgefüllt sein.", Type.WARNING));
+				} else if (!item.getFromDate().before(item.getEndFirstTerm())) {
 					eventBus.post(new MessageEvent("Speichern nicht möglich!",
 							"Das Anfangsdatum muss vor dem Ende des 1. Halbjahres liegen.", Type.WARNING));
-				} if (!item.getEndFirstTerm().before(item.getBeginSecondTerm())) {
+				} else if (!item.getEndFirstTerm().before(item.getBeginSecondTerm())) {
 					eventBus.post(new MessageEvent("Speichern nicht möglich!",
 							"Das Enddatum des 1. Halbjahres muss vor dem Anfangsdatum des 2. Halbjahres liegen.", Type.WARNING));
-				} if (!item.getBeginSecondTerm().before(item.getToDate())) {
+				} else if (!item.getBeginSecondTerm().before(item.getToDate())) {
 					eventBus.post(new MessageEvent("Speichern nicht möglich!",
 							"Das Anfangsdatum des 2. Halbjahres muss vor dem Enddatum des gesamten Schuljahres liegen.", Type.WARNING));
 				} else {
