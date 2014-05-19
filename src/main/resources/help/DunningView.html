@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Mahnung</title>
-	</head>
-	<body>
-		<h1>Wobei benötigen Sie Hilfe?</h1>
-		
-		<div name=inhalt>
-			<h2>Grundlagen / Seitenaufbau</h2>
-			<a href='#tab'><h3>Wozu dient die Tabelle?</h3></a>
-			<h2>Funktionen</h2>
-			<a href='#mahnAnz'><h3>Wie kann ich eine Mahnung anzeigen?</h3></a>
-			<a href='#mahnVers'><h3>Wie markiere ich eine Mahnung als versendet?</h3></a>
-		</div><hr>
-	
-		<h1>Grundlagen / Seitenaufbau</h1>
-		
-		<h2><a name=tab>Tabelle</a></h2>
-		Diese Tabelle zeigt automatisch Schüler, die bei der Rückgabe ihrer Lehrmittel in Verzug sind.
-		Die Fristen für die Typen "erste Mahnung" und "zweite Mahnung" können hierbei in den Einstellungen festgelegt werden.
-		
-		<h1>Funktionen</h1>
-		
-		<h2><a name=mahnAnz>Mahnung anzeigen</a></h2>
-		Die Funktion "Mahnung anzeigen" erzeugt je nach Verzugstyp eine erste oder eine zweite druckbare Mahnung im PDF-Format.
-		Diese richtet sich an den jeweiligen in der Tabelle ausgewählten Schüler oder (bei der 2. Mahnung) an dessen Eltern.
-		
-		<h2><a name=mahnVers>Mahnung als versendet markieren</a></h2>
-		Durch das Ausführen dieser Funktion wird der erfolgreiche Versand einer Mahnung bestätigt. Hierdurch wird der entsprechende Schüler aus der Tabelle entfernt.
-		Wenn es sich hierbei um den Versand der ersten Mahnung gehandelt hat, so beginnt ab diesem Zeitpunkt die Frist bis zur Anzeige der zweiten Mahnung.
-	</body>
+<head>
+<meta charset="utf-8">
+<title>Mahnung</title>
+</head>
+<body>
+	<h1>Wobei benötigen Sie Hilfe?</h1>
+
+	<div>
+		<ul class="help-summary">
+			<li><a href="#tab">Wozu dient die Tabelle?</a></li>
+			<li><a href="#mahnAnz">Wie kann ich eine Mahnung anzeigen?</a></li>
+			<li><a href="#mahnVers">Wie markiere ich eine Mahnung als versendet?</a></li>
+		</ul>
+	</div>
+
+
+	<h2>
+		<a id=tab>Wozu dient die Tabelle?</a>
+	</h2>
+	<p>Diese Tabelle zeigt automatisch Schüler, die bei der Rückgabe ihrer
+	Lehrmittel in Verzug sind. Die Fristen für die Typen "erste Mahnung"
+	und "zweite Mahnung" können hierbei in den Einstellungen festgelegt
+	werden.</p>
+
+	<h2>
+		<a id=mahnAnz>Wie kann ich eine Mahnung anzeigen?</a>
+	</h2>
+	<p>Die Funktion "Mahnung anzeigen" erzeugt je nach Verzugstyp eine erste
+	oder eine zweite druckbare Mahnung im PDF-Format. Diese richtet sich an
+	den jeweiligen in der Tabelle ausgewählten Schüler oder (bei der 2.
+	Mahnung) an dessen Eltern.</p>
+
+	<h2>
+		<a id=mahnVers>Wie markiere ich eine Mahnung als versendet?</a>
+	</h2>
+	<p>Durch das Ausführen dieser Funktion wird der erfolgreiche
+		Versand einer Mahnung bestätigt. Hierdurch wird der entsprechende
+		Schüler aus der Tabelle entfernt. Wenn es sich hierbei um den Versand
+		der ersten Mahnung gehandelt hat, so beginnt ab diesem Zeitpunkt die
+		Frist bis zur Anzeige der zweiten Mahnung.</p>
+</body>
 </html>
