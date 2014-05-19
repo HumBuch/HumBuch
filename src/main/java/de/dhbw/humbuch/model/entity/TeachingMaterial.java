@@ -51,8 +51,8 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 	private double price;
 	private String comment;
 	
-	private Integer fromGrade;
-	private Integer toGrade;
+	private int fromGrade;
+	private int toGrade;
 	
 	@Enumerated(EnumType.ORDINAL)
 	private Term fromTerm = Term.FIRST;
@@ -128,19 +128,19 @@ public class TeachingMaterial implements de.dhbw.humbuch.model.entity.Entity, Se
 		this.comment = comment;
 	}
 
-	public Integer getFromGrade() {
+	public int getFromGrade() {
 		return fromGrade;
 	}
 
-	public void setFromGrade(Integer fromGrade) {
+	public void setFromGrade(int fromGrade) {
 		this.fromGrade = fromGrade;
 	}
 
-	public Integer getToGrade() {
+	public int getToGrade() {
 		return toGrade;
 	}
 
-	public void setToGrade(Integer toGrade) {
+	public void setToGrade(int toGrade) {
 		this.toGrade = toGrade;
 	}
 
