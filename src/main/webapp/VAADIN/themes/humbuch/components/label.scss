@@ -14,6 +14,15 @@
         /*         color: #404346; */
         }
         
+        .v-label h1 {
+        		font-size: 36px;
+				line-height: 1;
+				font-weight: 300;
+				-webkit-font-smoothing: antialiased;
+				letter-spacing: -0.05em;
+				padding: 10px 1em 0.5em 0px;
+        }
+        
         .v-label.h2 {
                 color: #404346;
                 font-size: 22px;
@@ -21,6 +30,20 @@
                 font-weight: normal;
                 padding: .5em 0;
                 -webkit-font-smoothing: antialiased;
+        }
+        
+        .v-label h2 {
+       			margin: 50px 0px 10px;
+				padding: 4px 0px;
+				font-weight: 300;
+				text-transform: uppercase;
+				border-bottom: 1px dashed #5a6066;
+				font-size: 13pt;
+        }
+        
+        .v-label h2 a, .v-label h2 a:hover, .v-label h2 a:active {
+        	text-decoration: none;
+        	color: inherit;
         }
         
         .v-label.light {
@@ -31,6 +54,15 @@
                 font-weight: bold;
                 text-transform: uppercase;
                 color: #349aff;
+        }
+        
+        .v-label a {
+        	text-decoration: none;
+        	color: #347EA3;
+        }
+        
+		.v-label a:hover, v-label a:active {
+        	text-decoration: underline;
         }
 
 }

@@ -1,60 +1,100 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Ausleihe-Hilfe</title>
-	</head>
-	<body>
-		<h1>Wobei benötigen Sie Hilfe?</h1>
-		
-		<div name=inhalt>
-			<h2>Grundlagen / Seitenaufbau</h2>
-			<a href='#tab'><h3>Wozu dient die Tabelle?</h3></a>
-			<a href='#schFil'><h3>Wie kann ich nach Schülern suchen?</h3></a>
-			<h2>Funktionen</h2>
-			<a href='#matErh'><h3>Wie kann ich, die in der Tabelle aufgeführten, Lehrmittel verleihen?</h3></a>
-			<a href='#listDru'><h3>Wie drucke ich Klassen oder Schülerlisten?</h3></a>
-			<a href='#manAus'><h3>Wie kann ich Lehrmittel manuell verleihen?</h3></a>
-		</div><hr>
-		
-		<h1>Grundlagen / Seitenufbau</h1>
-		<img src="./VAADIN/help/screenshots/lending.jpg">
-		<br>Abbildung 1
-		
-		<h2><a name=tab>Tabelle (Daten Auswählen / Ausgeliehen bis)</a></h2>
-		Mithilfe dieser Tabelle kann eingesehen werden, welche Bücher wie lange für einen jeweiligen Schüler zu verleihen sind.
-		Durch das Klicken auf ein Dreieck können Sublisten von Klassen sowie von Schülern eingeblendet werden (Abbildung 1 - Punkt 1).
-		Bei ersterem werden die Schüler je Klasse angezeigt und bei zweiterem die Bücher je Schüler. 
-		Durch die Auswahl von  Klasse/n, Schüler/n oder Bücher/n können zudem
-		die Funktionen "Material erhalten" (Abbildung 1 - Punkt 3) und "Listen drucken" (Abbildung 1 - Punkt 5) ausgeführt werden.
+<head>
+<meta charset="utf-8">
+<title>Ausleihe-Hilfe</title>
+</head>
+<body>
+	<h1>Wobei benötigen Sie Hilfe?</h1>
 
-		<h2><a name=schFil>Schüler Filtern</a></h2>
-		Dieses Textfeld (Abbildung 1 - Punkt 2) dient zur Erleichterung bei der Auffindung spezieller Schüler in der Tabelle.
-		Durch die Eingabe eines Namens, wird die Auswahlliste der Schüler auf diesen gefiltert. 
+	<div>
+		<ul class="help-summary">
+			<li><a href="#tab">Wozu dient die Tabelle?</a></li>
+			<li><a href="#schFil">Wie kann ich nach Schülern suchen?</a></li>
+			<li><a href="#matErh">Wie kann ich die in der Tabelle aufgeführten Lehrmittel verleihen?</a></li>
+			<li><a href="#listDru">Wie drucke ich Klassen oder Schülerlisten?</a></li>
+			<li><a href="#manAus">Wie kann ich Lehrmittel manuell verleihen?</a></li>
+		</ul>
+	</div>
+
+	<h2>
+		<a id="tab">Wozu dient die Tabelle?</a>
+	</h2>
+	<p>Mithilfe der Tabelle kann eingesehen werden, welche Bücher wie
+		lange für einen jeweiligen Schüler zu verleihen sind. Durch das
+		Klicken auf ein Dreieck können Sublisten von Klassen sowie von
+		Schülern eingeblendet werden (Abbildung 1 - Punkt 1). Bei ersterem
+		werden die Schüler je Klasse angezeigt und bei zweiterem die Bücher je
+		Schüler. Durch die Auswahl von Klasse/n, Schüler/n oder Bücher/n
+		können zudem die Funktionen "Material erhalten" (Abbildung 1 - Punkt
+		3) und "Listen drucken" (Abbildung 1 - Punkt 5) ausgeführt werden.</p>
+	<dl>
+		<dd>Abbildung 1: Ausleihe von Lehrmitteln</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/lending.jpg">
+		</dt>
+	</dl>
+
+	<h2>
+		<a id="schFil">Wie kann ich nach Schülern suchen?</a>
+	</h2>
+	<p>Das Textfeld (Abbildung 1 - Punkt 2) dient zur Erleichterung bei
+		der Auffindung spezieller Schüler in der Tabelle. Durch die Eingabe
+		eines Namens, wird die Auswahlliste der Schüler auf diesen gefiltert.</p>
+
+	<h2>
+		<a id="matErh">Wie kann ich die in der Tabelle aufgeführten
+			Lehrmittel verleihen?</a>
+	</h2>
+	<p>Mithilfe des Buttons "Material erhalten" bestätigen Sie die
+		Vergabe von Lehrmitteln. Um diese Funktion ausführen zu können, müssen
+		Sie zunächst Lehrmittel oder Schüler in der Spalte "Daten auswählen"
+		(Abbildung 1 - Punkt 1) auswählen. Nach Ausführung dieser Funktion
+		werden automatisch von Schülern erhaltene Lehrmittel aus der Tabelle
+		entfernt. Wenn ein Schüler alle Lehrmittel erhalten hat wird dieser
+		ebenfalls entfernt.</p>
+
+	<h2>
+		<a id="listDru">Wie drucke ich Klassen oder Schülerlisten?</a>
+	</h2>
+	<p>
+		Durch das Anklicken dieses Buttons (Abbildung 1 - Punkt 5) öffnet sich
+		ein Submenü, mit den Auswahlmöglichkeiten "Klassenliste" und
+		"Schülerliste". Durch die Auswahl einer der beiden Listenarten wird
+		eine durckbare PDF-Datei erstellt. Die Klassenliste soll Sie hierbei
+		bei der Vorbereitung einer Bücherausgabe unterstützen, indem sie Ihnen
+		alle für eine Klasse benötigten Bücher aufzeigt. Die Schülerliste
+		dient als Bestötigungsliste, auf der der jeweilige Schüler mit seiner
+		Unterschrift den Erhalt eines Lehrmittels bestötigt. <br> Zum
+		drucken von Klassenlisten müssen zuvor, in der Spalte "Daten
+		auswählen", Klassen ausgewählt werden. Eine hieraus resultierende
+		PDF-Datei zeigt die Anzahl der Bücher die pro gewählter Klasse
+		auszugeben sind. Zum drucken von Schülerlisten können Schüler oder
+		Klassen ausgewählt werden. Eine resultierende PDF-Datei zeigt hier die
+		benötigeten Bücher je Schüler.
+	</p>
+
+	<h2>
+		<a id="manAus">Wie kann ich Lehrmittel manuell verleihen?</a>
+	</h2>
+	<p>Die manuelle Ausleihe ermöglicht es Lehrmittel abweichend vom
+		regulären System zu verleihen. Hierzu muss zunächst ein Schüler
+		ausgewählt werden, dem dann Lehrmittel zu bestimmen Fristen zugewiesen
+		werden können. Das Feld "Materialien durchsuchen", hilft dabei
+		Materialien in der Liste zu finden (Abbildung 2 - Punkt 0). Um dem
+		ausgewählten Schüler ein Lehrmittel zuzuweisen, muss dieses durch
+		Klick auf dessen Namen markiert werden (Abbildung 2 - Punkt 1). Durch
+		Klick des Kalendersymbols (siehe Abbildung 2 - Punkt 2) kann
+		zusätzlich die jeweilige Verleihdauer eines Lehrmittels festgelegt
+		werden. Nach einstellen des Datums und der Auswahl der Lehrmittel,
+		können diese mithilfe des Buttons "Ausleihen" verliehen werden (siehe
+		Abbildung 2 - Punkt 3).</p>
 		
-		<h1>Funktionen</h1>
-		
-		<h2><a name=matErh>Material erhalten</a></h2>
-		Mithilfe dieser Funktion bestätigen Sie die Vergabe von Lehrmitteln. Um diese Funktion ausführen zu können, müssen Sie zunächst
-		Lehrmittel oder Schüler in der Spalte "Daten auswählen" (Abbildung 1 - Punkt 1) auswählen. 
-		Nach Ausführung dieser Funktion werden automatisch von Schülern erhaltene Lehrmittel aus der Tabelle entfernt.
-		Wenn ein Schüler alle Lehrmittel erhalten hat wird dieser ebenfalls entfernt.<hr>
-		
-		<h2><a name=listDru>Listen Drucken</a></h2>
-		Durch das Anklicken dieses Buttons (Abbildung 1 - Punkt 5) öffnet sich ein Submenü, mit den Auswahlmöglichkeiten "Klassenliste" und "Schülerliste". Durch die Auswahl einer der beiden Listenarten wird eine durckbare PDF-Datei erstellt.
-		Die Klassenliste soll Sie hierbei bei der Vorbereitung einer Bücherausgabe unterstützen, indem sie Ihnen alle für eine Klasse benötigten Bücher aufzeigt. 
-		Die Schülerliste dient als Bestötigungsliste, auf der der jeweilige Schüler mit seiner Unterschrift den Erhalt eines Lehrmittels bestötigt.<br>
-		Zum drucken von Klassenlisten müssen zuvor, in der Spalte "Daten auswählen", Klassen ausgewählt werden. Eine hieraus resultierende PDF-Datei zeigt die Anzahl der Bücher die pro gewählter Klasse auszugeben sind. 
-		Zum drucken von Schülerlisten können Schüler oder Klassen ausgewählt werden. Eine resultierende PDF-Datei zeigt hier die benötigeten Bücher je Schüler.<hr>
-		
-		<h2><a name=manAus>Manuelle Ausleihe</a></h2>	
-		Die manuelle Ausleihe ermöglicht es Lehrmittel abweichend vom regulären System zu verleihen. 
-		Hierzu muss zunächst ein Schüler ausgewählt werden, dem dann Lehrmittel zu bestimmen Fristen zugewiesen werden können.
-		Das Feld "Materialien durchsuchen", hilft dabei Materialien in der Liste zu finden (Abbildung 2 - Punkt 0).  
-		Um dem ausgewählten Schüler ein Lehrmittel zuzuweisen, muss dieses durch Klick auf dessen Namen markiert werden (Abbildung 2 - Punkt 1).
-		Durch Klick des Kalendersymbols (siehe Abbildung 2 - Punkt 2) kann zusätzlich die jeweilige Verleihdauer eines Lehrmittels festgelegt werden. 
-		Nach einstellen des Datums und der Auswahl der Lehrmittel, können diese mithilfe des Buttons "Ausleihen" verliehen werden (siehe Abbildung 2 - Punkt 3).
-		<br><img src="./VAADIN/help/screenshots/manuallending.jpg">
-		<br>Abbildung 2		
-	</body>
+	<dl>
+		<dd>Abbildung 2: Manuelle Ausleihe von Lehrmitteln</dd>
+		<dt>
+			<img src="./VAADIN/help/screenshots/manuallending.jpg">
+		</dt>
+	</dl>
+</body>
 </html>

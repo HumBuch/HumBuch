@@ -61,8 +61,10 @@ import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.StandardCategory;
 import de.dhbw.humbuch.viewmodel.TeachingMaterialViewModel.TeachingMaterials;
 
 /**
+ * {@link View} to manage the lendable teaching materials.
  * 
  * @author Martin Wentzel
+ * @author Johannes Idelhauser
  * 
  */
 public class TeachingMaterialView extends VerticalLayout implements View, ViewInformation {
@@ -364,22 +366,28 @@ public class TeachingMaterialView extends VerticalLayout implements View, ViewIn
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				try {
-					if (txtIdentNr.getValue() == null) {
-						eventBus.post(new MessageEvent("Bitte geben Sie eine ISBN an."));
-						return;
-					}
-					Book book = BookLookup.lookup(txtIdentNr.getValue());
-					txtTmName.setValue(book.title);
-					txtProducer.setValue(book.publisher);
-					String commentText = "Autor(en): " + book.author;
-					if (textAreaComment.getValue() != null && !textAreaComment.getValue().isEmpty()) {
-						commentText += '\n' + textAreaComment.getValue();
-					}
-					textAreaComment.setValue(commentText);
-				} catch (BookNotFoundException e) {
-					eventBus.post(new MessageEvent("Es konnte kein Buch zu der ISBN gefunden werden."));
+				//Check if empty
+				if (txtIdentNr.getValue() == null) {
+					eventBus.post(new MessageEvent("Bitte geben Sie eine ISBN an."));
+					return;
 				}
+				
+				Runnable confirmRunnable = new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Book book = BookLookup.lookup(txtIdentNr.getValue());
+							txtTmName.setValue(book.title);
+							txtProducer.setValue(book.publisher);
+							textAreaComment.setValue(book.publisher);
+						} catch (BookNotFoundException e) {
+							eventBus.post(new MessageEvent("Es konnte kein Buch zu der ISBN gefunden werden."));
+						}
+					}
+				};
+				eventBus.post(new ConfirmEvent.Builder("Alle bereits eingegebenen Daten des Lehrmittels werden überschrieben.<br>Wollen Sie wirklich fortfahren?")
+					.caption("Daten werden überschrieben").confirmRunnable(confirmRunnable).build());
+
 			}			
 		});
 		

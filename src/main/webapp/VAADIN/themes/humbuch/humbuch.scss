@@ -397,4 +397,32 @@ $main-color: #329d90;
                 }
         }
 
+        /********* Help window *********/
+        
+        .help-view {
+        	background: rgb(244,244,244);
+        }
+
+        .help-view img {
+        	max-width: 100%;
+        }
+        
+        .help-view .help-summary {
+        	padding: 0px;
+        	list-style-type: none;
+        	margin-bottom: 120px;
+        }
+
+		.help-view dl {
+			float: left;
+			margin: 10px 0px 10px 0;
+			max-width: 100%;
+		}
+		
+		.help-view dd {
+			margin: 0px 0px 5px 0px;
+			font-size: 90%;
+			font-style: italic;
+			max-width: 100%;
+		}
 }

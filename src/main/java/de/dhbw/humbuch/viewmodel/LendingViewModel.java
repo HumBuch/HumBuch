@@ -30,6 +30,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.SchoolYear.Term;
 import de.dhbw.humbuch.model.entity.Student;
+import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
@@ -265,8 +266,9 @@ public class LendingViewModel {
 					List<TeachingMaterial> teachingMaterialsOfStudent = new ArrayList<>(student.getTeachingMaterials());
 					List<TeachingMaterial> toLend = new ArrayList<TeachingMaterial>();
 
+					Set<Subject> studentsProfile = student.getProfile();
 					for (TeachingMaterial teachingMaterial : teachingMaterials) {
-						if (student.getProfile().containsAll(teachingMaterial.getProfile())
+						if (studentsProfile.containsAll(teachingMaterial.getProfile())
 								&& !teachingMaterialsOfStudent.contains(teachingMaterial)) {
 							toLend.add(teachingMaterial);
 						}
