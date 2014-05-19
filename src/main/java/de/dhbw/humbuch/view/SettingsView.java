@@ -359,6 +359,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 			public void buttonClick(ClickEvent event) {
 				discardFields(categoryFields);
 				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, false);
+				categories.notifyAllListeners();
 			}
 		});
 
@@ -383,7 +384,6 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 				categoryTable.addItem(item);
 				categoryTable.select(item);
 				configureEditable(categoryTable, new Button[]{btnSave, btnCancel}, new Button[]{btnEdit}, categoryFields, true);
-				btnCancel.setVisible(false);
 			}
 		});
 
@@ -582,6 +582,7 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 			public void buttonClick(ClickEvent event) {
 				discardFields(yearFields);
 				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, false);
+				schoolYears.notifyAllListeners();
 			}
 		});
 
@@ -620,7 +621,6 @@ public class SettingsView extends VerticalLayout implements View, ViewInformatio
 				yearData.addBean(item);
 				yearTable.select(item);
 				configureEditable(yearTable, new Button[]{btnCancel, btnSave}, new Button[]{btnEdit}, yearFields, true);
-				btnCancel.setVisible(false);
 			}
 		});
 
