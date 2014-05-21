@@ -197,8 +197,8 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * */
 	public void setGradesAndStudentsWithMaterials(
 			Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		updateTable(newGradeAndStudentsWithMaterials);
 		this.gradeAndStudentsWithMaterials = newGradeAndStudentsWithMaterials;
+		rebuildTable(newGradeAndStudentsWithMaterials);
 	}
 
 	/**
@@ -238,8 +238,9 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	/**
-	 * Returns all currently selected borrowed materials of the StudentMaterialSelector or
-	 * an empty HashSet. Will never return <code>null</code>.
+	 * Returns all currently selected borrowed materials of the
+	 * StudentMaterialSelector or an empty HashSet. Will never return
+	 * <code>null</code>.
 	 * 
 	 * @return the currently selected materials of the StudentMaterialSelector
 	 *         or an empty HashSet if none are selected
@@ -332,7 +333,7 @@ public class StudentMaterialSelector extends CustomComponent {
 	 * should be visualized by the StudentMaterialSelector
 	 */
 	private void rebuildTable(
-			LinkedHashMap<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentWithMaterials) {
+			Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentWithMaterials) {
 		treeTableContent.removeAllItems();
 		allGradeCheckBoxes.clear();
 		allStudentCheckBoxes.clear();
@@ -356,142 +357,6 @@ public class StudentMaterialSelector extends CustomComponent {
 	}
 
 	/*
-	 * Updates the table using the provided new data structure and adds or
-	 * removes all differences between the (passed) new structure and currently
-	 * displayed structure. It does not set new structure as member variable of
-	 * the StudentMaterialSelector!
-	 * 
-	 * @param newGradeAndStudentsWithMaterials the new structure which should be
-	 * the basis for the displayed content in the StudentMaterialSelector
-	 */
-	private void updateTable(
-			Map<Grade, Map<Student, List<BorrowedMaterial>>> newGradeAndStudentsWithMaterials) {
-		if (newGradeAndStudentsWithMaterials == null
-				|| gradeAndStudentsWithMaterials == null) {
-			return;
-		}
-
-		ArrayList<Grade> newGrades = new ArrayList<Grade>(
-				newGradeAndStudentsWithMaterials.keySet());
-		ArrayList<Student> newStudents = getAllStudentsFromStructure(newGradeAndStudentsWithMaterials);
-		ArrayList<BorrowedMaterial> newMaterials = getAllMaterialsFromStructure(newGradeAndStudentsWithMaterials);
-
-		ArrayList<Grade> oldGrades = new ArrayList<Grade>(
-				gradeAndStudentsWithMaterials.keySet());
-		ArrayList<Student> oldStudents = getAllStudentsFromStructure(gradeAndStudentsWithMaterials);
-		ArrayList<BorrowedMaterial> oldMaterials = getAllMaterialsFromStructure(gradeAndStudentsWithMaterials);
-
-		updateGradeNodes(oldGrades, newGrades);
-		updateStudentNodes(oldStudents, newStudents);
-		updateMaterialNodes(oldMaterials, newMaterials);
-
-		validateTableContent();
-		notifyObserver();
-	}
-
-	/*
-	 * Helper method used for updating the TreeTable. Updates all grades to be
-	 * displayed by the StudentMaterialSelector. When newGrades contains more
-	 * grade objects than oldGrades grades are added to the TreeTable. When
-	 * oldGrades contains more grade objects than newGrades grades are removed
-	 * from the TreeTable. When newGrades is equals to oldGrades nothing
-	 * happens. This method takes care of setting the corresponding listeners on
-	 * the added elements and manages all internally relevant member variables.
-	 * 
-	 * @param oldGrades an arraylist containing all currently showing grades
-	 * 
-	 * @param newGrades an arraylist containing all grades to be displayed after
-	 * calling this method
-	 */
-	private void updateGradeNodes(ArrayList<Grade> oldGrades,
-			ArrayList<Grade> newGrades) {
-		if (newGrades.size() > oldGrades.size()) {
-			newGrades.removeAll(oldGrades);
-			for (Grade grade : newGrades) {
-				addGradeToTree(grade);
-			}
-		} else if (newGrades.size() < oldGrades.size()) {
-			oldGrades.removeAll(newGrades);
-			for (Grade grade : oldGrades) {
-				for (CheckBox checkBoxGrade : allGradeCheckBoxes.keySet()) {
-					if (checkBoxGrade.getData().equals(grade)) {
-						treeTableContent.removeItem(allGradeCheckBoxes
-								.get(checkBoxGrade));
-
-						allGradeCheckBoxes.remove(checkBoxGrade);
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	 * Helper method used by update table. @see
-	 * StudentMaterialSelector.updateGradeNodes
-	 * 
-	 * @param oldStudents an arraylist containing all currently showing students
-	 * 
-	 * @param newStudents an arraylist containing all students to be displayed
-	 * after calling this method
-	 */
-	private void updateStudentNodes(ArrayList<Student> oldStudents,
-			ArrayList<Student> newStudents) {
-		if (newStudents.size() > oldStudents.size()) {
-			newStudents.removeAll(oldStudents);
-			for (Student student : newStudents) {
-				addStudentToTree(student);
-			}
-		} else if (newStudents.size() < oldStudents.size()) {
-			oldStudents.removeAll(newStudents);
-			for (Student student : oldStudents) {
-				for (CheckBox checkBoxStudent : allStudentCheckBoxes.keySet()) {
-					if (checkBoxStudent.getData().equals(student)) {
-						treeTableContent.removeItem(allStudentCheckBoxes
-								.get(checkBoxStudent));
-
-						allStudentCheckBoxes.remove(checkBoxStudent);
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	 * Helper method used by update table. @see
-	 * StudentMaterialSelector.updateGradeNodes
-	 * 
-	 * @param oldMaterials an arraylist containing all currently showing
-	 * materials
-	 * 
-	 * @param newMaterials an arraylist containing all materials to be displayed
-	 * after calling this method
-	 */
-	private void updateMaterialNodes(ArrayList<BorrowedMaterial> oldMaterials,
-			ArrayList<BorrowedMaterial> newMaterials) {
-		if (newMaterials.size() > oldMaterials.size()) {
-			newMaterials.removeAll(oldMaterials);
-			for (BorrowedMaterial material : newMaterials) {
-				addMaterialToTree(material);
-			}
-		} else if (newMaterials.size() < oldMaterials.size()) {
-			oldMaterials.removeAll(newMaterials);
-			for (BorrowedMaterial material : oldMaterials) {
-				for (CheckBox checkBoxMaterial : allMaterialCheckBoxes.keySet()) {
-					if (checkBoxMaterial.getData().equals(material)) {
-						treeTableContent.removeItem(allMaterialCheckBoxes
-								.get(checkBoxMaterial));
-
-						allMaterialCheckBoxes.remove(checkBoxMaterial);
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	/*
 	 * Helper method used to update or rebuild or the TreeTable. This method
 	 * takes care of adding the grade to the tree and storing all information in
 	 * the corresponding member variables.
@@ -504,7 +369,7 @@ public class StudentMaterialSelector extends CustomComponent {
 			return null;
 		}
 		if (checkBoxEverythingId == null
-				&& !treeTableContent.containsId(checkBoxEverythingId)) {
+				|| !treeTableContent.containsId(checkBoxEverythingId)) {
 			checkBoxEverythingId = treeTableContent.addItem(new Object[] {
 					checkBoxEverything, "" }, null);
 			treeTableContent.setCollapsed(checkBoxEverythingId, false);
@@ -652,49 +517,6 @@ public class StudentMaterialSelector extends CustomComponent {
 				treeTableContent.removeItem(studentItemId);
 			}
 		}
-	}
-
-	/*
-	 * Helper method which extracts all student objects from a data structure
-	 * 
-	 * @param structure the structure which all students object should be
-	 * extracted from
-	 * 
-	 * @return all students from the structure in an arraylist
-	 */
-	private ArrayList<Student> getAllStudentsFromStructure(
-			Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
-		ArrayList<Student> students = new ArrayList<Student>();
-		for (Grade grade : structure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = structure
-					.get(grade);
-			students.addAll(studentsWithMaterials.keySet());
-		}
-
-		return students;
-	}
-
-	/*
-	 * Helper method which extracts all borrowedmaterial objects from a data
-	 * structure
-	 * 
-	 * @param structure the structure which all borrowedmaterial objects should
-	 * be extracted from
-	 * 
-	 * @return all borrowedmaterials from the structure in an arraylist
-	 */
-	private ArrayList<BorrowedMaterial> getAllMaterialsFromStructure(
-			Map<Grade, Map<Student, List<BorrowedMaterial>>> structure) {
-		ArrayList<BorrowedMaterial> materials = new ArrayList<BorrowedMaterial>();
-		for (Grade grade : structure.keySet()) {
-			Map<Student, List<BorrowedMaterial>> studentsWithMaterials = structure
-					.get(grade);
-			for (Student student : studentsWithMaterials.keySet()) {
-				materials.addAll(studentsWithMaterials.get(student));
-			}
-		}
-
-		return materials;
 	}
 
 	/*
