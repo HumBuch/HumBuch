@@ -21,10 +21,9 @@ import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.entity.Entity;
 
 /**
- * @author davherrmann
- * 
  * Generic {@link DAO} implementation
  *
+ * @author davherrmann
  * @param <EntityType>
  */
 public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
