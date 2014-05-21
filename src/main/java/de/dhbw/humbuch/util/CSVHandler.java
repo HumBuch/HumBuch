@@ -28,6 +28,7 @@ import de.dhbw.humbuch.model.entity.Subject;
  * Checks cells for validity.
  * 
  * @author Benjamin Räthlein
+ * @author David Vitt
  *
  */
 public final class CSVHandler {
