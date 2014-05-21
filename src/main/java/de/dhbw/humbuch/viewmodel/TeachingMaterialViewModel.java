@@ -24,6 +24,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
  * @author David Vitt
+ * @author Martin Wentzel
  *
  */
 public class TeachingMaterialViewModel {
