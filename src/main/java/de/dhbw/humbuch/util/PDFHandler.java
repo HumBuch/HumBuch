@@ -47,6 +47,10 @@ public abstract class PDFHandler {
 		this.document = new Document();
 	}
 
+	/**
+	 * Create a document with the specified sizes and margins. This document is the internal representation 
+	 * of the PDF.
+	 */
 	public PDFHandler() {
 		this.document = new Document(new RectangleReadOnly(595,842), 30f, 30f, 25f, 35f);
 	}

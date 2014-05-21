@@ -10,7 +10,7 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
- * 
+ * Create a class list. It contains information about the amount of books belonging to a class.
  * @author Benjamin Räthlein
  *
  */
