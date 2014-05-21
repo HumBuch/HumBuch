@@ -232,7 +232,7 @@ public class SelectStudentPopupWindow extends Window {
 				LOG.error("Error occured while trying to start a new process. ManualProcessPopupWindow could not be created.");
 			}
 		} else {
-			// TODO: UI Notification
+			LOG.error("No valid student has been selected.");
 		}
 	}
 
