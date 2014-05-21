@@ -36,15 +36,19 @@ import de.dhbw.humbuch.view.StudentInformationView;
 
 
 /**
+ * Provides a {@link State} for all {@link Student}s.<br>
+ * Imports {@link Student}.
+ * 
  * @author David Vitt
+ * @author Benjamin Räthlein
+ * @author Johannes Idelhauser
  *
  */
 public class StudentInformationViewModel {
-	
 	private final static Logger LOG = LoggerFactory.getLogger(StudentInformationView.class);
 
-	public interface Students extends State<Collection<Student>> {}
 	public interface PersistStudents extends ActionHandler {}
+	public interface Students extends State<Collection<Student>> {}
 
 	@ProvidesState(Students.class)
 	public State<Collection<Student>> students = new BasicState<>(Collection.class);
@@ -82,6 +86,15 @@ public class StudentInformationViewModel {
 		students.set(daoStudent.findAll());
 	}
 
+	/**
+	 * Imports the given {@link List} of {@link Student}s.<br>
+	 * If {@code fullImport} is set, all {@link Student}s in the database will be deleted which aren't included in the {@link List}.
+	 * Existing {@link Student}s will be updated.<br>
+	 * If {@code fullImport} is not set, new {@link Student}s will be persisted and the existing {@link Student}s will be updated.  
+	 * 
+	 * @param csvStudents
+	 * @param fullImport
+	 */
 	@HandlesAction(PersistStudents.class)
 	public void persistStudents(List<Student> csvStudents, boolean fullImport) {
 
@@ -128,6 +141,12 @@ public class StudentInformationViewModel {
 		}
 	}
 
+	/**
+	 * Checks the encoding of the given {@link ByteArrayOutputStream}.
+	 * 
+	 * @param outputStream
+	 * @return The encoding of the {@link ByteArrayOutputStream}. If no encoding can be deteced: <code>null</code>. 
+	 */
 	private String checkEncoding(ByteArrayOutputStream outputStream) {
 		byte[] buf = new byte[4096];
 		ByteArrayInputStream bais;
@@ -158,6 +177,9 @@ public class StudentInformationViewModel {
 		return null;
 	}
 	
+	/**
+	 * @return {@link List} of {@link Student}s which have {@code received} {@link BorrowedMaterial}s with {@code isReturned == false}
+	 */
 	private List<Student> getStudentsWithUnreturnedBorrowedMaterials() {
 		Collection<BorrowedMaterial> unreturnedBorrowedMaterials = this.daoBorrowedMaterial.findAllWithCriteria(
 				Restrictions.eq("received", true),
@@ -171,6 +193,13 @@ public class StudentInformationViewModel {
 		return studentsWithUnreturnedBorrowedMaterials;
 	}
 	
+	/**
+	 * Deletes the given {@link Student}s if they don't have any {@code unreturned} {@link BorrowedMaterial}s left.<br>
+	 * A {@link Student} will be marked as {@code leavingSchool} if he has {@code unreturned} {@link BorrowedMaterial}s.
+	 * 
+	 * @param csvStudents
+	 * @return Number of deleted or updated {@link Student}s
+	 */
 	private int deleteReturnedMarkUnreturned(List<Student> csvStudents) {
 		List<Student> toDelete = new ArrayList<>(daoStudent.findAll());
 		toDelete.removeAll(csvStudents);
@@ -187,6 +216,13 @@ public class StudentInformationViewModel {
 		return toDelete.size();
 	}
 	
+	/**
+	 * Checks if one of the given {@link Student}s is already existing in the database.
+	 * In this case, the {@link Student} will be updated, otherwise it will be persisted. 
+	 * 
+	 * @param csvStudents
+	 * @return Number of updated or inserted {@link Student}s
+	 */
 	private int updateInsertStudents(List<Student> csvStudents) {
 		int changedStudents = 0;
 		for(Student student : csvStudents) {
