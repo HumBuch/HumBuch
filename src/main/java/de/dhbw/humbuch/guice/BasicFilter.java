@@ -11,9 +11,9 @@ import com.google.inject.servlet.GuiceFilter;
 import de.davherrmann.guice.vaadin.UIScopeModule;
 
 /**
- * @author davherrmann
- *
  * {@link Filter} for creating a Guice {@link Injector}
+ *
+ * @author davherrmann
  */
 public class BasicFilter extends GuiceFilter {
 

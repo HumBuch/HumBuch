@@ -11,9 +11,9 @@ import de.davherrmann.guice.vaadin.ScopedUIProvider;
 import de.davherrmann.guice.vaadin.UIKeyProvider;
 
 /**
- * @author davherrmann
- *
  * {@link Provider} for providing scoped {@link UI}s
+ *
+ * @author davherrmann
  */
 public class BasicProvider extends ScopedUIProvider {
 	private static final long serialVersionUID = -8975200838602301472L;

@@ -31,10 +31,9 @@ import de.dhbw.humbuch.viewmodel.Properties;
 
 
 /**
- * @author davherrmann
- *
  * Guice {@link Module} for binding classes to instances/providers in different scopes
  * 
+ * @author davherrmann
  */
 public class BasicModule extends ServletModule {
 
