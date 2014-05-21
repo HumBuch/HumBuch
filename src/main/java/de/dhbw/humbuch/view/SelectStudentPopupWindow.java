@@ -19,6 +19,12 @@ import com.vaadin.ui.Window;
 import de.dhbw.humbuch.model.entity.Student;
 import elemental.events.KeyboardEvent.KeyCode;
 
+/**
+ * Popup window to select a student. Normally appears before a manual process
+ * starts and no students has been selected.
+ * 
+ * @author Henning Muszynski
+ * */
 public class SelectStudentPopupWindow extends Window {
 
 	private static final long serialVersionUID = 4748807796813638121L;

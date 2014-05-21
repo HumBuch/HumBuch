@@ -62,6 +62,8 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
  * containing actions and a StudentMaterialSelector with all information about
  * the lent books of students. It is used to lent books and print student and
  * class lists.
+ * 
+ * @author Henning Muszynski
  * */
 public class LendingView extends VerticalLayout implements View,
 		ViewInformation, StudentMaterialSelectorObserver {
