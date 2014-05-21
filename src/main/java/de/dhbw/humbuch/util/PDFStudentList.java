@@ -22,6 +22,7 @@ import de.dhbw.humbuch.model.entity.Student;
  * Borrowed material list contains material that has to be borrowed by a student.
  * Return list contains material that has to be returned by a student.
  * Lending list contains material that has to be lent by a student.
+ * 
  * @author Benjamin Räthlein
  *
  */
