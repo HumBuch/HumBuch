@@ -89,6 +89,9 @@ public class DunningView extends VerticalLayout implements View,
 		bindViewModel(viewModelComposer, dunningViewModel);
 	}
 	
+	/**
+	 * Creates UI elements and initializes the View 
+	 */
 	private void init() {
 		HorizontalLayout head = new HorizontalLayout();
 		head.setWidth("100%");
@@ -154,6 +157,9 @@ public class DunningView extends VerticalLayout implements View,
 		addListener();
 	}
 
+	/**
+	 * Adds listeners to different UI elements as well as to states.
+	 */
 	private void addListener() {
 		
 		/*
