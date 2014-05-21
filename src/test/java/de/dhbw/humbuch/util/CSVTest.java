@@ -17,6 +17,12 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+/**
+ * Test reading a csv file and creating student objects of its data.
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public class CSVTest {
 	
 	@Test
