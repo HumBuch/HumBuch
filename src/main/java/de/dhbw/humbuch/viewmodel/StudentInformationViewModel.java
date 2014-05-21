@@ -195,9 +195,12 @@ public class StudentInformationViewModel {
 							Restrictions.like("grade", student.getGrade().getGrade()),
 							Restrictions.like("suffix", student.getGrade().getSuffix())
 						));
-			if (grade != null) {
-				student.setGrade(grade);
+
+			if (grade == null) {
+				grade = daoGrade.insert(student.getGrade());
 			}
+
+			student.setGrade(grade);
 			
 			Student existingStudent = daoStudent.find(student.getId());
 			if(existingStudent != null) {
