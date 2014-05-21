@@ -13,6 +13,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
+ * @author davherrmann
+ * 
  * Util class for looking up a book by its isbn
  * <ul>
  * <li>Standard ISBN API is isbndb.com</li>
