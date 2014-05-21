@@ -59,6 +59,10 @@ import de.dhbw.humbuch.viewmodel.SettingsViewModel.DoUpdateUser;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.DoPasswordChange;
 import de.dhbw.humbuch.viewmodel.SettingsViewModel.PasswordChangeStatus;
 
+/**
+ * Provides a {@link View} to manage the application settings.
+ * @author Johannes Idelhauser
+ */
 @SuppressWarnings({"rawtypes", "serial"})
 public class SettingsView extends VerticalLayout implements View, ViewInformation {
 	private static final long serialVersionUID = 410136048295487570L;

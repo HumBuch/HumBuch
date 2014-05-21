@@ -43,6 +43,17 @@ import de.dhbw.humbuch.view.components.Sidebar;
 import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 
+/**
+ * The main UI class responsible for building the main layout and providing a
+ * {@link Navigator} for navigating through {@link View}s. Additionally
+ * {@link ConfirmEvent}s and {@link MessageEvent}s are handled.
+ * 
+ * @author Johannes Idelhauser
+ * @author Henning Muszynski
+ * @author David Herrmann
+ * @author David Vitt
+ * @author Martin Junker
+ */
 @Theme("humbuch")
 @SuppressWarnings("serial")
 @Widgetset("com.vaadin.DefaultWidgetSet")
@@ -115,7 +126,6 @@ public class MainUI extends ScopedUI {
 
 		navigator.setErrorView(errorView);
 
-		// TODO: Hack! Check how to save String in enums
 		navigator.addView("", lendingView);
 		navigator.addView(LOGIN_VIEW, loginView);
 		navigator.addView(BOOK_MANAGEMENT_VIEW, bookManagementView);
@@ -178,6 +188,9 @@ public class MainUI extends ScopedUI {
 		setContent(root);
 	}
 
+	/**
+	 * Attaches all listeners to the components.
+	 */
 	private void attachListener() {
 
 		/**
@@ -242,6 +255,9 @@ public class MainUI extends ScopedUI {
 
 		});
 
+		/**
+		 * Adds the help HTML to the help button.
+		 */
 		header.getHelpButton().addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -281,6 +297,13 @@ public class MainUI extends ScopedUI {
 		Notification.show(messageEvent.caption, messageEvent.message, notificationType);
 	}
 
+	/**
+	 * Handles {@link ConfirmEvent}s showing a window with a cancel and a
+	 * confirm button.
+	 * 
+	 * @param confirmEvent
+	 *            {@link ConfirmEvent}s containing the confirmable information
+	 */
 	@Subscribe
 	public void handleConfirmEvent(final ConfirmEvent confirmEvent) {
 		ConfirmDialog.show(confirmEvent.caption, confirmEvent.message,
