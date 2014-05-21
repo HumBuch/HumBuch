@@ -23,6 +23,7 @@ import de.dhbw.humbuch.model.entity.Category;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
+ * Provides the {@link TeachingMaterialView} with data to display and manage teaching materials
  * @author David Vitt
  * @author Martin Wentzel
  *
@@ -79,16 +80,11 @@ public class TeachingMaterialViewModel {
 		updateTeachingMaterials();
 		updateCategories();
 	}
-	/**
-	 * Sets the teachingMaterials state
-	 */
+
 	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
-	/**
-	 * Sets the categories state. Moreover, to set a standard category, the category which name is similar to "Buch" is selected.
-	 */
 	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 		standardCategory.set(daoCategory.findSingleWithCriteria(Restrictions.ilike("name", "B%ch%")));
