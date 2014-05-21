@@ -1,6 +1,7 @@
 package de.dhbw.humbuch.guice;
 
 import com.google.common.eventbus.EventBus;
+import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
@@ -29,6 +30,12 @@ import de.dhbw.humbuch.viewmodel.LoginViewModel;
 import de.dhbw.humbuch.viewmodel.Properties;
 
 
+/**
+ * @author davherrmann
+ *
+ * Guice {@link Module} for binding classes to instances/providers in different scopes
+ * 
+ */
 public class BasicModule extends ServletModule {
 
 	@Override
