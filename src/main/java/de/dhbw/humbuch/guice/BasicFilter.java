@@ -1,5 +1,6 @@
 package de.dhbw.humbuch.guice;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
@@ -9,6 +10,11 @@ import com.google.inject.servlet.GuiceFilter;
 
 import de.davherrmann.guice.vaadin.UIScopeModule;
 
+/**
+ * {@link Filter} for creating a Guice {@link Injector}
+ *
+ * @author davherrmann
+ */
 public class BasicFilter extends GuiceFilter {
 
 	private static Injector INJECTOR;

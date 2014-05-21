@@ -15,6 +15,7 @@ import de.dhbw.humbuch.model.entity.Entity;
  * Data Access Object for inserting, updating, finding or deleting one or more
  * entities of the indicated type in a database
  * 
+ * @author davherrmann
  * @param <EntityType>
  *            type of the {@link Entity}s handled by the {@link DAO}
  */

@@ -20,6 +20,12 @@ import com.google.inject.persist.Transactional;
 import de.dhbw.humbuch.event.EntityUpdateEvent;
 import de.dhbw.humbuch.model.entity.Entity;
 
+/**
+ * Generic {@link DAO} implementation
+ *
+ * @author davherrmann
+ * @param <EntityType>
+ */
 public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 
 	private Provider<EntityManager> emProvider;
@@ -27,7 +33,6 @@ public class DAOImpl<EntityType extends Entity> implements DAO<EntityType> {
 	
 	private Class<EntityType> entityClass;
 
-	
 	@SuppressWarnings("unchecked")
 	@Inject
 	public DAOImpl(TypeLiteral<EntityType> entityType, Provider<EntityManager> emProvider, EventBus eventBus) {

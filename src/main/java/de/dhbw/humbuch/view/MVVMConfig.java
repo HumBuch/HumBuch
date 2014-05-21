@@ -20,6 +20,11 @@ import de.davherrmann.mvvm.StateChangeListener;
 import de.davherrmann.mvvm.StateChangeWrapper;
 import de.davherrmann.mvvm.ViewModelComposer;
 
+/**
+ * Configures the MVVM binding between Views and ViewModels during instantiation
+ * 
+ * @author davherrmann
+ */
 public class MVVMConfig {
 	
 	private final static Logger LOG = LoggerFactory

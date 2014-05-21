@@ -2,14 +2,23 @@ package de.dhbw.humbuch.guice;
 
 import java.util.Properties;
 
+import javax.servlet.Servlet;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.UIProvider;
 import com.vaadin.server.VaadinServlet;
 
+/**
+ * {@link Singleton} {@link Servlet} - initialise {@link DeploymentConfiguration} and 
+ * {@link UIProvider}
+ * 
+ * @author davherrmann
+ */
 @Singleton
 public class BasicServlet extends VaadinServlet implements
 		SessionInitListener {

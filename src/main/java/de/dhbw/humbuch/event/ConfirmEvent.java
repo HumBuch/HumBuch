@@ -2,6 +2,12 @@ package de.dhbw.humbuch.event;
 
 import java.util.UUID;
 
+/**
+ * Event for showing a confirm dialogue holding two runnables which can be called 
+ * for either of two events: cancel, confirm
+ * 
+ * @author David Vitt
+ */
 public class ConfirmEvent {
 	
 	public final UUID id;
@@ -16,22 +22,6 @@ public class ConfirmEvent {
 	private static final String DEFAULT_WINDOW_CAPTION = "Bestätigen";
 	private static final String DEFAULT_CONFIRM_CAPTION = "Ok";
 	private static final String DEFAULT_CANCEL_CAPTION = "Abbrechen";
-	
-//	public ConfirmEvent(String message) {
-//		this(DEFAULT_WINDOW_CAPTION, message);
-//	}
-//	
-//	public ConfirmEvent(String caption, String message) {
-//		this(caption, message, DEFAULT_CONFIRM_CAPTION, DEFAULT_CANCEL_CAPTION);
-//	}
-//	
-//	public ConfirmEvent(String caption, String message, String confirmCaption, String cancelCaption) {
-//		this.caption = caption;
-//		this.message = message;
-//		this.confirmCaption = confirmCaption;
-//		this.cancelCaption = cancelCaption;
-//		id = UUID.randomUUID();
-//	}
 	
 	public void confirm() {
 		if(confirmRunnable != null)

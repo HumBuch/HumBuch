@@ -15,9 +15,14 @@ import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.vaadin.server.StreamResource.StreamSource;
 
+/**
+ * Util class for loading image, text and binary resources
+ * 
+ * @author davherrmann
+ * @author Benjamin Räthlein
+ */
 public class ResourceLoader implements StreamSource{
 	private static final long serialVersionUID = 7205541400825272604L;
-
 	private final static Logger LOG = LoggerFactory
 			.getLogger(ResourceLoader.class);
 
