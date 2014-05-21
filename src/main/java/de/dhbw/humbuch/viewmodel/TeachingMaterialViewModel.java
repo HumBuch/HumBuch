@@ -24,6 +24,7 @@ import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
  * Provides the {@link TeachingMaterialView} with data to display and manage teaching materials
+ * 
  * @author David Vitt
  * @author Martin Wentzel
  *

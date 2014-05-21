@@ -29,6 +29,8 @@ import de.dhbw.humbuch.model.entity.User;
 import de.dhbw.humbuch.util.PasswordHash;
 
 /**
+ * Provides {@link State}s and methods for inserting and updateing {@link SchoolYear}s and {@link Category}s.
+ * 
  * @author David Vitt
  * 
  */
@@ -71,6 +73,16 @@ public class SettingsViewModel {
 	private DAO<Category> daoCategory;
 	private DAO<SettingsEntry> daoSettingsEntry;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param daoSchoolYear
+	 * @param daoUser
+	 * @param daoCategory
+	 * @param daoSettingsEntry
+	 * @param properties
+	 * @param eventBus
+	 */
 	@Inject
 	public SettingsViewModel(DAO<SchoolYear> daoSchoolYear, DAO<User> daoUser, DAO<Category> daoCategory, DAO<SettingsEntry> daoSettingsEntry,
 			Properties properties, EventBus eventBus) {
@@ -128,6 +140,11 @@ public class SettingsViewModel {
 		updateSchoolYears();
 	}
 
+	/**
+	 * Delets {@link SchoolYear} if it isn't the current one.
+	 * 
+	 * @param schoolYear
+	 */
 	public void doDeleteSchoolYear(SchoolYear schoolYear) {
 		if (!schoolYear.isActive()) {
 			daoSchoolYear.delete(schoolYear);
@@ -166,6 +183,13 @@ public class SettingsViewModel {
 		updateCategories();
 	}
 
+	/**
+	 * Updates {@code userName} and {@code userEmail} of the current {@link User}.<br>
+	 * Checks if username or email are already in use by another {@link User}.
+	 * 
+	 * @param userName
+	 * @param userEmail
+	 */
 	@HandlesAction(DoUpdateUser.class)
 	public void doUpdateUser(String userName, String userEmail) {
 		if (userEmail.isEmpty())
