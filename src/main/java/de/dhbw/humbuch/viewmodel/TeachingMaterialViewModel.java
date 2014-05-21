@@ -79,11 +79,16 @@ public class TeachingMaterialViewModel {
 		updateTeachingMaterials();
 		updateCategories();
 	}
-
+	/**
+	 * Sets the teachingMaterials state
+	 */
 	private void updateTeachingMaterials() {
 		teachingMaterials.set(daoTeachingMaterial.findAll());
 	}
 
+	/**
+	 * Sets the categories state. Moreover, to set a standard category, the category which name is similar to "Buch" is selected.
+	 */
 	private void updateCategories() {
 		categories.set(daoCategory.findAll());
 		standardCategory.set(daoCategory.findSingleWithCriteria(Restrictions.ilike("name", "B%ch%")));
@@ -111,7 +116,7 @@ public class TeachingMaterialViewModel {
 	 * by a student.
 	 * 
 	 * @param teachingMaterial
-	 *            the teacing material to be updated or deleted
+	 *            the teaching material to be updated or deleted
 	 */
 	@HandlesAction(DoDeleteTeachingMaterial.class)
 	public void doDeleteTeachingMaterial(TeachingMaterial teachingMaterial) {
