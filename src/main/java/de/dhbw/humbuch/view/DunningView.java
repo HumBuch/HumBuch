@@ -162,7 +162,7 @@ public class DunningView extends VerticalLayout implements View,
 	 */
 	private void addListener() {
 		
-		/*
+		/**
 		 * Listens for changes in all dunning collection an adds them to the
 		 * container
 		 */
@@ -177,7 +177,7 @@ public class DunningView extends VerticalLayout implements View,
 
 		});
 
-		/*
+		/**
 		 * Enables/disables the buttons
 		 */
 		tblDunnings.addValueChangeListener(new Table.ValueChangeListener() {
@@ -197,7 +197,7 @@ public class DunningView extends VerticalLayout implements View,
 			}
 		});
 		
-		/*
+		/**
 		 * Set the send status of the dunning
 		 */
 		btnDunningSent.addClickListener(new ClickListener() {
@@ -211,7 +211,7 @@ public class DunningView extends VerticalLayout implements View,
 			}
 		});
 		
-		/*
+		/**
 		 * Open the pdf with the dunning
 		 */
 		btnShowDunning.addClickListener(new ClickListener() {
@@ -241,7 +241,7 @@ public class DunningView extends VerticalLayout implements View,
 			}
 		});
 		
-		/*
+		/**
 		 * Provides the live search of the table by adding a filter after every
 		 * keypress in the search field.
 		 */
