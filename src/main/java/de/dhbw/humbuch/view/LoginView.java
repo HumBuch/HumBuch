@@ -32,6 +32,8 @@ import de.dhbw.humbuch.viewmodel.LoginViewModel.IsLoggedIn;
 /**
  * Provides the UI for the login and displays error messages, if the user uses
  * wrong credentials
+ * 
+ * @author Johannes Idelhauser
  */
 public class LoginView extends VerticalLayout implements View {
 	private static final long serialVersionUID = 5187769743375079627L;
