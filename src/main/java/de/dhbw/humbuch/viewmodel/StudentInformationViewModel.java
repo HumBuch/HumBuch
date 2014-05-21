@@ -240,13 +240,14 @@ public class StudentInformationViewModel {
 			
 			Student existingStudent = daoStudent.find(student.getId());
 			if(existingStudent != null) {
-				student.setBorrowedMaterials(existingStudent.getBorrowedMaterials());
-				student.setParent(existingStudent.getParent());
+				existingStudent.copyDataFrom(student);
+				daoStudent.update(existingStudent);
+			} else {	
+				daoStudent.insert(student);
 			}
-
+			
 			changedStudents++;
 		}
-		daoStudent.update(csvStudents);
 		
 		return changedStudents;
 	}
