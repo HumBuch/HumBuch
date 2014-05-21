@@ -1,9 +1,9 @@
 package de.dhbw.humbuch.event;
 
 /**
- * Example event for the Guava EventBus
+ * Event for the EventBus holding a message after a successful/unsuccessful login
  * 
- * @author David Herrmann
+ * @author davherrmann
  */
 public class LoginEvent {
 	private final String message;
