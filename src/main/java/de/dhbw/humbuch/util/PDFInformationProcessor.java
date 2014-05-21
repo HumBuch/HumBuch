@@ -13,6 +13,8 @@ import de.dhbw.humbuch.model.entity.Student;
 
 /**
  * Utility class which process information used for latter Pdf generation.
+ * 
+ * @author Henning Muszynski
  * */
 public class PDFInformationProcessor {
 

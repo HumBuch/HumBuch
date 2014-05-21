@@ -38,6 +38,12 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import elemental.events.KeyboardEvent.KeyCode;
 
+/**
+ * Class representing the popup window of a manual lending or return process.
+ * The constructor defines which process is displayed.
+ * 
+ * @author Henning Muszynski
+ * */
 public class ManualProcessPopupWindow extends Window {
 
 	private static final long serialVersionUID = -6517435259424504689L;
