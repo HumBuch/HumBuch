@@ -23,7 +23,13 @@ import de.dhbw.humbuch.model.entity.Grade;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
-
+/**
+ * Test persisting of "uploaded" students in StudentInformationViewModel.
+ * Test different kinds of persisting: delta import and non-delta import. 
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModuleWithoutSingletons.class })
 public class StudentInformationViewModelTest extends BaseTest {

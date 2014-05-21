@@ -23,7 +23,14 @@ import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 
-
+/**
+ * Create student objects of data in csv file.
+ * Checks cells for validity.
+ * 
+ * @author Benjamin Räthlein
+ * @author David Vitt
+ *
+ */
 public final class CSVHandler {
 
 	/**
@@ -85,6 +92,15 @@ public final class CSVHandler {
 		return studentArrayList;
 	}
 
+	/**
+	 * Read a properties file that contains information about the names of the header fields in the csv.
+	 * If the name of a header in the csv changes, the new name can be mapped in the properties file. As a result,
+	 * changes of csv headers can be adopted easily without the need of touching the code.
+	 * Also, the properties file enables the program to handle csv files even in case the order of the header fields
+	 * changed.
+	 * 
+	 * @return properties that fit the csv header line
+	 */
 	private static Properties readCSVConfigurationFile() {
 		Properties csvHeaderProperties = new Properties();
 		try {
