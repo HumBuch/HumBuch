@@ -133,7 +133,9 @@ public class BookLookup {
 		Element element = (Element) data.item(0);
 		if (element != null) {
 			Node node = element.getChildNodes().item(0);
-			return node.getNodeValue();
+			if (node != null) {
+				return node.getNodeValue();
+			}
 		}
 		return null;
 	}
