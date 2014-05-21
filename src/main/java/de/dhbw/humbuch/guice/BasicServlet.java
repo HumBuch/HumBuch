@@ -30,7 +30,7 @@ public class BasicServlet extends VaadinServlet implements
 	@Override
 	protected DeploymentConfiguration createDeploymentConfiguration(
 			Properties initParameters) {
-		initParameters.setProperty(SERVLET_PARAMETER_PRODUCTION_MODE, "false");
+		initParameters.setProperty(SERVLET_PARAMETER_PRODUCTION_MODE, "true");
 		initParameters.setProperty("disable-xsrf-protection", "false");
 		return super.createDeploymentConfiguration(initParameters);
 	}
