@@ -17,7 +17,14 @@ import de.dhbw.humbuch.model.SubjectHandler;
 import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.Student;
 
-
+/**
+ * Create a borrowed material list, a return list or a lending list.
+ * Borrowed material list contains material that has to be borrowed by a student.
+ * Return list contains material that has to be returned by a student.
+ * Lending list contains material that has to be lent by a student.
+ * @author Benjamin Räthlein
+ *
+ */
 public final class PDFStudentList extends PDFHandler {
 
 	private Student student;

@@ -26,7 +26,11 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource.StreamSource;
 
-
+/**
+ * Abstract super class for PDF creation. Determines general layout of PDFs.
+ * @author Benjamin Räthlein
+ *
+ */
 public abstract class PDFHandler {
 
 	private Document document;

@@ -23,7 +23,13 @@ import de.dhbw.humbuch.model.entity.Parent;
 import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.Subject;
 
-
+/**
+ * Create student objects of data in csv file.
+ * Checks cells for validity.
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public final class CSVHandler {
 
 	/**
