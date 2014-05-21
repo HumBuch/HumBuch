@@ -14,6 +14,12 @@ import org.slf4j.LoggerFactory;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 
+/**
+ * Util class for loading image, text and binary resources
+ * 
+ * @author davherrmann
+ * @author Benjamin Räthlein
+ */
 public class ResourceLoader {
 	private final static Logger LOG = LoggerFactory
 			.getLogger(ResourceLoader.class);
