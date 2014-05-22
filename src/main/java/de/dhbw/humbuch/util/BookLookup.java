@@ -18,6 +18,8 @@ import org.xml.sax.SAXException;
  * <li>Standard ISBN API is isbndb.com</li>
  * <li>Document retrieval, validation and parsing can be overridden in subclass</li>
  * </ul>
+ * 
+ * @author davherrmann
  */
 public class BookLookup {
 	private final static String KEY = "CONBNUOZ";
@@ -131,7 +133,9 @@ public class BookLookup {
 		Element element = (Element) data.item(0);
 		if (element != null) {
 			Node node = element.getChildNodes().item(0);
-			return node.getNodeValue();
+			if (node != null) {
+				return node.getNodeValue();
+			}
 		}
 		return null;
 	}

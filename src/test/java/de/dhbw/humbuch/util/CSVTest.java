@@ -17,6 +17,12 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+/**
+ * Test reading a csv file and creating student objects of its data.
+ * 
+ * @author Benjamin Räthlein
+ *
+ */
 public class CSVTest {
 	
 	@Test
@@ -34,15 +40,12 @@ public class CSVTest {
 			ArrayList<de.dhbw.humbuch.model.entity.Student> list = CSVHandler.createStudentObjectsFromCSV(csvReader);
 			assertEquals(99, list.size());		
 			assertEquals("Zivko", list.get(1).getLastname());
-//			assertEquals("5a", GradeHandler.getFullGrade(list.get(1).getGrade()));
 			assertEquals("Adelina", list.get(1).getFirstname());		
 			DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 			assertEquals("02.01.1989", dateFormat.format(list.get(1).getBirthday()));
 			assertEquals("m", list.get(1).getGender());
-			//assertEquals("E", ProfileHandler.getLanguageProfile(list.get(1).getProfile()));
 		}
 		catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

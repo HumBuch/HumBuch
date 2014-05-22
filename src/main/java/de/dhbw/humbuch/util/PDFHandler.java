@@ -26,7 +26,11 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vaadin.server.StreamResource.StreamSource;
 
-
+/**
+ * Abstract super class for PDF creation. Determines general layout of PDFs.
+ * @author Benjamin Räthlein
+ *
+ */
 public abstract class PDFHandler {
 
 	private Document document;
@@ -43,6 +47,10 @@ public abstract class PDFHandler {
 		this.document = new Document();
 	}
 
+	/**
+	 * Create a document with the specified sizes and margins. This document is the internal representation 
+	 * of the PDF.
+	 */
 	public PDFHandler() {
 		this.document = new Document(new RectangleReadOnly(595,842), 30f, 30f, 25f, 35f);
 	}
@@ -71,33 +79,6 @@ public abstract class PDFHandler {
 		this.addMetaData(document);
 		this.insertDocumentParts(document);
 		this.document.close();
-	}
-
-	/**
-	 * User can choose a printer where this pdf is printed then. The pdf
-	 * contains the information stored in the object that was send to the
-	 * constructor previously.
-	 * 
-	 */
-	public void printPDF() {
-		ByteArrayOutputStream byteArrayOutputStream;
-		try {
-			byteArrayOutputStream = new ByteArrayOutputStream();
-			PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
-			event = new HeaderFooter();
-			writer.setBoxSize("art", new Rectangle(36, 54, 559, 788));
-			writer.setPageEvent(event);
-
-			this.document.open();
-			this.addMetaData(document);
-			this.insertDocumentParts(document);
-			this.document.close();
-
-			new PDFPrinter(byteArrayOutputStream);
-		}
-		catch (DocumentException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

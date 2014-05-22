@@ -213,6 +213,16 @@ public class Student implements de.dhbw.humbuch.model.entity.Entity, Serializabl
 		
 		return false;
 	}
+	
+	public void copyDataFrom(Student student) {
+		setBirthday(student.getBirthday());
+		setFirstname(student.getFirstname());
+		setGender(student.getGender());
+		setGrade(student.getGrade());
+		setLastname(student.getLastname());
+		setParent(student.getParent());
+		setProfile(student.getProfile());
+	}
 
 	public static class Builder {
 		private final int id;

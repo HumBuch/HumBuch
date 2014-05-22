@@ -20,6 +20,8 @@ import com.google.inject.persist.UnitOfWork;
 /**
  * Overrides Guice implementation to handle when the persistence service is
  * already started
+ * 
+ * @author davherrmann
  */
 @Singleton
 public final class PersistFilter implements Filter {

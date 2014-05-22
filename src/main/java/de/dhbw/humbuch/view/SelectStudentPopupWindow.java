@@ -19,6 +19,12 @@ import com.vaadin.ui.Window;
 import de.dhbw.humbuch.model.entity.Student;
 import elemental.events.KeyboardEvent.KeyCode;
 
+/**
+ * Popup window to select a student. Normally appears before a manual process
+ * starts and no students has been selected.
+ * 
+ * @author Henning Muszynski
+ * */
 public class SelectStudentPopupWindow extends Window {
 
 	private static final long serialVersionUID = 4748807796813638121L;
@@ -226,7 +232,7 @@ public class SelectStudentPopupWindow extends Window {
 				LOG.error("Error occured while trying to start a new process. ManualProcessPopupWindow could not be created.");
 			}
 		} else {
-			// TODO: UI Notification
+			LOG.error("No valid student has been selected.");
 		}
 	}
 

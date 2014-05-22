@@ -24,8 +24,12 @@ import de.dhbw.humbuch.model.entity.BorrowedMaterial;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
+
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModuleWithoutSingletons.class })
+/**
+ * @author Martin Wentzel
+ */
 public class TeachingMaterialViewModelTest extends BaseTest {
 	private TeachingMaterialViewModel teachingMaterialViewModel;
 	private DAO<TeachingMaterial> daoTeachingMaterial;

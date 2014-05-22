@@ -30,6 +30,8 @@ import de.dhbw.humbuch.model.entity.Student;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
+ * Provides {@link State}s and methods for returning {@link BorrowedMaterial}s
+ * 
  * @author David Vitt
  *
  */

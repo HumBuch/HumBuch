@@ -50,6 +50,8 @@ import de.dhbw.humbuch.viewmodel.StudentInformationViewModel.Students;
  * containing actions and a StudentMaterialSelector with all information about
  * the lent books of students. It is used to return the books and create student
  * lists.
+ * 
+ * @author Henning Muszynski
  * */
 public class ReturnView extends VerticalLayout implements View,
 		ViewInformation, StudentMaterialSelectorObserver {
@@ -371,7 +373,7 @@ public class ReturnView extends VerticalLayout implements View,
 		return TITLE;
 	}
 
-	/*
+	/**
 	 * Update procedure from the view model in order to get new information
 	 * without the need to manually refresh.
 	 */

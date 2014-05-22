@@ -34,6 +34,8 @@ import de.dhbw.humbuch.model.entity.Subject;
 import de.dhbw.humbuch.model.entity.TeachingMaterial;
 
 /**
+ * Provides {@link State}s and methods for automatic and manual lending of {@link TeachingMaterial}s.
+ * 
  * @author David Vitt
  *
  */

@@ -63,7 +63,6 @@ COMMIT;
 START TRANSACTION;
 USE `humbuch`;
 INSERT INTO `humbuch`.`category` (`id`, `name`, `description`) VALUES (1, 'Bücher', NULL);
-INSERT INTO `humbuch`.`category` (`id`, `name`, `description`) VALUES (2, 'Mobile Device', NULL);
 
 COMMIT;
 
@@ -94,6 +93,7 @@ COMMIT;
 START TRANSACTION;
 USE `humbuch`;
 INSERT INTO `humbuch`.`user` (`id`, `username`, `password`, `email`) VALUES (1, 'admin', '500:d854d1abe5e05e2e2ad4d3bde6d6c1e858ec18c1:c816e7e095abc356c27ff84ccf5c0c1275299ae4', 'test@test.com');
+INSERT INTO `humbuch`.`user` (`id`, `username`, `password`, `email`) VALUES (2, 'schlager', '500:1dac1aeacf9cc190a569672bea49432f6be88d5e:45446a81139d8aca30ec3762cdf734cbb60adaf9', 'schlager@test.com');
 
 COMMIT;
 
@@ -196,9 +196,6 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `humbuch`;
-INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (1, 'feld1', 'Hallo1', 'Hallo1');
-INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (2, 'feld2', 'Hallo2', 'a');
-INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (3, 'feld3', 'Hallo3', 'Test');
 INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (4, 'dun_firstDunningDeadline', '14', '14');
 INSERT INTO `humbuch`.`setting` (`id`, `settingKey`, `settingValue`, `settingStandardValue`) VALUES (5, 'dun_secondDunningDeadline', '14', '14');
 

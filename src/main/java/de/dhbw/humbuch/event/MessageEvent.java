@@ -1,8 +1,9 @@
 package de.dhbw.humbuch.event;
 
 /**
- * Object for the Guava EventBus containing a message and a message type
+ * Event for the EventBus containing a message and a message type
  * 
+ * @author davherrmann
  */
 public class MessageEvent {
 

@@ -9,6 +9,8 @@ import de.dhbw.humbuch.model.entity.Entity;
 /**
  * Event should be used when {@link Entity}s which are used elsewhere have been
  * updated
+ * 
+ * @author davherrmann
  */
 public class EntityUpdateEvent {
 	public final List<Class<? extends Entity>> updatedEntityTypes;

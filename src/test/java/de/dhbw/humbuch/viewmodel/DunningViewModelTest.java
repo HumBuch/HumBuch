@@ -33,8 +33,13 @@ import de.dhbw.humbuch.model.entity.Dunning.Status;
 import de.dhbw.humbuch.model.entity.SchoolYear;
 import de.dhbw.humbuch.model.entity.TestPersistenceInitialiser;
 
+
 @RunWith(GuiceJUnitRunner.class)
 @GuiceModules({ TestModule.class })
+/** 
+ * @author Martin Wentzel
+ * @author David Hermann
+ */
 public class DunningViewModelTest extends BaseTest {
 
 	private final int DEADLINE_FIRST_DUNNING = 15;
