@@ -123,6 +123,8 @@ public class MainUI extends ScopedUI {
 
 		ccViewDisplay = new ComponentContainerViewDisplay(viewContainer);
 		navigator = new Navigator(UI.getCurrent(), ccViewDisplay);
+		
+		navigator.setErrorView(lendingView);
 
 		navigator.setErrorView(errorView);
 
